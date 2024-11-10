@@ -5,7 +5,7 @@ This readme file is an outcome of the [CENG501 (Spring 2024)](https://ceng.metu.
 # 1. Introduction
 
 @TODO: Introduce the paper (inc. where it is published) and describe your goal (reproducibility).
-
+![Events Camera](https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/output.gif)
 ## 1.1. Paper summary
 
 @TODO: Summarize the paper, the method & its contributions in relation with the existing literature.
