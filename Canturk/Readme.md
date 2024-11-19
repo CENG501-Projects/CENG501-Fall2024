@@ -21,7 +21,9 @@ The paper introduces a method contributing to Graph Neural Networks to classify 
 The method has four different parts. It starts with the input and higher-order layer. We are given a graph $G$ which is a pair $(V,E)$ with a set of nodes $V$ and a set of edges $E$ where $E \subseteq \\{ (i,j) | i,j \in V, i \neq j \\} $. $V(G)$ and $E(G)$ denote the set of nodes and edges, respectively. Moreover, define the neighborhood of a node $i$ as $N(i) = \\{ j | (i,j) \in E(G) \\}$ and show the feature embedding encoding attributes of $i$ as $u_i$. After starting with such a graph $G$, substructures of $G$ which are $1$-order substructures are considered and they give $1$-order graph which is $G$ itself. To extract more information about $G$, higher-order graphs are defined in the following way.
 
 **Definition.** For an integer $k \geq 2$, we denote any $k$ different connected nodes forming a connected subgraph in $G$ as $C_k=\\{v_1,\ldots,v_k\\}$. We identify $C_k$ as a node in $k$-order graph. $V(G)^k$ is denoted as the set of all nodes of $k$-order graph. The neighborhood of the node $C_k$ is defined as:
-$$$N(C_k)=\\{T_k \in V(G)^k | |C_k \bigcap T_k| = k-1\\}.$$$
+$$N(C_k)=\\{T_k \in V(G)^k | |C_k \bigcap T_k| = k-1\\}.$$
+
+With this definition, we can create higher-order graphs for $k \geq 2$. The next step is to initialize node features of 1-order and higher order graphs. For $i \in V(G)$, the feature embedding $u_i \in ℝ^d$ is the concatanation of two one-hot vectors $e_i \in ℝ^{d_1}$ and $a_i \in ℝ^{d_2}$ based on label and attributes of the node $i$, respectively. Note that $d=d_1+d_2$.
 
 ## 2.2. Our interpretation
 
