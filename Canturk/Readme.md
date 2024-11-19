@@ -4,7 +4,7 @@ This readme file is an outcome of the [CENG501 (Spring 2024)](https://ceng.metu.
 
 # 1. Introduction
 
-This paper is written by Jianliang Gao, Jun Gao, Xiaoting Ying, Mingming Lu and Jianxin Wang and published in IEEE Transactions on Knowledge and Data Engineering where volume, issue and date are 35, 2 and 01 February 2023, respectively. 
+This paper is written by Jianliang Gao, Jun Gao, Xiaoting Ying, Mingming Lu and Jianxin Wang and published in IEEE Transactions on Knowledge and Data Engineering where volume, issue and date are 35, 2 and 1 February 2023, respectively. 
 
 Data can come in very different forms such as point clouds or graphs. Numerous applications in cheminformatics or social networks use classification of graphs to get results. Hence, the existence of Neural Networks working on graph-structured data is essential and Graph Neural Networks (GNNs) covers this need. However, existing GNN models tries to capture the information of first-order neighboring nodes within a single layer and mostly don't give enough importance to graph substructure and substructure information. In this paper, the proposed method SA-GAT not only investigate and extract linear information from higher-order substructures but also focus on their non-linear interaction information via a core module "Substructure Interaction Attention" (SIA). 
 
@@ -18,7 +18,7 @@ The paper introduces a method contributing to Graph Neural Networks to classify 
 
 ## 2.1. The original method
 
-@TODO: Explain the original method.
+The method has four different parts. It starts with the input and higher-order layer. We are given a graph $G$ which is a pair 
 
 ## 2.2. Our interpretation
 
