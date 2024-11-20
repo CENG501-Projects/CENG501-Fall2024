@@ -8,7 +8,7 @@ The paper "Entropy Induced Pruning Framework for Convolutional Neural Networks" 
 
 Pruning techniques are essential for reducing the computational overhead of CNNs, enabling their deployment in resource-constrained environments like mobile devices and embedded systems. The AFIE method evaluates the importance of filters in a CNN using entropy derived from the eigenvalues of the layer's weight matrix, allowing effective pruning even when the model is under-trained.
 
-Project Goal:
+###Project Goal:
 The primary goal of this project is to reproduce the results presented in the paper to validate its claims. This involves:
 
 1. Implementing the AFIE-based pruning framework.
@@ -20,7 +20,30 @@ By conducting this reproducibility study, we aim to evaluate the practicality of
 
 ## 1.1. Paper summary
 
-@TODO: Summarize the paper, the method & its contributions in relation with the existing literature.
+CNNs have achieved remarkable success in tasks like image classification but are computationally intensive due to their large model size. Redundancy in CNN filters not only increases inference time and memory requirements but also risks overfitting. Existing pruning techniques can be broadly categorized into:
+
+Unstructured Pruning: Removes individual weights but retains overall model structure.
+Structured Pruning: Removes entire filters or layers, significantly reducing computational demands.
+Structured pruning is preferred for real-world applications as it achieves better computational efficiency by reducing the number of feature maps.
+
+However, current methods depend on fully trained models to assess the importance of filters accurately. This dependency makes pruning inefficient and resource-intensive, as under-trained models often yield suboptimal results.
+
+###Proposed Method:
+The paper introduces Average Filter Information Entropy (AFIE), a structured pruning framework that eliminates the need for a fully trained model by evaluating filter importance using entropy derived from the eigenvalues of the weight matrix. AFIE's key steps include:
+
+Weight Decomposition: Applying Singular Value Decomposition (SVD) to decompose the weight matrix into a low-rank space.
+Normalization and Entropy Calculation: Eigenvalues are normalized into a probability distribution, and entropy is calculated to measure redundancy.
+Pruning Ratio Allocation: Based on AFIE scores, pruning ratios are dynamically allocated across layers.
+####Key Contributions:
+
+1. The method eliminates the reliance on fully trained models, allowing effective pruning even when the model is trained for just one epoch.
+2. The AFIE framework provides consistent filter evaluations regardless of the model's training stage.
+3. The authors demonstrate competitive results on AlexNet, VGG-16, and ResNet-50 across datasets, achieving significant reductions in parameters and FLOPs while maintaining comparable accuracy.
+
+###Relation to Existing Literature:
+AFIE addresses limitations in both Layer-Importance-Supported (LIS) and Filter-Importance-Supported (FIS) pruning methods, which often rely on weight magnitude, gradients, or sensitivity analysis. The proposed entropy-based approach is less dependent on model optimization, making it a robust alternative to traditional methods like Taylor expansion, L1 norm, and batch normalization regularization.
+
+This framework bridges the gap between pruning efficiency and model training, contributing to the broader goal of making deep learning models more accessible and efficient.
 
 # 2. The method and our interpretation
 
@@ -52,7 +75,7 @@ By conducting this reproducibility study, we aim to evaluate the practicality of
 
 # 5. References
 
-@TODO: Provide your references here.
+1. Paul Gavrikov, Towards Data Science (2022, October 28). Downloading and Using the ImageNet Dataset with PyTorch. Train your image classification models with the most popular research dataset. https://towardsdatascience.com/downloading-and-using-the-imagenet-dataset-with-pytorch-f0908437c4be
 
 # Contact
 
