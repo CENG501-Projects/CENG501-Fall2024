@@ -31,7 +31,7 @@ However, current methods depend on fully trained models to assess the importance
 ### Proposed Method:
 The paper introduces Average Filter Information Entropy (AFIE), a structured pruning framework that eliminates the need for a fully trained model by evaluating filter importance using entropy derived from the eigenvalues of the weight matrix. AFIE's key steps include:
 
-**Weight Decomposition**: Applying Singular Value Decomposition (SVD) to decompose the weight matrix into a low-rank space.
+**Weight Decomposition**: Applying Singular Value Decomposition (SVD) to decompose the weight matrix into a low-rank space.  
 **Normalization and Entropy Calculation**: Eigenvalues are normalized into a probability distribution, and entropy is calculated to measure redundancy.
 **Pruning Ratio Allocation**: Based on AFIE scores, pruning ratios are dynamically allocated across layers.
 #### Key Contributions:
@@ -41,7 +41,7 @@ The paper introduces Average Filter Information Entropy (AFIE), a structured pru
 3. The authors demonstrate competitive results on AlexNet, VGG-16, and ResNet-50 across datasets, achieving significant reductions in parameters and FLOPs while maintaining comparable accuracy.
 
 ### Relation to Existing Literature:
-AFIE addresses limitations in both **Layer-Importance-Supported (LIS)** and **Filter-Importance-Supported (FIS)** pruning methods, which often rely on weight magnitude, gradients, or sensitivity analysis. The proposed entropy-based approach is less dependent on model optimization, making it a robust alternative to traditional methods like Taylor expansion, L1 norm, and batch normalization regularization.
+AFIE addresses limitations in both *Layer-Importance-Supported (LIS)* and *Filter-Importance-Supported (FIS)* pruning methods, which often rely on weight magnitude, gradients, or sensitivity analysis. The proposed entropy-based approach is less dependent on model optimization, making it a robust alternative to traditional methods like Taylor expansion, L1 norm, and batch normalization regularization.
 
 This framework bridges the gap between pruning efficiency and model training, contributing to the broader goal of making deep learning models more accessible and efficient.
 
