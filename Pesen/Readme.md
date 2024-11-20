@@ -32,8 +32,8 @@ However, current methods depend on fully trained models to assess the importance
 The paper introduces Average Filter Information Entropy (AFIE), a structured pruning framework that eliminates the need for a fully trained model by evaluating filter importance using entropy derived from the eigenvalues of the weight matrix. AFIE's key steps include:
 
 **Weight Decomposition**: Applying Singular Value Decomposition (SVD) to decompose the weight matrix into a low-rank space.  
-**Normalization and Entropy Calculation**: Eigenvalues are normalized into a probability distribution, and entropy is calculated to measure redundancy.
-**Pruning Ratio Allocation**: Based on AFIE scores, pruning ratios are dynamically allocated across layers.
+**Normalization and Entropy Calculation**: Eigenvalues are normalized into a probability distribution, and entropy is calculated to measure redundancy.  
+**Pruning Ratio Allocation**: Based on AFIE scores, pruning ratios are dynamically allocated across layers.  
 #### Key Contributions:
 
 1. The method eliminates the reliance on fully trained models, allowing effective pruning even when the model is trained for just one epoch.
