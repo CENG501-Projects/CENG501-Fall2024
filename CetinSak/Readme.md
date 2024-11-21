@@ -7,7 +7,7 @@ This readme file is an outcome of the [CENG501 (Fall 2024)](https://ceng.metu.ed
 @TODO: Introduce the paper (inc. where it is published) and describe your goal (reproducibility).
 
 @TODO: Convert bullet points to paragraphs 
-- The paper is published at Proceedings of Machine Learning Research.
+- The paper is published at Proceedings of Machine Learning Research. It was shown as a spotlight poster at ICML 2024.
 - Our goal is to reproduce the paper and results.
 
 
@@ -15,9 +15,17 @@ This readme file is an outcome of the [CENG501 (Fall 2024)](https://ceng.metu.ed
 
 @TODO: Summarize the paper, the method & its contributions in relation with the existing literature.
 
+- Summary
+
+- Method -> SHRM, 
+- Contributions
+- Existing Literature -> Random Hierarchy Model, 
+
 # 2. The method and our interpretation
 
 ## 2.1. The original method
+
+-> SHRM, Sample Complexity, Sparsity ve Diffeomorphism, Derivation of Sample complexity for CNN and LCN (CNN but no weight sharing)
 
 @TODO: Explain the original method.
 
@@ -25,13 +33,29 @@ This readme file is an outcome of the [CENG501 (Fall 2024)](https://ceng.metu.ed
 
 @TODO: Explain the parts that were not clearly explained in the original paper and how you interpreted them.
 
+-> Interpret the output of SHRM, how should data look etc.
+-> Interpret how S_k and D_k was calculated. 
+-> In RHM code, what does each parameter correspond to here
+
 # 3. Experiments and results
 
 ## 3.1. Experimental setup
 
+1. Making SHRM dataset -> main part of the paper, explain the code in relation to the 'our interpretation' part
+2. Running CNN and LCN on them -> hyperparams come from appendix
+3. Getting graphs from results
+4. Running CIFAR10 with given architectures -> hyperparams come from appendix, nets come from citation
+5. Getting graphs from here
+6. Additional guidance on how to run Appendices
+
+
 @TODO: Describe the setup of the original paper and whether you changed any settings.
 
 ## 3.2. Running the code
+
+1. Explain the directory -> where what is stored -> nets in one folder, RHM and SHRM in another folder, main files in root, guided ipynb
+2. TODO -> Add a helper script to download CIFAR dataset. Required for first milestone.
+3. How to run -> venv creation, running files, reproducing images, requirements,
 
 @TODO: Explain your code & directory structure and how other people can run it.
 
@@ -91,13 +115,9 @@ CIFAR 10 Dataset From: `Learning Multiple Layers of Features from Tiny Images`
 }
 ```
 
-Model Implementations (VGG ResNet EfficientNetB0) WILL be from: [diffeo-sota repository](https://github.com/leonardopetrini/diffeo-sota/tree/main/models)
-
-@TODO: Authors requested permission from Petrini et al., we should request permission too.
+Model Implementations (VGG ResNet EfficientNetB0) are from: [diffeo-sota repository](https://github.com/leonardopetrini/diffeo-sota/tree/main/models)
 
 # Contact
 
 Burak Erinç Çetin - erinc.cetin@metu.edu.tr
 Emin Sak - sak.emin@metu.edu.tr
-
-@TODO: Provide your names & email addresses and any other info with which people can contact you.
