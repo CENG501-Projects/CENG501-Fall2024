@@ -114,7 +114,17 @@ where $`\lambda^*`$ is the total pruning ratio, and $`p^*`$ is the total number 
 
 ## 2.2. Our interpretation
 
-@TODO: Explain the parts that were not clearly explained in the original paper and how you interpreted them.
+#### Clarifications and Extensions:  
+While the paper provides clear formulations, some parts required interpretation for optimization and practical implementation:  
+1. Performance Consistency Across Training Epochs:
+- The AFIE metric remains stable across poorly trained and fully trained models, demonstrating that it captures inherent filter redundancy without being influenced by parameter updates. This simplifies the pruning process as it eliminates the need for fully trained models.
+2. Optimization Improvements:
+- **Scalability:**  The use of SVD and entropy ensures that the framework scales to large models like ResNet-50 without excessive computational overhead.
+- **One-Shot Pruning Efficiency:** By avoiding iterative pruning, AFIE significantly reduces computational resources compared to traditional methods.
+3. Practical Adjustments for Pruning Ratio:
+- In cases where eigenvalues are nearly uniform, $`AFIE_l`$ may underestimate the importance of filters. To address this, we introduced an additional safeguard to preserve a small percentage of filters (1%) even in highly redundant layers.  
+#### Inference on Improvements:
+AFIE outperforms traditional methods by combining robustness (independence from training epochs) with computational efficiency (one-shot pruning). This balance makes it suitable for real-world applications where retraining and iterative pruning are costly.
 
 # 3. Experiments and results
 ```math
