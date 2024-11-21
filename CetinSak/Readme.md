@@ -8,7 +8,7 @@ Deep Learning has become a foundational foot of the modern machine learning, exh
 
 This work introduces the Sparse Random Hierarchy Model (SRHM), demonstrating that sparsity in hierarchical data enables networks to learn invariances to such transformations.  Taking the RHM as a framework, this work introduces the Sparse Random Hierarchy Model (SRHM), demonstrating that sparsity in hierarchical data enables networks to learn invariances to such transformations, published at Proceedings of Machine Learning Research. It was shown as a spotlight poster at ICML 2024.
 
-Our main goal is to create the dataset by using SRHM and reproducing the same results shared in this paper. Through systematically creation of the dataset, we aim to validate that deep networks can learn such invariances from the data in which size is  polynominal in the input dimension, emphasising their advantage over shallow networks. Furthermore, we want to verify the theoretical relationships between sparsity, sample complexity and hierarchical representations.  
+Our main goal is to create the dataset by using SRHM and reproducing the same results shared in this paper. Through systematically creation of the dataset, we aim to validate that deep networks can learn such invariances from the data that is polynominal in the input dimension, emphasising their advantage over shallow networks. Furthermore, we want to verify the theoretical relationships between sparsity, sample complexity and hierarchical representations.  
 
 ## 1.1. Paper summary
 
