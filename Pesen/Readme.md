@@ -46,19 +46,98 @@ AFIE addresses limitations in both *Layer-Importance-Supported (LIS)* and *Filte
 This framework bridges the gap between pruning efficiency and model training, contributing to the broader goal of making deep learning models more accessible and efficient.
 
 # 2. The method and our interpretation
-```math
-SE = \frac{\sigma}{\sqrt{n}}
-```
-## 2.1. The original method
 
-@TODO: Explain the original method.
+## 2.1. The original method
+The Average Filter Information Entropy (AFIE) framework proposed in the paper involves several steps to efficiently prune convolutional neural networks. Below, the method is detailed in subsections with formulations:  
+
+### 2.1.1. Low-Rank Decomposition of Weight Matrices  
+The weight matrix of a convolutional layer is first decomposed into a low-rank representation to capture the intrinsic properties of the filter set. Given a 4D weight tensor $`\tilde{M}^{(I \times O \times H \times W)}`$  where I and 𝑂 are the input and output channels, and H and W are the filter dimensions:  
+1. The tensor is reshaped into a 2D matrix M by averaging H and W:
+```math
+M^{(I^* \times O^*)}_l = \text{Average}_{H, W}\left(\tilde{M}^{(I \times O \times H \times W)}_l\right)
+```
+2. Singular Value Decomposition (SVD) is applied:
+```math
+M = U \cdot S \cdot V^\top
+```
+- S is a diagonal matrix containing eigenvalues representing the magnitude of the principal components.
+
+### 2.1.2. Eigenvalue Normalization and Probability Distribution  
+The eigenvalues from S are normalized to ensure comparability across layers:  
+1. Min-Max Normalization:
+Each eigenvalue $`s_i`$ is scaled to the range [0,1]:
+```math
+s_{i,\text{norm}} = \frac{s_i - s_{\text{min}}}{s_{\text{max}} - s_{\text{min}}}
+i=1,2,…,p_l
+```
+where $`p_l`$ is the number of eigenvalues for layer 𝑙.   
+2. Softmax Normalization:  
+The normalized values are converted into probabilities:
+```math
+s_{i,\text{soft}} = \frac{\exp(s_{i,\text{norm}})}{\sum_{j=1}^{p_l} \exp(s_{j,\text{norm}})}
+```
+### 2.1.3. Average Filter Information Entropy (AFIE)
+Entropy is calculated over the probability distribution of eigenvalues to measure the redundancy in the layer:
+```math
+H(x) = -\sum_{x \in \Psi} p(x) \log p(x)
+```
+For a convolutional layer l, this becomes:
+```math
+K_l = -\sum_{i=1}^{p_l} s_{i,\text{soft}} \log s_{i,\text{soft}}
+```
+The importance of individual filters is then quantified using:
+```math
+\text{AFIE}_l = \frac{K_l}{c_l}
+```
+where $`c_l`$ is the number of filters in the layer.  
+
+### 2.1.4. Pruning Ratio Allocation and Filter Removal
+The pruning ratio for each layer is dynamically assigned based on AFIE scores:
+1. Compute layer pruning ratio:
+```math
+\lambda_l = \lambda_{\text{min}} \cdot \frac{\text{AFIE}_{\text{max}}}{\text{AFIE}_l}
+```
+Subject to:
+```math
+\sum_{l=1}^N \lambda_l \cdot p_l = \lambda^* \cdot p^*
+```
+where $`\lambda^*`$ is the total pruning ratio, and $`p^*`$ is the total number of filters.  
+2. Ensure at least 1% of filters are retained in each layer to maintain topology:
+```math
+\lambda_l = 
+\begin{cases} 
+\lambda_{\text{min}} \cdot \frac{\text{AFIE}_{\text{max}}}{\text{AFIE}_l}, & \text{if } \lambda_l < 1 \\
+0.99, & \text{otherwise}
+\end{cases}
+```
+3. Apply one-shot pruning to remove filters, avoiding iterative recalculations of AFIE.
 
 ## 2.2. Our interpretation
 
 @TODO: Explain the parts that were not clearly explained in the original paper and how you interpreted them.
 
 # 3. Experiments and results
+```math
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
 ## 3.1. Experimental setup
 
 @TODO: Describe the setup of the original paper and whether you changed any settings.
