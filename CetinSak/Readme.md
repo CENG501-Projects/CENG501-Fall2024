@@ -4,12 +4,11 @@ This readme file is an outcome of the [CENG501 (Fall 2024)](https://ceng.metu.ed
 
 # 1. Introduction
 
-@TODO: Introduce the paper (inc. where it is published) and describe your goal (reproducibility).
+Deep Learning has become a foundational foot of the modern machine learning, exhibiting well performance across a wide range of problems.This success is often be evaluated to its ability to build hierarchical representations, progressing from simple features to more complex ones. In addition,  the ability to learn invariance to task-specific transformations, such as spatial changes in image data, has been strongly correlated to this performance Still, there is a fundamental question needs to be answered  **_What underlying properties make high-dimensional data effectively learnable by deep networks?_** 
 
-@TODO: Convert bullet points to paragraphs 
-- The paper is published at Proceedings of Machine Learning Research. It was shown as a spotlight poster at ICML 2024.
-- Our goal is to reproduce the paper and results.
+This work introduces the Sparse Random Hierarchy Model (SRHM), demonstrating that sparsity in hierarchical data enables networks to learn invariances to such transformations.  Taking the RHM as a framework, this work introduces the Sparse Random Hierarchy Model (SRHM), demonstrating that sparsity in hierarchical data enables networks to learn invariances to such transformations, published at Proceedings of Machine Learning Research. It was shown as a spotlight poster at ICML 2024.
 
+Our main goal is to create the dataset by using SRHM and reproducing the same results shared in this paper. Through systematically creation of the dataset, we aim to validate that deep networks can learn such invariances from the data in which size is  polynominal in the input dimension, emphasising their advantage over shallow networks. Furthermore, we want to verify the theoretical relationships between sparsity, sample complexity and hierarchical representations.  
 
 ## 1.1. Paper summary
 
