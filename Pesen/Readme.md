@@ -46,7 +46,9 @@ AFIE addresses limitations in both *Layer-Importance-Supported (LIS)* and *Filte
 This framework bridges the gap between pruning efficiency and model training, contributing to the broader goal of making deep learning models more accessible and efficient.
 
 # 2. The method and our interpretation
-
+```math
+SE = \frac{\sigma}{\sqrt{n}}
+```
 ## 2.1. The original method
 
 @TODO: Explain the original method.
