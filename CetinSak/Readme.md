@@ -12,17 +12,39 @@ Our main goal is to create the dataset by using SRHM and reproducing the same re
 
 ## 1.1. Paper summary
 
-@TODO: Summarize the paper, the method & its contributions in relation with the existing literature.
+Deep learning can solve high dimensional tasks. This is possible because learnable data is highly structured. Data is learnable when it has local features that are assembled hierarchically. This view is consistent with deep networks forming hierarchical representations or CNNs architectural choices. Hierarchical nature of data can be captured by using hierarchical models. 
 
-- Summary
+However, hierarchical models are discrete, whereas images are approximated as continuous functions. Labels on this view are invariant to smooth transformations. Enforcing stability to smooth transformations (diffeomorphisms) makes models generalize better. Thus, there is a strong correlation between a network's test error and its sensitivity to diffeomorphisms. 
 
-- Method -> SHRM, 
-- Contributions
-- Existing Literature -> Random Hierarchy Model, 
+Authors argue that:
+- Incorporating sparsity to hierarchical generative models leads to insensitivity to discrete versions of diffeomorphisms.
+- To illustrate, they introduce the Sparse Random Hierarchy Model (SRHM), which captures the empirically observed correlation between sensitivity to diffeomorphisms and test error.
+- Correlation between test error reduction and invariance to diffeomorphisms occur when a model has learnt a hierarchical representation.
+- Number of training points needed to learn the task, called sample complexity, is the point where both diffeomorphism insensitivity and low test error is achieved.
+
+### Prior Work
+
+Deep networks can represent hierarchical compositional functions with less parameters compared to shallow networks. Specifically, deep networks can learn a hierarchical model polynomial in the dataset dimension. This work focuses on sparsity in feature space, which corresponds to smooth transformations of the input.
+
+Sample complexity, number of training examples needed to learn the task is introduced by the authors in their previous paper: “How Deep Neural Networks Learn Compositional Data: The Random Hierarchy Model”. It depends on the nature of the dataset, and the learning networks architecture. For example, data points required by a deep network to learn a task is usually polynomial in data dimension, but it is exponential for a shallow network (Cagnetta et al., 2024). 
+
+### Aims
+
+- Show and quantify strong correlation between feature sparsity and insensitivity to discretized diffeomorphisms
+- Explain how invariance emerges during training and how it affects sample complexity.
+- Work with generic perturbations of data, rather than adversarial-like worst-case perturbations.
 
 # 2. The method and our interpretation
 
 ## 2.1. The original method
+
+### Random Hierarchical Model (RHM)
+
+### Sparse Random Hierarchical Model (SRHM)
+
+### Sample Complexity
+
+### Sparsity and Diffeomorphism
 
 -> SHRM, Sample Complexity, Sparsity ve Diffeomorphism, Derivation of Sample complexity for CNN and LCN (CNN but no weight sharing)
 
