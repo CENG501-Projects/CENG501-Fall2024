@@ -78,9 +78,12 @@ Token Features might have dimensions (n,d), where n is the number of tokens and 
 (n,1), as each token gets a single score. To combine these (e.g., by addition), their shapes must match. If they don’t, matrix expansion ensures that smaller matrices (like (n,1)) are "stretched" to match larger ones (like (n,d)). Also, token attention score allows network to focus on the important information.
 
 ### 2.1.3 Multi-stage Feature Reconstruction (MFR)
+Multi-stage Feature Reconstruction restores and aggregates all N stages. MFR upsamples the tokens from a history record and restores the feature map. In the Figure XX unsampling process is given.
+FIGURE
+In Attention-based Feature Merging every token is assigned to a cluster and since tokens are merged, every cluster is represented by a merged token. Positional correspondences between original and merged tokens are recorded and those records are used to copy the merged token features into the unsampled token. Token features from the previous stage are added iteratively to get an aggregate. Later, tokens are fed to a multilayer perceptron and that process is iterated N times. After the process a feature map of size (Ws x Hs x C') is obtained.
 
 ### 2.1.4 Monocular 3D Detection
-
+In MonoATT, GUPNet is used as a monocular 3D object detector.
 
 ## 2.2. Our interpretation
 
