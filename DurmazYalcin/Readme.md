@@ -52,8 +52,12 @@ As illustrated in the figure above, a neuron generates an output (or spike) only
 
 As highlighted in the original paper, specialized hardware designed for spiking neural networks exists. On such hardware, spiking networks offer the advantage of significantly reduced power consumption, making them ideal for energy-efficient computations.
 
-## 2.2. Our interpretation
+The original method presents a hybrid model integrating conventional neural networks (CNNs) with spiking neural networks (SNNs). While SNNs are specifically employed for designing the encoders, the rest of the network operates on conventional image frames. Although SNNs do not enhance the system's performance, they significantly reduce inference time and energy consumption when deployed on appropriate hardware.
 
+## 2.2. Our interpretation
+@TODO: Explain the parts that were not clearly explained in the original paper and how you interpreted them.
+
+* We can say that we have already dowloaded and examined the event datasets. We can refer to the visualization and our visualization codes. 
 * We can explain input representation.
 * We can explain how to back propagate the photometric loss? How to compute the jacobian of the photometric loss?
 
