@@ -2,109 +2,228 @@
 
 
 
+---
+
 ## 1. Introduction
 
-Vision Transformers (ViTs), introduced by Dosovitskiy et al. (2021) in *"An Image is Worth 16x16 Words"*, have revolutionized computer vision tasks by leveraging self-attention mechanisms originally developed for natural language processing. Despite their success, their inherently opaque nature necessitates post-hoc interpretability techniques to provide human-understandable explanations for their predictions.
+### 1.1 Background: Vision Transformers and Their Rise
+Vision Transformers (ViTs) have emerged as a groundbreaking architecture in deep learning for image classification tasks. Unlike Convolutional Neural Networks (CNNs), which rely on local receptive fields to capture spatial patterns, ViTs leverage a **self-attention mechanism** to model global relationships across the entire input image. This key difference allows ViTs to
+- Capture long-range dependencies between different regions of the image.
+- Adapt flexibly to different input scales and structures.
+- Achieve superior performance on various vision benchmarks when trained on large datasets.
 
-### Why Interpretability Matters
-Post-hoc explanations, such as salience maps, assign scores to input features (e.g., pixels) based on their relevance to a model's decision. However, the "faithfulness" of these explanations—how accurately the salience scores represent the true causal effect of input features—remains underexplored. Faithfulness is critical for trustworthiness, especially in high-stakes applications such as healthcare and autonomous systems.
+While ViTs have achieved remarkable success, they are considered "black-box" models due to the complexity of the attention mechanism. Understanding **why** and **how** these models make specific predictions is crucial, particularly for safety-critical applications, such as medical imaging or autonomous driving.
 
-### Goal of the Paper
-The paper *"On the Faithfulness of Vision Transformer Explanations"* addresses this gap by proposing a novel metric, **Salience-guided Faithfulness Coefficient (SaCo)**, to evaluate the faithfulness of explanation methods. The metric quantitatively measures the alignment between salience scores and their actual impact on model predictions.
+### 1.2 Explainable AI and Vision Transformers
+**Explainable AI (XAI)** refers to methods and techniques that make machine learning models more interpretable, ensuring that their decisions are understandable to humans. In the case of ViTs, interpretability is essential for
+- Building trust in model predictions.
+- Diagnosing model failures.
+- Ensuring fairness and transparency in AI systems.
 
-### Research Questions
-1. Are current metrics for evaluating explanation methods sufficient to measure faithfulness in Vision Transformers?
-2. How can faithfulness be defined and rigorously evaluated for salience maps?
-3. What design improvements enhance the faithfulness of existing explanation methods?
+To achieve this, **post-hoc explanation methods** are employed to generate **salience maps** that highlight the most important regions of an input image, showing which parts of the image influenced the model’s decision the most. These methods can be divided into two primary categories:
+1. **Gradient-based methods**: These methods compute salience scores by calculating gradients with respect to the input image. Examples include
+   - Integrated Gradients [1]
+   - Grad-CAM [2]
+   - SmoothGrad [3]
+2. **Attention-based methods**: These methods use attention weights from the ViT model to determine the relative importance of different tokens (parts of the image). Examples include:
+   - Raw Attention [4]
+   - Rollout [5]
 
-### Structure of This Work
-This project aims to reproduce the paper’s results, analyze its methods, and provide insights for improving faithfulness metrics in the context of ViTs. We focus on re-implementing SaCo, comparing it with existing metrics, and experimenting with various explanation methods to validate its claims.
+While these techniques help explain model predictions, their **faithfulness**—the degree to which the salience map accurately reflects the model's true decision-making process—remains an open challenge.
+
+### 1.3 Paper Context and Research Problem
+The paper that introduces the **Salience-Guided Faithfulness Coefficient (SaCo)** addresses the problem of **faithfulness** in post-hoc explanations for ViTs. Specifically, it focuses on the fact that
+- Current evaluation metrics, such as those based on cumulative perturbation, fail to properly assess the individual contributions of pixel groups with different salience levels.
+- These metrics also overlook the absolute values of salience scores, focusing only on their relative rankings, which can lead to misleading interpretations.
+
+**SaCo** offers a new approach by introducing a pair-wise evaluation of pixel groups based on their salience scores and comparing their impact on the model's predictions. The contributions of the paper include
+- Proposing a more accurate and **faithful** method for evaluating post-hoc explanations in ViTs.
+- Providing a **robust framework** to assess the true influence of different pixel groups on model predictions, setting a new standard for explainability in ViTs.
+- Demonstrating that **existing methods** often fail to distinguish between meaningful explanations and random attributions, highlighting the need for more reliable evaluation techniques.
+
+### 1.4 My Goal
+The goal of this project is to
+- **Reproduce the SaCo metric** as described in the paper to verify its reproducibility and reliability.
+- **Explore its application** across different datasets and model architectures to test its generalizability.
+- **Identify potential improvements** to make ViT explanations more faithful, transparent, and useful for real-world applications.
+
+---
+
+## 1.5 Visuals and Examples
+
+### 1.5.1 ViT Architecture Overview
+Below is a simplified diagram of the Vision Transformer architecture, showing how the self-attention mechanism processes input image patches to form a global representation.
+
+![ViT Architecture](assets/vit-arc.png)
+
+### 1.5.2 Post-hoc Explanation Methods
+
+#### Gradient-based Explanation Example
+This heatmap demonstrates how a **Gradient-based method** (e.g., Integrated Gradients) highlights the regions of an image most relevant to the model's decision.
+
+![Gradient-Based Explanation](assets/integrated.png)
+
+#### Attention-based Explanation Example
+This image shows the salience map generated by using **attention weights** from a ViT model. The map indicates which image tokens (patches) the model paid attention to the most when making a prediction.
+
+![Attention-Based Explanation](assets/attention-based.png)
+
+### 1.6 Comparison of Explanation Methods
+
+| Method          | Approach           | Strengths                  | Weaknesses                      |
+|-----------------|--------------------|----------------------------|----------------------------------|
+| Gradient-based  | Uses gradients     | Precise, detailed          | Computationally expensive       |
+| Attention-based | Uses attention     | Intuitive for ViTs         | May not always align with true model behavior|
 
 ---
 
-### 1.1. Paper Summary
 
-The main contributions of the paper are:
-1. **Faithfulness Definition and Metric**: SaCo evaluates salience maps by comparing the influence of pixel subsets with different salience scores on model predictions. Unlike existing metrics such as AOPC or AUC, SaCo assesses individual pixel subsets rather than cumulative perturbations.
-2. **Empirical Findings**: Using ViT-B, ViT-L, and DeiT-B models across CIFAR-10, CIFAR-100, and ImageNet datasets, SaCo demonstrates:
-   - Current metrics fail to differentiate between meaningful explanations and random attributions.
-   - Attention-based methods with gradient and layer aggregation achieve higher faithfulness scores.
-3. **Theoretical Contributions**: SaCo leverages statistical comparisons of salience subsets inspired by the Kendall τ statistic, ensuring scale invariance and robustness against perturbation order.
 
----
-
-### 1.2. Related Work
-
-#### Post-hoc Explanation Methods
-1. **Gradient-based Methods**: 
-   - *Integrated Gradients* (Sundararajan et al., 2017) and *Grad-CAM* (Selvaraju et al., 2017) use gradients to assign salience scores.
-   - **Limitations**: Dependence on local gradients, which may not reflect the model's global reasoning.
-2. **Attribution-based Methods**:
-   - *Layer-wise Relevance Propagation* (Binder et al., 2016) propagates relevance scores through layers.
-3. **Attention-based Methods**:
-   - Methods like *Raw Attention*, *Rollout*, and *ATTCAT* utilize attention weights as explanations.
-
-#### Faithfulness Evaluation Metrics
-- **AUC**: Measures model performance under cumulative pixel removal.
-- **AOPC**: Quantifies output variations after perturbation.
-- **Comprehensiveness**: Measures importance of pixels with lower salience.
-- **Limitations**: These metrics do not evaluate the magnitude differences between salience subsets, failing to validate faithfulness.
-
----
 
 ## 2. The Method and Our Interpretation
 
-### 2.1. The Original Method
+### 2.1 Methodology: The Paper's Approach
 
-#### Salience-guided Faithfulness Coefficient (SaCo)
+The Salience-Guided Faithfulness Coefficient (SaCo) is a novel evaluation metric designed to assess the faithfulness of post-hoc explanations in Vision Transformers (ViTs). Faithfulness refers to the degree to which salience scores accurately represent the true influence of input features on a model's predictions. The SaCo methodology involves the following steps
 
-The core assumption is that salience scores should correlate with the impact of input features on predictions. Mathematically:
+#### **1. Core Idea: Faithfulness Assumption**
+- The fundamental assumption of faithfulness is:
+  - If a pixel group $G_i$ has higher salience scores than $G_j$, it should have a greater impact on the model's confidence.
+  - Mathematically $$s(G_i) \geq s(G_j) \implies \nabla_{\text{pred}}(x, G_i) \geq \nabla_{\text{pred}}(x, G_j)$$
+    where $s(G_i)$ is the salience score of the group $G_i$, and  $\nabla_{\text{pred}}(x, G_i)$ represents the change in the model's confidence when  $G_i$ is perturbed.
 
-1. **Salience Map**:  
-   Given an input image \(x\), model prediction \(y = \hat{f}(x)\), and explanation method \(E\), the salience map \(M(x)\) assigns a score to each pixel:
-   $$
-   M(x) = \{m_{ij} \mid m_{ij} \in \mathbb{R}, \, \forall (i, j) \in x\}
-   $$
-   where \(m_{ij}\) is the salience score of pixel \((i, j)\).
+#### **2. Salience Ranking**
+- Input pixels are assigned salience scores based on their contribution to the model's prediction.
+- These scores are ranked in descending order of importance.
 
-2. **Subset Partitioning**:  
-   Pixels are divided into \(K\) subsets \(G_k\) based on salience ranking:
-   $$
-   G_k = \{(i, j) \mid (k-1)\frac{HW}{K} \leq \text{rank}(m_{ij}) < k\frac{HW}{K}\}
-   $$
-   where \(HW\) is the total number of pixels.
+#### **3. Grouping into Subsets**
+- Ranked pixels are divided into  $K$ equally sized subsets  $G_1, G_2, ..., G_K$
+  - $G_1$: Pixels with the highest salience scores.
+  - $G_K$: Pixels with the lowest salience scores.
 
-3. **Perturbation Impact**:  
-   Replace pixels in \(G_k\) with their mean value and measure the change in model confidence:
-   $$
-   \Delta_k = p(y | x) - p(y | R_p(x, G_k))
-   $$
-   where \(R_p(x, G_k)\) denotes the perturbed image.
+#### **4. Perturbation**
+- To test the influence of each subset, the pixels in $G_i$ are replaced with a neutral value (e.g., the per-sample mean).
+- The perturbed image is represented as $R_p(x, G_i)$.
 
-4. **Faithfulness Coefficient**:  
-   Compare all pairs of subsets \(G_i, G_j\) and accumulate the differences in salience scores:
-   $$
-   F = \frac{\sum_{i, j} w_{ij} \cdot \text{sign}(\Delta_i - \Delta_j)}{\sum_{i, j} |w_{ij}|}, \quad w_{ij} = s(G_i) - s(G_j)
-   $$
-   \(F \in [-1, 1]\), where positive values indicate faithful alignment.
+#### **5. Model Response Measurement**
+- The impact of the perturbed subset $G_i$ is calculated as the change in the model's confidence
+  
+  $$\nabla_{\text{pred}}(x, G_i) = p(\hat{y}(x)|x) - p(\hat{y}(x)|R_p(x, G_i))$$
+  
+  where $p(\hat{y}(x)|x)$ is the model's confidence before perturbation and $p(\hat{y}(x)|R_p(x, G_i))$ is the confidence after perturbation.
+
+#### **6. Faithfulness Testing**
+- The faithfulness of the salience map is tested by comparing subsets pairwise
+  - For each pair $G_i$ and $G_j$:
+    - If $s(G_i) \geq s(G_j)$, then $\nabla_{\text{pred}}(x, G_i) \geq \nabla_{\text{pred}}(x, G_j)$ should hold.
+  - Violations of this inequality result in penalties to the faithfulness score.
+
+#### **7. Final Metric: Faithfulness Coefficient**
+- The SaCo metric computes a faithfulness coefficient  $F \in [-1, 1]$
+  -  $F > 0$ : Indicates that the salience scores align with the model's behavior.
+  -  $F < 0$ : Indicates violations of faithfulness.
+  - The absolute value $|F|$ measures the degree of alignment.
+
+#### **8. Comparison to Existing Methods**
+- Unlike cumulative perturbation-based metrics, SaCo
+  - Evaluates pixel subsets individually, providing a more granular assessment.
+  - Considers the absolute values of salience scores, not just their relative rankings.
 
 ---
 
-### 2.2. Our Interpretation
+### 2.2 Our Interpretation: Evaluating SaCo and Suggestions for Improvement
 
-#### Clarifications and Extensions
-1. **Perturbation Strategy**:  
-   The choice of replacing pixels with mean values is based on prior work but may introduce bias. We explored alternatives, such as Gaussian noise or black-out perturbations, to assess their impact on SaCo scores.
-2. **Subset Size \(K\)**:  
-   The granularity of pixel subsets influences faithfulness evaluation. Smaller \(K\) captures more subtle salience differences but increases computation.
-3. **Cross-layer Aggregation**:  
-   SaCo's success with attention-based methods highlights the importance of integrating gradient information and multi-layer attention. We hypothesize that these designs capture more global model behavior.
+The Salience-Guided Faithfulness Coefficient (SaCo) provides a structured and versatile framework for assessing the faithfulness of salience-based explanations in Vision Transformers (ViTs). While SaCo introduces significant advancements, its design also raises important considerations about its assumptions, practical applications, and potential areas for refinement. Below, we combine clarifications, strengths, and actionable improvements for SaCo.
 
-#### Connections to Related Metrics
-- **Kendall \( \tau \) Statistic**:  
-  SaCo’s pairwise comparisons are inspired by the Kendall \( \tau \) statistic for rank correlation, ensuring robustness in salience evaluations.
-- **Scale Invariance**:  
-  Unlike AOPC or AUC, SaCo is unaffected by normalization or scaling of salience scores, ensuring consistent evaluations across methods.
+---
+
+#### **1. Clarifications and Potential Improvements**
+
+1. **Perturbation Strategy**
+   - SaCo relies on perturbing pixel subsets by replacing them with their mean value. While computationally simple, this approach may introduce bias or distort the data distribution. Alternative strategies to improve robustness include:
+     - **Gaussian Noise**: Replace pixels with noise sampled from a Gaussian distribution centered on the mean.
+     - **Blackout Perturbation**: Mask pixels entirely by setting their values to zero.
+     - **Semantic Perturbation**: Replace pixels with semantically similar features extracted from the image to preserve contextual integrity.
+
+2. **Subset Size  $K$**
+   - The choice of  $K$, which determines the number of pixel subsets, directly impacts evaluation granularity:
+     - Smaller  $K$: Provides coarser evaluations with reduced computational cost.
+     - Larger $K$: Enables finer evaluations at the expense of higher computational complexity.
+   - Dynamically adjusting $K$ based on the complexity of the salience map or the dataset could strike a balance between computational efficiency and evaluation accuracy.
+
+3. **Cross-layer Aggregation**
+   - Salience scores often reflect hierarchical patterns in ViTs. Incorporating attention maps or gradients across multiple layers can provide a more holistic evaluation of the model’s decision-making process. Layer-wise salience aggregation or gradient-weighted attention fusion are promising approaches to extend SaCo’s capabilities.
+
+---
+
+#### **2. Connections to Related Metrics**
+
+1. Inspired by Kendall $\tau$ 
+   - SaCo’s pairwise comparisons echo the principles of Kendall  $\tau$, a rank correlation metric. This similarity ensures robustness when assessing the consistency of salience maps across subsets.
+
+2. **Scale Invariance**
+   - Unlike traditional metrics like AOPC or AUC, SaCo is inherently invariant to transformations applied to salience scores (e.g., normalization or scaling). This makes it adaptable to a wide range of salience-based methods and preprocessing techniques.
+
+---
+
+#### **3. Key Strengths of SaCo**
+
+1. **Direct Evaluation**
+   - SaCo evaluates the true impact of individual pixel subsets on model predictions, avoiding biases introduced by cumulative perturbation.
+
+2. **Noise Sensitivity**
+   - SaCo assigns heavier penalties for larger mismatches between salience scores and actual influence, making it highly sensitive to inconsistencies in salience maps.
+
+3. **Broad Applicability**
+   - SaCo has proven effective across datasets and models, demonstrating its versatility in evaluating gradient-based and attention-based explanation methods alike.
+
+---
+
+#### **4. Limitations and Practical Considerations**
+
+1. **Granularity vs. Scalability**
+   - While SaCo’s granular evaluation provides detailed insights, it comes with significant computational overhead, particularly for high-resolution datasets.
+
+2. **Dependence on Salience Rankings**
+   - SaCo assumes that higher-ranked pixels consistently exert greater influence on predictions. This assumption may not hold for models that distribute decision-making across multiple regions or layers.
+
+3. **Neutrality Assumption in Perturbation**
+   - Replacing pixels with the mean value is treated as equivalent to "removing" their influence. However, as noted in [9], this approach could distort the input distribution, leading to potential inaccuracies.
+
+---
+
+#### **5. Practical and Ethical Implications**
+
+1. **Building Trust and Accountability**
+   - By ensuring that salience maps align with the model’s internal logic, SaCo contributes to building trust in AI systems. However, trust must also consider human interpretability and actionable insights.
+
+2. **Bias Amplification Risks**
+   - Faithfulness metrics like SaCo do not explicitly address fairness or bias mitigation. If salience maps reflect underlying biases, faithful explanations could inadvertently amplify them. Combining SaCo with fairness-oriented metrics is critical for mitigating these risks [13, 14].
+
+---
+
+#### **References**
+1. Sundararajan, M., Taly, A., & Yan, Q. (2017). "Axiomatic Attribution for Deep Networks". Integrated Gradients. [Link](https://arxiv.org/abs/1703.01365)
+2. Selvaraju, R. R., et al. (2017). "Grad-CAM: Visual Explanations from Deep Networks". [Link](https://arxiv.org/abs/1610.02391)
+3. Smilkov, D., et al. (2017). "SmoothGrad: Removing Noise by Adding Noise". [Link](https://arxiv.org/abs/1706.03825)
+4. Hooker, S., et al. (2019). "A Benchmark for Interpretability Methods in Deep Learning". [Link](https://arxiv.org/abs/1806.10758)
+5. Doshi-Velez, F., & Kim, B. (2017). "Towards A Rigorous Science of Interpretable Machine Learning". [Link](https://arxiv.org/abs/1702.08608)
+6. Ribeiro, M. T., Singh, S., & Guestrin, C. (2016). "Why Should I Trust You?". LIME. [Link](https://arxiv.org/abs/1602.04938)
+7. Abnar, S., & Zuidema, W. (2020). "Quantifying Attention Flow in Transformers". [Link](https://arxiv.org/abs/2005.00928)
+8. Fong, R. C., & Vedaldi, A. (2017). "Interpretable Explanations of Black Boxes by Meaningful Perturbation". [Link](https://arxiv.org/abs/1704.03296)
+9. Yeh, C.-K., et al. (2019). "On the (In)fidelity and Sensitivity of Explanations". [Link](https://arxiv.org/abs/1901.09392)
+10. Jain, S., & Wallace, B. C. (2019). "Attention is not Explanation". [Link](https://arxiv.org/abs/1902.10186)
+11. Hooker, S., et al. (2019). "What Do Compressed Deep Neural Networks Forget?". [Link](https://arxiv.org/abs/1911.05248)
+12. Lipton, Z. C. (2018). "The Mythos of Model Interpretability". [Link](https://arxiv.org/abs/1606.03490)
+13. Barocas, S., Hardt, M., & Narayanan, A. (2019). "Fairness and Machine Learning". Book. [Link](https://fairmlbook.org/)
+14. Mitchell, M., et al. (2019). "Model Cards for Model Reporting". [Link](https://arxiv.org/abs/1810.03993)
+15. Dabkowski, P., & Gal, Y. (2017). "Real Time Image Saliency for Black Box Classifiers". [Link](https://arxiv.org/abs/1705.07857)
+16. Vaswani, A., et al. (2017). "Attention is All You Need". [Link](https://arxiv.org/abs/1706.03762)
+17. Gilpin, L. H., et al. (2018). "Explaining Explanations: An Approach to Evaluating Interpretability of Machine Learning". [Link](https://arxiv.org/abs/1806.00069)
+
+
+
+
 
 # 3. Experiments and results
 
