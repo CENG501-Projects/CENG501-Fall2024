@@ -1,9 +1,39 @@
 # On the Faithfulness of Vision Transformer Explanations
 
+![Gradient-Based Explanation](assets/gradcam.gif)
+
+---
+- [x] **Introduction**
+ 
+- [x] **Methodology**
+  
+- [ ] **Experiments and Results**
+  
+- [ ] **Conclusion**
+- [ ] **References**
+- [x] **Contact Information**
+
 
 
 ---
 
+1. [Introduction](#1-introduction)
+   - [Background: Vision Transformers](#11-background-vision-transformers-and-their-rise)
+   - [Explainable AI in Vision Transformers](#12-explainable-ai-and-vision-transformers)
+   - [Paper Context and Research Problem](#13-paper-context-and-research-problem)
+   - [Project Goals](#14-my-goal)
+   - [Visuals and Examples](#15-visuals-and-examples)
+2. [Methodology](#2-the-method-and-our-interpretation)
+   - [The Paper’s Approach](#21-methodology-the-papers-approach)
+   - [Our Interpretation](#22-our-interpretation-evaluating-saco-and-suggestions-for-improvement)
+3. [Experiments and Results](#3-experiments-and-results)
+   - [Experimental Setup](#31-experimental-setup)
+   - [Results](#32-results)
+4. [Conclusion](#4-conclusion)
+5. [References](#5-references)
+6. [Contact](#6-contact)
+
+---
 ## 1. Introduction
 
 ### 1.1 Background: Vision Transformers and Their Rise
@@ -202,24 +232,8 @@ The Salience-Guided Faithfulness Coefficient (SaCo) provides a structured and ve
 
 ---
 
-#### **References**
-1. Sundararajan, M., Taly, A., & Yan, Q. (2017). "Axiomatic Attribution for Deep Networks". Integrated Gradients. [Link](https://arxiv.org/abs/1703.01365)
-2. Selvaraju, R. R., et al. (2017). "Grad-CAM: Visual Explanations from Deep Networks". [Link](https://arxiv.org/abs/1610.02391)
-3. Smilkov, D., et al. (2017). "SmoothGrad: Removing Noise by Adding Noise". [Link](https://arxiv.org/abs/1706.03825)
-4. Hooker, S., et al. (2019). "A Benchmark for Interpretability Methods in Deep Learning". [Link](https://arxiv.org/abs/1806.10758)
-5. Doshi-Velez, F., & Kim, B. (2017). "Towards A Rigorous Science of Interpretable Machine Learning". [Link](https://arxiv.org/abs/1702.08608)
-6. Ribeiro, M. T., Singh, S., & Guestrin, C. (2016). "Why Should I Trust You?". LIME. [Link](https://arxiv.org/abs/1602.04938)
-7. Abnar, S., & Zuidema, W. (2020). "Quantifying Attention Flow in Transformers". [Link](https://arxiv.org/abs/2005.00928)
-8. Fong, R. C., & Vedaldi, A. (2017). "Interpretable Explanations of Black Boxes by Meaningful Perturbation". [Link](https://arxiv.org/abs/1704.03296)
-9. Yeh, C.-K., et al. (2019). "On the (In)fidelity and Sensitivity of Explanations". [Link](https://arxiv.org/abs/1901.09392)
-10. Jain, S., & Wallace, B. C. (2019). "Attention is not Explanation". [Link](https://arxiv.org/abs/1902.10186)
-11. Hooker, S., et al. (2019). "What Do Compressed Deep Neural Networks Forget?". [Link](https://arxiv.org/abs/1911.05248)
-12. Lipton, Z. C. (2018). "The Mythos of Model Interpretability". [Link](https://arxiv.org/abs/1606.03490)
-13. Barocas, S., Hardt, M., & Narayanan, A. (2019). "Fairness and Machine Learning". Book. [Link](https://fairmlbook.org/)
-14. Mitchell, M., et al. (2019). "Model Cards for Model Reporting". [Link](https://arxiv.org/abs/1810.03993)
-15. Dabkowski, P., & Gal, Y. (2017). "Real Time Image Saliency for Black Box Classifiers". [Link](https://arxiv.org/abs/1705.07857)
-16. Vaswani, A., et al. (2017). "Attention is All You Need". [Link](https://arxiv.org/abs/1706.03762)
-17. Gilpin, L. H., et al. (2018). "Explaining Explanations: An Approach to Evaluating Interpretability of Machine Learning". [Link](https://arxiv.org/abs/1806.00069)
+
+
 
 
 
@@ -245,8 +259,25 @@ The Salience-Guided Faithfulness Coefficient (SaCo) provides a structured and ve
 
 # 5. References
 
-@TODO: Provide your references here.
+1. Sundararajan, M., Taly, A., & Yan, Q. (2017). "Axiomatic Attribution for Deep Networks". Integrated Gradients. [Link](https://arxiv.org/abs/1703.01365)
+2. Selvaraju, R. R., et al. (2017). "Grad-CAM: Visual Explanations from Deep Networks". [Link](https://arxiv.org/abs/1610.02391)
+3. Smilkov, D., et al. (2017). "SmoothGrad: Removing Noise by Adding Noise". [Link](https://arxiv.org/abs/1706.03825)
+4. Hooker, S., et al. (2019). "A Benchmark for Interpretability Methods in Deep Learning". [Link](https://arxiv.org/abs/1806.10758)
+5. Doshi-Velez, F., & Kim, B. (2017). "Towards A Rigorous Science of Interpretable Machine Learning". [Link](https://arxiv.org/abs/1702.08608)
+6. Ribeiro, M. T., Singh, S., & Guestrin, C. (2016). "Why Should I Trust You?". LIME. [Link](https://arxiv.org/abs/1602.04938)
+7. Abnar, S., & Zuidema, W. (2020). "Quantifying Attention Flow in Transformers". [Link](https://arxiv.org/abs/2005.00928)
+8. Fong, R. C., & Vedaldi, A. (2017). "Interpretable Explanations of Black Boxes by Meaningful Perturbation". [Link](https://arxiv.org/abs/1704.03296)
+9. Yeh, C.-K., et al. (2019). "On the (In)fidelity and Sensitivity of Explanations". [Link](https://arxiv.org/abs/1901.09392)
+10. Jain, S., & Wallace, B. C. (2019). "Attention is not Explanation". [Link](https://arxiv.org/abs/1902.10186)
+11. Hooker, S., et al. (2019). "What Do Compressed Deep Neural Networks Forget?". [Link](https://arxiv.org/abs/1911.05248)
+12. Lipton, Z. C. (2018). "The Mythos of Model Interpretability". [Link](https://arxiv.org/abs/1606.03490)
+13. Barocas, S., Hardt, M., & Narayanan, A. (2019). "Fairness and Machine Learning". Book. [Link](https://fairmlbook.org/)
+14. Mitchell, M., et al. (2019). "Model Cards for Model Reporting". [Link](https://arxiv.org/abs/1810.03993)
+15. Dabkowski, P., & Gal, Y. (2017). "Real Time Image Saliency for Black Box Classifiers". [Link](https://arxiv.org/abs/1705.07857)
+16. Vaswani, A., et al. (2017). "Attention is All You Need". [Link](https://arxiv.org/abs/1706.03762)
+17. Gilpin, L. H., et al. (2018). "Explaining Explanations: An Approach to Evaluating Interpretability of Machine Learning". [Link](https://arxiv.org/abs/1806.00069)
 
 # Contact
 
-@TODO: Provide your names & email addresses and any other info with which people can contact you.
+email: kerem.zengin@metu.edu.tr
+
