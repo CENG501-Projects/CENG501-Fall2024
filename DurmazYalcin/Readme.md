@@ -17,7 +17,7 @@ A few attempts have been made to estimate optical flow from event streams using 
 ## 1.1. Paper summary
 ### Porposed Framework
 The proposed method utilizes a simple U-Net framework to estimate the optical flow as illustrated below.
-![Smoothness Loss Equation](https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/SpikeNetwork.png)
+![Network](https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/SpikeNetwork.png)
 
 Method (a) represents a framework from prior work that is already publicly available. In contrast, method (b) refers to the newly proposed framework, which is not yet publicly accessible. Our implementation will focus on method (b).
 
@@ -46,13 +46,16 @@ $$
 
 The original work begins by describing what a spiking neural network (SNN) is. For the convenience of the reader, we also provide a brief explanation of the Integrate-and-Fire (IF) neuron model.
 
+<img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/if_neuron.png" alt="description" width="600">
+
 As illustrated in the figure above, a neuron generates an output (or spike) only when its integrated state surpasses a predefined threshold. Due to the nature of our problem, the authors of the paper employ leaky Integrate-and-Fire (LIF) neurons. A neural network constructed using IF neurons is referred to as a spiking neural network.
 
 As highlighted in the original paper, specialized hardware designed for spiking neural networks exists. On such hardware, spiking networks offer the advantage of significantly reduced power consumption, making them ideal for energy-efficient computations.
 
 ## 2.2. Our interpretation
 
-@TODO: Explain the parts that were not clearly explained in the original paper and how you interpreted them.
+* We can explain input representation.
+* We can explain how to back propagate the photometric loss? How to compute the jacobian of the photometric loss?
 
 # 3. Experiments and results
 
