@@ -82,7 +82,7 @@ Multi-stage Feature Reconstruction restores and aggregates all N stages. MFR ups
 FIGURE
 In Attention-based Feature Merging every token is assigned to a cluster and since tokens are merged, every cluster is represented by a merged token. Positional correspondences between original and merged tokens are recorded and those records are used to copy the merged token features into the unsampled token. Token features from the previous stage are added iteratively to get an aggregate. Later, tokens are fed to a multilayer perceptron and that process is iterated N times. After the process a feature map of size (Ws x Hs x C') is obtained.
 
-### 2.1.4 Monocular 3D Detection
+### 2.1.4 Monocular 3D Detection
 In MonoATT, GUPNet is used as a monocular 3D object detector.
 
 ## 2.2. Our interpretation
