@@ -55,6 +55,27 @@ into heatmap.
 After scoring is done for the whole feature map, mean value of each pixel score within a token is taken as the importance of the token. For the token clustering, a cluster center token is chosen which has the highest average score. In some stages, there may be more than one cluster center required. In that case, at each iteration, nth cluster center is chosen among the clusters which has the highest ranking.
 
 ### 2.1.2 Adaptive Token Transformer (ATT)
+By using both the tokents from the initial stage (feature map) and selected cluster centers, tokens are grouped into clusters. Tokens in each cluster are merged and single token for every cluster is created. Then results are fed into a transformer. Adaptive token transformer exploits the long-range self-attention mechanism. 
+
+Figure XX - ATT
+As shown in the Figure XX, ATT loops N stages where at every stage first outline preferred token grouipng and then later, attention based feature merging are performed. 
+
+#### 2.1.2.1 Outline-preferred Token Grouping
+To avoid local feature correlation, clustering based on the spatial distance is not reasonable. A variation of nearest neighbor algorithm is used. The algorithm considers feature similarity along with the image distance while clustering. 
+
+Eq 7 gelecek buraya.
+The equation states that, for every point each cluster center is looped. Feature similarity and spatial distances are considered and balance between them is controlled by \Beta. Minimum value of a point against a cluster means that, the most appropriate value for the cluster is found.
+
+#### 2.1.2.2 Attention-based Feature Merging
+While merging tokens, instead of directly averaging the token features at every cluster, token features are averaged with the guidence of attention scores. 
+
+Eq 8 gelecek paperdaki : where yi is the merged token feature, x_j and p_j are the original token features and they are summed over the i'th cluster set. 
+Merged tokens are fed into the transformer as queries Q. Original tokens are also used as keys K and values V. Attention matrix of the transformer altered and attention score p is involved in the calculation in order to allow tokens to be more important. 
+
+Attention(Q, K, V) = softmax(QK^T / sqrt(d_k) + p)V where d_k is the number of the channels of the queries. 
+
+Token Features might have dimensions (n,d), where n is the number of tokens and d is the feature dimension. Attention Scores might have a dimension of
+(n,1), as each token gets a single score. To combine these (e.g., by addition), their shapes must match. If they don’t, matrix expansion ensures that smaller matrices (like (n,1)) are "stretched" to match larger ones (like (n,d)). Also, token attention score allows network to focus on the important information.
 
 ### 2.1.3 Multi-stage Feature Reconstruction (MFR)
 
