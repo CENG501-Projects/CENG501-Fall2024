@@ -12,8 +12,6 @@ This repository aims to reproduce the results indicated in the paper.
 
 ## 1.1. Paper summary
 
-@TODO: Summarize the paper, the method & its contributions in relation with the existing literature.
-
 ### Summary
 
 This paper investigates the sub-optimal performance of transformers on long-range tasks in terms of expressiveness, optimization and generalization.
@@ -27,7 +25,7 @@ strong inductive bias. Furthermore, the results of the paper shows a significant
 
 ### Contribution to Existing Literature
 
-
+This paper explores why transformers struggle with tasks that involve long-range dependencies and identifies key principles—like smoothness and locality—that help models handle these tasks better. The authors introduce Local and Smooth Attention (LaS-Attention), a simple modification to transformers that incorporates these principles by smoothing attention scores and adding a positional bias to focus on nearby tokens. Unlike other approaches such as state space layers, it doesn’t rely on complex 1-D convolution operations but still performs very well on the LRA benchmark. The paper bridges the gap between transformers and models designed for long-range tasks. It also introduces LaS-chunk, which is a linear complexity solution to the same problem.
 
 # 2. The method and our interpretation
 
