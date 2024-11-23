@@ -44,6 +44,10 @@ The models mentioned in the experiments are trained using the following loss,
 
 where $\lambda_S$ and $\lambda_{\Delta S}$ are regularization hyperparameters and $L_{CE}$ is the well-known cross-entropy loss.
 
+## 2.1.2. OOD Sampling
+
+@TODO
+
 ## 2.2. Our interpretation
 
 @TODO: Explain the parts that were not clearly explained in the original paper and how you interpreted them.
