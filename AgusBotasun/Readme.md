@@ -1,30 +1,30 @@
 # Sample-Efficient and Safe Deep Reinforcement Learning via Reset Deep Ensemble Agents
 
-This readme file is an outcome of the [CENG501 (Spring 2024)](https://ceng.metu.edu.tr/~skalkan/DL/) project for reproducing a paper without an implementation. See [CENG501 (Spring 2024) Project List](https://github.com/CENG501-Projects/CENG501-Fall2024) for a complete list of all paper reproduction projects.
+This readme file is an outcome of the [CENG501 (Spring 2024)](https://ceng.metu.edu.tr/~skalkan/DL/) project for reproducing a paper without an implementation. <br/>
+See [CENG501 (Spring 2024) Project List](https://github.com/CENG501-Projects/CENG501-Fall2024) for a complete list of all paper reproduction projects.
 
 # 1. Introduction
 
-Deep reinforcement learning (RL) combines neural networks and reinforcement learning to solve complex tasks. However, a key challenge in deep RL is **primacy bias**, a phenomenon where deep neural networks (DNNs) overfit to early experiences due to their reliance on replay buffers. This bias impairs the learning process, particularly at higher replay ratios, leading to suboptimal performance and a decline in sample efficiency. Additionally, methods that mitigate primacy bias, such as **parameter resets**, can cause performance collapses immediately following resets, undermining their applicability in safe RL environments.
-
-This paper, published at NeurIPS 2023, introduces **Reset Deep Ensemble Agents (RDE)**, a framework that combines ensemble learning with periodic parameter resets to mitigate primacy bias while addressing the performance collapse issue. This repository aims to reproduce the key findings of the paper, focusing on its proposed method's performance improvements in sample efficiency, safety, and stability.
+The paper subject to our implementation, published at NeurIPS 2023, introduces Reset Deep Ensemble Agents (RDE) [[1]], a framework that combines ensemble learning with periodic parameter resets to simultaneously mitigate primacy bias, and the performance collapse issues associated with parameter resetting. 
+This repository aims to reproduce the key findings of the paper, focusing on its proposed method's performance improvements in sample efficiency, safety, and stability.
 
 ## 1.1. Paper summary
 
-The paper introduces a novel approach to deep RL that:
-1. Combines **reset mechanisms** with **ensemble learning** to reduce the negative effects of primacy bias.
-2. Employs **sequential resets** for ensemble agents to avoid performance collapses.
-3. Utilizes **adaptive action weighting** to select actions based on Q-values, ensuring robust performance and a balance between exploration and exploitation.
+Deep reinforcement learning (RL) combines neural networks and reinforcement learning to solve complex tasks. However, a key challenge in deep RL is *primacy bias*, a phenomenon where deep neural networks (DNNs) overfit to early experiences, which tend to be replayed more than newer experiences, due to design of replay buffers built into them. This bias impairs the learning process, particularly at higher replay ratios, leading to suboptimal performance and a decline in sample efficiency. Additionally, methods that mitigate primacy bias, such as *parameter resets*, can cause performance collapses immediately following resets, undermining their applicability in safe RL environments.
 
 ### Key Contributions
-- **Mitigation of primacy bias**: By combining deep ensembles and sequential resets, the framework effectively counters the overfitting problem introduced by replay buffers.
-- **Improved sample efficiency**: RDE demonstrates higher efficiency compared to baseline methods across continuous and discrete environments such as DeepMind Control Suite, Atari-100k, and MiniGrid.
-- **Safety-aware enhancements**: Through modifications in action selection, the method is tailored for safety-critical RL tasks, significantly reducing safety constraint violations.
+The paper introduces a novel approach to deep RL that:
+1. Employs *sequential resets* to reduce the negative effects of primacy bias, and counter overfitting.
+2. Introduces *ensemble learning* for deep RL applications which effectively combines *N* agents into a single agent, and benefits from the diversity among agents to keep the performance steadily high against sequential resets on agents within the ensemble.
+3. Utilizes *adaptive action weighting* to select actions based on Q-values, ensuring robust performance and a balance between exploration and exploitation.
+4. Improves *sample efficiency* compared to baseline methods across continuous and discrete environments such as Atari-100k [[2]], MiniGrid [[3]], and DeepMind Control Suite [[4]].
+5. Tailors itself for *safety-critical* RL tasks through modifications in action selection, significantly reducing safety constraint violations.
 
 # 2. The method and our interpretation
 
 ## 2.1. The original method
 
-The Reset Deep Ensemble (RDE) framework proposes a novel methodology to tackle primacy bias and performance collapses in deep reinforcement learning. It consists of three core components:
+The RDE framework proposes a novel methodology to tackle primacy bias and performance collapses in deep reinforcement learning. It consists of three core components:
 
 ### 1. **Ensemble Agents**
    - The system is built on an ensemble of $N$ agents, all with identical neural network architectures but initialized with distinct random parameters. This initialization promotes diversity in agent behavior and learning.
@@ -40,21 +40,21 @@ The Reset Deep Ensemble (RDE) framework proposes a novel methodology to tackle p
    - To ensure robust decision-making, the composite agent selects actions adaptively based on the Q-values of each ensemble agent.
    - For a given state $s$, each agent $k$ generates an action $a_k$ along with its associated Q-value, $Q(s, a_k)$. The probability of selecting an action is determined by a softmax function:
 ```math
-$$p_{s} = softmax(Q(s, a_1)/α, Q(s, a_2)/α, ..., Q(s, a_N)/α)$$
+$$p_{s} = softmax(Q(s, a_1)/\alpha, Q(s, a_2)/\alpha, ..., Q(s, a_N)/\alpha)$$
 ```
-Here, $α$ is a temperature parameter that scales the Q-values to control the influence of differences among them. A higher Q-value corresponds to a higher selection probability.
+Here, $\alpha$ is a temperature parameter that scales the Q-values to control the influence of differences among them. A higher Q-value corresponds to a higher selection probability.
    - Actions generated by recently reset agents are assigned lower probabilities because their Q-values are less reliable immediately after a reset. This adaptive weighting allows the composite agent to prioritize actions from more stable, trained agents, effectively mitigating performance instability.
 
 ### Safety-Critical Modifications
    - In safety-critical reinforcement learning tasks, such as those with constraints on unsafe states or actions, the adaptive action selection mechanism is modified to incorporate safety considerations.
    - The final selection probability is computed as:
 ```math
-p^{safe}_{s} = κ * p_{s} + (1 - κ) * p^{c}_{s}
+p^{safe}_{s} = \kappa * p_{s} + (1 - \kappa) * p^{c}_{s}
 ```
  where:
  -  $p_s$  is the action selection probability based on Q-values.
  -  $p^{c}_{s}$ prioritizes actions with lower safety costs.
- -  $κ$ is a mixing coefficient that balances the importance of reward maximization (through Q-values) and safety cost minimization.
+ -  $\kappa$ is a mixing coefficient that balances the importance of reward maximization (through Q-values) and safety cost minimization.
  - This adjustment ensures that the composite agent not only performs efficiently but also adheres to safety constraints, reducing violations in real-world scenarios.
 
 ## 2.2. Our interpretation
@@ -81,8 +81,18 @@ p^{safe}_{s} = κ * p_{s} + (1 - κ) * p^{c}_{s}
 
 # 5. References
 
-@TODO: Provide your references here.
+[1]: <https://arxiv.org/abs/2310.20287> "W. Kim, Y. Shin, J. Park, and Y. Sung, 'Sample-Efficient and Safe Deep Reinforcement Learning via Reset Deep Ensemble Agents,' arXiv.org, 2023. https://arxiv.org/abs/2310.20287 (accessed Nov. 23, 2024)."
+[2]: <https://arxiv.org/abs/1207.4708> "M. G. Bellemare, Y. Naddaf, J. Veness, and M. Bowling, 'The Arcade Learning Environment: An Evaluation Platform for General Agents,' Journal of Artificial Intelligence Research, vol. 47, pp. 253-279, Jun. 2013, doi: https://doi.org/10.1613/jair.3912."
+[3]: <https://arxiv.org/abs/2306.13831> "M. Chevalier-Boisvert et al., 'Minigrid & Miniworld: Modular & Customizable Reinforcement Learning Environments for Goal-Oriented Tasks,' arXiv.org, 2023. https://arxiv.org/abs/2306.13831 (accessed Nov. 23, 2024)."
+[4]: <https://www.softwareimpacts.com/article/S2665-9638(20)30009-9/fulltext> "S. Tunyasuvunakool et al., 'dm_control: Software and tasks for continuous control,' Software Impacts, vol. 6, p. 100022, Nov. 2020, doi: https://doi.org/10.1016/j.simpa.2020.100022."
+
+
+`[1]`: "W. Kim, Y. Shin, J. Park, and Y. Sung, 'Sample-Efficient and Safe Deep Reinforcement Learning via Reset Deep Ensemble Agents,' arXiv.org, 2023. https://arxiv.org/abs/2310.20287 (accessed Nov. 23, 2024)." <br/>
+`[2]`: "M. G. Bellemare, Y. Naddaf, J. Veness, and M. Bowling, 'The Arcade Learning Environment: An Evaluation Platform for General Agents,' Journal of Artificial Intelligence Research, vol. 47, pp. 253-279, Jun. 2013, doi: https://doi.org/10.1613/jair.3912." <br/>
+`[3]`: "M. Chevalier-Boisvert et al., 'Minigrid & Miniworld: Modular & Customizable Reinforcement Learning Environments for Goal-Oriented Tasks,' arXiv.org, 2023. https://arxiv.org/abs/2306.13831 (accessed Nov. 23, 2024)." <br/>
+`[4]`: "S. Tunyasuvunakool et al., 'dm_control: Software and tasks for continuous control,' Software Impacts, vol. 6, p. 100022, Nov. 2020, doi: https://doi.org/10.1016/j.simpa.2020.100022." <br/>
 
 # Contact
 
-@TODO: Provide your names & email addresses and any other info with which people can contact you.
+[Ege Uğur Aguş](mailto:email@domain.com) <br/>
+[Atakan Botasun](mailto:abotasun@metu.edu.tr)
