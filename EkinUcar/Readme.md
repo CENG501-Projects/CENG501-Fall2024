@@ -108,4 +108,5 @@ Below are some of our interpretations about aspects that were unclear in the pap
 
 # Contact
 
-@TODO: Provide your names & email addresses and any other info with which people can contact you.
+Name: Defne Ekin Email: ekindefne@gmail.com
+Name: Şevval Uçar Email: seevvalucar@gmail.com
