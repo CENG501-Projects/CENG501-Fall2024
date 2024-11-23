@@ -154,7 +154,7 @@ The paper only focuses on Y-channel DCT map since it is more sensitive to human 
 
 The model computes $(k+1)th$ recompression coefficients through sequential operations:
 
-![](equation.png)
+![](equation.jpg)
 
    Where:
    - $D_k$: De-quantized DCT coefficients
