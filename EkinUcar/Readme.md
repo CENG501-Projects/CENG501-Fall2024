@@ -14,10 +14,20 @@ This repository aims to reproduce the results indicated in the paper.
 
 @TODO: Summarize the paper, the method & its contributions in relation with the existing literature.
 
-The two key principles for long-range tasks are as follows:  
+### Summary
 
-**(i)  Incorporating an inductive bias towards smoothness**:  
-**(ii) Locality**  
+This paper investigates the sub-optimal performance of transformers on long-range tasks in terms of expressiveness, optimization and generalization.
+
+**(i) Expressiveness.** Since transformers are high-capacity models, this is unlikely to be a cause of the problem. Furthermore, it is proven in the appendix of the paper that one head self-attention can express one channel of the state-space layer.
+
+**(ii) Optimization.** This paper associates optimization issues for long-range dependencies with exploding and vanishing gradient problems. However, this is not the primary bottleneck in transformers for three reasons. Firstly, since self-attention heads are parallel, there is no reason to assume that gradients are more likely to vanish or explode on long interactions. Secondly, the amount of nonlinearity is constant in transformers. Thirdly, trasformers extensively use normalization layers which makes them stable.
+
+**(iii) Generalization.** The lack of generalization due to an unsuitable inductive bias that results in an unfavorable hypothesis class is likely to be the root cause of the problem. When the models exhibiting exceptional performance on LRA benchmarks are examined, it is seen that they tend to contain layers with
+strong inductive bias. Furthermore, the results of the paper shows a significant improvement in the performance of proposed models on the LRA benchmark with increasing amount of data. The same phenomenon is not observed in vanilla transformer architecture. This highlights the fact that the model’s ability to fit the underlying data distribution increases with the right type of inductive bias.
+
+### Contribution to Existing Literature
+
+
 
 # 2. The method and our interpretation
 
