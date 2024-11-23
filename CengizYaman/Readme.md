@@ -18,7 +18,7 @@ The method, named Greg+, consists of two main parts. In contrast to state-of-the
 
 ## 2.1.1. Gradient Regularization
 
-Suppose $x$ is a training sample, and $x^{'}$ is another sample which is sufficiently close to $x$. Using first-order Taylor approximation of the score function around $x$,
+Suppose $x$ is a training sample, and $x$' is another sample which is sufficiently close to $x$. Using first-order Taylor approximation of the score function around $x$,
 
 ## 2.2. Our interpretation
 
