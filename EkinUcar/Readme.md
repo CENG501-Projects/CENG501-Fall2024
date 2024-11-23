@@ -44,7 +44,9 @@ $$ ELD: \mathbb{R}^{LxL} \rightarrow \mathbb{R}^{LxL} $$
 
 $$ ELD(B) = exp\left(-\alpha_c D_L\right) \odot B $$ 
 
-where  $ exp\left(-\alpha_c D_L\right) $  is the ELD matrix.
+where the ELD matrix is defined as
+
+$$ ELD = exp\left(-\alpha_c D_L\right) $$
 
 @TODO: Explain the original method.
 
