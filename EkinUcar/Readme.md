@@ -57,6 +57,7 @@ LaS Attention utilizes different $\alpha_c$ values for each attention head to al
 Initialization of $\alpha_c$ is realized as follows:
 
 **(i)** $\alpha_0$ is set to 0 in first attention head.
+
 **(ii)** $\alpha_c$ initialized exponential-uniformly in $[0,B]$, where $B$ is defined as a hyperparameter in (0,1).
 
 @TODO: Explain the original method.
