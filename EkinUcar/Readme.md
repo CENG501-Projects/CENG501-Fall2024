@@ -37,7 +37,7 @@ $$ LAS_c(Q,K,V) = AP\left(SF\left(exp\left(-\alpha_c D_L\right) \odot \left(\fra
 Architecture of LaS attention can be seen in Figure 1 left.
 
 <p align="center">
-  <img src="(https://github.com/user-attachments/assets/6e0f4276-0a28-44c7-829a-5a3e3022325e)" alt="LaS Attention vs Original Attention" />
+  <img src="(https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/EkinUcar/LaS_original_attn.png))" alt="LaS Attention vs Original Attention" />
 </p>
 
 <p align="center"><b>Figure 1:</b> LaS Attention vs Original Attention</p>
