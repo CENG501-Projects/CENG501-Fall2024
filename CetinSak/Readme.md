@@ -119,14 +119,6 @@ The SRHM distinguishes itself from the RHM by incorporating a sparsity factor, i
 @TODO: Explain the original method.
 
 ## 2.2. Our interpretation
-
-@TODO: Explain the parts that were not clearly explained in the original paper and how you interpreted them.
-
--> Interpret the output of SHRM, how should data look etc.
--> Interpret how S_k and D_k was calculated.
--> In RHM code, what does each parameter correspond to here
-
-## 2.2. Our interpretation
 The output of the Sparse Random Hierarchical Model (SRHM) is a **set of generated hierarchical data points** that follow a structured and sparse pattern. Specifically: 
 
 - _**Data**_:Each data point consists of a sparse input $( x \in \mathbb{R}^{d \times v} )$, where:
