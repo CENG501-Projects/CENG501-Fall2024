@@ -48,7 +48,16 @@ where the ELD matrix is defined as
 
 $$ ELD = exp\left(-\alpha_c D_L\right) $$
 
-$D_L$ is the matrfjdsskl
+$D_L$ is the distance matrix multiplied by the causality mask ($-\alpha_c$). The distance matrix is computed as follows:
+
+### DL FOTO KOY
+
+LaS Attention utilizes different $\alpha_c$ values for each attention head to allow each attention head to focus on dependencies of a uniform scale. As a result of this application, the model can capture a spectrum of local dependencies at multiple scales at each layer. This creates a hierarchy between local interactions, allowing the recognition of global dependencies.
+
+Initialization of $\alpha_c$ is realized as follows:
+
+**(i)** $\alpha_0$ is set to 0 in first attention head.
+**(ii)** $\alpha_c$ initialized exponential-uniformly in $[0,B]$, where $B$ is defined as a hyperparameter in (0,1).
 
 @TODO: Explain the original method.
 
