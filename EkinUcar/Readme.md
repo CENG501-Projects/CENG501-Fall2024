@@ -69,13 +69,18 @@ Initialization of $\alpha_c$ is realized as follows:
 
 ## 2.2. Our interpretation
 
-### The Principle of Smoothness
+Below are some of our interpretations about aspects that were unclear in the paper:
 
-### The Principle of Exponentially Decaying Structure
+**(i)** The paper does not explicitly state whether positional encoding is used as it is in vanilla transformer architecture. We inferred that it is not included in the model since the Exponentially Locally Decay (ELD) already captures positional information.
 
-The paper does not explicitly state whether positional encoding used similarly to vanilla transfermer architecture
+**(ii)** Since the padding value is not specified, we assumed 0-padding.
 
-@TODO: Explain the parts that were not clearly explained in the original paper and how you interpreted them.
+**(iii)** The paper doesn't explain why exponential function is used in ELD. We inferred that it is likely because the exponential decay ensures non-negativity and smooth, continuous transition of influence on attention scores as $D_L$ changes.
+
+**(iv)** By observing the figure below, we inferred that as the $\alpha_c$ value increases, the weights corresponding to distant neighbours approaches to 0. This puts more emphasis on close neighbours. 
+
+<img width="648" alt="image" src="https://github.com/user-attachments/assets/e617826b-b3a7-4fd0-8236-1bf402901a69">
+
 
 # 3. Experiments and results
 
