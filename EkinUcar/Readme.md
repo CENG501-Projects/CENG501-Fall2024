@@ -73,7 +73,7 @@ Below are some of our interpretations about aspects that were unclear in the pap
 
 **(i)** The paper does not explicitly state whether positional encoding is used as it is in vanilla transformer architecture. We inferred that it is not included in the model since the Exponentially Locally Decay (ELD) already captures positional information as indicated in [2].
 
-**(ii)** Since the padding value is not specified, we assumed 0-padding.
+**(ii)** Since the padding value is not specified, we assumed 0-padding as it is the default padding used by torch.nn.AvgPool1d().
 
 **(iii)** The paper doesn't explain why exponential function is used in ELD. We inferred that it is likely because the exponential decay ensures non-negativity and smooth, continuous transition of influence on attention scores as $D_L$ changes.
 
@@ -103,9 +103,8 @@ Below are some of our interpretations about aspects that were unclear in the pap
 
 # 5. References
 
-@TODO: Provide your references here.
-[1] OUR PAPER
-[2] ALIBI
+[1] Zimerman, I., & Wolf, L. (2024). Viewing Transformers Through the Lens of Long Convolutions Layers. Proceedings of Machine Learning Research, 235, 62815-62831.
+[2] Press, O., Smith, N. A., & Lewis, M. (2021). Train short, test long: Attention with linear biases enables input length extrapolation. arXiv preprint arXiv:2108.12409.
 
 # Contact
 
