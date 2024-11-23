@@ -71,7 +71,7 @@ Initialization of $\alpha_c$ is realized as follows:
 
 Below are some of our interpretations about aspects that were unclear in the paper:
 
-**(i)** The paper does not explicitly state whether positional encoding is used as it is in vanilla transformer architecture. We inferred that it is not included in the model since the Exponentially Locally Decay (ELD) already captures positional information.
+**(i)** The paper does not explicitly state whether positional encoding is used as it is in vanilla transformer architecture. We inferred that it is not included in the model since the Exponentially Locally Decay (ELD) already captures positional information as indicated in [2].
 
 **(ii)** Since the padding value is not specified, we assumed 0-padding.
 
@@ -79,7 +79,8 @@ Below are some of our interpretations about aspects that were unclear in the pap
 
 **(iv)** By observing the figure below, we inferred that as the $\alpha_c$ value increases, the weights corresponding to distant neighbours approaches to 0. This puts more emphasis on close neighbours. 
 
-<img width="648" alt="image" src="https://github.com/user-attachments/assets/e617826b-b3a7-4fd0-8236-1bf402901a69">
+<img width="861" alt="image" src="https://github.com/user-attachments/assets/e929a3b0-608b-4fb7-a050-fb70edd0782a">
+
 
 
 # 3. Experiments and results
