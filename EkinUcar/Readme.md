@@ -48,6 +48,8 @@ where the ELD matrix is defined as
 
 $$ ELD = exp\left(-\alpha_c D_L\right) $$
 
+$D_L$ is the matrfjdsskl
+
 @TODO: Explain the original method.
 
 ## 2.2. Our interpretation
@@ -75,7 +77,8 @@ $$ ELD = exp\left(-\alpha_c D_L\right) $$
 # 5. References
 
 @TODO: Provide your references here.
-[1] dhskjfhdskj
+[1] OUR PAPER
+[2] ALIBI
 
 # Contact
 
