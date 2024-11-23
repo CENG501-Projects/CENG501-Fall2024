@@ -39,7 +39,7 @@ Following two cases could be considered to better understand the intuition behin
 2. If a sample is misclassified, gradient regularization is not applied.
 
 The models mentioned in the experiments are trained using the following loss,
-$L = L_{CE} + \lambda_S L_S + \lambda_{\Delta S} L_{\Delta S}$
+$$L = L_{CE} + \lambda_S L_S + \lambda_{\Delta S} L_{\Delta S}$$
 where $\lambda_S$ and $\lambda_{\Delta S}$ are regularization hyperparameters and $L_{CE}$ is the well-known cross-entropy loss.
 
 ## 2.2. Our interpretation
