@@ -37,7 +37,7 @@ $$ LAS_c(Q,K,V) = AP\left(SF\left(exp\left(-\alpha_c D_L\right) \odot \left(\fra
 Architecture of LaS attention can be seen in Figure 1 left.
 
 
-![LaS_original_attn (1)](https://github.com/user-attachments/assets/d4976c02-7cd1-4459-b356-1f5d30ad0b3b)
+![LaS_original_attn (2)](https://github.com/user-attachments/assets/6e0f4276-0a28-44c7-829a-5a3e3022325e)
 
 
 ### The Principle of Smoothness
