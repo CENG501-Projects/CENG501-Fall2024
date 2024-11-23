@@ -36,7 +36,8 @@ $$ LAS_c(Q,K,V) = AP\left(SF\left(exp\left(-\alpha_c D_L\right) \odot \left(\fra
 
 Architecture of LaS attention can be seen in figure below.
 
-![LaS_original_attn (2)](https://github.com/user-attachments/assets/37f982dc-6a43-45f4-8a24-aefa087a7846)
+![image](https://github.com/user-attachments/assets/275696b6-2222-4dcf-8eef-5268e4fe3b0c)
+
 
 ### The Principle of Smoothness
 LaS Attention exploits this principle by a smoothing operator implemented by 1-D average pooling (denoted by $AP()$ in the above formula) applied to each row individually with appropriate padding to preserve the shape.
@@ -54,7 +55,8 @@ $$ ELD = exp\left(-\alpha_c D_L\right) $$
 
 $D_L$ is the distance matrix multiplied by the causality mask ($-\alpha_c$). The distance matrix is computed as follows:
 
-![image](https://github.com/user-attachments/assets/7d90b752-a086-4435-8fec-a2ce144fccc7)
+![image](https://github.com/user-attachments/assets/ee1cb4c7-2290-4c8c-b4de-cc53777bd0d5)
+
 
 LaS Attention utilizes different $\alpha_c$ values for each attention head to allow each attention head to focus on dependencies of a uniform scale. As a result of this application, the model can capture a spectrum of local dependencies at multiple scales at each layer. This creates a hierarchy between local interactions, allowing the recognition of global dependencies.
 
