@@ -154,9 +154,12 @@ The paper only focuses on Y-channel DCT map since it is more sensitive to human 
 
 The model computes $(k+1)th$ recompression coefficients through sequential operations:
 
-![equation](https://latex.codecogs.com/svg.latex?\left\{\begin{array}{lr}D_{k}=Q_{k}\odot%20q\\B_{k}=IDCT(D_{k})\\I_{k+1}=RT(B_{k})\\Q_{k+1}=[DCT(I_{k+1})\oslash%20q]\end{array}\right})
-
-
+$\left\{ \begin{array}{lr}
+D*k = Q*k \odot q \\
+B*k = \text{IDCT}(D*k) \\
+I*{k+1} = \text{RT}(B*k) \\
+Q*{k+1} = [\text{DCT}(I*{k+1}) \oslash q]
+\end{array} \right\}$
 
    Where:
    - $D_k$: De-quantized DCT coefficients
