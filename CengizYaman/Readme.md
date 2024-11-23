@@ -14,7 +14,11 @@ This readme file is an outcome of the [CENG501 (Spring 2024)](https://ceng.metu.
 
 ## 2.1. The original method
 
-@TODO: Explain the original method.
+The method, named Greg+, consists of two main parts. Firstly, a new regularization term is added to the loss, obtained by regularizing the gradient of the score function. In addition, a novel energy-based sampling method is proposed to select more informative examples from the dataset during training, which is expecially important when the auxiliary dataset is large.
+
+## 2.1.1. Gradient Regularization
+
+@TODO:
 
 ## 2.2. Our interpretation
 
