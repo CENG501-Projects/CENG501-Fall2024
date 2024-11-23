@@ -1,24 +1,269 @@
-# @TODO: Paper title
+# AugDETR: Improving Multi-scale Learning for Detection Transformer
 
 This readme file is an outcome of the [CENG501 (Spring 2024)](https://ceng.metu.edu.tr/~skalkan/DL/) project for reproducing a paper without an implementation. See [CENG501 (Spring 42) Project List](https://github.com/CENG501-Projects/CENG501-Fall2024) for a complete list of all paper reproduction projects.
 
 # 1. Introduction
 
-@TODO: Introduce the paper (inc. where it is published) and describe your goal (reproducibility).
+DEtection TRansformer (DETR) [1] revolutionized object detection by introducing a fully end-to-end approach that eliminated traditional heuristics like anchor generation and non-maximum suppression (NMS). Building upon DETR, Deformable DETR [2] improved performance on small objects (+7 AP) by replacing the self-attention mechanism with Multi-Scale Deformable Attention, which was subsequently adopted by state-of-the-art models like DAB-DETR [3], DN-DETR [4], and DINO [5].
+
+This project focuses on reproducing AugDETR [6] (ECCV 2024), which addresses the limitations of Multi-Scale Deformable Attention through two components:
+
+1. Hybrid Attention Encoder (HAE): Enhances local feature representation
+2. Encoder-Mixing Cross-Attention (EMCA): Improves multi-level encoder exploitation
+
+The paper reports the following AP improvements when integrated with existing detectors on the COCO dataset:
+- DINO: +1.2 AP
+- AlignDETR: +1.1 AP
+- DDQ: +1.0 AP
+
+Key experiments to be reproduced:
+1. DINO (4-scale) + HAE (12 Epoch): Expected +0.6 AP
+2. DINO (4-scale) + HAE + EMCA (12 Epoch): Expected +1.2 AP
+3. Quantitative analysis of EMCA weights
+
+Additional experiments that are reported in the paper, but will be conducted only if time permits:
+- HAE comparison with Deformable Encoder variants
+- DINO variants analysis (5-scale, varying encoder layers)
+- Integration with AlignDETR and DDQ
+
 
 ## 1.1. Paper summary
 
-@TODO: Summarize the paper, the method & its contributions in relation with the existing literature.
+As shown in the table below, while Deformable DETR achieves better overall AP and significantly better AP_S compared to DETR, it performs worse on large objects (AP_L). This observation motivates the paper's analysis of Multi-Scale Deformable Attention's limitations.
+
+<div align="center">
+<table>
+<caption><b>Table 1:</b> Performance comparison between DETR and Deformable DETR.</caption>
+<tr>
+    <th>Method</th>
+    <th>Epochs</th>
+    <th>AP</th>
+    <th>AP_S</th>
+    <th>AP_M</th>
+    <th>AP_L</th>
+</tr>
+<tr>
+    <td>DETR [1]</td>
+    <td>500</td>
+    <td>42.0</td>
+    <td>20.5</td>
+    <td>45.8</td>
+    <td>61.1</td>
+</tr>
+<tr>
+    <td>Deformable DETR [2]</td>
+    <td>50</td>
+    <td>44.5</td>
+    <td>27.1</td>
+    <td>47.6</td>
+    <td>59.6</td>
+</tr>
+</table>
+</div>
+
+This paper studies the limitations of Multi-Scale Deformable Attention in two aspects:
+
+#### Local Feature Enhancement: 
+The paper identifies that Deformable DETR's sparse attention mechanism, while computationally efficient, has limitations in its receptive field. By using a fixed number of deformable sampling points, it struggles to achieve the larger receptive fields needed for detecting large objects. Furthermore, sparse attention loses global context information that could be valuable in complex scenes. The paper empirically demonstrates this through experiments with different numbers of hybrid attention layers:
+
+<div align="center">
+<table>
+<caption><b>Table 2:</b> Impact of number of hybrid attention layers on performance.</caption>
+<tr>
+    <th>Layers</th>
+    <th>AP</th>
+    <th>AP_50</th>
+    <th>AP_75</th>
+    <th>AP_S</th>
+    <th>AP_M</th>
+    <th>AP_L</th>
+</tr>
+<tr>
+    <td>-</td>
+    <td>49.0</td>
+    <td>66.6</td>
+    <td>53.5</td>
+    <td>32.0</td>
+    <td>52.3</td>
+    <td>63.0</td>
+</tr>
+<tr>
+    <td>1</td>
+    <td>49.3</td>
+    <td>66.6</td>
+    <td>53.7</td>
+    <td>31.1</td>
+    <td>52.7</td>
+    <td>63.7</td>
+</tr>
+<tr>
+    <td>2</td>
+    <td>49.6</td>
+    <td>67.0</td>
+    <td>54.2</td>
+    <td>31.8</td>
+    <td>52.9</td>
+    <td>63.8</td>
+</tr>
+<tr>
+    <td>3</td>
+    <td>49.7</td>
+    <td>67.2</td>
+    <td>54.3</td>
+    <td>32.3</td>
+    <td>52.8</td>
+    <td>64.0</td>
+</tr>
+<tr>
+    <td>4</td>
+    <td>49.3</td>
+    <td>67.0</td>
+    <td>53.8</td>
+    <td>31.9</td>
+    <td>52.7</td>
+    <td>63.5</td>
+</tr>
+<tr>
+    <td>5</td>
+    <td>49.3</td>
+    <td>66.8</td>
+    <td>54.0</td>
+    <td>31.4</td>
+    <td>52.8</td>
+    <td>63.1</td>
+</tr>
+<tr>
+    <td>6</td>
+    <td>48.8</td>
+    <td>66.3</td>
+    <td>53.4</td>
+    <td>30.7</td>
+    <td>52.2</td>
+    <td>63.1</td>
+</tr>
+</table>
+</div>
+
+As shown in the table, increasing the number of hybrid attention layers initially improves performance up to 3 layers, but further increases lead to degradation, particularly affecting AP_S. This demonstrates the need for a balanced approach in combining dense and sparse attention.
+
+####  Multi-level Encoder Exploitation: 
+Current DETR-based detectors typically use six encoder layers but only utilize features from the last encoder layer in the decoder. The paper analyzes the receptive fields of different encoder layers and reveals their distinct characteristics (Fig. 1). For instance, Encoder 1 shows a more concentrated, localized attention pattern, while Encoder 6 exhibits a broader, more diffused receptive field. This observation suggests that different encoder layers capture complementary features at varying scales. However, existing methods only use the last encoder layer, potentially missing valuable information from earlier layers. The paper argues that adaptively using multi-level encoder features based on query features would better facilitate multi-scale learning, as objects at different scales may benefit from different combinations of these receptive fields.
+
+<div align="center">
+<img src="assets/receptive_fields.png" width="500"/>
+<p><b>Fig. 1:</b> Comparison of receptive fields of different encoders. Encoder 1 shows a concentrated pattern while Encoder 6 exhibits a broader receptive field.</p>
+</div>
+
+These insights led to the development of two components:
+
+- Hybrid Attention Encoder (HAE): Combines dense and sparse attention to enhance local features
+- Encoder-Mixing Cross-Attention (EMCA): Enables adaptive use of multi-level encoder features
+
 
 # 2. The method and our interpretation
 
 ## 2.1. The original method
 
-@TODO: Explain the original method.
+The paper introduces two main components that build upon the Deformable DETR architecture, as illustrated in Fig. 2.
+
+<div align="center">
+<img src="assets/augdetr.png" width="800"/>
+<p><b>Fig. 2:</b> (a) is the process of hybrid attention in the Hybrid Attention Layer. Dense attention is first applied to only the top features, and then sparse attention is applied to the multi-scale features. (b) is the details of Encoder-Mixing Cross-Attention. Deformable attention extracts multiple object features from multi-level encoder and then the extracted features are aggregated based on the adaptive fusion weights learned from the query features.</p>
+</div>
+
+
+### 2.1.1. Hybrid Attention Encoder (HAE)
+
+In original DETR, self-attention (dense attention) is formulated as:
+
+<div align="center">
+
+$\mathbf{Q} = W_q P_5, \mathbf{K} = W_k P_5, \mathbf{V} = W_v P_5$
+
+$\text{SelfAttention}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \text{Softmax}(\mathbf{Q}\mathbf{K})\mathbf{V}$
+
+</div>
+
+where:
+- $P_5$ represents the features from the last encoder layer.
+- $Q$, $K$, and $V$ are query, key, and value features, respectively.
+
+
+Deformable DETR replaced this with multi-scale deformable attention (sparse attention):
+
+<div align="center">
+
+$\mathbf{Q} = \text{Concat}(P_3, P_4, P_5), \mathbf{A} = W_a \mathbf{Q}$
+
+$\Delta r = W_p \mathbf{Q}, \mathbf{V} = \text{Samp}(W_v\mathbf{Q}, r + \Delta r)$
+
+$\text{DeformableAttention}(\mathbf{Q}, \mathbf{V}) = \text{Softmax}(\mathbf{A})\mathbf{V}$
+
+</div>
+
+where:
+- $P_3, P_4, P_5$ are multi-scale features from last 3 encoder layers
+- $r$ represents the reference points
+- $\Delta r$ represents learnable offsets from reference points
+- $\text{Samp}$ is the bilinear sampling function
+- $W_a, W_p, W_v$ are learnable parameters
+
+The proposed HAE combines standard self-attention with deformable attention in the encoder layer (Fig. 2(a)). To maintain computational efficiency, HAE employs a hybrid-scale strategy where dense attention is applied only to the last scale features $(P_5)$, while deformable attention operates on all scales.
+
+<div align="center">
+
+$\mathbf{Q'} = \mathbf{K'} = \mathbf{V'} = P_5$
+
+$P_5' = \text{SelfAttention}(\mathbf{Q'}, \mathbf{K'}, \mathbf{V'})$
+
+$\mathbf{Q} = \text{Concat}(P_3, P_4, P_5'), \mathbf{A} = W_a \mathbf{Q}$
+
+$\Delta r = W_p \mathbf{Q}, \mathbf{V} = \text{Samp}(W_v\mathbf{Q}, r + \Delta r)$
+
+$\text{DeformableAttention}(\mathbf{Q}, \mathbf{V}) = \text{Softmax}(\mathbf{A})\mathbf{V}$
+
+</div>
+
+### 2.1.2. Encoder-Mixing Cross-Attention (EMCA)
+
+In Deformable DETR, the cross-attention in the decoder uses multi-scale deformable attention to achieve query-feature interaction with only the last encoder layer:
+
+<div align="center">
+
+$\mathbf{A} = W_a \mathbf{Q}, \Delta r = W_p \mathbf{Q}, \mathbf{V} = \text{Samp}(W_vE_6, r + \Delta r)$
+
+$\text{DeformableAttention}(\mathbf{Q}, \mathbf{V}) = \text{Softmax}(\mathbf{A})\mathbf{V}$
+
+</div>
+
+where $E_6$ represents features from only the last encoder layer.
+
+EMCA extends this by enabling interaction with all encoder layers (Fig. 2(b)). For each encoder layer $l$, it computes:
+
+<div align="center">
+
+$\mathbf{A} = W_a \mathbf{Q}, \Delta r = W_p \mathbf{Q}, \mathbf{w}_e = \sigma(W_e \mathbf{Q})$
+
+$\mathbf{V}_l = \text{Samp}(W_{vl}E_l, r + \Delta r)$
+
+$\text{EMCA}(\mathbf{Q}, \mathbf{E}) = \sum_{l=1}^{L} w_e^l \cdot \text{Softmax}(\mathbf{A})\mathbf{V}_l$
+
+</div>
+
+where:
+- $\sigma$ is the Sigmoid activation
+- $E_l$ represents the features from encoder layer $l$
+- $w_e^l$ is the learned weight for encoder layer $l$
+- $L$ is the total number of encoder layers
+- $W_e$ is a learnable projection matrix for generating fusion weights
+
+The key innovation of EMCA is its ability to adaptively weight features from different encoder layers based on query characteristics. This allows objects of different scales to leverage the most appropriate combination of encoder features, as earlier layers tend to capture more local details while later layers capture more global context.
 
 ## 2.2. Our interpretation
 
-@TODO: Explain the parts that were not clearly explained in the original paper and how you interpreted them.
+The paper does not specify the dimensionality and initialization of $W_e^l$ in EMCA's fusion weight generation. In the Deformable DETR source code, we apply this projection only on the last layer of the encoder output. In EMCA, we assume that shape $W_e^l$ should be adjusted to match $l^{th}$ encoder layer.
+
+All other details seems clear right now. We may have to update this section during implementations. The authors repeatedly indicated that the modifications to baselines kept minimal and the proposed extensions are simple.
 
 # 3. Experiments and results
 
@@ -40,8 +285,19 @@ This readme file is an outcome of the [CENG501 (Spring 2024)](https://ceng.metu.
 
 # 5. References
 
-@TODO: Provide your references here.
+[1] N. Carion, F. Massa, G. Synnaeve, N. Usunier, A. Kirillov, and S. Zagoruyko, "End-to-end object detection with transformers," in European conference on computer vision, 2020, pp. 213–229.
+
+[2] X. Zhu, W. Su, L. Lu, B. Li, X. Wang, and J. Dai, "Deformable DETR: Deformable transformers for end-to-end object detection," arXiv preprint arXiv:2010.04159, 2020.
+
+[3] S. Liu, F. Li, H. Zhang, X. Yang, X. Qi, H. Su, J. Zhu, and L. Zhang, "DAB-DETR: Dynamic anchor boxes are better queries for DETR," in International Conference on Learning Representations, 2021.
+
+[4] F. Li, H. Zhang, S. Liu, J. Guo, L. M. Ni, and L. Zhang, "DN-DETR: Accelerate DETR training by introducing query denoising," in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, 2022, pp. 13619–13627.
+
+[5] H. Zhang, F. Li, S. Liu, L. Zhang, H. Su, J. Zhu, L. M. Ni, and H.-Y. Shum, "DINO: DETR with improved denoising anchor boxes for end-to-end object detection," in The Eleventh International Conference on Learning Representations, 2022.
+
+[6] J. Dong, Y. Lin, C. Li, S. Zhou, and N. Zheng, "AugDETR: Improving multi-scale learning for detection transformer," in ECCV 2024, 2024.
 
 # Contact
 
-@TODO: Provide your names & email addresses and any other info with which people can contact you.
+Emirhan Bayar 
+bayaremirhan07@gmail.com
