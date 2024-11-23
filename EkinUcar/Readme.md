@@ -34,15 +34,9 @@ Local and Smooth (LaS) Attention exploits the principles of smoothness and expon
 
 $$ LAS_c(Q,K,V) = AP\left(SF\left(exp\left(-\alpha_c D_L\right) \odot \left(\frac{QK^T}{\sqrt{d_k}}\right)\right)\right)$$
 
-Architecture of LaS attention can be seen in Figure 1 left.
+Architecture of LaS attention can be seen in figure below.
 
-<p align="center">
-  <img src="(https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/EkinUcar/LaS_original_attn.png)" alt="LaS Attention vs Original Attention" />
-</p>
-
-<p align="center"><b>Figure 1:</b> LaS Attention vs Original Attention</p>
-
-
+![LaS_original_attn (2)](https://github.com/user-attachments/assets/37f982dc-6a43-45f4-8a24-aefa087a7846)
 
 ### The Principle of Smoothness
 LaS Attention exploits this principle by a smoothing operator implemented by 1-D average pooling (denoted by $AP()$ in the above formula) applied to each row individually with appropriate padding to preserve the shape.
@@ -60,7 +54,7 @@ $$ ELD = exp\left(-\alpha_c D_L\right) $$
 
 $D_L$ is the distance matrix multiplied by the causality mask ($-\alpha_c$). The distance matrix is computed as follows:
 
-### DL FOTO KOY
+![image](https://github.com/user-attachments/assets/7d90b752-a086-4435-8fec-a2ce144fccc7)
 
 LaS Attention utilizes different $\alpha_c$ values for each attention head to allow each attention head to focus on dependencies of a uniform scale. As a result of this application, the model can capture a spectrum of local dependencies at multiple scales at each layer. This creates a hierarchy between local interactions, allowing the recognition of global dependencies.
 
@@ -70,9 +64,13 @@ Initialization of $\alpha_c$ is realized as follows:
 
 **(ii)** $\alpha_c$ initialized exponential-uniformly in $[0,B]$, where $B$ is defined as a hyperparameter in (0,1).
 
-@TODO: Explain the original method.
-
 ## 2.2. Our interpretation
+
+### The Principle of Smoothness
+
+### The Principle of Exponentially Decaying Structure
+
+The paper does not explicitly state whether positional encoding used similarly to vanilla transfermer architecture
 
 @TODO: Explain the parts that were not clearly explained in the original paper and how you interpreted them.
 
