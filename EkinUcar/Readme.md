@@ -34,6 +34,15 @@ Local and Smooth (LaS) Attention exploits the principles of smoothness and expon
 
 $$ LAS_c(Q,K,V) = AP\left(SF\left(exp\left(-\alpha_c D_L\right) \odot \left(\frac{QK^T}{\sqrt{d_k}}\right)\right)\right)$$
 
+### The Principle of Smoothness
+LaS Attention exploits this principle by a smoothing operator implemented by 1-D average pooling (denoted by $AP()$ in the above formula) applied to each row individually with appropriate padding to preserve the shape.
+
+### The Principle of Exponentially Decaying Structure
+LaS Attention exploits this principle by elementwise multiplication of the attention matrix at each head with a nonlearnable locally decaying matrix. This is achieved by Exponentially Locally Decay (ELD) operator. This operator is defined by
+
+$$ ELD: \mathbb{R}^{LxL} \rightarrow \mathbb{R}^{LxL} $$
+$$ ELD(B) = exp\left(-\alpha_c D_L\right) \odot B $$ where $$ exp\left(-\alpha_c D_L\right) $$ is the ELD matrix.
+
 @TODO: Explain the original method.
 
 ## 2.2. Our interpretation
