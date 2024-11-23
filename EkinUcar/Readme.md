@@ -30,6 +30,7 @@ This paper explores why transformers struggle with tasks that involve long-range
 # 2. The method and our interpretation
 
 ## 2.1. The original method
+Local and Smooth (LaS) Attention exploits the principles of smoothness and exponentially decaying structure, which can be observed in the following definition of the $c^{th}$ LaS attention head calculation: 
 
 @TODO: Explain the original method.
 
