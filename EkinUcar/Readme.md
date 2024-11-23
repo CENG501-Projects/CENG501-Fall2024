@@ -14,6 +14,10 @@ This repository aims to reproduce the results indicated in the paper.
 
 @TODO: Summarize the paper, the method & its contributions in relation with the existing literature.
 
+The two key principles for long-range tasks are as follows:
+**(i)  Incorporating an inductive bias towards smoothness**:
+**(ii) Locality**
+
 # 2. The method and our interpretation
 
 ## 2.1. The original method
