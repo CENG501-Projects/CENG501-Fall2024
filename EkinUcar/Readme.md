@@ -108,5 +108,5 @@ Below are some of our interpretations about aspects that were unclear in the pap
 
 # Contact
 
-Name: Defne Ekin Email: ekindefne@gmail.com
+Name: Defne Ekin Email: ekindefne@gmail.com  
 Name: Şevval Uçar Email: seevvalucar@gmail.com
