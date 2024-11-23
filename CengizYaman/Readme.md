@@ -18,13 +18,17 @@ The method, named Greg+, consists of two main parts. In contrast to state-of-the
 
 ## 2.1.1. Gradient Regularization
 
-The main intuition behind gradient regularization is that the distribution of ID (in distribution) and OOD tends to be well-separated, and the area around an ID sample would not include any OOD samples, and vice versa.
+The main intuition behind gradient regularization is that the distribution of ID (in distribution) and OOD samples tend to be well-separated, and the area around an ID sample would not include any OOD samples, and vice versa.
 
 ![t-SNE plot showing the representation of ID and OOD datasets for CIFAR experiments](./Figures/Distribution.png)
 
 **Figure 1: t-SNE plot showing the representation of ID and OOD datasets for CIFAR experiments**
 
-Regularization Suppose $x$ is a training sample, and $x$' is another sample which is sufficiently close to $x$. Using first-order Taylor approximation of the score function around $x$,
+Regularization term is used to promote smoothness of the loss function around the training samples by penalizing the norm of its gradient. For the first-order Taylor approximation of the score function $S(x)$,
+
+![First-order Taylor Approximation of the Score Function](./Figures/ScoreFunctionApproximation.png)
+
+Suppose $x$ is a training sample, and $x$' is another sample which is sufficiently close to $x$. If the gradient $\delta_x S(x)$ is small, then $|S(x) - S(x')$ becomes small for nearby points $x$'.
 
 ## 2.2. Our interpretation
 
