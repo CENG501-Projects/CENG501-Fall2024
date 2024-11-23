@@ -28,7 +28,19 @@ Regularization term is used to promote smoothness of the loss function around th
 
 ![First-order Taylor Approximation of the Score Function](./Figures/ScoreFunctionApproximation.png)
 
-Suppose $x$ is a training sample, and $x$' is another sample which is sufficiently close to $x$. If the gradient $\Delta_x S(x)$ is small, then $|S(x) - S(x$'$)|$ becomes small for nearby points $x$'.
+Suppose $x$ is a training sample, and $x$' is another sample which is sufficiently close to $x$. If the gradient $\Delta_x S(x)$ is small, then $|S(x) - S(x')|$ becomes small for nearby points $x$'. This ensures ID points classified as ID remain stable within their neighborhood.
+As the paper mainly focuses on the energy loss as the score function, $L_{\Delta S}$ is defined as follows:
+
+![Gradient of the energy loss](./Figures/GradientEnergyLoss.png)
+
+Thresholds $m_{in}$ and $m_{aux}$ are selected such that the loss only penalizes the gradient for the correctly detected samples. For a sample $x$, if $S(x)$ is below the threshold, we label it as ID, and label it as OOD otherwise.
+Following two cases could be considered to better understand the intuition behind this choice:
+1. If an ID (or OOD) sample is correctly detected, penalizing the gradient around that sample reduces sensitivity to small changes in the input, providing stable ID (OOD) classification.
+2. If a sample is misclassified, gradient regularization is not applied.
+
+The models mentioned in the experiments are trained using the following loss,
+$L = L_{CE} + \lambda_S L_S + \lambda_{\Delta S} L_{\Delta S}$
+where $\lambda_S$ and $\lambda_{\Delta S}$ are regularization hyperparameters and $L_{CE}$ is the well-known cross-entropy loss.
 
 ## 2.2. Our interpretation
 
