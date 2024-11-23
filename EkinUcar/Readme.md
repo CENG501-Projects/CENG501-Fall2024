@@ -34,6 +34,10 @@ Local and Smooth (LaS) Attention exploits the principles of smoothness and expon
 
 $$ LAS_c(Q,K,V) = AP\left(SF\left(exp\left(-\alpha_c D_L\right) \odot \left(\frac{QK^T}{\sqrt{d_k}}\right)\right)\right)$$
 
+Architecture of LaS attention can be seen in Figure 1 left.
+
+![Figure 1: LaS Attention vs Original Attention]([http://url/to/img.png](https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/EkinUcar/LaS_original_attn.png))
+
 ### The Principle of Smoothness
 LaS Attention exploits this principle by a smoothing operator implemented by 1-D average pooling (denoted by $AP()$ in the above formula) applied to each row individually with appropriate padding to preserve the shape.
 
