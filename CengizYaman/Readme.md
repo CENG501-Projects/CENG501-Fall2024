@@ -22,6 +22,8 @@ The main intuition behind gradient regularization is that the distribution of ID
 
 ![t-SNE plot showing the representation of ID and OOD datasets for CIFAR experiments](./Figures/Distribution.png)
 
+**Figure 1: t-SNE plot showing the representation of ID and OOD datasets for CIFAR experiments**
+
 Regularization Suppose $x$ is a training sample, and $x$' is another sample which is sufficiently close to $x$. Using first-order Taylor approximation of the score function around $x$,
 
 ## 2.2. Our interpretation
