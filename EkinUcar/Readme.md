@@ -1,10 +1,16 @@
-# @TODO: Paper title
+# Viewing Transformers Through Lens of Long Convolutions Layers
 
 This readme file is an outcome of the [CENG501 (Spring 2024)](https://ceng.metu.edu.tr/~skalkan/DL/) project for reproducing a paper without an implementation. See [CENG501 (Spring 42) Project List](https://github.com/CENG501-Projects/CENG501-Fall2024) for a complete list of all paper reproduction projects.
 
 # 1. Introduction
 
 @TODO: Introduce the paper (inc. where it is published) and describe your goal (reproducibility).
+
+Transformers have been dominating Deep Learning areas, especially NLP domains, for years after their foundation. However, they perform poorly on longe range tasks and struggle to exploit long context compared to long range layers, such as state-space layers, linear RNN layers and global convolution layers. 
+
+In this paper [1] (ICML 2024), the authors identify the principles of long range layers that allow them to capture long range relations. They also discuss the possible reasons behind tranformers' sub-optimal performance in these tasks. Lastly, they introduce Local and Smooth Attention (LaS-Attention), making minimal modifications to vanilla transformer architecture, leading to performance enhancement on Long Range Arena (LRA) benchmark.
+
+This repository aims to reproduce the results indicated in the paper.
 
 ## 1.1. Paper summary
 
@@ -41,6 +47,7 @@ This readme file is an outcome of the [CENG501 (Spring 2024)](https://ceng.metu.
 # 5. References
 
 @TODO: Provide your references here.
+[1] dhskjfhdskj
 
 # Contact
 
