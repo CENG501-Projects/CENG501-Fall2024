@@ -28,7 +28,7 @@ Regularization term is used to promote smoothness of the loss function around th
 
 ![First-order Taylor Approximation of the Score Function](./Figures/ScoreFunctionApproximation.png)
 
-Suppose $x$ is a training sample, and $x$' is another sample which is sufficiently close to $x$. If the gradient $\delta_x S(x)$ is small, then $|S(x) - S(x')$ becomes small for nearby points $x$'.
+Suppose $x$ is a training sample, and $x$' is another sample which is sufficiently close to $x$. If the gradient $\Delta_x S(x)$ is small, then $|S(x) - S(x$'$)|$ becomes small for nearby points $x$'.
 
 ## 2.2. Our interpretation
 
