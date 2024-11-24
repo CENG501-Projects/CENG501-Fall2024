@@ -375,36 +375,36 @@ For datasets where ground truth optical flow is unavailable (e.g., real-world ev
 The self-supervised loss assumes that pixel intensities remain consistent across consecutive frames, except for motion-induced changes. It uses warping techniques to estimate the consistency of pixel intensities.
 
 #### (a) Photometric Loss:
-Given two event-based frames \( I_t \) (at time \( t \)) and \( I_{t + \Delta t} \) (at time \( t + \Delta t \)), the predicted optical flow \( \hat{f}(x, y) \) is used to warp \( I_t \) to \( I_{t + \Delta t} \):
+Given two event-based frames $( I_t )$ (at time $( t )$) and $( I_{t + \Delta t} )$ (at time $( t + \Delta t )$), the predicted optical flow $( \hat{f}(x, y) )$ is used to warp $( I_t )$ to $( I_{t + \Delta t} )$:
 
-\[
+$$
 L_{\text{photo}} = \frac{1}{N} \sum_{(x, y)} \left\| I_t(x, y) - I_{t + \Delta t}(x + \hat{u}, y + \hat{v}) \right\|_1
-\]
+$$
 
 Where:
 
-- \( \hat{u}, \hat{v} \) are the predicted optical flow components at \( (x, y) \),
-- \( \|\cdot\|_1 \) denotes the L1 norm, which is robust to outliers.
+- $( \hat{u}, \hat{v} )$ are the predicted optical flow components at \( (x, y) \),
+- $( \|\cdot\|_1 )$ denotes the L1 norm, which is robust to outliers.
 
 The warping operation maps pixels from the earlier frame to the later frame.
 
 #### (b) Smoothness Loss:
 To enforce spatial smoothness in the predicted flow field, a smoothness regularization term is added:
 
-\[
+$$
 L_{\text{smooth}} = \frac{1}{N} \sum_{(x, y)} \left\| \nabla \hat{f}(x, y) \right\|
-\]
+$$
 
-Where \( \nabla \hat{f}(x, y) \) is the gradient of the flow field. This encourages the optical flow to be smooth in regions with consistent motion.
+Where $( \nabla \hat{f}(x, y) )$ is the gradient of the flow field. This encourages the optical flow to be smooth in regions with consistent motion.
 
 ### Combined Loss:
 The self-supervised loss combines the photometric and smoothness terms:
 
-\[
+$$
 L_{\text{self}} = \lambda_1 L_{\text{photo}} + \lambda_2 L_{\text{smooth}}
-\]
+$$
 
-Where \( \lambda_1 \) and \( \lambda_2 \) are hyperparameters balancing the two terms.
+Where $( \lambda_1 )$ and $( \lambda_2 )$ are hyperparameters balancing the two terms.
 
 ## 3. Dataset-Specific Adaptation
 
@@ -485,9 +485,9 @@ Once we have the spike frames, we predict the optical flow (**f̂**) at each pix
 
 The **End-Point Error (EPE)** is calculated for each pixel using the following formula:
 
-\[
+$$
 EPE(x, y) = (û - u)^2 + (v̂ - v)^2
-\]
+$$
 
 For our example:
 
@@ -497,17 +497,17 @@ For our example:
 
 The total EPE loss is the mean of the individual pixel errors:
 
-\[
+$$
 L_{EPE} = \frac{0.1 + 0.1 + 0.0}{3} = 0.0667
-\]
+$$
 
 #### (b) Photometric Consistency Loss
 
 The **photometric consistency loss** compares the warped event frame at \( t_1 \) using the predicted flow with the event frame at \( t_2 \). The formula is:
 
-\[
+$$
 L_{photometric} = \frac{1}{N} \sum |I_{t1}(x, y) - I_{t2}(x + û, y + v̂)|
-\]
+$$
 
 ##### Step 1: Warp Event Frame Using Predicted Flow
 
@@ -529,17 +529,17 @@ The warped frame and target frame are compared pixel by pixel. For the nonzero p
 
 The total photometric loss is:
 
-\[
+$$
 L_{photometric} = \frac{0 + 1 + 0}{3} = 0.333
-\]
+$$
 
 #### (c) Smoothness Loss
 
 **Smoothness loss** penalizes large gradients in the flow, encouraging smooth optical flow fields across neighboring pixels. The formula is:
 
-\[
+$$
 L_{smoothness} = \frac{1}{N} \sum \left( | \nabla û(x, y) | + | \nabla v̂(x, y) | \right)
-\]
+$$
 
 Where \( \nabla û \) and \( \nabla v̂ \) are the gradients of the predicted optical flow in the \( x \) and \( y \) directions, respectively.
 
@@ -571,9 +571,9 @@ For each pixel in the event frame, the predicted optical flow is provided as `(u
 
 The new position `(x', y')` for each pixel after warping is calculated using the formula:
 
-\[
+$$
 (x', y') = (x + u^, y + v^)
-\]
+$$
 
 For example:
 
@@ -589,31 +589,31 @@ Thus, the **Warped Bin 1** frame becomes:
 
 The photometric loss is calculated as the difference between the warped frame `I_t1` and the target frame `I_t2`. It is given by the formula:
 
-\[
+$$
 L_{\text{photo}} = \frac{1}{N} \sum_{x, y} |I_{t1}(x', y') - I_{t2}(x, y)|
-\]
+$$
 
 Where `N` is the total number of pixels in the image, and \( I_{t1}(x', y') \) and \( I_{t2}(x, y) \) represent the pixel values in the warped frame and the target frame, respectively.
 
 For the nonzero pixels:
 
-- At (0, 0): |0 - 0| = 0
-- At (1, 1): |-1 - 0| = 1
-- At (2, 2): |+1 - +1| = 0
+- At $(0, 0): |0 - 0| = 0$
+- At $(1, 1): |-1 - 0| = 1$
+- At $(2, 2): |+1 - +1| = 0$
 
 Thus, the **Total Photometric Loss** is:
 
-\[
+$$
 L_{\text{photo}} = \frac{1}{3} \times (0 + 1 + 0) = 0.333
-\]
+$$
 
 ## Step 3: Calculate Smoothness Loss
 
 Smoothness loss encourages smooth optical flow fields across neighboring pixels and is given by the formula:
 
-\[
+$$
 L_{\text{smooth}} = \frac{1}{N} \sum_{x, y} \left( \| \nabla u^ (x, y) \| + \| \nabla v^ (x, y) \| \right)
-\]
+$$
 
 Where `∇u^(x, y)` and `∇v^(x, y)` are the gradients of the optical flow components `u^` and `v^`, calculated with respect to neighboring pixels.
 
@@ -623,27 +623,27 @@ The gradients for `u^` and `v^` are calculated using finite differences:
 
 The gradient for `u^` at each pixel `(x, y)` is calculated as:
 
-\[
+$$
 \nabla u^ (x, y) = |u^ (x+1, y) - u^ (x, y)| + |u^ (x, y+1) - u^ (x, y)|
-\]
+$$
 
 For example:
 
-- At (0, 0): |0.0 - 0.2| + |0.0 - 0.2| = 0.4
-- At (1, 1): |0.0 - 0.0| + |0.1 - 0.0| = 0.1
+- At $(0, 0): |0.0 - 0.2| + |0.0 - 0.2| = 0.4$
+- At $(1, 1): |0.0 - 0.0| + |0.1 - 0.0| = 0.1$
 
 ### 3.2 Gradients for `v^`
 
 Similarly, the gradient for `v^` at each pixel is:
 
-\[
+$$
 \nabla v^ (x, y) = |v^ (x+1, y) - v^ (x, y)| + |v^ (x, y+1) - v^ (x, y)|
-\]
+$$
 
 For example:
 
-- At (0, 0): |0.0 - 0.1| + |0.0 - 0.1| = 0.2
-- At (1, 1): |0.3 - (-0.2)| + |0.0 - (-0.2)| = 0.7
+- At $(0, 0): |0.0 - 0.1| + |0.0 - 0.1| = 0.2$
+- At $(1, 1): |0.3 - (-0.2)| + |0.0 - (-0.2)| = 0.7$
 
 ### 3.3 Smoothness Loss
 
@@ -659,94 +659,95 @@ The smoothness loss is based on the gradients of the flow components \( \hat{u} 
 For the flow component \( \hat{u} \), the differences between neighboring pixels along both the horizontal (\( x \)) and vertical (\( y \)) directions are calculated.
 
 #### Example flow field for \( \hat{u} \):
-
+$$
 \hat{u} = [ 0.2, 0.0, 0.0; 0.0, 0.0, 0.1; 0.0, 0.1, 0.0 ]
-
+$$
 
 
 
 #### Gradient Calculation for \( \hat{u} \):
 
-- At \( (0, 0) \):
+- At $( (0, 0) )$:
 
-  \[
+  $$
   \nabla \hat{u}(0,0) = | \hat{u}_{1,0} - \hat{u}_{0,0} | + | \hat{u}_{0,1} - \hat{u}_{0,0} | = |0.0 - 0.2| + |0.0 - 0.2| = 0.2 + 0.2 = 0.4
-  \]
+  $$
 
-- At \( (1, 0) \):
+- At $( (1, 0) )$:
 
-  \[
+  $$
   \nabla \hat{u}(1,0) = | \hat{u}_{2,0} - \hat{u}_{1,0} | + | \hat{u}_{1,1} - \hat{u}_{1,0} | = |0.0 - 0.0| + |0.0 - 0.0| = 0 + 0 = 0
-  \]
+  $$
 
-- At \( (2, 0) \):
+- At $( (2, 0) )$:
 
-  \[
+  $$
   \nabla \hat{u}(2,0) = | \hat{u}_{2,0} - \hat{u}_{1,0} | + | \hat{u}_{2,1} - \hat{u}_{2,0} | = |0.0 - 0.0| + |0.0 - 0.0| = 0 + 0 = 0
-  \]
+  $$
 
 ### Step 2: Compute Gradients for \( \hat{v} \)
 
 Now, we compute the gradients for the \( \hat{v} \)-component.
 
 #### Example flow field for \( \hat{v} \):
-
+$$
 \hat{v} = [ 0.1, 0.0, 0.0; 0.0, -0.2, 0.3; 0.0, 0.0, 0.3 ]
-
+$$
 
 
 
 #### Gradient Calculation for \( \hat{v} \):
 
-- At \( (0, 0) \):
+- At $( (0, 0) )$:
 
-  \[
+  $$
   \nabla \hat{v}(0,0) = | \hat{v}_{1,0} - \hat{v}_{0,0} | + | \hat{v}_{0,1} - \hat{v}_{0,0} | = |0.0 - 0.1| + |0.0 - 0.1| = 0.1 + 0.1 = 0.2
-  \]
+  $$
 
-- At \( (1, 0) \):
+- At $( (1, 0) )$:
 
-  \[
+  $$
   \nabla \hat{v}(1,0) = | \hat{v}_{2,0} - \hat{v}_{1,0} | + | \hat{v}_{1,1} - \hat{v}_{1,0} | = |0.0 - 0.0| + |-0.2 - 0.0| = 0 + 0.2 = 0.2
-  \]
+  $
 
-- At \( (2, 0) \):
+- At $( (2, 0) )$:
 
-  \[
+  $$
   \nabla \hat{v}(2,0) = | \hat{v}_{2,0} - \hat{v}_{1,0} | + | \hat{v}_{2,1} - \hat{v}_{2,0} | = |0.0 - 0.0| + |0.0 - 0.0| = 0 + 0 = 0
-  \]
+  $$
 
 ### Step 3: Smoothness Loss Formula
 
 Now that we have the gradients for both the \( u \)- and \( v \)-components, the total smoothness loss is computed as:
 
-\[
+$$
 L_{\text{smooth}} = \frac{1}{N} \sum_{(x,y)} \left( \| \nabla \hat{u}(x,y) \| + \| \nabla \hat{v}(x,y) \| \right)
-\]
+$$
 
-Where \( N \) is the number of pixels.
+Where $( N )$ is the number of pixels.
 
 #### Gradients for \( \hat{u} \):
-
+$$
 \nabla \hat{u}(0,0) = 0.4, \quad \nabla \hat{u}(1,0) = 0, \quad \nabla \hat{u}(2,0) = 0 \nabla \hat{u}(0,1) = 0.4, \quad \nabla \hat{u}(1,1) = 0.1, \quad \nabla \hat{u}(2,1) = 0.1 \nabla \hat{u}(0,2) = 0.4, \quad \nabla \hat{u}(1,2) = 0, \quad \nabla \hat{u}(2,2) = 0.1
-
-shell
+$$
 
 
 #### Gradients for \( \hat{v} \):
-
+$$
 \nabla \hat{v}(0,0) = 0.2, \quad \nabla \hat{v}(1,0) = 0.2, \quad \nabla \hat{v}(2,0) = 0 \nabla \hat{v}(0,1) = 0.2, \quad \nabla \hat{v}(1,1) = 0.7, \quad \nabla \hat{v}(2,1) = 0.3 \nabla \hat{v}(0,2) = 0.2, \quad \nabla \hat{v}(1,2) = 0.3, \quad \nabla \hat{v}(2,2) = 0.3
-
+$$
 
 
 
 #### Summing the gradients:
 
-\[
+$$
 L_{\text{smooth}} = \frac{1}{9} \left( 0.4 + 0 + 0 + 0.4 + 0.1 + 0.1 + 0.4 + 0 + 0.1 + 0.2 + 0.2 + 0 + 0.2 + 0.7 + 0.3 + 0.2 + 0.3 + 0.3 \right)
-\]
+$$
 
-\[L_{\text{smooth}} = \frac{1}{9} \times 4.5 = 0.5\]
+$$
+L_{\text{smooth}} = \frac{1}{9} \times 4.5 = 0.5
+$$
 
 Thus, the smoothness loss for this flow field is \( L_{\text{smooth}} = 0.5 \).
 
