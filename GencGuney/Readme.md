@@ -1,44 +1,52 @@
-# @TODO: Paper title
+# Enhancing the Power of OOD Detection via Sample-Aware Model Selection
 
 This readme file is an outcome of the [CENG501 (Spring 2024)](https://ceng.metu.edu.tr/~skalkan/DL/) project for reproducing a paper without an implementation. See [CENG501 (Spring 42) Project List](https://github.com/CENG501-Projects/CENG501-Fall2024) for a complete list of all paper reproduction projects.
 
 # 1. Introduction
 
-Enhancing the Power of OOD Detection via Sample-Aware Model Selection is a paper authored by Feng Xue et al., presented at CVPR 2024. This work introduces ZODE (Zoo-based OOD Detection Enhancement), a novel approach aimed at improving out-of-distribution (OOD) detection by leveraging sample-aware model selection within a model zoo framework. The method advances the field of OOD detection, a critical task for ensuring the reliability and safety of machine learning systems in open-world environments.
+Enhancing the Power of OOD Detection via Sample-Aware Model Selection [1] paper, authored by Feng Xue et al., is published at the CVPR 2024 (Conference on Computer Vision and Pattern Recognition) conferance. This paper introduces ZODE (Zoo-based OOD Detection Enhancement) method, a novel approach whose purpose is to improve out-of-distribution (OOD) detection by leveraging sample-aware model selection within a model zoo framework. The method advances the field of OOD detection, which is critical for ensuring the reliability of machine learning systems in real-world cases.
 
-The primary goal of this project is to reproduce the results and insights presented in the paper. This includes implementing ZODE from scratch, verifying its performance, and analyzing its contributions in the context of existing literature. By achieving reproducibility, this effort aims to validate the claims made in the paper and potentially extend its applicability.
-
-@TODO: Introduce the paper (inc. where it is published) and describe your goal (reproducibility).
+The goal of this repository is to reproduce the results and insights presented in the paper. This includes implementing the ZODE method from scratch, verifying its performance with the same metrics presented in the paper. 
 
 ## 1.1. Paper summary
 
-The paper “Enhancing the Power of OOD Detection via Sample-Aware Model Selection” introduces ZODE (Zoo-based OOD Detection Enhancement), a framework that improves out-of-distribution (OOD) detection by leveraging a diverse collection of pre-trained models, termed a "model zoo." Unlike traditional methods that rely on a single pre-trained model, ZODE dynamically selects models based on each test sample. This sample-aware model selection enables more robust and accurate OOD detection.
+Out-of-distribution (OOD) detection is a critical deep learning task that identifies inputs that differ from the general distribution of the training data. While deep neural networks are sufficient in scenarios where the test and training distributions are identical or similar, their performance often decreases when supplied with OOD inputs. This limitation causes significant risks in applications where safety is crucial since undetected OOD inputs can lead to error prone decisions. 
 
-ZODE uses statistical techniques to normalize detection scores into p-values and adjusts thresholds via the Benjamini-Hochberg procedure, ensuring a high true positive rate (TPR) for in-distribution samples while reducing false positives. Theoretical analysis proves ZODE's ability to maintain TPR and asymptotically lower false positive rates (FPR) as the model zoo grows.
+To address this, the paper introduces ZODE, a novel OOD detection method that uses a diverse set of pre-trained models known as a model zoo. Unlike traditional methods, which use a single pre-trained model, ZODE chooses models dynamically based on each test sample. The sample-aware model selection allows for more robust and accurate OOD detection. ZODE normalizes detection scores into p-values and adjusts thresholds using the Benjamini-Hochberg procedure, resulting in a high true positive rate (TPR) for in-distribution samples while reducing false positives. Theoretical analysis demonstrates ZODE's ability to maintain TPR while asymptotically decreasing false positive rates (FPR) as the model zoo grows.
 
-Extensive experiments on CIFAR10 and ImageNet demonstrate ZODE's effectiveness, achieving a 65.40% improvement in FPR on CIFAR10 and a 37.25% improvement on ImageNet compared to the best baselines. The paper highlights ZODE’s ability to exploit the complementarity of multiple models while addressing the limitations of single-model detectors. However, the method requires significant storage and computational resources, which could be mitigated through distributed computing.
+Comprehensive experiments on CIFAR10 and ImageNet datasets demonstrate ZODE's effectiveness by achieving a 65.40% improvement in FPR on CIFAR10 and a 37.25% improvement on ImageNet compared to the best baselines. The paper emphasizes how ZODE leverages the strengths of multiple models to overcome the weaknesses of single-model detectors.However, the method requires significant storage and computational resources, which could be mitigated through distributed computing.
 
 In summary, ZODE offers a novel, statistically grounded approach to OOD detection that combines theoretical guarantees with state-of-the-art empirical performance, making it a significant advancement in the field.
-
-@TODO: Summarize the paper, the method & its contributions in relation with the existing literature.
 
 # 2. The method and our interpretation
 
 ## 2.1. The original method
 
-The paper proposes ZODE (Zoo-based OOD Detection Enhancement), which improves out-of-distribution (OOD) detection by leveraging a diverse set of pre-trained models (a "model zoo") and applying sample-aware model selection. The key steps of the method are:
+The paper proposes ZODE, which improves OOD detection by leveraging a collection of pre-trained models named a "model zoo" and applying sample-aware model selection. The core components of the method are:
 
-- Model Zoo Construction: A collection of pre-trained models is built with diverse architectures and training strategies, ensuring the ability to capture a wide range of features.
+- **Model Zoo Construction:** A collection of pre-trained models is joint together with diverse architectures and training strategies, ensuring the ability to capture a wide range of features.
 
-- P-Value Normalization: The OOD detection scores for a given test input are transformed into p-values for each model in the zoo. The p-value represents the probability of the sample belonging to the in-distribution based on the model's scoring function.
+- **p-Value Normalization:** The OOD detection scores for a given test input are transformed into p-values for each model in the model zoo. The p-value represents the probability of the sample belonging to the ID based on the model's scoring function.
 
-- Threshold Adjustment: To maintain a high true positive rate (TPR) for in-distribution samples while reducing false positive rates (FPR), the paper uses the Benjamini-Hochberg procedure. This adjusts the detection threshold dynamically, ensuring statistical rigor across the model zoo.
+- **Threshold Adjustment:** To maintain a high true positive rate (TPR) for ID samples while reducing false positive rates (FPR), the paper uses the Benjamini-Hochberg procedure [2]. This dynamically adjusts the detection threshold, ensuring precise and statistically robust integration across the model zoo.
 
-- Sample-Aware Selection: For each test input, the method determines the subset of models that classify the input as OOD. If no models in the zoo classify the input as OOD, it is considered in-distribution; otherwise, it is flagged as OOD.
+- **Sample-Aware Selection:** The model zoo classifies an input as in-distribution (ID) if all models agree it is ID; otherwise, it is considered OOD. However, as the number of models increases, this naive approach is likely to accumulate errors, resulting in decreased performance.
 
-The method is backed by theoretical analysis, proving that ZODE maintains TPR while achieving low FPR as the zoo size increases. Empirically, ZODE is shown to leverage the complementarity of models, significantly outperforming single-model detectors and naïve ensembles.
+The following algorithm outlines the ZODE framework, which dynamically selects active models from a pre-trained model zoo to robustly classify inputs as ID or OOD:
 
-@TODO: Explain the original method.
+![alt text](<images/score.png>) 
+
+Figure 1: The empirical distribution of the score function.
+
+![alt text](<images/threshold.png>)
+
+Figure 2: The largest subscript that satisfies the threshold condition
+
+![alt text](<images/algorithm.png>)
+
+Figure 3: Zoo-based OOD Detection Enhancement
+
+Theoretical analysis backs up the approach, showing that even as the model zoo expands, ZODE continuously maintains a high TPR while maintaining a low FPR. According to empirical findings, ZODE outperforms both single-model detectors and naive ensemble approaches by efficiently utilizing the advantages of multiple models.
 
 ## 2.2. Our interpretation
 
@@ -54,11 +62,11 @@ We believe ZODE’s success hinges on the quality and diversity of the model zoo
 
 ## 3.1. Experimental setup
 
-The authors of the paper evaluated ZODE on two main datasets: CIFAR10 and ImageNet-1K, representing in-distribution (ID) data, with various out-of-distribution (OOD) datasets used for evaluation.
+The authors of the paper evaluated ZODE on two main datasets: CIFAR10 [3] and ImageNet-1K [4], representing in-distribution (ID) data, with various out-of-distribution (OOD) datasets used for evaluation.
 
-### Datasets:
-- CIFAR10 (ID) and six OOD datasets: SVHN, LSUN, iSUN, Texture, Places365, and CIFAR100.
-- ImageNet-1K (ID) and four OOD datasets: subsets of Places365, iNaturalist, SUN, and Texture.
+### Datasets:
+- CIFAR10 (ID) and six OOD datasets: SVHN [5], LSUN [6], iSUN [7], Texture [8], Places365 [9], and CIFAR100 [10].
+- ImageNet-1K (ID) and four OOD datasets: subsets of Places365, iNaturalist [11], SUN [12], and Texture.
 
 ### Metrics:
 The experiments were evaluated using:
@@ -66,11 +74,11 @@ The experiments were evaluated using:
 - False Positive Rate (FPR) for OOD samples at a TPR of 95%.
 - Area Under the ROC Curve (AUC), capturing overall performance across varying thresholds.
 
-### Model Zoo:
+### Model Zoo:
 - CIFAR Experiments: The zoo consisted of seven pre-trained models (e.g., ResNet18, ResNet50, DenseNet, etc.), varying in architecture and loss functions (including contrastive loss for diversity).
 - ImageNet Experiments: A larger zoo with diverse architectures, including ResNet50*, ResNeXt101, Swin Transformer models, and DinoV2, pre-trained on different datasets with varying resolutions.
 
-### Baseline Methods:
+### Baseline Methods:
 The paper compared ZODE against state-of-the-art OOD detectors, including methods like Maximum Softmax Probability (MSP), Energy-based models, KNN, and Mahalanobis distance.
 
 Thresholds and Hyperparameters:
@@ -103,9 +111,20 @@ These adjustments are aimed at ensuring reproducibility while accommodating prac
 @TODO: Discuss the paper in relation to the results in the paper and your results.
 
 # 5. References
-
-@TODO: Provide your references here.
+1. Xue, F., He, Z., Zhang, Y., Xie, C., Li, Z., & Tan, F. (2024). Enhancing the power of OOD detection via sample-aware model selection. Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), 17148–17157.
+2. Yoav Benjamini and Yosef Hochberg. Controlling the false discovery rate: a practical and powerful approach to multiple testing. Journal of the Royal statistical society: series B (Methodological), 57(1):289–300, 1995. 
+3. Alex Krizhevsky, Geoffrey Hinton, et al. Learning multiple layers of features from tiny images. 2009.
+4. Jia Deng, Wei Dong, Richard Socher, Li-Jia Li, Kai Li, and Li Fei-Fei. Imagenet: A large-scale hierarchical image database. In 2009 IEEE conference on computer vision and pattern recognition, pages 248–255. Ieee, 2009.
+5. Yuval Netzer, Tao Wang, Adam Coates, Alessandro Bissacco, Bo Wu, and Andrew Y Ng. Reading digits in natural images with unsupervised feature learning. 2011.
+6. Fisher Yu, Ari Seff, Yinda Zhang, Shuran Song, Thomas Funkhouser, and Jianxiong Xiao. Lsun: Construction of a large-scale image dataset using deep learning with humans in the loop. arXiv preprint arXiv:1506.03365, 2015.
+7. Pingmei Xu, Krista A Ehinger, Yinda Zhang, Adam Finkelstein, Sanjeev R Kulkarni, and Jianxiong Xiao. Turkergaze: Crowdsourcing saliency with webcam based eye tracking. arXiv preprint arXiv:1504.06755, 2015.
+8. Mircea Cimpoi, Subhransu Maji, Iasonas Kokkinos, Sammy Mohamed, and Andrea Vedaldi. Describing textures in the wild. In Proceedings of the IEEE conference on computer vision and pattern recognition, pages 3606–3613, 2014.
+9. Bolei Zhou, Agata Lapedriza, Aditya Khosla, Aude Oliva, and Antonio Torralba. Places: A 10 million image database for scene recognition. IEEE transactions on pattern analysis and machine intelligence, 40(6):1452–1464, 2017.
+10. Alex Krizhevsky, Geoffrey Hinton, et al. Learning multiple layers of features from tiny images. 2009.
+11. Grant Van Horn, Oisin Mac Aodha, Yang Song, Yin Cui, Chen Sun, Alex Shepard, Hartwig Adam, Pietro Perona, and Serge Belongie. The inaturalist species classification and detection dataset. In Proceedings of the IEEE conference on computer vision and pattern recognition, pages 8769–8778, 2018.
+12. Jianxiong Xiao, J Hays, KA Ehinger, A Oliva, and A Torralba. Sun database: Large-scale scene recognition from abbey to zoo. In IEEE Computer Society Conference on Computer Vision and Pattern Recognition, 2010.
 
 # Contact
 
-@TODO: Provide your names & email addresses and any other info with which people can contact you.
+- [Esra Genç](mailto:esra.genc@metu.edu.tr)
+- [Emirhan Yılmaz Güney](mailto:email@metu.edu.tr)
