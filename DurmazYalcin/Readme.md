@@ -174,6 +174,96 @@ Where $\theta$ is the threshold for spike generation, and $t$ corresponds to the
 - **Sparsity Preservation**: Only active bins (with significant event activity) contribute to the input, reducing computational overhead.
 
 
+## Spike Encoding in Adaptive-SpikeNet
+
+Spike encoding is the critical step that transforms the processed event bin data into input suitable for spiking neural networks (SNNs). Here's how the process works in detail:
+
+#### 1. From Event Bins to Spikes
+After constructing the voxel grid $V(x, y, k)$, the values at each pixel $(x, y)$ within each bin $k$ are converted into spikes using various encoding strategies. The primary goal is to map the intensity or activity information from the bin into spike timing or frequency, which SNNs use for computation.
+
+**(a) Threshold-Based Encoding**:  
+This is one of the simplest and most widely used methods. A spike is generated at a pixel if the bin's aggregated value exceeds a threshold:
+
+$$
+s_k(x, y) =
+\begin{cases}
+1 & \text{if } V(x, y, k) > \theta \\
+0 & \text{otherwise}
+\end{cases}
+$$
+
+Where:
+
+- $s_k(x, y)$ represents the binary spike activity at pixel $(x, y)$ for the $k$-th time bin.
+- $\theta$ is a user-defined or learned threshold.
+
+This method ensures sparsity, as only a subset of pixels will spike in each bin.
+
+**(b) Rate Coding**:  
+Instead of a binary spike, the number of spikes generated at a pixel is proportional to the aggregated value in the bin:
+
+$$
+\text{Spike Rate}(x, y) \propto V(x, y, k)
+$$
+
+Rate coding may involve discretizing the aggregated value into a fixed number of spikes per bin.
+
+**(c) Temporal Coding**:  
+In temporal coding, the timing of the spike conveys the information. For example, a higher value in $V(x, y, k)$ might lead to an earlier spike in the bin's interval:
+
+$$
+t_{\text{spike}}(x, y) = t_k + \tau \cdot \left( 1 - \frac{V(x, y, k)}{\max(V)} \right)
+$$
+
+Where:
+
+- $t_{\text{spike}}(x, y)$ is the spike time at pixel $(x, y)$.
+- $\tau$ is the duration of the bin interval $\Delta t$.
+- $\max(V)$ normalizes the bin values to a range $[0, 1]$.
+
+This method is biologically plausible and retains temporal precision.
+
+#### 2. Feeding Spikes into the SNN
+Once the spikes are generated, they are passed to the SNN for processing. Spiking neurons in the network operate based on biologically-inspired models like the Leaky Integrate-and-Fire (LIF) or Adaptive LIF model, which processes spikes over time.
+
+**Leaky Integrate-and-Fire Neuron**:  
+A typical LIF neuron accumulates input spikes over time:
+
+$$
+\tau_m \frac{dV(t)}{dt} = -V(t) + I(t)
+$$
+
+Where:
+
+- $V(t)$ is the neuron's membrane potential.
+- $\tau_m$ is the membrane time constant.
+- $I(t)$ is the synaptic input (spike activity).
+
+When $V(t)$ crosses a threshold $V_{\text{thresh}}$, the neuron fires a spike, and the potential is reset:
+
+$$
+\text{if } V(t) \geq V_{\text{thresh}} \quad \text{then spike, reset } V(t) \to V_{\text{reset}}
+$$
+
+#### Adaptations in Adaptive-SpikeNet:
+The paper introduces learnable dynamics for these neurons, enabling them to adjust their time constants $\tau_m$, thresholds $V_{\text{thresh}}$, and other parameters based on the input data. This adaptive mechanism improves the network's ability to capture complex motion patterns.
+
+#### 3. Advantages of the Encoding Process
+- **Sparse Computation**: By generating spikes only for active regions, the computational load is significantly reduced.
+- **Retained Spatio-Temporal Information**: The precise timing and location of spikes ensure that both spatial and temporal dynamics are preserved.
+- **Biological Plausibility**: Encoding strategies like temporal coding align closely with how biological neurons process information.
+- **Flexibility with Dynamics**: The learnable parameters allow the system to adapt to different types of motion and input characteristics.
+
+### Summary of the Workflow:
+1. **Raw Event Data**: Captured as $(x, y, t, p)$.
+2. **Temporal Binning**: Events grouped into bins $V(x, y, k)$.
+3. **Spike Encoding**: Bin values converted into spike activity using threshold, rate, or temporal coding.
+4. **SNN Processing**: Spikes input to spiking neurons with learnable dynamics to estimate optical flow.
+
+Would you like to delve deeper into the learnable dynamics of the neurons or their training process?
+
+
+
 ## Learnable Neural Dynamics
 
 Adaptive-SpikeNet also introduces learnable neural dynamics to adaptively learn the temporal patterns of events. The key aspect of this learning process is the use of **spiking neurons** that can respond to incoming events based on learned weights and synaptic dynamics.
