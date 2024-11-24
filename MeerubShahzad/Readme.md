@@ -84,13 +84,13 @@ In the paper, validation approach focus on empirical tests without much mention 
 
 **o	Backdoor Attacks:** This paper evaluated the defense against six black box backdoor attacks, it showcases the robustness of DTINSPECTOR.
 ## 5.2	Adaptations and Changes for My Project:
-**o	Dataset Selection:** Given the computational constraints, I will focuse on CIFAR10 and GTSRB only. These datasets are smaller and more manageable but they still provide a robust testing ground for backdoor defense mechanisms.
+**o	Dataset Selection:** Given the computational constraints We will focuse on CIFAR10 and GTSRB only. These datasets are smaller and more manageable but they still provide a robust testing ground for backdoor defense mechanisms.
 
-**o	Model Simplification:** Since the original paper can use complex architectures, I will use simple versions of neural networks that require less computational power, they are equally effective for understanding and demonstrating defense mechanisms against backdoor attacks.
+**o	Model Simplification:** Since the original paper can use complex architectures we will use simple versions of neural networks that require less computational power. They are equally effective for understanding and demonstrating defense mechanisms against backdoor attacks.
 
-**o	Limited Attack Types:** Instead of six different backdoor attacks, I  will concentrate on two only. The BADNET and TROJANNN. These attacks are well documented and more easy to replicate for an undergraduate project, they allow a focused approach on testing and understanding the effectiveness of defense.
+**o	Limited Attack Types:** Instead of six different backdoor attacks, we  will concentrate on two only. The BADNET and TROJANNN. These attacks are well documented and more easy to replicate. They allow a focused approach on testing and understanding the effectiveness of defense.
 ## 5.3 Experimental Validation:
-To validate the effectiveness of my implementation of DTINSPECTOR, I will follow a similar method to the original method but with the simplifications. This involve measuring the attack success rate (ASR) and comparing it to the accuracy of the model.
+To validate the effectiveness of my implementation of DTINSPECTOR we will follow a similar method to the original method but with the simplifications. This involve measuring the attack success rate (ASR) and comparing it to the accuracy of the model.
 
 
 
