@@ -107,7 +107,24 @@ The implementation details provided by the authors appear to be sufficient for r
 
 ## 3.1. Experimental setup
 
-@TODO: Describe the setup of the original paper and whether you changed any settings.
+In this paper, experiments are conducted on two large-scale image-based CAER datasets, namely EMOTIC and CAER-S. The evaluation of the proposed framework is performed using five representative methods with completely different structures and contextual modelling paradigms:
+
+* EMOT-Net[3]
+* CAER-Net[4]
+* GNN-CNN[5]
+*  CD-Net[6]
+*  EmotiCon[7]
+
+The effectiveness of the five given CLEF-based methods are compared against existing state-of-the-art models such as:
+* HLCR [8]
+* TEKG [9]
+* RRLA [10]
+* VRD [11]
+* SIB-Net [12]
+* MCA [13]
+* GRERN [14]
+
+
 
 ## 3.2. Running the code
 
@@ -136,6 +153,20 @@ The implementation details provided by the authors appear to be sufficient for r
 [6] Zili Wang, Lingjie Lao, Xiaoya Zhang, Yong Li, Tong Zhang, and Zhen Cui. Context-dependent emotion recog- nition. Journal of Visual Communication and Image Repre- sentation, 89:103679, 2022. 2, 3, 6, 7, 8
 
 [7] Trisha Mittal, Pooja Guhan, Uttaran Bhattacharya, Rohan Chandra, Aniket Bera, and Dinesh Manocha. Emoticon: Context-aware multimodal emotion recognition using frege’s principle. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), pages 14234–14243, 2020. 1, 2, 3, 4, 6, 7
+
+[8] Willams de Lima Costa, Estefania Talavera, Lucas Silva Figueiredo, and Veronica Teichrieb. High-level context rep- resentation for emotion recognition in images. In Proceed- ings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshop (CVPRW), pages 326–334, 2023. 2, 3, 6, 7
+
+[9] Jing Chen, Tao Yang, Ziqiang Huang, Kejun Wang, Me- ichen Liu, and Chunyan Lyu. Incorporating structured emo- tion commonsense knowledge and interpersonal relation into context-aware emotion recognition. Applied Intelligence, 53 (4):4201–4217, 2023. 2, 3, 6, 7
+
+[10] Weixin Li, Xuan Dong, and Yunhong Wang. Human emo- tion recognition with relational region-level analysis. IEEE Transactions on Affective Computing, 2021. 2, 3, 6, 7
+
+[11] Manh-Hung Hoang, Soo-Hyung Kim, Hyung-Jeong Yang, and Guee-Sang Lee. Context-aware emotion recognition based on visual relationship detection. IEEE Access, 9: 90465–90474, 2021. 2, 3, 6, 7
+
+[12] Xinpeng Li, Xiaojiang Peng, and Changxing Ding. Se- quential interactive biased network for context-aware emo- tion recognition. In IEEE International Joint Conference on Biometrics (IJCB), pages 1–6, 2021. 2, 3, 6, 7
+
+[13] DingkangYang,ShuaiHuang,ShunliWang,YangLiu,Peng Zhai, Liuzhen Su, Mingcheng Li, and Lihua Zhang. Emotion recognition for multiple context awareness. In Proceedings of the European Conference on Computer Vision (ECCV), pages 144–162, 2022. 2, 3, 6, 7
+
+[14] Qinquan Gao, Hanxin Zeng, Gen Li, and Tong Tong. Graph reasoning-based emotion recognition network. IEEE Access, 9:6488–6497, 2021. 2, 3, 6, 7
 
 # Contact
 
