@@ -8,7 +8,8 @@ Domain adaptation (DA) is essential for adapting machine learning models to dive
 This paper introduces a novel ADA method specifically tailored for object detection, addressing the limitations of conventional UDA and AL approaches. The authors identify false negative (FN) errors—undetected objects—as a critical issue under domain shift, which existing methods often fail to adequately address. To tackle this, they propose a False Negative Prediction Module (FNPM) that predicts the likelihood of FN errors, incorporating this metric into the active sampling process alongside uncertainty and diversity. Their framework starts with UDA training to align features between the source and target domains, followed by active sampling guided by the FNPM's predictions. The final semi-supervised DA training phase incorporates a few labeled target domain samples and pseudo-labels generated from uncertainty-guided predictions. Experimental results demonstrate that this method achieves performance comparable to fully supervised learning while requiring significantly less labeling effort, setting a new benchmark for ADA in object detection.
 
 # 2. The method, its implementation and my interpretation
-<img width="1056" alt="image" src="https://github.com/user-attachments/assets/77fa4e50-746a-4454-acce-d52bd003c74f">
+<img width="1058" alt="image" src="https://github.com/user-attachments/assets/bcc555e4-5294-4148-a599-2198c4885c87">
+
 The schema of the suggested framework
 
 ## 2.1. The original method
@@ -54,7 +55,8 @@ This method uses a combination of Unsupervised Domain Adaptation (UDA) and Activ
 ### 2.1.5. FN Errors and the Role of Active Learning (FNPM):
    A critical observation in the original method is that False Negative (FN) errors are a significant issue in domain adaptation for object detection. Although traditional domain adaptation methods can reduce False Positive (FP) errors, FN errors often persist, especially under domain shift. The paper proposes to focus active learning on sampling images where FN errors are likely to occur. This is where the FN Prediction Module (FNPM) comes into play—it predicts the number of FN errors for each image, helping to prioritize samples that will lead to a reduction in FN errors.
    
-<img width="537" alt="image" src="https://github.com/user-attachments/assets/39d83b84-90f0-48fd-9cf7-d9bbd315b0a8">
+<img width="528" alt="image" src="https://github.com/user-attachments/assets/732ef228-ea40-4c5f-8683-066f9d419fcb">
+
 
 False Negative Prediction Module (FNPM), uses the output feature map from the detection model’s backbone, which is processed through global average pooling (GAP) and fully connected (FC) layers to produce FN predictions. Ground truth FN counts are derived from the detection model’s output by identifying ground truths not matched to predictions with a sufficient intersection over union (IoU) score. The FNPM is trained with a loss function designed to minimize prediction errors. However, since labeled target domain data is limited, the FNPM leverages domain-invariant features extracted from the adapted backbone of the detection model to make predictions for the target domain, thereby avoiding the need for additional parameters. Training stability is maintained by alternately updating the FNPM and the detection model. During active sampling, the FNPM parameters are updated while the detection model is frozen, ensuring effective optimization for both components without interference. This approach ensures that FN errors are effectively addressed while maintaining simplicity and stability in the training process.
 
