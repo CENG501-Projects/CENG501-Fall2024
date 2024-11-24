@@ -14,7 +14,7 @@ Out-of-distribution (OOD) detection is a critical deep learning task that identi
 
 To address this, the paper introduces ZODE, a novel OOD detection method that uses a diverse set of pre-trained models known as a model zoo. Unlike traditional methods, which use a single pre-trained model, ZODE chooses models dynamically based on each test sample. The sample-aware model selection allows for more robust and accurate OOD detection. ZODE normalizes detection scores into p-values and adjusts thresholds using the Benjamini-Hochberg procedure, resulting in a high true positive rate (TPR) for in-distribution samples while reducing false positives. Theoretical analysis demonstrates ZODE's ability to maintain TPR while asymptotically decreasing false positive rates (FPR) as the model zoo grows.
 
-Comprehensive experiments on CIFAR10 and ImageNet datasets demonstrate ZODE's effectiveness by achieving a 65.40% improvement in FPR on CIFAR10 and a 37.25% improvement on ImageNet compared to the best baselines. The paper emphasizes how ZODE leverages the strengths of multiple models to overcome the weaknesses of single-model detectors.However, the method requires significant storage and computational resources, which could be mitigated through distributed computing.
+Comprehensive experiments on [CIFAR10](https://www.cs.toronto.edu/~kriz/cifar.html) and [ImageNet](https://www.image-net.org/download.php) datasets demonstrate ZODE's effectiveness by achieving a 65.40% improvement in FPR on CIFAR10 and a 37.25% improvement on ImageNet compared to the best baselines. The paper emphasizes how ZODE leverages the strengths of multiple models to overcome the weaknesses of single-model detectors.However, the method requires significant storage and computational resources, which could be mitigated through distributed computing.
 
 In summary, ZODE offers a novel, statistically grounded approach to OOD detection that combines theoretical guarantees with state-of-the-art empirical performance, making it a significant advancement in the field.
 
@@ -50,11 +50,11 @@ Theoretical analysis backs up the approach, showing that even as the model zoo e
 
 ## 2.2. Our interpretation
 
-The ZODE method strikes a balance between statistical rigor and practical applicability. The transformation of detection scores into p-values simplifies the challenge of comparing outputs from heterogeneous models, which we find to be an elegant solution to standardizing scores. The use of the Benjamini-Hochberg procedure is particularly impressive, as it avoids the accumulation of errors typically seen in naïve ensembles, while ensuring statistical consistency.
+The ZODE method successfully balances accuracy with practical usability. Transforming detection scores into p-values is a clever way to standardize outputs from different models, and the use of the Benjamini-Hochberg procedure helps prevent error accumulation seen in naive ensembles while maintaining consistency.
 
-From our perspective, the sample-aware model selection mechanism is a powerful innovation. It allows the detection process to adapt dynamically to each test input, leveraging the strengths of different models in the zoo. However, we recognize potential challenges in real-world implementations. The need to store validation data for p-value computation and to perform per-sample model selection may result in significant computational and memory overhead, particularly for large-scale deployments. A distributed approach might address these issues, though it could add implementation complexity.
+Because it utilizes the model zoo to its fullest potential and dynamically adjusts to each test input, the sample-aware model selection is especially powerful. However, implementing sample-aware model selection in real-world scenarios could be challenging due to the need for storing validation data and performing per-sample model selection, which can be computationally expensive and memory-intensive for large-scale systems. Parallel computing might help but could add complexity.
 
-We believe ZODE’s success hinges on the quality and diversity of the model zoo. While this is a strength, it may also present a barrier for smaller teams or projects with limited resources. Despite these challenges, we see ZODE as a transformative approach that combines theoretical robustness with practical effectiveness, making it a significant step forward in OOD detection research.
+The quality and diversity of the model zoo are the key to ZODE’s success, but building such a zoo might be an issue for teams with limited resources. Despite these challenges, ZODE represents a substantial advancement in OOD detection, providing solid theoretical background as well as useful applications.
 
 # 3. Experiments and results
 
@@ -73,8 +73,8 @@ The experiments were evaluated using:
 - Area Under the ROC Curve (AUC), capturing overall performance across varying thresholds.
 
 ### Model Zoo:
-- CIFAR Experiments: The zoo consisted of seven pre-trained models (e.g., ResNet18, ResNet50, DenseNet, etc.), varying in architecture and loss functions (including contrastive loss for diversity).
-- ImageNet Experiments: A larger zoo with diverse architectures, including ResNet50*, ResNeXt101, Swin Transformer models, and DinoV2, pre-trained on different datasets with varying resolutions.
+- **CIFAR Experiments:** The zoo consisted of seven pre-trained models (e.g., ResNet18, ResNet50, DenseNet, etc.), varying in architecture and loss functions (including contrastive loss for diversity).
+- **ImageNet Experiments:** A larger zoo with diverse architectures, including ResNet50*, ResNeXt101, Swin Transformer models, and DinoV2, pre-trained on different datasets with varying resolutions.
 
 ### Baseline Methods:
 The paper compared ZODE against state-of-the-art OOD detectors, including methods like Maximum Softmax Probability (MSP), Energy-based models, KNN, and Mahalanobis distance.
@@ -87,14 +87,11 @@ Thresholds and Hyperparameters:
 
 For our implementation, we plan to:
 
-- Maintain the same datasets and baselines as described in the original paper for consistency.
-- Recreate the model zoo with accessible pre-trained models from standard repositories like PyTorch or TensorFlow. However, the exact pretraining strategies (e.g., contrastive loss) might differ if specific models are unavailable.
-- Use the same evaluation metrics (FPR, TPR, and AUC) to align with the original results.
-- Experiment with scaling the zoo size and tuning hyperparameters (αα) to observe its impact on ZODE's performance.
+- Use the same datasets and evaluation metrics as the original paper to ensure consistency.
+- Construct the model zoo with accessible pre-trained models from standard repositories like PyTorch or TensorFlow.
+- Test to see how scaling the zoo size and tuning hyperparameters affect ZODE’s performance.
 
-These adjustments are aimed at ensuring reproducibility while accommodating practical constraints, such as the availability of pre-trained models and computational resources.
-
-@TODO: Describe the setup of the original paper and whether you changed any settings.
+These steps aim to reproduce the results while accounting for practical limitations, such as model availability and computational resources.
 
 ## 3.2. Running the code
 
