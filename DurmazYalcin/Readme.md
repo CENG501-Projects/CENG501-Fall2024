@@ -471,7 +471,7 @@ In this step, we warp one event frame (Bin 1) to another (Bin 2) using the predi
 
 ### 1.1 Predicted Optical Flow for Each Pixel
 
-For each pixel in the event frame, the predicted optical flow is provided as `$(\hat{u}, \hat{v})$`, where `$\hat{u}$` is the horizontal displacement and `$\hat{v}$` is the vertical displacement:
+For each pixel in the event frame, the predicted optical flow is provided as $(\hat{u}, \hat{v})$, where $\hat{u}$ is the horizontal displacement and $\hat{v}$ is the vertical displacement:
 
 | Pixel (x, y) | Predicted Flow $(\hat{u}, \hat{v})$ |
 |--------------|-------------------------|
@@ -491,7 +491,7 @@ For each pixel in the event frame, the predicted optical flow is provided as `$(
 
 ### 1.3 Warping Bin 1
 
-The new position `(x', y')` for each pixel after warping is calculated using the formula:
+The new position (x', y') for each pixel after warping is calculated using the formula:
 
 $$
 (x', y') = (x + \hat{u}, y + \hat{v})
@@ -509,13 +509,13 @@ Thus, the **Warped Bin 1** frame becomes:
 
 ## Step 2: Calculate Photometric Loss
 
-The photometric loss is calculated as the difference between the warped frame `I_t1` and the target frame `I_t2`. It is given by the formula:
+The photometric loss is calculated as the difference between the warped frame $I_{t1}$ and the target frame $I_{t2}$. It is given by the formula:
 
 $$
 L_{\text{photo}} = \frac{1}{N} \sum_{x, y} |I_{t1}(x', y') - I_{t2}(x, y)|
 $$
 
-Where `N` is the total number of pixels in the image, and \( I_{t1}(x', y') \) and \( I_{t2}(x, y) \) represent the pixel values in the warped frame and the target frame, respectively.
+Where $N$ is the total number of pixels in the image, and $( I_{t1}(x', y') )$ and $( I_{t2}(x, y) )$ represent the pixel values in the warped frame and the target frame, respectively.
 
 For the nonzero pixels:
 
@@ -537,13 +537,13 @@ $$
 L_{\text{smooth}} = \frac{1}{N} \sum_{x, y} \left( \| \nabla \hat{u} (x, y) \| + \| \nabla \hat{v} (x, y) \| \right)
 $$
 
-Where `∇\hat{u}(x, y)` and `∇\hat{v}(x, y)` are the gradients of the optical flow components `$\hat{u}$` and `$\hat{v}$`, calculated with respect to neighboring pixels.
+Where $∇\hat{u}(x, y)$ and $∇\hat{v}(x, y)$ are the gradients of the optical flow components $\hat{u}$ and $\hat{v}$, calculated with respect to neighboring pixels.
 
-The gradients for `$\hat{u}$` and `$\hat{v}$` are calculated using finite differences:
+The gradients for $\hat{u}$ and $\hat{v}$ are calculated using finite differences:
 
-### 3.1 Gradients for `$\hat{u}$`
+### 3.1 Gradients for $\hat{u}$
 
-The gradient for `$\hat{u}$` at each pixel `(x, y)` is calculated as:
+The gradient for $\hat{u}$ at each pixel $(x, y)$ is calculated as:
 
 $$
 \nabla \hat{u} (x, y) = |\hat{u} (x+1, y) - \hat{u}(x, y)| + |\hat{u} (x, y+1) - \hat{u} (x, y)|
