@@ -140,8 +140,14 @@ the network. Generated Moving Octree can also be utilised to modify the position
 
 ## 2.2. Our interpretation
 
-@TODO: Explain the parts that were not clearly explained in the original paper and how you interpreted them.
+### Octomap Gneration
+In the paper, it is not mentioned how the authors implemented the octree stucture. We are planning to use the existing octomap library to generate the octree structure given in [4].
 
+### Utilization of the Camera Pose
+In the paper, it is mentioned that the camera pose is utilised to generate the octree structure and create the positional encodings but it is not mentioned how to do it. We will use the camera pose to generate rays for the sparse sampling process, and get the positional information along this ray. 
+
+### Training of the Network
+In the paper, the training setting is not presented. We will try different training approaches to effectively train the network.
 
 # 3. Experiments and results
 
@@ -168,6 +174,7 @@ the network. Generated Moving Octree can also be utilised to modify the position
 #### [1] Wu, Ke, Kaizhao Zhang, Mingzhe Gao, Jieru Zhao, Zhongxue Gan, and Wenchao Ding. “Swift-Mapping: Online Neural Implicit Dense Mapping in Urban Scenes.” Proceedings of the AAAI Conference on Artificial Intelligence 38, no. 6 (March 24, 2024): 6048–56. https://doi.org/10.1609/aaai.v38i6.28420.
 #### [2] Y. Zhang, X. Guo, M. Poggi, Z. Zhu, G. Huang and S. Mattoccia, "CompletionFormer: Depth Completion with Convolutions and Vision Transformers," 2023 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), Vancouver, BC, Canada, 2023, pp. 18527-18536, doi: 10.1109/CVPR52729.2023.01777.
 #### [3] J. Luiten, T. Fischer and B. Leibe, "Track to Reconstruct and Reconstruct to Track," in IEEE Robotics and Automation Letters, vol. 5, no. 2, pp. 1803-1810, April 2020, doi: 10.1109/LRA.2020.2969183.
+#### [4] https://github.com/OctoMap/octomap
 
 
 # Contact
