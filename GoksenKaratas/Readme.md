@@ -27,7 +27,7 @@ Some drawbacks of CAER:
 To address these issues, the paper proposes the Counterfactual Emotion Inference Framework (CLEF), which uses causal inference to separate helpful prior and harmful bias. By removing the direct context effect (bias) and preserving only the indirect context effect (helpful prior), CLEF ensures more robust emotion predictions.
 In the scope of the paper, the authors extend the pre-existing CAER architecture to capture the indirect causal effects and reduce their negative effects on prediction performance. They construct a causal graph to formulate the relationships among variables in CAER. Using the causal graph, CLEF propose a non-invasive context branch aimed at capturing the direct effects of context bias. During inference, CLEF computes both factual and counterfactual outcomes to remove the direct context effect from the total causal effect. This process ensures that the model's predictions are less influenced by biased contextual information and thus enhances emotion recognition performance.
 
-For evaluating the performance of the proposed framework, experiments are conducted on two large-scale image-based CAER datasets, including EMOTIC and CAER-S. The results for the five baseline models EMOT-Net, CAER-Net, GNN-CNN, CD-Net, and EmotiCon show that integrating CLEF increases performance across all approaches.
+For evaluating the performance of the proposed framework, experiments are conducted on two large-scale image-based CAER datasets, including EMOTIC[3] and CAER-S[4]. The results for the five baseline models EMOT-Net[3], CAER-Net[4], GNN-CNN[5], CD-Net[6], and EmotiCon[7] show that integrating CLEF increases performance across all approaches.
 
 ---
 
@@ -126,6 +126,16 @@ The implementation details provided by the authors appear to be sufficient for r
 [1] Yang, Dingkang, et al. "Robust Emotion Recognition in Context Debiasing." [arXiv:2403.05963](https://arxiv.org/abs/2403.05963)
 
 [2] Ronak Kosti, Jose M Alvarez, Adria Recasens, and Agata Lapedriza. Emotion recognition in context. In Proceedings of the IEEE/CVF Conference on computer Vision and Pattern Recognition (CVPR), pages 1667–1675, 2017. 1, 2, 3, 4, 6
+
+[3] Ronak Kosti, Jose M Alvarez, Adria Recasens, and Agata Lapedriza. Context based emotion recognition using emotic dataset. IEEE Transactions on Pattern Analysis and Machine Intelligence, 42(11):2755–2766, 2019. 1, 2, 3, 5, 6, 7, 8
+
+[4] JiyoungLee,SeungryongKim,SunokKim,JunginPark,and Kwanghoon Sohn. Context-aware emotion recognition net- works. In Proceedings of the IEEE/CVF International Con- ference on Computer Vision (ICCV), pages 10143–10152, 2019. 3,4,5,6,7,8
+
+[5] Minghui Zhang, Yumeng Liang, and Huadong Ma. Context- aware affective graph reasoning for emotion recognition. In IEEE International Conference on Multimedia and Expo (ICME), pages 151–156. IEEE, 2019. 2, 3, 6, 7
+
+[6] Zili Wang, Lingjie Lao, Xiaoya Zhang, Yong Li, Tong Zhang, and Zhen Cui. Context-dependent emotion recog- nition. Journal of Visual Communication and Image Repre- sentation, 89:103679, 2022. 2, 3, 6, 7, 8
+
+[7] Trisha Mittal, Pooja Guhan, Uttaran Bhattacharya, Rohan Chandra, Aniket Bera, and Dinesh Manocha. Emoticon: Context-aware multimodal emotion recognition using frege’s principle. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), pages 14234–14243, 2020. 1, 2, 3, 4, 6, 7
 
 # Contact
 
