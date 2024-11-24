@@ -181,7 +181,13 @@ For the original Y-channel DCT coefficients $Q_0$​,  a clipping operation is a
    \end{cases}$
 
    
-$f(Q_0^t(i,j)) = \begin{cases}1, & \text{if } |clip(Q_0(i,j))| = t, t \in [0,T] \\0, & \text{otherwise}\end{cases}$
+$$
+f(Q_0^t(i,j)) =
+\begin{cases}
+1, & \text{if } |clip(Q_0(i,j))| = t, t \in [0,T] \\
+0, & \text{otherwise}
+\end{cases}
+$$
 
    where $clip(⋅)$ is used to extract histogram features within the range $[−T,T]$, which is crucial for optimizing GPU memory usage. Based on the experimental results, T is set to 20 in the paper.
 
