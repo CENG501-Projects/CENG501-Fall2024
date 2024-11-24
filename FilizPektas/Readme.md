@@ -45,7 +45,7 @@ A recent work proposed to make a 2-level training on ERM models to improve the s
 
 This section of the paper outlines a framework for classifier learned reweighting (LRW). The basic idea is to reweight training data according to instance-specific weights in order to get better performance from a classifier on a validation dataset. Optimization of a two-level (or bi-level) objective function is used to accomplish the reweighting.
 
-Two datasets are used in the basic LRW formulation. LRW learns a classifier with parameters Î¸ and an instance-wise weighting function that minimizes the following bi-level objective given a desired loss function.
+Two datasets are used in the basic LRW formulation. LRW learns a classifier with parameters θ¸ and an instance-wise weighting function that minimizes the following bi-level objective given a desired loss function.
 
 Notations:
 
