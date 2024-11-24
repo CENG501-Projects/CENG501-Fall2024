@@ -134,6 +134,46 @@ $$
 
 Where $$ t_k = k \cdot \Delta t $$.
 
+### 3. Spatial Aggregation:
+Within each temporal bin, the events are aggregated spatially over the pixel grid to form a 2D representation. This can be done using a voxel grid representation or by creating a histogram of events at each pixel location:
+
+$$
+V_k(x, y) = \sum_{e_i \in B_k} p_i \cdot \delta(x - x_i, y - y_i)
+$$
+
+Where:
+
+- $V_k(x, y)$ is the binned value at pixel $(x, y)$ in the $k$-th time bin.
+- $\delta(x - x_i, y - y_i)$ is the Kronecker delta ensuring only events at $(x_i, y_i)$ contribute.
+
+### 4. Input Volume for the Network:
+The event bins across all time intervals are stacked to create a spatio-temporal voxel grid:
+
+$$
+V(x, y, k) = V_k(x, y), \quad k = 1, 2, \dots, N
+$$
+
+This 3D tensor $V$ (spatial dimensions $x$, $y$ and temporal dimension $k$) serves as the input to the spiking neural network.
+
+### 5. Spike Encoding:
+To feed this voxel grid into an SNN, the aggregated event values $V_k(x, y)$ are encoded as spike trains. A common approach is to use a threshold-based encoding, where a spike is generated if the value at a pixel exceeds a threshold:
+
+$$
+s(x, y, t) = 
+\begin{cases} 
+1 & \text{if } V(x, y, k) > \theta \\
+0 & \text{otherwise}
+\end{cases}
+$$
+
+Where $\theta$ is the threshold for spike generation, and $t$ corresponds to the time step within the bin.
+
+### Advantages of Event Binning:
+- **Temporal Resolution**: By dividing events into bins, temporal information is preserved, enabling the network to process motion over time.
+- **Spatial Aggregation**: Events within each bin contribute to the spatial structure, highlighting edges and patterns.
+- **Sparsity Preservation**: Only active bins (with significant event activity) contribute to the input, reducing computational overhead.
+
+
 ## Learnable Neural Dynamics
 
 Adaptive-SpikeNet also introduces learnable neural dynamics to adaptively learn the temporal patterns of events. The key aspect of this learning process is the use of **spiking neurons** that can respond to incoming events based on learned weights and synaptic dynamics.
