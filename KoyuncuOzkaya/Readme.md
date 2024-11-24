@@ -36,13 +36,16 @@ Swift-Mapping addresses these limitations with:
 
 ### Methodology Overview
 The method introduced in this paper mainly fuses the RGB data from a camera and sparse  Point Cloud data from a LiDAR through a MLP Decoder to generate a map in the
-form of octree structure. It firstly takes RGB and sparse Point Cloud data and utilizing the CompletionFormer [[2]](#2-y-zhang-x-guo-m-poggi-z-zhu-g-huang-and-s-mattoccia-completionformer-depth-completion-with-convolutions-and-vision-transformers-2023-ieeecvf-conference-on-computer-vision-and-pattern-recognition-cvpr-vancouver-bc-canada-2023-pp-18527-18536-doi-101109cvpr52729202301777) framework for depth completion to interpolate the sparse 
-depth information to generate a dense depth inputs. Next, it initialize the octree structure to generate octomap using this information, sparsly sampling the depth information along each ray
+form of octree structure. It firstly takes RGB and sparse Point Cloud data and utilizing the CompletionFormer [[2]](#2-y-zhang-x-guo-m-poggi-z-zhu-g-huang-and-s-mattoccia-completionformer-depth-completion-with-convolutions-and-vision-transformers-2023-ieeecvf-conference-on-computer-vision-and-pattern-recognition-cvpr-vancouver-bc-canada-2023-pp-18527-18536-doi-101109cvpr52729202301777) framework for depth completion to interpolate the sparse depth information to generate a dense depth inputs. 
+
+Next, it initialize the octree structure to generate octomap using this information, sparsly sampling the depth information along each ray
 and utilizing the the camera pose. After initializing the octomap, it generates the feature vectors representing the color and depth using trilinear interpolation. 
 Meanwhile, it utilizes the positional encoding to generate the feature vector representing the position of each voxel along the map. The generated color and depth feature
 vectors are combined with learnable memorization parameters to control the forgetting of the features between each frame. Generated feature vectors, including the 
 position encoding, are then concatenated to generate a single feature vector and fed into a MLP decoder, whose architecture is selected as ConvOnet architecture, with 
-5 fully-connected layers and a residual connection added to the 3rd layer. The network is trained with Photometric Loss, penalizing the loss of the RGB information, 
+5 fully-connected layers and a residual connection added to the 3rd layer.
+
+The network is trained with Photometric Loss, penalizing the loss of the RGB information, 
 and Geometric Loss, penalizing the loss of the depth information, combined. Finally, the output of the MLP decoder is used to reconstruct the dense RGBD maps, or 3D meshes are generated 
 using Marching Cubes. Moreover, MOTSFusion [[3]](#3-j-luiten-t-fischer-and-b-leibe-track-to-reconstruct-and-reconstruct-to-track-in-ieee-robotics-and-automation-letters-vol-5-no-2-pp-1803-1810-april-2020-doi-101109lra20202969183) framework is utilised to generate Moving Octree structure, modeling the dynamic environment without the need of retraining 
 the network. Generated Moving Octree can also be utilised to modify the position of the objects offline. 
