@@ -27,7 +27,7 @@ MonoATT uses adaptive tokens with irregular shapes and various sizes in order to
 1) Increasing the accuracy of both near and far objects by obtaining superior image features.
 2) Improving the time performence of the visual transformer by reducing the number of tokens in the irrelevant regions.
 
-First step of the architecture is to create a feature map by using DLA-34 as a backbone. From a monocular image which has the dimensions W x H x 3, a feature map with dimensions Ws x Hs x C is obtained where S is a hyperparameter. Then, the feature map is fed into the following modules:
+First step of the architecture is to create a feature map by using DLA-34 as a backbone. From a monocular image which has the dimensions $(W \times H \times 3)$, a feature map with dimensions $(W_s \times H_s \times C)$ is obtained where S is a hyperparameter. Then, the feature map is fed into the following modules:
 ### 2.1.1 Cluster Center Estimation (CCE)
 
 Cluster center estimation module decides the cluster centers based on the importance of the coordinates. Each region has different importance and two facts are considered to decide the importance of the region. 
@@ -39,26 +39,34 @@ To comply with the both observations, two scoring functions are purposed which a
 #### 2.1.1.1 Depth Scoring Function
 By using the pinhole camera model, in a given the camera coordinate system P, the virtual horizontal plane can be projected on the image
 plane of the camera, and by using camera instrinsic parameter K, depth of each pixel can be determined. Every point in 2D scene with the coordinates u,v can be projected to the 3D scene with x,y,z coordinates as follows;
-    x = (u - c_x) * z / f_x ;
-    y = (v - c_y) * z / f_y ;
 
-f_x and f_y represent the focal lengths in pixels along the axes and c_x and c_y are the possible displacement between the image center and the foot point. All those parameters are included in the camera intrinsic parameters which is called K. From the equation 2;
-    z = (f_y * y) / (v - c_y); 
-If elevation of the camera from the ground is assumed to be known and called H, the equation becomes;
-    z = (f_y * H*) / (v - c_y); 
-Note that mean height of all vehicles in the KITTI dataset is 1.65m. Since the equation 3 is not continious and the result may be negative, the following depth scoring function is used;
-    S_d = -ReLU(B * (v - c_y) / f_y * H) where B is a constant. 
+$x_{3d} = \frac{u - c_x}{f_x} \hat{z}, \quad y_{3d} = \frac{v - c_y}{f_y} \hat{z}$
+
+f_x and f_y represent the focal lengths in pixels along the axes and c_x and c_y are the possible displacement between the image center and the foot point. All those parameters are included in the camera intrinsic parameters which is called K. From the equation 2:
+
+$z = \frac{f_y \times y}{v - c_y}$
+
+If elevation of the camera from the ground is assumed to be known and called H, the equation becomes:
+
+$z = \frac{f_y * H}{v - c_y}$
+
+Note that mean height of all vehicles in the KITTI dataset is 1.65m. Since the equation 3 is not continuous and the result may be negative, the following depth scoring function is used:
+
+$S_d = -\text{ReLU}\left(B \frac{v - c_y}{f_y \cdot H}\right)$ , where B is a constant. 
 
 #### 2.1.1.2 Semantic Scoring Function
 For the semantic scoring function, a neural network is used to detect the keypoints from the images. A regression branch is added to the CenterNet. 
-    S_s = f(H) where H is the input image feature obtained from the DLA-34 and f is the CNN architecture. 
+    $S_s = f(H)$ where H is the input image feature obtained from the DLA-34 and f is the CNN architecture. 
 
 Total score is calculated as;
-    S = S_d + \alphaS_s where \alpha is a hyperparameter.
+    $S = S_d + \alpha S_s$ where $\alpha$ is a hyperparameter.
 
 The loss of point detection is calculated as;
-    L_CCE = FL(g^m(u_t, v_t), S) where FL is the Focal Loss, (ut , vt ) is the ground truth key point coordinate, g^m is the mapping function which turns m point coordinates
-into heatmap.
+
+$\mathcal{L}_{\text{CCE}} = \text{FL}\left(\mathbf{g}^m(\mathbf{u}_t, \mathbf{v}_t), \mathbf{S}\right)$
+
+where FL is the Focal Loss, $(\mathbf{u}_t, \mathbf{v}_t)$ is the ground truth key point coordinate, $\mathbf{g}^m$ is the mapping function which turns m point coordinates into heatmap.
+
 After scoring is done for the whole feature map, mean value of each pixel score within a token is taken as the importance of the token. For the token clustering, a cluster center token is chosen which has the highest average score. In some stages, there may be more than one cluster center required. In that case, at each iteration, nth cluster center is chosen among the clusters which has the highest ranking.
 
 ### 2.1.2 Adaptive Token Transformer (ATT)
@@ -70,7 +78,8 @@ As shown in the Figure XX, ATT loops N stages where at every stage first outline
 #### 2.1.2.1 Outline-preferred Token Grouping
 To avoid local feature correlation, clustering based on the spatial distance is not reasonable. A variation of nearest neighbor algorithm is used. The algorithm considers feature similarity along with the image distance while clustering. 
 
-Eq 7 gelecek buraya.
+$\delta_i = \min_{j : \mathbf{x}_j \in \mathbf{X}_c} \left( \lVert \mathbf{x}_i - \mathbf{x}_j \rVert_2^2 - \beta \lVert \mathbf{g}^l(\mathbf{x}_i) - \mathbf{g}^l(\mathbf{x}_j) \rVert_2^2 \right)$
+
 The equation states that, for every point each cluster center is looped. Feature similarity and spatial distances are considered and balance between them is controlled by \Beta. Minimum value of a point against a cluster means that, the most appropriate value for the cluster is found.
 
 #### 2.1.2.2 Attention-based Feature Merging
