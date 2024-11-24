@@ -1,6 +1,5 @@
 # Inspecting Prediction Confidence for Detecting Black-Box Backdoor Attacks
 
-This readme file is an outcome of the CENG501 (Spring 2024) project for reproducing a paper without an implementation. See CENG501 (Spring 42) Project List for a complete list of all paper reproduction projects.
 
 # 1. Introduction
 This project is based on the findings from the paper "Inspecting Prediction Confidence for Detecting Black-Box Backdoor Attacks," presented at the Thirty Eighth AAAI Conference on Artificial Intelligence. The study by Tong Wang and colleagues introduces DTINSPECTOR, a defense strategy against the severe threat of backdoor attacks in deep learning models. These attacks manipulate model predictions by secretly altering training data, it is a vulnerability that DTINSPECTOR counters by examining prediction confidence anomalies.
