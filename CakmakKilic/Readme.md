@@ -1,14 +1,41 @@
 # FIGHTING OVER-FITTING WITH QUANTIZATION FOR LEARNING DEEP NEURAL NETWORKS ON NOISY LABELS
 
-This readme file is an outcome of the [CENG501 (Spring 2024)](https://ceng.metu.edu.tr/~skalkan/DL/) project for reproducing a paper without an implementation. See [CENG501 (Spring 42) Project List](https://github.com/CENG501-Projects/CENG501-Fall2024) for a complete list of all paper reproduction projects.
-
 # 1. Introduction
 
-An increase of the computation power let to emergence of computationally complex neural networks. These neural networks require large amount of annotated data. Collecting such amount of annotated data without noisy labels are very costly. Therefore, techniques to cope with noisy labeled annotated data are required. In this paper, it is suggested that by restricting the expressivity of the neural network, accuracy of the network that is trained with noisy labeled data can be increased. The expressivity of the neural network can be restricted by using classical regularization and compression techniques. It is claimed that these techniques are not tested with noisy labels.
+The paper titled "Fighting Over-Fitting with Quantization for Learning Deep Neural Networks on Noisy Labels" was authored by Gauthier Tallec, Édouard Yvinec, Arnaud Dapogny, and Kevin Bailly. It was published in the 2023 IEEE International Conference on Image Processing (ICIP) and investigates how quantization-aware training can reduce overfitting in deep neural networks trained on noisy labels while simultaneously improving inference efficiency.
+
+Project goal is to replicate the experiments described in the paper, evaluate the impact of regularization and quantization on noisy datasets CIFAR-10 and BP4D and compare quantization's effectiveness against other regularization techniques and baseline.
 
 ## 1.1. Paper summary
 
-@TODO: Summarize the paper, the method & its contributions in relation with the existing literature.
+## 1.1.1 Motivation and Aim
+
+The increase in computational power has led to the emergence of highly complex neural networks. These networks require large amounts of annotated data for training. However, collecting such data without noisy labels is often very costly. As a result, techniques to handle noisy labeled data are essential. This paper suggests that restricting the expressivity of a neural network can improve its accuracy when trained on noisy labeled data. Expressivity can be restricted using classical regularization and compression techniques. The authors claim that the effectiveness of these techniques has not been thoroughly tested on noisy labels.
+
+## 1.1.2 Techniques 
+
+Two main techniques are used to fight the overfitting problem on noisy labels:
+- Regularization Methods: Early stopping, weight decay, dropout, and label smoothing
+- Compression Techniques: Quantization and pruning.
+
+## 1.1.3 Datasets
+
+Cifar10 and BP4D data sets are used in this paper. 
+- Cifar10 is used with synthetic noisy labels. This allows to test regularization and quantization techniques for different noisy labels.
+- BP4D dataset is used for facial Action Unit (AU) detection and contains inherently noisy annotations due to the complexity of labeling facial expressions. It is usedd as a benchmark for evaluating the techniques under real-world noisy labeling conditions.
+
+## 1.1.4 Models
+
+In this paper two models are used.
+- ResNet-20: A residual network architecture is used for the CIFAR-10 dataset to test the impact of synthetic label noise.
+- Vanilla Architecture for AU Detection: This model is used for the BP4D dataset to test performance under real-world noisy annotations.
+
+## 1.1.5 Findings and Conclusion of the Paper
+
+- Both regularization and quantization effectively combat overfitting on noisy labels by improving the accuracy of the models.
+- Quantization performs better than traditional regularization methods at reducing overfitting on noisy datasets and also makes inference faster.
+- CIFAR-10 Results: Quantization achieves the best accuracy under synthetic label noise for noise levels up to 40%.
+- BP4D Results: On real-world noisy labels, quantization improves the average F1 score significantly compared to other methods while reducing performance variability across tasks.
 
 # 2. The method and our interpretation
 
