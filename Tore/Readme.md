@@ -76,13 +76,123 @@ Spectra of weight perturbations are plotted, showing the normalized singular val
 
 ## 2.2. Our interpretation
 
-@TODO: Explain the parts that were not clearly explained in the original paper and how you interpreted them.
+Although the paper defines the experimental setting in detail, some of the things need to be clarified.
+
+The paper does not specify whether exact rank or stable rank is used. Both are computed for robustness.
+Imagenet set used is not specified in the paper, due to dataset size consideration Hugginface Imagenet 1000k set will be used in our analysis.
+
+1. Definition of Incremental Stages
+
+Original Paper:
+The paper describes incremental learning stages where the rank of the weight update matrix increases by at most one during each stage. However:
+It does not clearly define how to identify the start and end of a stage in empirical settings.
+The theoretical framework relies on gradient flow (an idealized version of optimization), but it is unclear how to relate this to stochastic gradient descent (SGD) or Adam in practice.
+Interpretation:
+Stage Detection:
+
+Empirically, a "stage" is inferred by tracking the rank of the perturbation matrix  over iterations. A sharp increase in rank suggests the end of one stage and the start of another.
+Loss plateaus, as described in the theory, may also indicate stages, but these are not explicitly linked to rank changes in the experiments.
+Gradient Flow Approximation:
+Treat SGD/Adam as approximating gradient flow but introduce noise due to stochastic updates. Rank growth patterns are expected to remain qualitatively similar despite these differences.
+
+2. Experimental Design Details
+
+Original Paper:
+The experiments lack detailed descriptions of:
+Training settings (e.g., batch size, learning rate, optimizer parameters).
+Specific iterations or checkpoints used for analyzing rank changes.
+Interpretation:
+Training Settings:
+Use standard practices for Vision Transformers:
+Optimizer: Adam with learning rate 10^−4$.
+Batch size: 32.
+Number of iterations: Up to 50,000 (track at key points like 1, 10, 50, etc.).
+Adjust hyperparameters to align with the size of CIFAR-10 or ImageNet datasets.
+Iteration Tracking:
+Track weight updates and perturbations at predefined iterations, as these are likely points used in the paper (e.g., 1, 10, 50, 100, etc.).
 
 # 3. Experiments and results
 
 ## 3.1. Experimental setup
 
-@TODO: Describe the setup of the original paper and whether you changed any settings.
+The paper investigates incremental rank growth in transformer models using two complementary approaches: a simplified theoretical setup and experiments on practical transformer models.
+
+1. Simplified Theoretical Setup
+Goal: Prove incremental learning dynamics under idealized conditions.
+Model Assumptions:
+Diagonal Weights: Attention head weights $(𝑊_𝐾,𝑊_𝑄,𝑊_𝑉,𝑊_𝑂)$ are diagonal matrices.
+Small Initialization: Weights are initialized close to zero (∼O(α), where 𝛼≪1.
+Training Assumptions:
+Training is modeled using gradient flow dynamics:
+$𝑑𝜃𝑑𝑡=−∇_𝜃 𝐿(𝜃)$
+Loss plateaus during most of each stage, and the rank of weight updates increases by at most one at the end of each stage.
+
+3. Practical Experimental Setup
+Models:
+
+Vision Transformer (ViT) trained on CIFAR-10, CIFAR-100, and ImageNet.
+GPT-2 trained on Wikitext-103.
+Training Configuration:
+
+Optimizer: Adam with standard parameters.
+Loss Function: Cross-Entropy Loss.
+Datasets:
+CIFAR-10/CIFAR-100 resized to 
+224
+×
+224
+224×224 for ViT input.
+ImageNet for ViT.
+Wikitext-103 for GPT-2.
+Layer Selection: Focused on specific attention heads (e.g., 
+$𝑊_𝐾 𝑊_𝑄^⊤$).
+Rank Analysis:
+
+The rank of the weight perturbation matrix 
+$Δ 𝑊 =𝑊_{trained} −𝑊_{initial}$ is tracked over iterations.
+Singular Value Decomposition (SVD) is used to compute spectra and stable rank.
+Visualization:
+
+Normalized spectra of weight perturbations are plotted at initialization and during training (e.g., Figure 1).
+Changes to the Setup
+While aiming to replicate the original results, some adjustments were made to fill in missing details or adapt the setup:
+
+1. Theoretical Setup Adjustments
+Gradient Flow:
+Direct implementation of gradient flow (𝑑𝜃𝑑𝑡) is infeasible in standard deep learning libraries, so stochastic gradient descent (SGD) or Adam is used as an approximation.
+
+Diagonal Weights:
+Practical transformers do not use diagonal weights. Instead, their full matrices are analyzed.
+
+Initialization:
+To mimic small initialization, initial weights are scaled by a factor ($α∼10^{−2}$) before training.
+2. Practical Setup Adjustments
+Datasets:
+
+CIFAR-10 is used primarily due to computational constraints. CIFAR-100 and ImageNet are omitted in some experiments.
+Image resolution is adjusted to 224×224 for ViT input.
+
+Model:
+
+A smaller ViT configuration (e.g., fewer attention heads or layers) is used to reduce computational requirements.
+
+Iterations for Analysis:
+
+Perturbation analysis is conducted at predefined checkpoints (e.g., 1, 10, 50, 100 iterations) instead of continuous tracking.
+Layer Focus:
+
+Attention heads in the first layer (‘vit.encoder.layer.0.attention‘) are analyzed as a representative case, instead of tracking all layers.
+3. Analysis Adjustments
+
+Rank Calculation:
+The paper does not specify whether exact rank or stable rank is used. Both are computed for robustness:
+Exact Rank: Based on the count of non-zero singular values.
+Stable Rank: Stable Rank $=∥𝑊∥_𝐹^2/∥𝑊∥_2^2$.
+
+Normalization:
+
+Singular values are normalized relative to the largest singular value to align with the visualizations in the paper.
+
 
 ## 3.2. Running the code
 
@@ -102,4 +212,4 @@ Spectra of weight perturbations are plotted, showing the normalized singular val
 
 # Contact
 
-@TODO: Provide your names & email addresses and any other info with which people can contact you.
+Nurşen Töre email:nursen.tore@metu.edu.tr
