@@ -1,20 +1,78 @@
-# @TODO: Paper title
+# Transformers learn through gradual rank increase
 
 This readme file is an outcome of the [CENG501 (Spring 2024)](https://ceng.metu.edu.tr/~skalkan/DL/) project for reproducing a paper without an implementation. See [CENG501 (Spring 42) Project List](https://github.com/CENG501-Projects/CENG501-Fall2024) for a complete list of all paper reproduction projects.
 
 # 1. Introduction
 
-@TODO: Introduce the paper (inc. where it is published) and describe your goal (reproducibility).
+The paper titled "Transformers Learn Through Gradual Rank Increase" by Enric Boix-Adserà, Etai Littwin, Emmanuel Abbe, Samy Bengio, and Joshua Susskind was published on arXiv (2306.07042v2) on December 12, 2023. It is part of Advances in Neural Information Processing Systems 36 (NeurIPS 2023) Main Conference Track. It explores the training dynamics of transformer models, focusing on the phenomenon of incremental learning where the rank of the difference between trained and initial weights increases gradually during training. This dynamic is rigorously analyzed in a simplified theoretical setting and supported by experiments on practical transformer architectures, including Vision Transformers (ViTs) trained on datasets like CIFAR-10 and ImageNet.
+The paper demonstrates that transformers exhibit low-rank bias in weight updates, even in practical settings, without explicitly enforcing it. These findings could improve our understanding of why transformers are so effective and help optimize methods like LoRA (Low-Rank Adaptation).
+
+The goal of this work is to reproduce the key results of the paper, ensuring that the experimental findings are accurate and replicable. This involves:
+1.	Simulating Simplified Incremental Learning Dynamics: Reproducing the theoretical setup with diagonal weight matrices and verifying the incremental rank increase under small initialization.
+2.	Training Practical Transformer Models:Training Vision Transformers (ViTs) on datasets like CIFAR-10 and ImageNet. Monitoring the rank of weight perturbations (e.g., $W_K W_Q^⊤$) at different iterations during training.
+3.	Visualizing Results:Generating spectra plots similar to those in the paper, showing the normalized spectra of weight perturbations across iterations.
+By successfully replicating the results, we aim to verify the claims in the paper and provide a foundation for further exploration into training dynamics and their implications for model efficiency.
 
 ## 1.1. Paper summary
 
-@TODO: Summarize the paper, the method & its contributions in relation with the existing literature.
+The paper investigates the incremental learning dynamics of transformer models, where the rank of the difference between trained and initial weights increases progressively during training. The authors present both theoretical insights and empirical evidence to support their findings, shedding light on the structured nature of transformer training dynamics.
 
+The authors simplify the transformer model by assuming diagonal weight matrices for attention layers and small initialization.
+They prove that training proceeds in stages, where weights plateau near a saddle point for most of a stage. At the end of each stage, the rank of weight updates increases by at most one. These findings are derived using gradient flow dynamics and extend existing theories from simpler, linear networks to nonlinear transformer models.
+
+The model contributes the literature in theoretical and empirical result related to how transformers work. The paper identifies and rigorously analyzes the incremental rank growth during transformer training, previously unexplored in nonlinear attention-based models. It extends theories of incremental learning and low-rank bias from simpler linear networks to more complex nonlinear architectures, such as transformers. In empirical side, the paper demonstrates that incremental rank growth occurs in practice for models trained with standard optimizers (e.g., Adam), even when theoretical assumptions (e.g., diagonal weights) do not apply. They link their findings to LoRA, a fine-tuning method that constrains weight updates to low-rank subspaces, suggesting that the incremental dynamics observed in this work might explain LoRA's efficiency.
 # 2. The method and our interpretation
 
 ## 2.1. The original method
 
-@TODO: Explain the original method.
+The paper explores the incremental learning dynamics of transformers, describing how weight updates evolve in a structured, stage-wise manner during training. The method is a blend of theoretical analysis for simplified transformers and empirical validation on real-world models.
+
+1. Simplified Theoretical Framework
+The authors analyze transformer training dynamics under two simplifying assumptions:
+
+Diagonal Weights: Each attention head’s weight matrices (
+$𝑊_𝐾 , 𝑊_𝑄 , 𝑊_𝑉 , 𝑊_𝑂$ ) are diagonal.
+Small Initialization: Weights are initialized with very small values (∼𝑂(𝛼), where 𝛼≪1).
+Using these assumptions, they derive:
+
+Discrete Stages in Training:
+
+Training progresses in stages. During each stage:
+Weights plateau near a saddle point for most of the time.
+At the end of the stage, the rank of the weight update 
+$Δ𝑊=𝑊_{trained}−𝑊_{initial}$ increases by at most one.
+Key Results:
+
+For the simplified diagonal transformer:
+$𝑊_𝐾 𝑊_𝑄^⊤$  and $𝑊_𝑉 𝑊_𝑂^⊤$ incrementally increase in rank by one at the end of each stage.
+These dynamics generalize to nonlinear networks, extending prior works focused on linear models.
+
+Mathematical Formulation:
+
+The method uses gradient flow to track the evolution of weights:
+
+$𝑑𝜃𝑑𝑡=−∇_𝜃 𝐿(𝜃)$
+Analysis reveals that weight updates are biased toward low-rank solutions, and rank increases step-by-step as the model escapes saddle points.
+
+2. Empirical Validation in Real Transformers
+
+The authors apply their theoretical insights to practical transformers, such as Vision Transformers (ViTs), and measure the dynamics of weight perturbations during training.
+
+Training Real Transformers:
+
+Models are trained on datasets like CIFAR-10 and ImageNet using standard optimizers (e.g., Adam).
+The weight perturbations $Δ𝑊=𝑊_{trained}−𝑊_{initial}$​ are tracked for attention layers.
+
+Analyzing Rank Growth:
+
+The rank of the perturbation matrix $𝑊_𝐾 𝑊_𝑄^⊤$ is computed at multiple iterations using singular value decomposition (SVD):
+
+Rank(𝑊)=number of non-zero singular values of 𝑊
+
+Results show a gradual increase in rank during training, consistent with theoretical predictions.
+Normalization and Spectra Analysis:
+
+Spectra of weight perturbations are plotted, showing the normalized singular values at initialization and at various training stages.
 
 ## 2.2. Our interpretation
 
