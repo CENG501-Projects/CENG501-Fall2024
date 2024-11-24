@@ -402,22 +402,9 @@ The dual loss paradigm enables Adaptive-SpikeNet to handle diverse datasets:
 - **Real-World Datasets (Self-Supervised)**: Leverages unsupervised learning techniques for datasets lacking ground truth, making the method versatile for real-world applications.
 
 
-# Event-Based Optical Flow Estimation Using Spiking Neural Networks
+### Training and Optimization Event-Based Optical Flow Estimation Example
 
-This repository contains an implementation of **event-based optical flow estimation** using **spiking neural networks** (SNNs) with learnable neural dynamics. The model leverages the adaptive-spike mechanism, which is particularly suited for processing event-based data.
-
-## Overview
-
-Optical flow estimation typically involves calculating the motion of objects between consecutive frames of video. In the context of event-based cameras, such as the **Dynamic Vision Sensor (DVS)**, each pixel generates events asynchronously when there is a change in the scene. These events provide rich temporal information that can be used for tasks like optical flow estimation, especially in dynamic or low-light environments.
-
-This approach utilizes **spiking neural networks** to predict optical flow by leveraging the asynchronous nature of event data.
-
-## Requirements
-
-- Python 3.7+
-- TensorFlow 2.x
-- Numpy
-- Matplotlib
+To better comprehend the algorithm, let us give an example and explain the procedure on this example. This example demonstrates how event data is collected, and converted into a usable spike format, and how loss is calculated. We work through a 3×3 pixel frame over 3 timestamps. The steps are explained systematically.
 
 ## Step-by-Step Procedure
 
