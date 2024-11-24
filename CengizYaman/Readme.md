@@ -59,6 +59,10 @@ Auxiliary OOD datasets may be larger than the ID dataset, and using all OOD samp
 
 3. As the energy scores $S_i$ are used for OOD detection, the same scores are also used for sample selection. Given our choice of loss functions $L_S$ and $L_{\Delta S}$, samples with smallest energy scores of each cluster are selected for the former, and samples with the largest energy scores are selected for the latter. Intuitively, $L_S$ aims to increase energy scores of OOD samples, and $L_{\Delta S}$ aims to penalize the gradients for OOD samples with sufficiently large energy scores.
 
+![Pseudocode for the energy-based sampling algorithm](./Figures/SamplingPseudocode.png)
+
+**Pseudocode of the energy-based sampling algorithm**
+
 Overall, clustering is used to make the model exposed to diverse regions of the feature space, and sampling is used to select the most informative samples from these clusters.
 
 ## 2.2. Our interpretation
