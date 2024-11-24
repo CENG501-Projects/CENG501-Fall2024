@@ -4,7 +4,7 @@ This readme file is an outcome of the [CENG501 (Spring 2024)](https://ceng.metu.
 
 # 1. Introduction
 
-@TODO: Introduce the paper (inc. where it is published) and describe your goal (reproducibility).
+An increase of the computation power let to emergence of computationally complex neural networks. These neural networks require large amount of annotated data. Collecting such amount of annotated data without noisy labels are very costly. Therefore, techniques to cope with noisy labeled annotated data are required. In this paper, it is suggested that by restricting the expressivity of the neural network, accuracy of the network that is trained with noisy labeled data can be increased. The expressivity of the neural network can be restricted by using classical regularization and compression techniques. It is claimed that these techniques are not tested with noisy labels.
 
 ## 1.1. Paper summary
 

@@ -154,7 +154,14 @@ The paper only focuses on Y-channel DCT map since it is more sensitive to human 
 
 The model computes $(k+1)th$ recompression coefficients through sequential operations:
 
-![](equation.jpg)
+$$
+\begin{cases}
+D_{k} = Q_{k} \odot q \\
+B_{k} = \text{IDCT}(D_{k}) \\
+I_{k+1} = \text{RT}(B_{k}) \\
+Q_{k+1} = [\text{DCT}(I_{k+1}) \oslash q]
+\end{cases}
+$$
 
    Where:
    - $D_k$: De-quantized DCT coefficients
@@ -166,23 +173,19 @@ The model computes $(k+1)th$ recompression coefficients through sequential opera
    - $RT(\cdot)$: Rounding and truncation
    - $k = 7$ (determined in the experiments of the official paper)
 
-Then, residual de-quantized coefficients after k compressions defined as: $
-   R = \frac{1}{k}\sum_{i=1}^{k}(Q_i - Q_{i-1})
-   $
+Then, residual de-quantized coefficients after k compressions defined as:  $R = \frac{1}{k}\sum_{i=1}^{k}(Q_i - Q_{i-1})$
 
-For the original Y-channel DCT coefficients $Q_0$​,  a clipping operation is applied with a threshold value T. Following this, the coefficients are converted into a binary volume. This binary conversion is represented as 
-   $
-   f: Q_0^{H\times W} \rightarrow \{0,1\}^{(T+1) \times H \times W}
-   $
+For the original Y-channel DCT coefficients $Q_0$​,  a clipping operation is applied with a threshold value T. Following this, the coefficients are converted into a binary volume. This binary conversion is represented as $f: Q_0^{H\times W} \rightarrow \{0,1\}^{(T+1) \times H \times W}$
    
    Research by Yousfi and Fridrich (2020) demonstrated that this conversion method effectively captures the correlation between individual coefficients in the DCT histogram. Accordingly, the DCT coefficients $Q_0$​ are transformed into binary volumes as follows:
-
-   $
-   f(Q_0^t(i,j)) = \begin{cases}
-   1, & \text{if } |clip(Q_0(i,j))| = t, t \in [0,T] \\
-   0, & \text{otherwise}
-   \end{cases}
-   $
+   
+$$
+f(Q_0^t(i,j)) =
+\begin{cases}
+1, & \text{if } |clip(Q_0(i,j))| = t, t \in [0,T] \\
+0, & \text{otherwise}
+\end{cases}
+$$
 
    where $clip(⋅)$ is used to extract histogram features within the range $[−T,T]$, which is crucial for optimizing GPU memory usage. Based on the experimental results, T is set to 20 in the paper.
 

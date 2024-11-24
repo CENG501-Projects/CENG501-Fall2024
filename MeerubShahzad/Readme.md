@@ -13,7 +13,7 @@ The paper "Inspecting Prediction Confidence for Detecting Black Box Backdoor Att
 
 **•	Extensive Evaluation:** The paper explains extensive evaluations of DTINSPECTOR against several types of backdoor attacks in different datasets, it demonstrates superior performance in identifying trojaned models and infected labels compared to the existing defenses like Neural Cleanse (NC), ABS, and others.
 ### 1.1.2.	Relation to Existing Literature:
-The method proposes advanced traditional defenses that generally detect small sized triggers or analyze neuron activation patterns, which can fail against complex backdoor strategies. Notably, DTINSPECTOR’s ability to adapt to unseen attacks and its robustness against varying trigger configurations stand out as significant improvements over previous methods.
+The method proposes advanced traditional defenses that generally detect small sized triggers or analyze neuron activation patterns, which can fail against complex backdoor strategies. DTINSPECTOR’s ability is to adapt to unseen attacks. Its robustness against varying trigger configurations stand out as significant improvements over previous methods.
 
 
 ### 1.1.3.	Methodology:
@@ -46,7 +46,7 @@ This paper introduces DTINSPECTOR, a novel defense mechanism designed to detect 
 ![image](https://github.com/user-attachments/assets/056800fe-7c0f-4f80-bb8e-3af693c0e643)
 
 ### 4.1.2. Patch Learning and Application
-**o	Patch Design:** A specific patch δ is designed using only the high confidence samples. This patch is desired to shift the model's predictions from the current label to any other label.
+**o	Patch Design:** A specific patch δ is designed using only the high confidence samples. This patch shift the model's predictions from the current label to other label.
 
 **o	Objective Function:** The patch is optimized through an objective function stated as: 
 
@@ -56,15 +56,15 @@ This paper introduces DTINSPECTOR, a novel defense mechanism designed to detect 
 
 These pictures shows examples of the learned patches and how they alter the data samples.
 ### 4.1.3. Transfer Ratio Computation and Anomaly Detection
-**o	Patch Application:** The learned patch is applied to the low confidence samples, and the change in prediction labels is monitored.
+**o	Patch Application:** The learned patch is applied to the low confidence samples. And then the change in prediction labels is monitored.
 
 **o	Transfer Ratio:** The transfer ratio is calculated as the proportion of low confidence samples whose labels have been changed due to the patch application.
 
 **o	Anomaly Detection:** Anomalies in the transfer ratios are analyzed to identify labels that depicts notably different behaviors, consequently it suggests potential backdoor manipulation.
 ### 4.1.4.	Effectiveness and Validation
-This methodology is validated empirically through enormous tests among multiple datasets and attack scenarios. The effectiveness of defense is gauged by its ability to maintain high model accuracy while identifying and mitigating backdoor influences.
+This methodology is validated empirically through large tests among multiple datasets and attack. The effectiveness of defense is secred by its ability to maintain high model accuracy. This is done while identifying and mitigating backdoor influences.
 
-This methodology ensures a robust defense against enormous backdoor attacks by focusing on the atypical prediction confidences induced by such attacks, providing a significant enhancement in security measures for deep learning models. The detailed and iterative approach of DTINSPECTOR, from data sampling to anomaly detection, offers a comprehensive defense strategy that is adaptable to various attack complexities.
+This ensures a good defense against enormous backdoor attacks. It do it  by focusing on the atypical prediction confidences induced by such attacks, providing a significant enhancement in security measures for deep learning models. The detailed and iterative approach of DTINSPECTOR  include data sampling to anomaly detection. It offers a  defense strategy that is adaptable to a lot of attack complexities.
 ## 4.2.  Our Interpretation of Methodology
 ### 4.2.1.	Data Segregation and Sampling:
 The paper mentions sorting data by prediction confidence and selecting high and low-confidence samples. But the exact criteria for these selections were not detailed. In our interpretation, we decided to determine the thresholds for high and low confidence. These threshold values will be based on standard deviation metrics from the overall dataset confidence distribution. It will select the most extreme cases that will reveal signs of potential tampering.
@@ -78,19 +78,19 @@ The concept of transfer ratio was clear, but its application in a varied dataset
 In the paper, validation approach focus on empirical tests without much mention of cross-validation or other statistical validation techniques. Our approach will inlcude a cross-validation framework to robustly assess the DTINSPECTOR's performance across different data partitions and enhancing the reliability of the validation results.
 # 5. Experiments and results
 ## 5.1 Original Experimental Setup:
-**o	Datasets Used:** The original study utilized commonly studied datasets like CIFAR10, GTSRB, ImageNet, and PubFig, chosen for their relevance and challenge for the AI community.
+**o	Datasets Used:** The original study use common studied datasets like CIFAR10, GTSRB, ImageNet, and PubFig. They are chosen for their relevance and challenge for the AI community.
 
 **o	Model Configurations:** Number of models, such as convolutional networks and ResNets, were tailored  specific to each dataset.
 
 **o	Backdoor Attacks:** This paper evaluated the defense against six black box backdoor attacks, it showcases the robustness of DTINSPECTOR.
 ## 5.2	Adaptations and Changes for My Project:
-**o	Dataset Selection:** Given the computational constraints, I will focuse on CIFAR10 and GTSRB only. These datasets are smaller and more manageable but they still provide a robust testing ground for backdoor defense mechanisms.
+**o	Dataset Selection:** Given the computational constraints We will focuse on CIFAR10 and GTSRB only. These datasets are smaller and manageable. But they still provide testing ground for backdoor defense mechanisms.
 
-**o	Model Simplification:** Since the original paper can use complex architectures, I will use simple versions of neural networks that require less computational power, they are equally effective for understanding and demonstrating defense mechanisms against backdoor attacks.
+**o	Model Simplification:** Since the original paper can use complex architectures we will use simple versions of neural networks that require less computational power. They are equally effective for understanding and demonstrating defense mechanisms against backdoor attacks.
 
-**o	Limited Attack Types:** Instead of six different backdoor attacks, I  will concentrate on two only. The BADNET and TROJANNN. These attacks are well documented and more easy to replicate for an undergraduate project, they allow a focused approach on testing and understanding the effectiveness of defense.
+**o	Limited Attack Types:** Instead of six different backdoor attacks, we  will concentrate on two only. The BADNET and TROJANNN. These attacks are well documented and more easy to replicate. They allow the testing and understanding the effectiveness of defense.
 ## 5.3 Experimental Validation:
-To validate the effectiveness of my implementation of DTINSPECTOR, I will follow a similar method to the original method but with the simplifications. This involve measuring the attack success rate (ASR) and comparing it to the accuracy of the model.
+To validate the effectiveness of my implementation of DTINSPECTOR we will follow a similar method to the original method but with the simplifications. This involve measuring the attack success rate (ASR). Then compare to the accuracy of the model.
 
 
 
