@@ -8,7 +8,14 @@ This readme file is an outcome of the [CENG501 (Spring 2024)](https://ceng.metu.
 
 ## 1.1. Paper summary
 
-@TODO: Summarize the paper, the method & its contributions in relation with the existing literature.
+MonoATT is an online Mono3D framework designed for accurate 3D object detection from a single camera input. It specifically targets mobile devices where computational power is limited and response time is critical, such as in autonomous driving applications. The rising success of transformers in NLP in the recent years has also sparked a trend of trials to integrate them into existing visual domains such as 3D object detection. Similar to the other Mono3D methods, MonoATT utilizes transformers but also a custom      multi-step procedure.
+
+Traditionally, Mono3D frameworks employ homogeneous grid-based vision tokens which presented two main issues: If a coarse grid is used, distant and small objects cannot be detected accurately enough. On the contrary, if a fine grid is used, increased computational complexity makes it quite a challenge to run on mobile applications. Recent works such as MonoDTR [x] and MonoDETR [x] have shown significant progress in monocular 3D object detection; however, their utilization of homogeneous grids leads to the mentioned problem. MonoATT addresses these challenges with a novel approach called Adaptive Token Transformer (ATT) by using heterogeneous grids. This method assigns finer tokens to regions of the image that contain critical information (such as cars, pedestrians and bicycles), and coarser tokens to less important areas (sky, buildings and so on). This token distribution is based on these "keypoints", which are dynamically identified and prioritized by the framework.
+
+A multi-stage process is designed to implement this approach. First, a scoring network assesses parts of images to identify keypoints. These scores are determined by semantic information (importance for the context) and depth estimation (to emphasize far objects more than near ones). The results of the network is used for the subsequent clustering of tokens. Secondly, these tokens are merged using an attention mechanism that considers both feature similarities and spatial relationships to optimize the allocation of computational resources and improve detection accuracy. Finally, a pixel-level "enhanced" feature map is reconstructed from the heterogeneous tokens for effective and accurate 3D object detection. This feature map is rebuilt and upsampled so that it can work with existing Mono3D detectors, such as GUPNet [x].
+
+Experimental results on the KITTI 3D dataset demonstrate that MonoATT significantly outperforms existing methods, offering improvements in detection accuracy for both near and far objects while maintaining low latency suitable for real-time applications. The paper concludes by acknowledging the framework's potential for further optimization, particularly in refining the efficiency of the token clustering process and improving the robustness of the scoring network against semantic noise.
+
 
 # 2. The method and our interpretation
 
