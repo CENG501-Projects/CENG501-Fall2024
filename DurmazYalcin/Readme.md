@@ -526,6 +526,125 @@ L_{smoothness} = \frac{1}{N} \sum \left( | \nabla û(x, y) | + | \nabla v̂(x, 
 
 Where \( \nabla û \) and \( \nabla v̂ \) are the gradients of the predicted optical flow in the \( x \) and \( y \) directions, respectively.
 
+## Step 1: Warp Event Frame Using Predicted Flow
+
+In this step, we warp one event frame (Bin 1) to another (Bin 2) using the predicted optical flow. The process involves the following:
+
+### 1.1 Predicted Optical Flow for Each Pixel
+
+For each pixel in the event frame, the predicted optical flow is provided as `(u^, v^)`, where `u^` is the horizontal displacement and `v^` is the vertical displacement:
+
+| Pixel (x, y) | Predicted Flow (u^, v^) |
+|--------------|-------------------------|
+| (0, 0)       | (0.2, 0.1)              |
+| (1, 1)       | (0.0, -0.2)             |
+| (2, 2)       | (0.1, 0.3)              |
+
+### 1.2 Event Frames for Bin 1 and Bin 2
+
+- **Bin 1 (t = [0, 0.1])**:
+[ +1 0 0 0 -1 0 0 0 0 ]
+
+- **Bin 2 (t = [0.1, 0.2])**:
+[ 0 0 0 +1 0 0 0 0 +1 ]
+
+vbnet
+Kodu kopyala
+
+### 1.3 Warping Bin 1
+
+The new position `(x', y')` for each pixel after warping is calculated using the formula:
+
+\[
+(x', y') = (x + u^, y + v^)
+\]
+
+For example:
+
+- Pixel (0, 0) with predicted flow (0.2, 0.1) gives a new position of (0.2, 0.1), which rounds to (0, 0).
+- Pixel (1, 1) with predicted flow (0.0, -0.2) gives a new position of (1.0, 0.8), which rounds to (1, 1).
+- Pixel (2, 2) with predicted flow (0.1, 0.3) gives a new position of (2.1, 2.3), which rounds to (2, 2).
+
+Thus, the **Warped Bin 1** frame becomes:
+[ 0 -1 0 0 0 0 0 0 +1 ]
+
+vbnet
+Kodu kopyala
+
+## Step 2: Calculate Photometric Loss
+
+The photometric loss is calculated as the difference between the warped frame `I_t1` and the target frame `I_t2`. It is given by the formula:
+
+\[
+L_{\text{photo}} = \frac{1}{N} \sum_{x, y} |I_{t1}(x', y') - I_{t2}(x, y)|
+\]
+
+Where `N` is the total number of pixels in the image, and \( I_{t1}(x', y') \) and \( I_{t2}(x, y) \) represent the pixel values in the warped frame and the target frame, respectively.
+
+For the nonzero pixels:
+
+- At (0, 0): |0 - 0| = 0
+- At (1, 1): |-1 - 0| = 1
+- At (2, 2): |+1 - +1| = 0
+
+Thus, the **Total Photometric Loss** is:
+
+\[
+L_{\text{photo}} = \frac{1}{3} \times (0 + 1 + 0) = 0.333
+\]
+
+## Step 3: Calculate Smoothness Loss
+
+Smoothness loss encourages smooth optical flow fields across neighboring pixels and is given by the formula:
+
+\[
+L_{\text{smooth}} = \frac{1}{N} \sum_{x, y} \left( \| \nabla u^ (x, y) \| + \| \nabla v^ (x, y) \| \right)
+\]
+
+Where `∇u^(x, y)` and `∇v^(x, y)` are the gradients of the optical flow components `u^` and `v^`, calculated with respect to neighboring pixels.
+
+The gradients for `u^` and `v^` are calculated using finite differences:
+
+### 3.1 Gradients for `u^`
+
+The gradient for `u^` at each pixel `(x, y)` is calculated as:
+
+\[
+\nabla u^ (x, y) = |u^ (x+1, y) - u^ (x, y)| + |u^ (x, y+1) - u^ (x, y)|
+\]
+
+For example:
+
+- At (0, 0): |0.0 - 0.2| + |0.0 - 0.2| = 0.4
+- At (1, 1): |0.0 - 0.0| + |0.1 - 0.0| = 0.1
+
+### 3.2 Gradients for `v^`
+
+Similarly, the gradient for `v^` at each pixel is:
+
+\[
+\nabla v^ (x, y) = |v^ (x+1, y) - v^ (x, y)| + |v^ (x, y+1) - v^ (x, y)|
+\]
+
+For example:
+
+- At (0, 0): |0.0 - 0.1| + |0.0 - 0.1| = 0.2
+- At (1, 1): |0.3 - (-0.2)| + |0.0 - (-0.2)| = 0.7
+
+### 3.3 Smoothness Loss
+
+Finally, the smoothness loss is computed by averaging the gradients across all pixels. This term penalizes large discontinuities in the optical flow field, encouraging smoother motion between neighboring pixels.
+
+
+
+
+
+
+
+
+
+
+
 ### Conclusion
 
 This example walked through the process of collecting event data, converting it into spikes, predicting optical flow, and calculating various losses including EPE, photometric consistency, and smoothness loss. These steps demonstrate how spiking neural networks can be used for event-based optical flow estimation.
