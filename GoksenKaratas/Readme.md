@@ -84,7 +84,7 @@ The context branch is a neural network like ResNet to receive context images wit
 Once the values for both branches are calculated, a pragmatic fusion strategy φ(·) is introduced to obtain the final score Y_{c,e}(X):
 <p align="left"> <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/GoksenKaratas/images/Fusion.png" alt="fusion" width="400"> </p>
 
-*Training*
+**Training**
 
 The authors state that as a universal framework, they have selected multi-class classification problem as an example to adopt the cross-entropy loss as the objective function. The general loss is calculated by summing the losses of two branches independently:
 
