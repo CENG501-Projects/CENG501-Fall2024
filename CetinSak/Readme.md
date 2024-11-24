@@ -2,7 +2,7 @@
 
 This readme file is an outcome of the [CENG501 (Fall 2024)](https://ceng.metu.edu.tr/~skalkan/DL/) project for reproducing a paper without an implementation. See [CENG501 (Fall 2024) Project List](https://github.com/CENG501-Projects/CENG501-Fall2024) for a complete list of all paper reproduction projects.
 
-# 1. Introduction
+## 1. Introduction
 
 Deep Learning has become a foundational foot of the modern machine learning, exhibiting well performance across a wide range of problems.This success is often be evaluated to its ability to build hierarchical representations, progressing from simple features to more complex ones. In addition, the ability to learn invariance to task-specific transformations, such as spatial changes in image data, has been strongly correlated to this performance Still, there is a fundamental question needs to be answered **_What underlying properties make high-dimensional data effectively learnable by deep networks?_**
 
@@ -10,7 +10,7 @@ This work introduces the Sparse Random Hierarchy Model (SRHM), demonstrating tha
 
 Our main goal is to create the dataset by using SRHM and reproducing the same results shared in this paper. Through systematically creation of the dataset, we aim to validate that deep networks can learn such invariances from the data that is polynominal in the input dimension, emphasising their advantage over shallow networks. Furthermore, we want to verify the theoretical relationships between sparsity, sample complexity and hierarchical representations.
 
-## 1.1. Paper summary
+### 1.1. Paper summary
 
 Deep learning can solve high dimensional tasks. This is possible because learnable data is highly structured. Data is learnable when it has local features that are assembled hierarchically. This view is consistent with deep networks forming hierarchical representations or CNNs architectural choices. Hierarchical nature of data can be captured by using hierarchical models.
 
@@ -35,9 +35,9 @@ Sample complexity, number of training examples needed to learn the task is intro
 - Explain how invariance emerges during training and how it affects sample complexity.
 - Work with generic perturbations of data, rather than adversarial-like worst-case perturbations.
 
-# 2. The method and our interpretation
+## 2. The method and our interpretation
 
-## 2.1. The original method
+### 2.1. The original method
 
 ### Random Hierarchical Model (RHM)
 
@@ -118,15 +118,16 @@ The SRHM distinguishes itself from the RHM by incorporating a sparsity factor, i
 
 @TODO: Explain the original method.
 
-## 2.2. Our interpretation
-The output of the Sparse Random Hierarchical Model (SRHM) is a **set of generated hierarchical data points** that follow a structured and sparse pattern. Specifically: 
+### 2.2. Our interpretation
+
+The output of the Sparse Random Hierarchical Model (SRHM) is a **set of generated hierarchical data points** that follow a structured and sparse pattern. Specifically:
 
 - _**Data**_:Each data point consists of a sparse input $( x \in \mathbb{R}^{d \times v} )$, where:
 
-     - $( d = (s(s_0 + 1))^L )$: The input dimension, representing the number of sub-features across all levels of the hierarchy. 
-     -  $v$: The one-hot encoded(or many other encoding techniques) vocabulary size for each feature. 
-   
-The input $x$ represents a hierarchical composition of informative features (useful for classification) and uninformative features (noise or placeholders). 
+  - $( d = (s(s_0 + 1))^L )$: The input dimension, representing the number of sub-features across all levels of the hierarchy.
+  - $v$: The one-hot encoded(or many other encoding techniques) vocabulary size for each feature.
+
+The input $x$ represents a hierarchical composition of informative features (useful for classification) and uninformative features (noise or placeholders).
 
 - _**Label**_: Each data point also has a corresponding class label $y \in C = \{1, 2, \ldots, n_c\},$
 
@@ -134,7 +135,7 @@ The label $y$ is derived from the top-level (class-level) feature, which propaga
 
 Paper introduces $S_k$(sensitivity to synonymic exchanges) and $D_k$ (sensitivity to diffeomorphisms) as metrics to evalute success, how well a network learns invariances to transformations and exchanges.
 
-_**$S_k$(Sensitivity to Synonymic Exchanges)**_
+_**$S_k$ (Sensitivity to Synonymic Exchanges)**_
 
 $S_k$​ measures how sensitive the activations of the $k$-th layer of the network are to synonymic exchanges at a  hierarchical level $\ell$.  This formula given as
 
@@ -147,12 +148,11 @@ $S_k = \frac{\langle \| f_k(x) - f_k(P_\ell x) \|_2 \rangle_{x, P_\ell}}{\langle
 - $( \langle \cdot \rangle_{x, y})$: Average over pairs of unrelated inputs $x$ and $y$.
 
 This process can be summarized as:
--   The numerator computes the average change in layer $k$'s activations when synonyms at level $\ell$ are swapped in the input.
--   The denominator normalizes this by the average difference in activations between unrelated inputs.
 
+- The numerator computes the average change in layer $k$'s activations when synonyms at level $\ell$ are swapped in the input.
+- The denominator normalizes this by the average difference in activations between unrelated inputs.
 
-_**$D_k$(Sensitivity to Diffeomorphisms)**_
-
+_**$D_k$ (Sensitivity to Diffeomorphisms)**_
 
 $D_k$​ measures how sensitive the $k$-th layer is to diffeomorphic transformations, such as translations or small deformations, applied to the input. Calculating this kind of sensitivities as a metric requires below formula:
 
@@ -165,33 +165,33 @@ $D_k = \frac{\langle \| f_k(x) - f_k(\tau(x)) \|_2 \rangle_{x, \tau}}{\langle \|
 - $( \langle \cdot \rangle_{x})$: Average over inputs $x$
 
 This process can be summarrized as:
--   The numerator computes the average change in activations when the input is slightly transformed.
--   The denominator normalizes this by the average magnitude of the activations.
+
+- The numerator computes the average change in activations when the input is slightly transformed.
+- The denominator normalizes this by the average magnitude of the activations.
 
   **Low $S_k$​ and $D_k$:**
-    
-   -   Indicates that the network has successfully learned invariant representations.
-   -   For example, if SkS_kSk​ is low, the network is insensitive to swapping synonyms, meaning it focuses on the overall structure rather than the specific representation of features.
-    -   Similarly, low DkD_kDk​ shows robustness to small spatial transformations, such as shifts or deformations.
-    
-   **High $S_k$​ and $D_k$**
-    
--  Indicates sensitivity to synonymic exchanges or transformations, meaning the network hasn’t fully generalized to the invariances of the task.
 
+  - Indicates that the network has successfully learned invariant representations.
+  - For example, if SkS_kSk​ is low, the network is insensitive to swapping synonyms, meaning it focuses on the overall structure rather than the specific representation of features.
+  - Similarly, low DkD_kDk​ shows robustness to small spatial transformations, such as shifts or deformations.
+
+   **High $S_k$​ and $D_k$**
+
+- Indicates sensitivity to synonymic exchanges or transformations, meaning the network hasn’t fully generalized to the invariances of the task.
 
 The RHM and the SHRM model parameters meaning nearly the same the only difference is coming from the registered uninformative results to the features. Meaning that:
 
 - The total inut dimension is modified from $d=s^L$ to $d = (s(s_0 +1))^L$ where the $s_0$ is the sparsity factor(number of the uninformative elements in a chunk).
- 
+
 @TODO: Explain the parts that were not clearly explained in the original paper and how you interpreted them.
 
 -> Interpret the output of SHRM, how should data look etc.
 -> Interpret how S_k and D_k was calculated.
 -> In RHM code, what does each parameter correspond to here
 
-# 3. Experiments and results
+## 3. Experiments and results
 
-## 3.1. Experimental setup
+### 3.1. Experimental setup
 
 1. Making SHRM dataset -> main part of the paper, explain the code in relation to the 'our interpretation' part
 2. Running CNN and LCN on them -> hyperparams come from appendix
@@ -202,7 +202,7 @@ The RHM and the SHRM model parameters meaning nearly the same the only differenc
 
 @TODO: Describe the setup of the original paper and whether you changed any settings.
 
-## 3.2. Running the code
+### 3.2. Running the code
 
 1. Explain the directory -> where what is stored -> nets in one folder, RHM and SHRM in another folder, main files in root, guided ipynb
 2. TODO -> Add a helper script to download CIFAR dataset. Required for first milestone.
@@ -210,15 +210,15 @@ The RHM and the SHRM model parameters meaning nearly the same the only differenc
 
 @TODO: Explain your code & directory structure and how other people can run it.
 
-## 3.3. Results
+### 3.3. Results
 
 @TODO: Present your results and compare them to the original paper. Please number your figures & tables as if this is a paper.
 
-# 4. Conclusion
+## 4. Conclusion
 
 @TODO: Discuss the paper in relation to the results in the paper and your results.
 
-# 5. References
+## 5. References
 
 @TODO: Provide your references here.
 
@@ -226,17 +226,17 @@ Main Paper: `How Deep Networks Learn Sparse and Hierarchical Data: the Sparse Ra
 
 ```bibtex
 @InProceedings{pmlr-v235-tomasini24a,
-  title = 	 {How Deep Networks Learn Sparse and Hierarchical Data: the Sparse Random Hierarchy Model},
+  title =   {How Deep Networks Learn Sparse and Hierarchical Data: the Sparse Random Hierarchy Model},
   author =       {Tomasini, Umberto Maria and Wyart, Matthieu},
-  booktitle = 	 {Proceedings of the 41st International Conference on Machine Learning},
-  pages = 	 {48369--48389},
-  year = 	 {2024},
-  editor = 	 {Salakhutdinov, Ruslan and Kolter, Zico and Heller, Katherine and Weller, Adrian and Oliver, Nuria and Scarlett, Jonathan and Berkenkamp, Felix},
-  volume = 	 {235},
-  series = 	 {Proceedings of Machine Learning Research},
-  month = 	 {21--27 Jul},
+  booktitle = {Proceedings of the 41st International Conference on Machine Learning},
+  pages =   {48369--48389},
+  year =   {2024},
+  editor =   {Salakhutdinov, Ruslan and Kolter, Zico and Heller, Katherine and Weller, Adrian and Oliver, Nuria and Scarlett, Jonathan and Berkenkamp, Felix},
+  volume =   {235},
+  series =   {Proceedings of Machine Learning Research},
+  month =   {21--27 Jul},
   publisher =    {PMLR},
-  pdf = 	 {https://raw.githubusercontent.com/mlresearch/v235/main/assets/tomasini24a/tomasini24a.pdf},
+  pdf =   {https://raw.githubusercontent.com/mlresearch/v235/main/assets/tomasini24a/tomasini24a.pdf},
 }
 ```
 
@@ -271,7 +271,7 @@ CIFAR 10 Dataset From: `Learning Multiple Layers of Features from Tiny Images`
 
 Model Implementations (VGG ResNet EfficientNetB0) are from: [diffeo-sota repository](https://github.com/leonardopetrini/diffeo-sota/tree/main/models)
 
-# Contact
+## Contact
 
-Burak Erinç Çetin - erinc.cetin@metu.edu.tr
-Emin Sak - sak.emin@metu.edu.tr
+- Burak Erinç Çetin - <erinc.cetin@metu.edu.tr>
+- Emin Sak - <sak.emin@metu.edu.tr>
