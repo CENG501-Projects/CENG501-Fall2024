@@ -103,7 +103,7 @@ Suppose:
 
   Then the tri-level optimization problem we discussed at 1.2. can be reduced to:
 
-![A close up of symbolsDescription automatically generated(https://github.com/Sinasi3/Sinasi3/blob/main/4.1in4Ã¼.jpg?raw=true) 
+![A close up of symbolsDescription automatically generated](https://github.com/Sinasi3/Sinasi3/blob/main/4.1in4ü.jpg?raw=true) 
 
 **Proof:**
 
