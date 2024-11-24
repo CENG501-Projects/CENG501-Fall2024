@@ -85,7 +85,11 @@ Overall, clustering is used to make the model exposed to diverse regions of the 
 
 ## 2.2. Our interpretation
 
-The paper specifies that these thresholds filter out samples with acceptable energy levels but does not provide detailed guidance on how these values are chosen. As these values are not clearly mentioned, we will make a literature search to find appropriate values and try to adjust them manually.
+![Energy Loss](./Figures/EnergyLoss.png)
+
+![Gradient of the energy loss](./Figures/GradientEnergyLoss.png)
+
+The paper specifies that these thresholds ($m_in$ and $m_aux$) filter out samples with acceptable energy levels but does not provide detailed guidance on how these values are chosen. As these values are not clearly mentioned, we will make a literature search to find appropriate values and try to adjust them manually.
 
 Additionally, the hardware resources used and comptational complexity of experiments are not clearly stated. However, as used datasets are not very large and images are not high-resolution, we infered that we can train mentioned models with the hardware we have.
 
