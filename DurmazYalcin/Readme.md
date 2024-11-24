@@ -10,8 +10,8 @@ An event-based camera is a new sensor modality that operates by detecting change
 ![Events Camera](https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/output.gif)
 
 <p float="left">
-  <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/MVSEC_indoor_flying1.gif" width="48%" />
-  <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/output.gif" width="48%" />
+  <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/MVSEC_indoor_flying1.gif" width="100%" />
+  <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/output.gif" width="100%" />
 </p>
 
 The gifs above depicts traditional image frames on the left, while the middle panels shows accumulated events over time, MVSEC on the top, and the DSEC at the bottom. In the middle panel, blue represents positive polarity (increased intensity), and red represents negative polarity (decreased intensity). The rightmost panel, on the other hand, illustrates the optical flow.
