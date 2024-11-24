@@ -76,11 +76,9 @@ where each term is another cost function defined as
 \mathcal{L}_{\text{final}} = \left\lVert V_{\Phi}(x_f, t_f) - G(x_f) \right\rVert_1.
 ```
 
-The paper declares the parameters used as $\alpha_{cost} = 1$, $\alpha_{HJB} = 1$, $\alpha_{final} = 0.01$. Adam optimizer is used with a decaying learning rate starting from 0.01.
+The running and terminal costs are defined as $L(x_t, u_t, t) = (u_t - u^{\*})^TR(u_t - u^{\*})$ and $G(x_f) = (x_f - x^{\*})^T P (x_f - x^{\*})$ respectively. Here, P and R are matrices representing the relative importance of the cost terms, x^{\*} and u^{\*} are the desired state and actions. The authors state that they used $P = I_d$ and $R = 0.01*I_m$, where $I_m$ and $I_d$ are identity matrices. The paper also declares the parameters used as $\alpha_{cost} = 1$, $\alpha_{HJB} = 1$, $\alpha_{final} = 0.01$. Adam optimizer is used with a decaying learning rate starting from 0.01.
 
 ## 2.2. Our interpretation
-
-@TODO: Explain the parts that were not clearly explained in the original paper and how you interpreted them.
 
 Although the paper is clear about the many details, there still remain some parts undisclosed and left to the reader to experiment with.
 
