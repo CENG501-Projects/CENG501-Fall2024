@@ -56,8 +56,6 @@ From our perspective, the sample-aware model selection mechanism is a powerful i
 
 We believe ZODE’s success hinges on the quality and diversity of the model zoo. While this is a strength, it may also present a barrier for smaller teams or projects with limited resources. Despite these challenges, we see ZODE as a transformative approach that combines theoretical robustness with practical effectiveness, making it a significant step forward in OOD detection research.
 
-@TODO: Explain the parts that were not clearly explained in the original paper and how you interpreted them.
-
 # 3. Experiments and results
 
 ## 3.1. Experimental setup
@@ -127,4 +125,4 @@ These adjustments are aimed at ensuring reproducibility while accommodating prac
 # Contact
 
 - [Esra Genç](mailto:esra.genc@metu.edu.tr)
-- [Emirhan Yılmaz Güney](mailto:email@metu.edu.tr)
+- [Emirhan Yılmaz Güney](mailto:yilmaz.guney@metu.edu.tr)
