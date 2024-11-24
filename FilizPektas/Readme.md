@@ -159,7 +159,7 @@ The tri-level optimization is reduced by the method to a bi-level formulation, w
 
 ### **6.3. Classifier network (θ)**
 
-* Optimizing weighted training loss on the training set Dâ€².  
+* Optimizing weighted training loss on the training set D′.  
 * After e epochs of bi-level setup, ![](https://github.com/Sinasi3/Sinasi3/blob/main/14.png?raw=true) epochs occur on training data, where ![](https://github.com/Sinasi3/Sinasi3/blob/main/15.png?raw=true) accounts for K-times inner loop iterations.
 
   ![A black and white math symbolsDescription automatically generated with medium confidence](https://github.com/Sinasi3/Sinasi3/blob/main/16.png?raw=true)
