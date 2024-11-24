@@ -471,9 +471,9 @@ In this step, we warp one event frame (Bin 1) to another (Bin 2) using the predi
 
 ### 1.1 Predicted Optical Flow for Each Pixel
 
-For each pixel in the event frame, the predicted optical flow is provided as `(u^, v^)`, where `u^` is the horizontal displacement and `v^` is the vertical displacement:
+For each pixel in the event frame, the predicted optical flow is provided as `$(\hat{u}, \hat{v})$`, where `$\hat{u}$` is the horizontal displacement and `$\hat{v}$` is the vertical displacement:
 
-| Pixel (x, y) | Predicted Flow (u^, v^) |
+| Pixel (x, y) | Predicted Flow $(\hat{u}, \hat{v})$ |
 |--------------|-------------------------|
 | (0, 0)       | (0.2, 0.1)              |
 | (1, 1)       | (0.0, -0.2)             |
@@ -494,7 +494,7 @@ For each pixel in the event frame, the predicted optical flow is provided as `(u
 The new position `(x', y')` for each pixel after warping is calculated using the formula:
 
 $$
-(x', y') = (x + u^, y + v^)
+(x', y') = (x + \hat{u}, y + \hat{v})
 $$
 
 For example:
@@ -541,7 +541,7 @@ Where `∇\hat{u}(x, y)` and `∇\hat{v}(x, y)` are the gradients of the optical
 
 The gradients for `$\hat{u}$` and `$\hat{v}$` are calculated using finite differences:
 
-### 3.1 Gradients for `u^`
+### 3.1 Gradients for `$\hat{u}$`
 
 The gradient for `$\hat{u}$` at each pixel `(x, y)` is calculated as:
 
