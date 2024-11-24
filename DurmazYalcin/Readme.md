@@ -24,7 +24,7 @@ The proposed method utilizes a simple U-Net framework to estimate the optical fl
 ![Network](https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/SpikeNetwork.png)
 
 Method (a) represents a framework from prior work that is already publicly available. In contrast, method (b) refers to the newly proposed framework, which is not yet publicly accessible. Our implementation will focus on method (b).
-### Loss Function
+## Loss Function
 Adaptive-SpikeNet employs two distinct loss paradigms—**supervised loss** and **self-supervised loss**—depending on the availability of labeled optical flow datasets. Below is a detailed explanation of how these approaches are utilized:
 
 ## 1. Supervised Loss
@@ -149,7 +149,7 @@ $$
 B_k = \{ e_i \mid t_k \leq t_i < t_{k+1} \}, \quad k = 1, 2, \dots, N
 $$
 
-Where $$ t_k = k \cdot \Delta t $$.
+Where $ t_k = k \cdot \Delta t $.
 
 ### 3. Spatial Aggregation:
 Within each temporal bin, the events are aggregated spatially over the pixel grid to form a 2D representation. This can be done using a voxel grid representation or by creating a histogram of events at each pixel location:
@@ -339,84 +339,6 @@ The paper introduces learnable dynamics for these neurons, enabling them to adju
 
 Would you like to delve deeper into the learnable dynamics of the neurons or their training process?
 
-
-# Adaptive-SpikeNet Loss Functions
-
-Adaptive-SpikeNet employs two distinct loss paradigms—**supervised loss** and **self-supervised loss**—depending on the availability of labeled optical flow datasets. Below is a detailed explanation of how these approaches are utilized:
-
-## 1. Supervised Loss
-
-This approach is used when ground truth optical flow labels are available for the dataset, such as in datasets specifically created for optical flow tasks.
-
-### Loss Definition:
-The supervised loss directly compares the predicted optical flow $( \hat{f}(x, y) )$ to the ground truth flow \( f_{\text{true}}(x, y) \).
-
-#### (a) End-Point Error (EPE):
-The End-Point Error (EPE) is the primary supervised loss function:
-
-$$
-L_{\text{EPE}} = \frac{1}{N} \sum_{(x, y)} \left( (\hat{u}(x, y) - u(x, y))^2 + (\hat{v}(x, y) - v(x, y))^2 \right)
-$$
-
-Where:
-
-- $( \hat{u}(x, y), \hat{v}(x, y) )$ are the predicted horizontal and vertical flow components at pixel \( (x, y) \),
-- $( u(x, y), v(x, y) )$ are the corresponding ground truth components,
-- $( N )$ is the total number of pixels.
-
-### Purpose:
-This loss encourages the network to predict optical flow vectors that minimize the Euclidean distance from the ground truth, making it highly effective for labeled datasets like **FlyingChairs** or **FlyingThings3D**.
-
-## 2. Self-Supervised Loss
-
-For datasets where ground truth optical flow is unavailable (e.g., real-world event-based datasets), Adaptive-SpikeNet employs a self-supervised loss based on the concept of **photometric consistency**.
-
-### Loss Definition:
-The self-supervised loss assumes that pixel intensities remain consistent across consecutive frames, except for motion-induced changes. It uses warping techniques to estimate the consistency of pixel intensities.
-
-#### (a) Photometric Loss:
-Given two event-based frames $( I_t )$ (at time $( t )$) and $( I_{t + \Delta t} )$ (at time $( t + \Delta t )$), the predicted optical flow $( \hat{f}(x, y) )$ is used to warp $( I_t )$ to $( I_{t + \Delta t} )$:
-
-$$
-L_{\text{photo}} = \frac{1}{N} \sum_{(x, y)} \left\| I_t(x, y) - I_{t + \Delta t}(x + \hat{u}, y + \hat{v}) \right\|_1
-$$
-
-Where:
-
-- $( \hat{u}, \hat{v} )$ are the predicted optical flow components at \( (x, y) \),
-- $( \|\cdot\|_1 )$ denotes the L1 norm, which is robust to outliers.
-
-The warping operation maps pixels from the earlier frame to the later frame.
-
-#### (b) Smoothness Loss:
-To enforce spatial smoothness in the predicted flow field, a smoothness regularization term is added:
-
-$$
-L_{\text{smooth}} = \frac{1}{N} \sum_{(x, y)} \left\| \nabla \hat{f}(x, y) \right\|
-$$
-
-Where $( \nabla \hat{f}(x, y) )$ is the gradient of the flow field. This encourages the optical flow to be smooth in regions with consistent motion.
-
-### Combined Loss:
-The self-supervised loss combines the photometric and smoothness terms:
-
-$$
-L_{\text{self}} = \lambda_1 L_{\text{photo}} + \lambda_2 L_{\text{smooth}}
-$$
-
-Where $( \lambda_1 )$ and $( \lambda_2 )$ are hyperparameters balancing the two terms.
-
-## 3. Dataset-Specific Adaptation
-
-- **Supervised Loss**: Used for synthetic datasets like **FlyingChairs**, **FlyingThings3D**, and other labeled optical flow datasets.
-- **Self-Supervised Loss**: Used for real-world event-based datasets, where labeled optical flow is unavailable, and the model must rely on assumptions about photometric consistency.
-
-## 4. Why Two Approaches?
-
-The dual loss paradigm enables Adaptive-SpikeNet to handle diverse datasets:
-
-- **Synthetic Datasets (Supervised)**: Maximizes prediction accuracy where labels are available.
-- **Real-World Datasets (Self-Supervised)**: Leverages unsupervised learning techniques for datasets lacking ground truth, making the method versatile for real-world applications.
 
 
 ### Training and Optimization Event-Based Optical Flow Estimation Example
