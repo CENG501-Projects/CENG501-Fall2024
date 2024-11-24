@@ -554,9 +554,9 @@ For example:
 - At $(0, 0): |0.0 - 0.2| + |0.0 - 0.2| = 0.4$
 - At $(1, 1): |0.0 - 0.0| + |0.1 - 0.0| = 0.1$
 
-### 3.2 Gradients for `$\hat{v}$`
+### 3.2 Gradients for $\hat{v}$
 
-Similarly, the gradient for `$\hat{v}$` at each pixel is:
+Similarly, the gradient for $\hat{v}$ at each pixel is:
 
 $$
 \nabla \hat{v} (x, y) = |\hat{v} (x+1, y) - \hat{v} (x, y)| + |\hat{v} (x, y+1) - \hat{v} (x, y)|
@@ -576,11 +576,11 @@ Finally, the smoothness loss is computed by averaging the gradients across all p
 
 The smoothness loss is based on the gradients of the flow components \( \hat{u} \) and \( \hat{v} \). We calculate these gradients using finite differences for each pixel in the flow field.
 
-### Step 1: Compute Gradients for \( \hat{u} \)
+### Step 1: Compute Gradients for $( \hat{u} )$
 
-For the flow component \( \hat{u} \), the differences between neighboring pixels along both the horizontal (\( x \)) and vertical (\( y \)) directions are calculated.
+For the flow component $( \hat{u} )$, the differences between neighboring pixels along both the horizontal (\( x \)) and vertical (\( y \)) directions are calculated.
 
-#### Example flow field for \( \hat{u} \):
+#### Example flow field for $( \hat{u} )$:
 $$
 \hat{u} = [ 0.2, 0.0, 0.0; 0.0, 0.0, 0.1; 0.0, 0.1, 0.0 ]
 $$
@@ -591,46 +591,52 @@ $$
 
 - At $(0, 0) $:
 
-  $ \nabla \hat{u}(0,0) = | \hat{u}_{1,0} - \hat{u}_{0,0} | + | \hat{u}_{0,1} - \hat{u}_{0,0} | = |0.0 - 0.2| + |0.0 - 0.2| = 0.2 + 0.2 = 0.4  $
+$$
+\nabla \hat{u}(0,0) = | \hat{u}_{1,0} - \hat{u}_{0,0} | + | \hat{u}_{0,1} - \hat{u}_{0,0} | = |0.0 - 0.2| + |0.0 - 0.2| = 0.2 + 0.2 = 0.4
+$$
 
 - At $(1, 0)$:
 
-  $ \nabla \hat{u}(1,0) = | \hat{u}_{2,0} - \hat{u}_{1,0} | + | \hat{u}_{1,1} - \hat{u}_{1,0} | = |0.0 - 0.0| + |0.0 - 0.0| = 0 + 0 = 0 $
+$$
+\nabla \hat{u}(1,0) = | \hat{u}_{2,0} - \hat{u}_{1,0} | + | \hat{u}_{1,1} - \hat{u}_{1,0} | = |0.0 - 0.0| + |0.0 - 0.0| = 0 + 0 = 0
+$$
 
 - At $(2, 0)$:
 
-  $ \nabla \hat{u}(2,0) = | \hat{u}_{2,0} - \hat{u}_{1,0} | + | \hat{u}_{2,1} - \hat{u}_{2,0} | = |0.0 - 0.0| + |0.0 - 0.0| = 0 + 0 = 0 $
+$$
+\nabla \hat{u}(2,0) = | \hat{u}_{2,0} - \hat{u}_{1,0} | + | \hat{u}_{2,1} - \hat{u}_{2,0} | = |0.0 - 0.0| + |0.0 - 0.0| = 0 + 0 = 0
+$$
 
-### Step 2: Compute Gradients for \( \hat{v} \)
+### Step 2: Compute Gradients for $( \hat{v} )$
 
 Now, we compute the gradients for the \( \hat{v} \)-component.
 
-#### Example flow field for \( \hat{v} \):
+#### Example flow field for $( \hat{v} )$:
 $$
 \hat{v} = [ 0.1, 0.0, 0.0; 0.0, -0.2, 0.3; 0.0, 0.0, 0.3 ]
 $$
 
 
 
-#### Gradient Calculation for \( \hat{v} \):
+#### Gradient Calculation for $( \hat{v} )$:
 
 - At $( (0, 0) )$:
 
-  $$
-  \nabla \hat{v}(0,0) = | \hat{v}_{1,0} - \hat{v}_{0,0} | + | \hat{v}_{0,1} - \hat{v}_{0,0} | = |0.0 - 0.1| + |0.0 - 0.1| = 0.1 + 0.1 = 0.2
-  $$
+$$
+\nabla \hat{v}(0,0) = | \hat{v}_{1,0} - \hat{v}_{0,0} | + | \hat{v}_{0,1} - \hat{v}_{0,0} | = |0.0 - 0.1| + |0.0 - 0.1| = 0.1 + 0.1 = 0.2
+$$
 
 - At $( (1, 0) )$:
 
-  $$
-  \nabla \hat{v}(1,0) = | \hat{v}_{2,0} - \hat{v}_{1,0} | + | \hat{v}_{1,1} - \hat{v}_{1,0} | = |0.0 - 0.0| + |-0.2 - 0.0| = 0 + 0.2 = 0.2
-  $
+$$
+\nabla \hat{v}(1,0) = | \hat{v}_{2,0} - \hat{v}_{1,0} | + | \hat{v}_{1,1} - \hat{v}_{1,0} | = |0.0 - 0.0| + |-0.2 - 0.0| = 0 + 0.2 = 0.2
+$
 
 - At $( (2, 0) )$:
 
-  $$
-  \nabla \hat{v}(2,0) = | \hat{v}_{2,0} - \hat{v}_{1,0} | + | \hat{v}_{2,1} - \hat{v}_{2,0} | = |0.0 - 0.0| + |0.0 - 0.0| = 0 + 0 = 0
-  $$
+$$
+\nabla \hat{v}(2,0) = | \hat{v}_{2,0} - \hat{v}_{1,0} | + | \hat{v}_{2,1} - \hat{v}_{2,0} | = |0.0 - 0.0| + |0.0 - 0.0| = 0 + 0 = 0
+$$
 
 ### Step 3: Smoothness Loss Formula
 
