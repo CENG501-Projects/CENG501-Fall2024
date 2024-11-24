@@ -125,30 +125,21 @@ According to the paper, the development and implementation of the DTINSPECTOR de
 @TODO: Discuss the paper in relation to the results in the paper and your results.
 
 # 10. References
-**Primary Research Paper:**
 
 Tong Wang, et al., "Inspecting Prediction Confidence for Detecting Black-Box Backdoor Attacks", Proceedings of the Thirty-Eighth AAAI Conference on Artificial Intelligence (AAAI-24), 2024.
 
-**Backdoor Attacks and Defenses Overview:**
 
 Gu, T., Dolan-Gavitt, B., & Garg, S. "BadNets: Identifying Vulnerabilities in the Machine Learning Model Supply Chain". arXiv preprint arXiv:1708.06733, 2017.
 
 
-**Data Segregation by Confidence:**
-
 Moosavi-Dezfooli, S. M., et al., "Universal Adversarial Perturbations", Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2017.
 
-
-**Detection with Anomaly-Based Metrics:**
 
 Iglewicz, B., & Hoaglin, D. C., "How to Detect and Handle Outliers", ASQC Quality Press, 1993.
 
 
-**Simplified Datasets and Models for Educational Use:**
-
 Krizhevsky, A., & Hinton, G., "Learning Multiple Layers of Features from Tiny Images", CIFAR Dataset Documentation, 2009.
 
-**TrojanNN Attack Methodology:**
 
 Liu, Y., Ma, S., Aafer, Y., et al., "Trojaning Attack on Neural Networks", Proceedings of NDSS, 2018.
 
