@@ -42,7 +42,7 @@ plane of the camera, and by using camera instrinsic parameter K, depth of each p
 
 $x_{3d} = \frac{u - c_x}{f_x} \hat{z}, \quad y_{3d} = \frac{v - c_y}{f_y} \hat{z}$
 
-f_x and f_y represent the focal lengths in pixels along the axes and c_x and c_y are the possible displacement between the image center and the foot point. All those parameters are included in the camera intrinsic parameters which is called K. From the equation 2:
+f_x and f_y represent the focal lengths in pixels along the axes and c_x and c_y are the possible displacement between the image center and the foot point. All those parameters are included in the camera intrinsic parameters which is called K. From the Equation 2:
 
 $z = \frac{f_y \times y}{v - c_y}$
 
@@ -83,12 +83,14 @@ $\delta_i = \min_{j : \mathbf{x}_j \in \mathbf{X}_c} \left( \lVert \mathbf{x}_i 
 The equation states that, for every point each cluster center is looped. Feature similarity and spatial distances are considered and balance between them is controlled by \Beta. Minimum value of a point against a cluster means that, the most appropriate value for the cluster is found.
 
 #### 2.1.2.2 Attention-based Feature Merging
-While merging tokens, instead of directly averaging the token features at every cluster, token features are averaged with the guidence of attention scores. 
+While merging tokens, instead of directly averaging the token features at every cluster, token features are averaged with the guidance of attention scores. 
 
-Eq 8 gelecek paperdaki : where yi is the merged token feature, x_j and p_j are the original token features and they are summed over the i'th cluster set. 
+$\mathbf{y}\_i = \frac{\sum_{j \in \mathcal{C}\_i} e^{p\_j} \mathbf{x}\_j}{\sum_{j \in \mathcal{C}\_i} e^{p\_j}}$ 
+
+where $\mathbf{y}_i$ is the merged token feature, $\mathbf{x}_j$ and $p_j$ are the original token features and they are summed over the i'th cluster set. 
 Merged tokens are fed into the transformer as queries Q. Original tokens are also used as keys K and values V. Attention matrix of the transformer altered and attention score p is involved in the calculation in order to allow tokens to be more important. 
 
-Attention(Q, K, V) = softmax(QK^T / sqrt(d_k) + p)V where d_k is the number of the channels of the queries. 
+$\text{Attention}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \text{softmax}\left(\frac{\mathbf{Q}\mathbf{K}^\top}{\sqrt{d_k}} + \mathbf{p}\right) \mathbf{V}$ where $d_k$ is the number of the channels of the queries. 
 
 Token Features might have dimensions (n,d), where n is the number of tokens and d is the feature dimension. Attention Scores might have a dimension of
 (n,1), as each token gets a single score. To combine these (e.g., by addition), their shapes must match. If they don’t, matrix expansion ensures that smaller matrices (like (n,1)) are "stretched" to match larger ones (like (n,d)). Also, token attention score allows network to focus on the important information.
@@ -96,7 +98,7 @@ Token Features might have dimensions (n,d), where n is the number of tokens and 
 ### 2.1.3 Multi-stage Feature Reconstruction (MFR)
 Multi-stage Feature Reconstruction restores and aggregates all N stages. MFR upsamples the tokens from a history record and restores the feature map. In the Figure XX unsampling process is given.
 FIGURE
-In Attention-based Feature Merging every token is assigned to a cluster and since tokens are merged, every cluster is represented by a merged token. Positional correspondences between original and merged tokens are recorded and those records are used to copy the merged token features into the unsampled token. Token features from the previous stage are added iteratively to get an aggregate. Later, tokens are fed to a multilayer perceptron and that process is iterated N times. After the process a feature map of size (Ws x Hs x C') is obtained.
+In Attention-based Feature Merging every token is assigned to a cluster and since tokens are merged, every cluster is represented by a merged token. Positional correspondences between original and merged tokens are recorded and those records are used to copy the merged token features into the unsampled token. Token features from the previous stage are added iteratively to get an aggregate. Later, tokens are fed to a multilayer perceptron and that process is iterated N times. After the process a feature map of size $(W_s \times H_s \times C')$ is obtained.
 
 ### 2.1.4 Monocular 3D Detection
 In MonoATT, GUPNet is used as a monocular 3D object detector.
