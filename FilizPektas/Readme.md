@@ -164,9 +164,9 @@ The tri-level optimization is reduced by the method to a bi-level formulation, w
 
   ![A black and white math symbolsDescription automatically generated with medium confidence](https://github.com/Sinasi3/Sinasi3/blob/main/16.png?raw=true)
 
-## **7\. Experiments:**
+## **7\. Expected Experiments:**
 
-Extensive experimentation has been evaluated. Before pooling, ranking, and repartitioning, we use the training data for the ERM classifier in the train-twice heuristic for all datasets if a train-validation split is already available.
+Extensive experimentation has been evaluated in the paper. Before pooling, ranking, and repartitioning, training data for the ERM classifier is used in the train-twice heuristic for all datasets if a train-validation split is already available.
 
 * Datasets that are utilized are as follows.
 
