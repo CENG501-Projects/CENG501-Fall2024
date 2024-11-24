@@ -12,7 +12,8 @@ This paper introduces a novel framework, **Counterfactual Emotion Inference (CLE
 
 This repository contains the re-implementation of the paper "Robust Emotion Recognition in Context Debiasing", authored by Dingkang Yang, Kun Yang, Mingcheng Li, Shunli Wang, Shuaibing Wang, Lihua Zhang. The paper was published in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), 2024.
 
-The primary aim of this repository is to ensure reproducibility of the results presented in the paper. By implementing the CLEF framework and conducting experiments as described in the paper.
+The primary aim of this repository is to ensure the reproducibility of the results presented in the paper by implementing the CLEF framewrok and conducting experiments as described in the paper.
+
 ---
 
 ## 1.1. Paper summary
@@ -100,8 +101,7 @@ After integrating all components together, the final loss is formulated as the f
 
 
 ## 2.2. Our interpretation
-
-@TODO: Explain the parts that were not clearly explained in the original paper and how you interpreted them.
+The implementation details provided by the authors appear to be sufficient for re-implementing the paper at the time of creating this README file. This section may be updated as the implementation study progresses.
 
 # 3. Experiments and results
 
