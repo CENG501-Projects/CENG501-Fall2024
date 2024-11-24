@@ -534,19 +534,19 @@ $$
 Smoothness loss encourages smooth optical flow fields across neighboring pixels and is given by the formula:
 
 $$
-L_{\text{smooth}} = \frac{1}{N} \sum_{x, y} \left( \| \nabla u^ (x, y) \| + \| \nabla v^ (x, y) \| \right)
+L_{\text{smooth}} = \frac{1}{N} \sum_{x, y} \left( \| \nabla \hat{u} (x, y) \| + \| \nabla \hat{v} (x, y) \| \right)
 $$
 
-Where `∇u^(x, y)` and `∇v^(x, y)` are the gradients of the optical flow components `u^` and `v^`, calculated with respect to neighboring pixels.
+Where `∇\hat{u}(x, y)` and `∇\hat{v}(x, y)` are the gradients of the optical flow components `$\hat{u}$` and `$\hat{v}$`, calculated with respect to neighboring pixels.
 
-The gradients for `u^` and `v^` are calculated using finite differences:
+The gradients for `$\hat{u}$` and `$\hat{v}$` are calculated using finite differences:
 
 ### 3.1 Gradients for `u^`
 
-The gradient for `u^` at each pixel `(x, y)` is calculated as:
+The gradient for `$\hat{u}$` at each pixel `(x, y)` is calculated as:
 
 $$
-\nabla u^ (x, y) = |u^ (x+1, y) - u^ (x, y)| + |u^ (x, y+1) - u^ (x, y)|
+\nabla \hat{u} (x, y) = |\hat{u} (x+1, y) - \hat{u}(x, y)| + |\hat{u} (x, y+1) - \hat{u} (x, y)|
 $$
 
 For example:
@@ -554,12 +554,12 @@ For example:
 - At $(0, 0): |0.0 - 0.2| + |0.0 - 0.2| = 0.4$
 - At $(1, 1): |0.0 - 0.0| + |0.1 - 0.0| = 0.1$
 
-### 3.2 Gradients for `v^`
+### 3.2 Gradients for `$\hat{v}$`
 
-Similarly, the gradient for `v^` at each pixel is:
+Similarly, the gradient for `$\hat{v}$` at each pixel is:
 
 $$
-\nabla v^ (x, y) = |v^ (x+1, y) - v^ (x, y)| + |v^ (x, y+1) - v^ (x, y)|
+\nabla \hat{v} (x, y) = |\hat{v} (x+1, y) - \hat{v} (x, y)| + |\hat{v} (x, y+1) - \hat{v} (x, y)|
 $$
 
 For example:
