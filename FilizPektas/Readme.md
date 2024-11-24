@@ -147,7 +147,7 @@ The tri-level optimization is reduced by the method to a bi-level formulation, w
 
 ### **6.1. Splitter network(Θ)**
 
-* The goal is to maximize loss on hard instances while minimizing loss on the validation set to enhance generalization by accurately predicting the label pair (ğ‘¥,ğ‘¦).
+* The goal is to maximize loss on hard instances while minimizing loss on the validation set to enhance generalization by accurately predicting the label pair (𝑥,𝑦).
 
   ![A close-up of a math problemDescription automatically generated](https://github.com/Sinasi3/Sinasi3/blob/main/12.png?raw=true)
 
