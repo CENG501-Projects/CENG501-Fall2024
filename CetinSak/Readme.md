@@ -172,8 +172,8 @@ This process can be summarrized as:
   **Low $S_k$​ and $D_k$:**
 
   - Indicates that the network has successfully learned invariant representations.
-  - For example, if SkS_kSk​ is low, the network is insensitive to swapping synonyms, meaning it focuses on the overall structure rather than the specific representation of features.
-  - Similarly, low DkD_kDk​ shows robustness to small spatial transformations, such as shifts or deformations.
+  - For example, if $S_k$ is low, the network is insensitive to swapping synonyms, meaning it focuses on the overall structure rather than the specific representation of features.
+  - Similarly, low $D_k$ shows robustness to small spatial transformations, such as shifts or deformations.
 
    **High $S_k$​ and $D_k$**
 
@@ -204,11 +204,28 @@ The RHM and the SHRM model parameters meaning nearly the same the only differenc
 
 ### 3.2. Running the code
 
-1. Explain the directory -> where what is stored -> nets in one folder, RHM and SHRM in another folder, main files in root, guided ipynb
-2. TODO -> Add a helper script to download CIFAR dataset. Required for first milestone.
-3. How to run -> venv creation, running files, reproducing images, requirements,
+The code is structured as follows:
 
-@TODO: Explain your code & directory structure and how other people can run it.
+- assets folder has figures from the paper.
+- src folder has the paper implementation. It has following subfolders:
+  - models has implementations of resnet, vgg etc
+  - SRHM has the papers implementation
+  - utils has utility functions such as CIFAR10 dataloader
+  - main.py is the code for
+- experiments.py is an annotated version of the paper. It reflects the code from main.py, but it is interactive.
+- requirements.txt has the dependencies required to run the experiments.
+
+To run the code:
+
+1. Make sure you have Python 3.12 installed.
+2. Clone the repository or copy folder of this implementation. Make sure you are on the root directory of the project.
+3. Create a virtual environment using `python -m venv .venv`.
+4. Activate the venv using:
+   - Linux/Mac : `.venv/Scripts/activate`
+   - Windows Powershell : `.venv/Scripts/activate.bat`
+   - Windows cmd : `source .venv/bin/activate`
+5. Install dependencies with `pip install -r requirements.txt`
+6. Run the code from ``experiments.ipynb`` or from `src/main.py`
 
 ### 3.3. Results
 
@@ -219,8 +236,6 @@ The RHM and the SHRM model parameters meaning nearly the same the only differenc
 @TODO: Discuss the paper in relation to the results in the paper and your results.
 
 ## 5. References
-
-@TODO: Provide your references here.
 
 Main Paper: `How Deep Networks Learn Sparse and Hierarchical Data: the Sparse Random Hierarchy Model`
 
