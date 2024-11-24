@@ -1,6 +1,6 @@
-# Paper title
+# Inspecting Prediction Confidence for Detecting Black-Box Backdoor Attacks
 
-Inspecting Prediction Confidence for Detecting Black-Box Backdoor Attacks
+
 
 # 1. Introduction
 This project is based on the findings from the paper "Inspecting Prediction Confidence for Detecting Black-Box Backdoor Attacks," presented at the Thirty Eighth AAAI Conference on Artificial Intelligence. The study by Tong Wang and colleagues introduces DTINSPECTOR, a defense strategy against the severe threat of backdoor attacks in deep learning models. These attacks manipulate model predictions by secretly altering training data, it is a vulnerability that DTINSPECTOR counters by examining prediction confidence anomalies.
@@ -157,6 +157,8 @@ Liu, Y., Ma, S., Aafer, Y., et al., "Trojaning Attack on Neural Networks", Proce
 # Contact
 
 
-**Haiqua Meerub**              **Umyma Shahzad**
+**Haiqua Meerub**             
+haiquameerub@gmail.com          
 
-haiquameerub@gmail.com          umyma02@gmail.com
+**Umyma Shahzad**
+umymashahzad02@gmail.com
