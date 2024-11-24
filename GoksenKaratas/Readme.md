@@ -40,7 +40,7 @@ First, the authors start by defining the preliminary relations obtained from cau
 <p align="center"> <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/GoksenKaratas/images/CausalGraphs.png" alt="Emotion Recognition Context Bias" width="400"> </p>
 
 To architecturally define the framework, the authors introduce an additional context branch to the pre-existing CAER architecture in order to denote the contextual bias. Once the emotion recognition problem is formulated as a causal graph, the given relations became useful for extracting direct effects of branches.
-While extendign the factual component, they also introduce a counterfactual component with a very similar architecture as the factual one. The main motivation behind this choice is to incorporate the extracted realations from the causal graphs and be able to govern the effects of the contextual features. 
+While extending the factual component, they also introduce a counterfactual component with a very similar architecture as the factual one. The main motivation behind this choice is to incorporate the extracted realations from the causal graphs and be able to govern the effects of the contextual features. 
 
 <p align="center"> <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/GoksenKaratas/images/Architecture.png" alt="Architecture" width="900"> </p>
 
