@@ -132,7 +132,7 @@ $$
 B_k = \{ e_i \mid t_k \leq t_i < t_{k+1} \}, \quad k = 1, 2, \dots, N
 $$
 
-Where $ t_k = k \cdot \Delta t $.
+Where $$ t_k = k \cdot \Delta t $$.
 
 ## Learnable Neural Dynamics
 
