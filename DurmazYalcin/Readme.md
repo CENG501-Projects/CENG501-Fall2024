@@ -245,6 +245,80 @@ $$
 \text{if } V(t) \geq V_{\text{thresh}} \quad \text{then spike, reset } V(t) \to V_{\text{reset}}
 $$
 
+** Synaptic Input and Spike Timing in Adaptive-SpikeNet**
+
+## Overview
+
+In a **Spiking Neural Network (SNN)**, the synaptic input at any given time is influenced by the spikes arriving from other neurons or pixels. The **synaptic input** at a specific time depends on both **spatial** and **temporal** aspects of the incoming spikes. This mechanism is particularly relevant in **event-based** systems such as the **Adaptive-SpikeNet** architecture for optical flow estimation.
+
+## 1. Synaptic Input 𝐼(𝑡) Calculation
+
+The synaptic input 𝐼(𝑡) for a given neuron at time 𝑡 is determined by the spikes that have occurred before that time, as well as their spatial locations. The general formula for computing the synaptic input is:
+
+### Mathematical Formulation
+
+For a pixel \((x, y)\), the synaptic input at time \(t\) is the sum of the contributions from all spikes that occurred before \(t\):
+
+\[
+I(t) = \sum_{(x', y')}\sum_{t_{spike}(x', y') < t} w(x', y') \cdot e(t - t_{spike}(x', y'))
+\]
+
+Where:
+
+- \( I(t) \) is the synaptic input at time \( t \),
+- \( w(x', y') \) is the synaptic weight from pixel \((x', y')\) (a learned parameter),
+- \( t_{spike}(x', y') \) is the timestamp of a spike from pixel \((x', y')\),
+- \( e(t - t_{spike}(x', y')) \) is the event-based function modeling the contribution of a spike from pixel \((x', y')\) at time \( t_{spike}(x', y') \).
+
+### Event Function
+
+The event function \( e(t - t_{spike}) \) represents the temporal influence of a spike over time. It is often modeled as a **decaying function**, such as exponential decay or a Gaussian kernel. For example:
+
+\[
+e(t - t_{spike}) = \exp\left( -\frac{(t - t_{spike})^2}{2\sigma^2} \right)
+\]
+
+Where:
+
+- \( \sigma \) controls the spread of the temporal influence of each spike.
+
+## 2. Spike Activity and Temporal Dynamics
+
+The timing of the spikes is crucial in determining the synaptic input:
+
+- **Earlier spikes**: Have a stronger impact on the synaptic input at later times, depending on the decay kernel.
+- **Recent spikes**: Have a more significant effect on the synaptic input at time \( t \), but their influence decays over time.
+
+This mechanism allows the SNN to process both **spatial** and **temporal** dependencies from the event-based data.
+
+## 3. Temporal and Spatial Dependencies in Adaptive-SpikeNet
+
+In the context of **Adaptive-SpikeNet** for **optical flow estimation**, the synaptic input mechanism is used to capture both the **temporal dynamics** and **spatial dependencies** of event-based data.
+
+- **Motion Estimation**: The synaptic input at each neuron corresponds to the spikes from neighboring pixels, which encode changes in the scene.
+- **Optical Flow**: By processing the spikes over time, the network learns to associate temporal spike patterns with the motion of objects in the scene. The optical flow \( u(x, y) \) is estimated by examining how the event-based data evolves over time.
+
+## 4. Summary of Synaptic Input Mechanism
+
+- The synaptic input \( I(t) \) is calculated by summing the weighted contributions of all past spikes, where the weights and the decay kernel control the influence of each spike.
+- The **temporal dynamics** of spikes, combined with the **spatial arrangement** of pixels, are essential for capturing motion in event-based systems.
+- Adaptive-SpikeNet uses these mechanisms to **learn the temporal patterns** of spikes and estimate motion (optical flow) in real-time.
+
+## 5. How to Use
+
+To implement this mechanism in your project, you can:
+
+1. Define the spike events and timestamps for each pixel.
+2. Implement the synaptic input calculation as described above.
+3. Train the network to learn the weights \( w(x', y') \) based on the event-based input and target output (e.g., optical flow).
+
+Feel free to check out the full implementation and contribute to the repository!
+
+## License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+
 #### Adaptations in Adaptive-SpikeNet:
 The paper introduces learnable dynamics for these neurons, enabling them to adjust their time constants $\tau_m$, thresholds $V_{\text{thresh}}$, and other parameters based on the input data. This adaptive mechanism improves the network's ability to capture complex motion patterns.
 
