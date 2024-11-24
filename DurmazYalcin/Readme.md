@@ -548,8 +548,7 @@ For each pixel in the event frame, the predicted optical flow is provided as `(u
 - **Bin 2 (t = [0.1, 0.2])**:
 [ 0 0 0 +1 0 0 0 0 +1 ]
 
-vbnet
-Kodu kopyala
+
 
 ### 1.3 Warping Bin 1
 
@@ -568,8 +567,6 @@ For example:
 Thus, the **Warped Bin 1** frame becomes:
 [ 0 -1 0 0 0 0 0 0 +1 ]
 
-vbnet
-Kodu kopyala
 
 ## Step 2: Calculate Photometric Loss
 
@@ -634,6 +631,110 @@ For example:
 ### 3.3 Smoothness Loss
 
 Finally, the smoothness loss is computed by averaging the gradients across all pixels. This term penalizes large discontinuities in the optical flow field, encouraging smoother motion between neighboring pixels.
+
+
+## Flow Gradients for Smoothness Loss
+
+The smoothness loss is based on the gradients of the flow components \( \hat{u} \) and \( \hat{v} \). We calculate these gradients using finite differences for each pixel in the flow field.
+
+### Step 1: Compute Gradients for \( \hat{u} \)
+
+For the flow component \( \hat{u} \), the differences between neighboring pixels along both the horizontal (\( x \)) and vertical (\( y \)) directions are calculated.
+
+#### Example flow field for \( \hat{u} \):
+
+\hat{u} = [ 0.2, 0.0, 0.0; 0.0, 0.0, 0.1; 0.0, 0.1, 0.0 ]
+
+
+
+
+#### Gradient Calculation for \( \hat{u} \):
+
+- At \( (0, 0) \):
+
+  \[
+  \nabla \hat{u}(0,0) = | \hat{u}_{1,0} - \hat{u}_{0,0} | + | \hat{u}_{0,1} - \hat{u}_{0,0} | = |0.0 - 0.2| + |0.0 - 0.2| = 0.2 + 0.2 = 0.4
+  \]
+
+- At \( (1, 0) \):
+
+  \[
+  \nabla \hat{u}(1,0) = | \hat{u}_{2,0} - \hat{u}_{1,0} | + | \hat{u}_{1,1} - \hat{u}_{1,0} | = |0.0 - 0.0| + |0.0 - 0.0| = 0 + 0 = 0
+  \]
+
+- At \( (2, 0) \):
+
+  \[
+  \nabla \hat{u}(2,0) = | \hat{u}_{2,0} - \hat{u}_{1,0} | + | \hat{u}_{2,1} - \hat{u}_{2,0} | = |0.0 - 0.0| + |0.0 - 0.0| = 0 + 0 = 0
+  \]
+
+### Step 2: Compute Gradients for \( \hat{v} \)
+
+Now, we compute the gradients for the \( \hat{v} \)-component.
+
+#### Example flow field for \( \hat{v} \):
+
+\hat{v} = [ 0.1, 0.0, 0.0; 0.0, -0.2, 0.3; 0.0, 0.0, 0.3 ]
+
+
+
+
+#### Gradient Calculation for \( \hat{v} \):
+
+- At \( (0, 0) \):
+
+  \[
+  \nabla \hat{v}(0,0) = | \hat{v}_{1,0} - \hat{v}_{0,0} | + | \hat{v}_{0,1} - \hat{v}_{0,0} | = |0.0 - 0.1| + |0.0 - 0.1| = 0.1 + 0.1 = 0.2
+  \]
+
+- At \( (1, 0) \):
+
+  \[
+  \nabla \hat{v}(1,0) = | \hat{v}_{2,0} - \hat{v}_{1,0} | + | \hat{v}_{1,1} - \hat{v}_{1,0} | = |0.0 - 0.0| + |-0.2 - 0.0| = 0 + 0.2 = 0.2
+  \]
+
+- At \( (2, 0) \):
+
+  \[
+  \nabla \hat{v}(2,0) = | \hat{v}_{2,0} - \hat{v}_{1,0} | + | \hat{v}_{2,1} - \hat{v}_{2,0} | = |0.0 - 0.0| + |0.0 - 0.0| = 0 + 0 = 0
+  \]
+
+### Step 3: Smoothness Loss Formula
+
+Now that we have the gradients for both the \( u \)- and \( v \)-components, the total smoothness loss is computed as:
+
+\[
+L_{\text{smooth}} = \frac{1}{N} \sum_{(x,y)} \left( \| \nabla \hat{u}(x,y) \| + \| \nabla \hat{v}(x,y) \| \right)
+\]
+
+Where \( N \) is the number of pixels.
+
+#### Gradients for \( \hat{u} \):
+
+\nabla \hat{u}(0,0) = 0.4, \quad \nabla \hat{u}(1,0) = 0, \quad \nabla \hat{u}(2,0) = 0 \nabla \hat{u}(0,1) = 0.4, \quad \nabla \hat{u}(1,1) = 0.1, \quad \nabla \hat{u}(2,1) = 0.1 \nabla \hat{u}(0,2) = 0.4, \quad \nabla \hat{u}(1,2) = 0, \quad \nabla \hat{u}(2,2) = 0.1
+
+shell
+
+
+#### Gradients for \( \hat{v} \):
+
+\nabla \hat{v}(0,0) = 0.2, \quad \nabla \hat{v}(1,0) = 0.2, \quad \nabla \hat{v}(2,0) = 0 \nabla \hat{v}(0,1) = 0.2, \quad \nabla \hat{v}(1,1) = 0.7, \quad \nabla \hat{v}(2,1) = 0.3 \nabla \hat{v}(0,2) = 0.2, \quad \nabla \hat{v}(1,2) = 0.3, \quad \nabla \hat{v}(2,2) = 0.3
+
+
+
+
+#### Summing the gradients:
+
+\[
+L_{\text{smooth}} = \frac{1}{9} \left( 0.4 + 0 + 0 + 0.4 + 0.1 + 0.1 + 0.4 + 0 + 0.1 + 0.2 + 0.2 + 0 + 0.2 + 0.7 + 0.3 + 0.2 + 0.3 + 0.3 \right)
+\]
+
+\[L_{\text{smooth}} = \frac{1}{9} \times 4.5 = 0.5\]
+
+Thus, the smoothness loss for this flow field is \( L_{\text{smooth}} = 0.5 \).
+
+
+
 
 
 
