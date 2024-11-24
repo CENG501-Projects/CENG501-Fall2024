@@ -193,12 +193,12 @@ The RHM and the SHRM model parameters meaning nearly the same the only differenc
 
 ### 3.1. Experimental setup
 
-1. Making SHRM dataset -> main part of the paper, explain the code in relation to the 'our interpretation' part
-2. Running CNN and LCN on them -> hyperparams come from appendix
-3. Getting graphs from results
-4. Running CIFAR10 with given architectures -> hyperparams come from appendix, nets come from citation
-5. Getting graphs from here
-6. Additional guidance on how to run Appendices
+Explanations of each experiment is below. There are sections from 1 to 4 for the main paper and from A to G for appendices. Each section has its goal, explanation, figure and implementation parts. Each section has a corresponding experiment file stored under `src/experiments`. 
+
+There are two ways to run our experiments:
+
+1. Follow the experiments.ipynb notebook and run each experiment.
+2. `src/main.py` runs each experiment from its file. Experiments are stored like `src/experiments/experiment_L.py` where L is the label of the experiment. 
 
 ---
 
