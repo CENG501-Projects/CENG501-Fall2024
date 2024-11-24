@@ -68,7 +68,7 @@ Notations:
 ### **3.2.  Intuition and insights**
 
 * The algorithm can indirectly modify training samples to enhance generalization because the training loss is weighted and the validation loss is unweighted.  
-* The model effectively treats validation performance as a "target for generalization" by iteratively updating Ï• and ğœƒ  to match the weighted training distribution with the validation distribution.
+* The model effectively treats validation performance as a "target for generalization" by iteratively updating ϕ  and 𝜃 to match the weighted training distribution with the validation distribution.
 
 ## **4\. MOLERE(Meta-Optimization of the Learned Reweighting)**
 
