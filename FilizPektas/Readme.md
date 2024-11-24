@@ -145,19 +145,19 @@ The tri-level optimization is reduced by the method to a bi-level formulation, w
 
 ## **6\. Deriving the update equations**
 
-### **6.1. Splitter network(Î˜)**
+### **6.1. Splitter network(Θ)**
 
 * The goal is to maximize loss on hard instances while minimizing loss on the validation set to enhance generalization by accurately predicting the label pair (ğ‘¥,ğ‘¦).
 
   ![A close-up of a math problemDescription automatically generated](https://github.com/Sinasi3/Sinasi3/blob/main/12.png?raw=true)
 
-### **6.2. Meta-network (Ï•)**
+### **6.2. Meta-network (ϕ)**
 
 * The main objective is minimizing the validation error using the classifier's predictions.
 
   ![A black and white math symbolDescription automatically generated](https://github.com/Sinasi3/Sinasi3/blob/main/13.png?raw=true)
 
-### **6.3. Classifier network (Î¸)**
+### **6.3. Classifier network (θ)**
 
 * Optimizing weighted training loss on the training set Dâ€².  
 * After e epochs of bi-level setup, ![](https://github.com/Sinasi3/Sinasi3/blob/main/14.png?raw=true) epochs occur on training data, where ![](https://github.com/Sinasi3/Sinasi3/blob/main/15.png?raw=true) accounts for K-times inner loop iterations.
