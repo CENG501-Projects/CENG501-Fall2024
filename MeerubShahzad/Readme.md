@@ -91,7 +91,7 @@ In the paper, validation approach focus on empirical tests without much mention 
 
 **o	Limited Attack Types:** Instead of six different backdoor attacks, I  will concentrate on two only. The BADNET and TROJANNN. These attacks are well documented and more easy to replicate for an undergraduate project, they allow a focused approach on testing and understanding the effectiveness of defense.
 ## 5.3 Experimental Validation:
-To validate the effectiveness of my implementation of DTINSPECTOR, I will followe a similar method to the original method but with the simplifications. This involved measuring the attack success rate (ASR) and comparing it to the accuracy of the model.
+To validate the effectiveness of my implementation of DTINSPECTOR, I will follow a similar method to the original method but with the simplifications. This involve measuring the attack success rate (ASR) and comparing it to the accuracy of the model.
 
 
 
