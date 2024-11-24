@@ -6,7 +6,7 @@ This readme file is an outcome of the [CENG501 (Spring 2024)](https://ceng.metu.
 
 @TODO: Introduce the paper (inc. where it is published) and describe your goal (reproducibility).
 
-For our CENG 501 Deep Learning term project, we implement the following paper on neural system identification and control: "Neural Optimal Control using Learned System Dynamics" [1]. The paper was published in Internation Conference on Robotics and Automation 2023, one of the most renowned and prestigious conferences in robotics. 
+For our CENG 501 Deep Learning term project, we implement the following paper on neural system identification and control: "Neural Optimal Control using Learned System Dynamics" [1]. The paper was published in International Conference on Robotics and Automation 2023, one of the most renowned and prestigious conferences in robotics. 
 
 The paper introduces neural networks to identify unknown nonlinear dynamics. Next, a neural optimal controller is developed using the identified dynamics. The results for both identification and control are demonstrated in four systems: Acrobot, Dubins car, Cartpole and Quadrotor. Since the primary goal of this project is to delve deep into the details of neural network implementations, we proceed to regenerate results incrementally. This means we implement system identification of some of these systems in the beginning. Later, as time permits, we implement the controllers for the systems identified. Once some systems have been studied end-to-end, we move on to investigate the remaining systems step-by-step.
 
@@ -77,6 +77,36 @@ The paper declares the parameters used as $\alpha_{cost} = 1$, $\alpha_{HJB} = 1
 
 @TODO: Explain the parts that were not clearly explained in the original paper and how you interpreted them.
 
+Although the paper is clear about the many details, there still remain some parts undisclosed and left to the reader to experiment with.
+
+### 2.2.1 Neural ODE MLP
+
+The number of neurons in the layers of the MLP for the system identification task is unclear. We try to adapt the best performing design using several experiments.
+
+The initialization of weights is also left ambiguous. They are randomly initialized by our choice because the weights for the controller network are said to be randomly initialized, as explained in the next section.
+
+### 2.2.2 The Value Function and The Controller Networks
+
+The depth and width of the MLPs used for the value function and the neural controller are not given in the paper. Our strategy is to determine the best architecture by trial and error.
+
+The weights of the controller MLP are initialized randomly, but no information is explicitly given for the network of the value function. We assume no change of style probbaly happened during method development. As a result, we initialize the weights of the MLP randomly also.
+
+### Data Generation
+
+The data sets consist of the triples $ (x, u, f(x,u))$. 
+
+The state and input are said to be sampled uniformly in their respective spaces. However, experimental results actually provide no bounds for the spaces. We prefer to set artifical limits such as $ -5 < u < 5$ to simplify the sampling process.
+
+In addition, it is explained that $f(x,u)$ are generated using the ground truth dynamics. The paper references [2], [3] at this point for Acrobot and Cartpole. However, we currently generate the datasets in MATLAB for the following reasons:
+
+- In MATLAB, we can directly set bounds to the variables and take samples.
+- The simulators in the references are not guaranteed to uniformly sample the state space.
+- Since the neural networks do not accept time as input, no actual simulation is needed. It is sufficient to pick a point and calculate the derivatives at that point until enough data is present.
+
+The system identification network is supervised by the gradients of the function $f$. We use the term gradient cautiously here because $x$ is a vector for any multidimensional system and this means $f$ is in fact multi-output. Therefore, we believe Jacobian would be a better use of terminology. In that case, the relevant cost function must use a matrix norm, not a vector norm. In out implementation, Frobenius norm is used as the matrix norm.
+
+The direct calculation of the Jacobian is difficult. So, unlike the data generation for $f(x,u)$, we do not use MATLAB and the ground truth equations. Instead, Pytorch's automatic differentiation engine [4] will likely be used to generate the ground truth Jacobian of $f$. 
+
 # 3. Experiments and results
 
 ## 3.1. Experimental setup
@@ -100,6 +130,12 @@ The paper declares the parameters used as $\alpha_{cost} = 1$, $\alpha_{HJB} = 1
 @TODO: Provide your references here.
 
 [1] S. Engin and V. Isler, "Neural Optimal Control using Learned System Dynamics," 2023 IEEE International Conference on Robotics and Automation (ICRA), London, United Kingdom, 2023, pp. 953-960, doi: 10.1109/ICRA48891.2023.10160339.
+
+[2] Greg Brockman, Vicki Cheung, Ludwig Pettersson, Jonas Schneider, John Schulman, Jie Tang, and Wojciech Zaremba. Openai gym. arXiv preprint arXiv:1606.01540, 2016.
+
+[3] Yuval Tassa, Yotam Doron, Alistair Muldal, Tom Erez, Yazhe Li, Diego de Las Casas, David Budden, Abbas Abdolmaleki, Josh Merel, Andrew Lefrancq, et al. Deepmind control suite. arXiv preprint arXiv:1801.00690, 2018.
+
+[4] "Autograd: Automatic Differentiation," PyTorch Tutorials, Accessed: Nov. 24, 2024. [Online]. Available: https://pytorch.org/tutorials/beginner/blitz/autograd_tutorial.html
 
 
 # Contact
