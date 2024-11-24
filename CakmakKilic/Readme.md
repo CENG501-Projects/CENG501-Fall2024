@@ -8,29 +8,29 @@ Project goal is to replicate the experiments described in the paper, evaluate th
 
 ## 1.1. Paper summary
 
-## 1.1.1 Motivation and Aim
+### 1.1.1 Motivation and Aim
 
 The increase in computational power has led to the emergence of highly complex neural networks. These networks require large amounts of annotated data for training. However, collecting such data without noisy labels is often very costly. As a result, techniques to handle noisy labeled data are essential. This paper suggests that restricting the expressivity of a neural network can improve its accuracy when trained on noisy labeled data. Expressivity can be restricted using classical regularization and compression techniques. The authors claim that the effectiveness of these techniques has not been thoroughly tested on noisy labels.
 
-## 1.1.2 Techniques 
+### 1.1.2 Techniques 
 
 Two main techniques are used to fight the overfitting problem on noisy labels:
 - Regularization Methods: Early stopping, weight decay, dropout, and label smoothing
 - Compression Techniques: Quantization and pruning.
 
-## 1.1.3 Datasets
+### 1.1.3 Datasets
 
 Cifar10 and BP4D data sets are used in this paper. 
 - Cifar10 is used with synthetic noisy labels. This allows to test regularization and quantization techniques for different noisy labels.
 - BP4D dataset is used for facial Action Unit (AU) detection and contains inherently noisy annotations due to the complexity of labeling facial expressions. It is usedd as a benchmark for evaluating the techniques under real-world noisy labeling conditions.
 
-## 1.1.4 Models
+### 1.1.4 Models
 
 In this paper two models are used.
 - ResNet-20: A residual network architecture is used for the CIFAR-10 dataset to test the impact of synthetic label noise.
 - Vanilla Architecture for AU Detection: This model is used for the BP4D dataset to test performance under real-world noisy annotations.
 
-## 1.1.5 Findings and Conclusion of the Paper
+### 1.1.5 Findings and Conclusion of the Paper
 
 - Both regularization and quantization effectively combat overfitting on noisy labels by improving the accuracy of the models.
 - Quantization performs better than traditional regularization methods at reducing overfitting on noisy datasets and also makes inference faster.
