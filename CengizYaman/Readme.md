@@ -1,4 +1,4 @@
-# @TODO: Paper title
+# Gradient-Regularized Out-of-Distribution Detection
 
 This readme file is an outcome of the [CENG501 (Spring 2024)](https://ceng.metu.edu.tr/~skalkan/DL/) project for reproducing a paper without an implementation. See [CENG501 (Spring 42) Project List](https://github.com/CENG501-Projects/CENG501-Fall2024) for a complete list of all paper reproduction projects.
 
@@ -14,7 +14,13 @@ This readme file is an outcome of the [CENG501 (Spring 2024)](https://ceng.metu.
 
 ## 2.1. The original method
 
-The method, named Greg+, consists of two main parts. In contrast to state-of-the-art methods which only focus on the value of the score function, Greg+ proposes a new regularization term added to the loss, obtained by regularizing the gradient of the score function. In addition, a novel energy-based sampling method is proposed to select more informative examples from the dataset during training, which is expecially important when the auxiliary dataset is large.
+As stated in the paper, the main approach in the literature for OOD detection is to define a scoring function S and use a threshold γ to distinguish different samples. If the score of a sample is below the threshold, then it is classified as an ID sample, and the label is OOD otherwise. Most relevant to the setup used in the paper, [2] uses the scoring function $S_{En}(x) = -LSE(f(x))$, and defines the following loss equation to make the model better differentiate ID and OOD samples:
+
+![Energy Loss](./Figures/EnergyLoss.png)
+
+where $m_{in} and $m_{aux} are threshold used to filter out ID and OOD samples. If the energy score of an ID (or OOD) sample is low (high) enough, then it is excluded from the loss calculation.
+
+The method, named Greg+ [1], consists of two main parts. In contrast to state-of-the-art methods which only focus on the value of the score function, Greg+ proposes a new regularization term added to the loss, obtained by regularizing the gradient of the score function. In addition, a novel energy-based sampling method is proposed to select more informative examples from the dataset during training, which is expecially important when the auxiliary dataset is large.
 
 ## 2.1.1. Gradient Regularization
 
@@ -35,7 +41,7 @@ As the paper mainly focuses on the energy loss as the score function, $L_{\Delta
 
 Thresholds $m_{in}$ and $m_{aux}$ are selected such that the loss only penalizes the gradient for the correctly detected samples. For a sample $x$, if $S(x)$ is below the threshold, we label it as ID, and label it as OOD otherwise.
 Following two cases could be considered to better understand the intuition behind this choice:
-1. If an ID (or OOD) sample is correctly detected, penalizing the gradient around that sample reduces sensitivity to small changes in the input, providing stable ID (OOD) classification.
+1. If an ID (or OOD) sample is correctly detected, penalizing the gradient around that sample reduces sensitivity to small changes in the input, providing stable ID (OOD) classification. So this sample should be included in the loss calculation.
 2. If a sample is misclassified, gradient regularization is not applied.
 
 The models mentioned in the experiments are trained using the following loss,
@@ -51,7 +57,9 @@ Auxiliary OOD datasets may be larger than the ID dataset, and using all OOD samp
 
 2. To perform clustering, K-Means clustering with a fixed number of clusters is used. For the number of clusters, the number of samples in each mini batch of training is used. More details on the choice of number of clusters can be found in the "Supplementary Material" section of the paper.
 
-3. a
+3. As the energy scores $S_i$ are used for OOD detection, the same scores are also used for sample selection. Given our choice of loss functions $L_S$ and $L_{\Delta S}$, samples with smallest energy scores of each cluster are selected for the former, and samples with the largest energy scores are selected for the latter. Intuitively, $L_S$ aims to increase energy scores of OOD samples, and $L_{\Delta S}$ aims to penalize the gradients for OOD samples with sufficiently large energy scores.
+
+Overall, clustering is used to make the model exposed to diverse regions of the feature space, and sampling is used to select the most informative samples from these clusters.
 
 ## 2.2. Our interpretation
 
