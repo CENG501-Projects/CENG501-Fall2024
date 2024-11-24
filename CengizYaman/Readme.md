@@ -14,13 +14,13 @@ As part of our CENG501 (Spring 2024) project, we aim to reproduce the results of
 
 The paper’s key contribution lies in proposing a method, GReg+, that enhances OOD detection by addressing two limitations in existing methods: reliance on score values without utilizing local gradient information and inefficient handling of large auxiliary datasets.
 
-1.Gradient Regularization (GReg): The central insight is that ID and OOD data tend to occupy distinct regions in the input space, and regularizing the gradient of the score function around these samples promotes stability in classification. This ensures that points in the neighborhood of an ID (or OOD) sample are consistently classified. By penalizing the gradient norm only for correctly detected samples, the method reduces sensitivity to small changes in the input, leading to a smoother score manifold.
+**1. Gradient Regularization (GReg):** The central insight is that ID and OOD data tend to occupy distinct regions in the input space, and regularizing the gradient of the score function around these samples promotes stability in classification. This ensures that points in the neighborhood of an ID (or OOD) sample are consistently classified. By penalizing the gradient norm only for correctly detected samples, the method reduces sensitivity to small changes in the input, leading to a smoother score manifold.
 
  
-2.Energy-Based Sampling: The authors propose a clustering-based sampling strategy that leverages normalized features and energy scores to select the most informative OOD samples during training. This approach ensures computational efficiency and avoids bias toward specific regions of the feature space.
+**2. Energy-Based Sampling:** The authors propose a clustering-based sampling strategy that leverages normalized features and energy scores to select the most informative OOD samples during training. This approach ensures computational efficiency and avoids bias toward specific regions of the feature space.
 
 
-3.Implementation and Results: The loss function used combines cross-entropy loss, gradient regularization, and energy-based sampling penalties. Empirical results demonstrate superior performance over state-of-the-art methods across multiple benchmarks, including CIFAR and ImageNet datasets.
+**3. Implementation and Results:** The loss function used combines cross-entropy loss, gradient regularization, and energy-based sampling penalties. Empirical results demonstrate superior performance over state-of-the-art methods across multiple benchmarks, including CIFAR and ImageNet datasets.
 
 By introducing these innovations, the paper provides a robust framework that not only enhances detection performance but also makes efficient use of large auxiliary datasets. Our project builds on this foundation to analyze and verify the reproducibility of these results.
 
