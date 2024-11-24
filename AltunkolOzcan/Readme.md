@@ -14,11 +14,31 @@ The paper introduces neural networks to identify unknown nonlinear dynamics. Nex
 
 @TODO: Summarize the paper, the method & its contributions in relation with the existing literature.
 
+![](/../main/AltunkolOzcan/images/overview.png)
+*Figure X: Original method overview*
+
 # 2. The method and our interpretation
 
 ## 2.1. The original method
 
 @TODO: Explain the original method.
+
+### 2.1.1 System Identification
+
+Suppose the system obeys the following time independent dynamical equation:
+
+```math
+\dot{x} = f(x, u),
+```
+where $x$ is the state of the system and $u$ is the input. The first goal is to train a neural network to demonstrate the relationship between $x$ and $\dot{x}$; namely, to learn the $f$ function. 
+
+The original method uses a three layer MLP $f_{\theta}$ to represent the $f$ function. The network is trained in a supervised fashion using using data samples of the form $ (x, u, f(x,u))$. The activation functions are sine functions, although the paper also provides results with other activation functions such as tanh and ReLU for comparison. 
+
+In addition to the values of $f$, $\nabla{f}$ are used to supervise training. The authors have found this can help generate smoother learned systems dynamics. Consequently, the loss function for system identification is set as 
+
+```math
+\mathrm{L}_{sys-id} = \sum_{i} || f_{\theta}(x_i,u_i) - f(x_i,u_i)|| + || \nabla{f}_{\theta}(x_i, u_i) - \nabla{f}(x_i, u_i) ||
+```
 
 ## 2.2. Our interpretation
 
