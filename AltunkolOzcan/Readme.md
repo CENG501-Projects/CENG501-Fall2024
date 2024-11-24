@@ -37,8 +37,41 @@ The original method uses a three layer MLP $f_{\theta}$ to represent the $f$ fun
 In addition to the values of $f$, $\nabla{f}$ are used to supervise training. The authors have found this can help generate smoother learned systems dynamics. Consequently, the loss function for system identification is set as 
 
 ```math
-\mathrm{L}_{sys-id} = \sum_{i} || f_{\theta}(x_i,u_i) - f(x_i,u_i)|| + || \nabla{f}_{\theta}(x_i, u_i) - \nabla{f}(x_i, u_i) ||
+\mathfrak{L}_{sys-id} = \sum_{i} || f_{\theta}(x_i,u_i) - f(x_i,u_i)|| + || \nabla{f}_{\theta}(x_i, u_i) - \nabla{f}(x_i, u_i) ||
 ```
+
+### 2.1.1 The Value Function and Controller Design
+
+According to the paper, so called control Hamiltonian $H$ is used for optimal control. $H$ is defined as
+
+```math
+H(x_t, \lambda_t, t) = \min_{u_t} \left\{ L(x_t, u_t, t) + \lambda_t^\top \cdot f(x_t, u_t, t) \right\},
+```
+where $L(x_t, u_t, t)$ is the running cost for control and $\lambda_t = \nabla_x V(x_t, t)$. Here, $V$ is known as the value function and it represent the optimal cost-to-go. Cost-to-go is initialized as $G(x_f)$, the terminal cost. The method in the paper uses a neural network to learn $V$ as well as the optimal controller.
+
+In theory, what is known as Pontryagin’s Maximum Principle (PMP) is used to find the optimal control signal. The paper provides a neural network approach for cases where the analytical solution is hard, especially with unknown dynamics. The authors name their approach as Control with Neural Dynamics (CND).  
+
+The controller network is made up of an MLP whose last layer is followed by a layer of tanh function in order to scale the input signal to the feasible range. Moreover, the network for the value function is also an MLP with tanh activations and skip connections. The remaining details of the networks, except for the loss functions, are not disclosed in the paper. 
+
+The training stats by sampling random initial states and randomly initialized controller parameters. Trajectories of the system are calculated using the learned dynamics $f_{\theta}$. The value function and the controller network are jointly trained by öinimizing the following cost function:
+
+```math
+\mathcal{L} = \alpha_{\text{cost}} \mathcal{L}_{\text{cost}} + \alpha_{\text{HJB}} \mathcal{L}_{\text{HJB}} + \alpha_{\text{final}} \mathcal{L}_{\text{final}} + \alpha_{\text{hamil}} \mathcal{L}_{\text{hamil}}
+```
+
+where each term is another cost function defined as
+
+```math
+\mathcal{L}_{\text{cost}} = \mathbb{E}_{x_0 \sim \rho} \int_{t_0}^{t_f} L(x_t, u_t, t) \, dt + G(x_f),
+```
+```math
+\mathcal{L}_{\text{HJB}} = \left\lVert \frac{\partial V_{\Phi}(x_t, t)}{\partial t} + H \right\rVert_1,
+```
+```math
+\mathcal{L}_{\text{final}} = \left\lVert V_{\Phi}(x_f, t_f) - G(x_f) \right\rVert_1.
+```
+
+The paper declares the parameters used as $\alpha_{cost} = 1$, $\alpha_{HJB} = 1$, $\alpha_{final} = 0.01$. Adam optimizer is used with a decaying learning rate starting from 0.01.
 
 ## 2.2. Our interpretation
 
