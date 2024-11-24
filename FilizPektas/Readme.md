@@ -60,7 +60,7 @@ Notations:
 ![A group of mathematical symbolsDescription automatically generated](https://github.com/Sinasi3/Sinasi3/blob/main/3not6.jpg.jpg?raw=true)
 
 * **Training Objective** seeks to determine which classifier parameters, ![](https://github.com/Sinasi3/Sinasi3/blob/main/3.1not1.jpg?raw=true), minimize the weighted training loss, with weights ![](https://github.com/Sinasi3/Sinasi3/blob/main/3.1not2.jpg?raw=true)and adjusting the significance of each training instance. The classifier will be guided toward settings that will yield good results on the validation data using this weighting function.  
-* **Validation objective** is to optimize Ï• , the instance-specific weights, by minimizing the unweighted validation loss. This step indirectly influences the inner optimization(training objective) by reweighting the training data to influence the learnt classifier, which strengthens the model's generalization on validation data.
+* **Validation objective** is to optimize ϕ , the instance-specific weights, by minimizing the unweighted validation loss. This step indirectly influences the inner optimization(training objective) by reweighting the training data to influence the learnt classifier, which strengthens the model's generalization on validation data.
 
 
   
