@@ -72,6 +72,7 @@ To exclude the explicitly captured context bias in NDE, Total Indirect Effect (T
 <p align="left"> <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/GoksenKaratas/images/EQ9.png" alt="EQ9" width="400"> </p>
 The resulting TIE is than used as the unbiased prediction during inference.
 
+
 **Implementation Instantiation**
 
 
