@@ -402,11 +402,26 @@ The dual loss paradigm enables Adaptive-SpikeNet to handle diverse datasets:
 - **Real-World Datasets (Self-Supervised)**: Leverages unsupervised learning techniques for datasets lacking ground truth, making the method versatile for real-world applications.
 
 
-### Training and Optimization Event-Based Optical Flow Estimation Example
+# Event-Based Optical Flow Estimation Using Spiking Neural Networks
 
-To better comprehend the algorithm, let us give an example and explain the procedure on this example. This example demonstrates how event data is collected, and converted into a usable spike format, and how loss is calculated. We work through a 3×3 pixel frame over 3 timestamps. The steps are explained systematically.
+This repository contains an implementation of **event-based optical flow estimation** using **spiking neural networks** (SNNs) with learnable neural dynamics. The model leverages the adaptive-spike mechanism, which is particularly suited for processing event-based data.
 
-## Step 1: Simulate Event Data
+## Overview
+
+Optical flow estimation typically involves calculating the motion of objects between consecutive frames of video. In the context of event-based cameras, such as the **Dynamic Vision Sensor (DVS)**, each pixel generates events asynchronously when there is a change in the scene. These events provide rich temporal information that can be used for tasks like optical flow estimation, especially in dynamic or low-light environments.
+
+This approach utilizes **spiking neural networks** to predict optical flow by leveraging the asynchronous nature of event data.
+
+## Requirements
+
+- Python 3.7+
+- TensorFlow 2.x
+- Numpy
+- Matplotlib
+
+## Step-by-Step Procedure
+
+### Step 1: Simulate Event Data
 
 We begin by simulating event data for a 3×3 pixel array. Each pixel records events with the following format:
 
@@ -414,7 +429,7 @@ We begin by simulating event data for a 3×3 pixel array. Each pixel records eve
 - **t**: Timestamp of the event
 - **p**: Polarity of the event (1 for intensity increase, -1 for intensity decrease)
 
-Assume the following event stream over 3 timestamps:
+The following table shows a hypothetical event stream over 3 timestamps:
 
 | Pixel (x, y) | Timestamp (t) | Polarity (p) |
 |--------------|---------------|--------------|
@@ -425,37 +440,34 @@ Assume the following event stream over 3 timestamps:
 | (0, 2)       | t₃ = 0.3      | -1           |
 | (2, 1)       | t₃ = 0.3      | +1           |
 
-## Step 2: Aggregate Events into Temporal Bins
+### Step 2: Aggregate Events into Temporal Bins
 
-We divide the time range into bins to create event frames. Assume each bin represents a 0.1-second interval. The data is binned as follows:
+Next, we divide the time range into bins to create event frames. Assume each bin represents a 0.1-second interval. The data is binned as follows:
 
-### Bin 1 (t = [0, 0.1]):
+- **Bin 1** (t = [0, 0.1]):
+    - Pixel (0, 0): +1
+    - Pixel (1, 1): -1
 
+- **Bin 2** (t = [0.1, 0.2]):
+    - Pixel (2, 2): +1
+    - Pixel (1, 0): +1
 
-### Bin 2 (t = [0.1, 0.2]):
+- **Bin 3** (t = [0.2, 0.3]):
+    - Pixel (0, 2): -1
+    - Pixel (2, 1): +1
 
+### Step 3: Convert Event Frames into Spikes
 
-### Bin 3 (t = [0.2, 0.3]):
+We use rate coding to convert the event frames into spikes. Each event corresponds to one spike over the time interval. The polarity of the event determines whether the spike is excitatory or inhibitory:
 
+- Positive polarity (+1) corresponds to an excitatory spike.
+- Negative polarity (-1) corresponds to an inhibitory spike.
 
-These bins represent the event data in both spatial and temporal dimensions.
+For each bin, we convert the event data into spike frames.
 
-## Step 3: Convert Event Frames into Spikes
+### Step 4: Predict Optical Flow
 
-Using an encoding method like rate coding, we convert the event frames into spikes. Each event corresponds to 1 spike over the time interval. The polarity of the event determines whether the spike is excitatory or inhibitory:
-
-- Positive polarity (+1) corresponds to excitatory spikes.
-- Negative polarity (-1) corresponds to inhibitory spikes.
-
-### Spike Frames for Bin 1, Bin 2, and Bin 3:
-
-- **Bin 1**: Same as event frame.
-- **Bin 2**: Same as event frame.
-- **Bin 3**: Same as event frame.
-
-## Step 4: Predict Optical Flow
-
-We now predict the optical flow using the spiking neural network. Assume the predicted optical flow (**f̂**) at each pixel is as follows:
+Once we have the spike frames, we predict the optical flow (**f̂**) at each pixel using a spiking neural network. Assume the predicted optical flow for each pixel is as follows:
 
 | Pixel (x, y) | Predicted Flow (û, v̂) | Ground Truth Flow (u, v) |
 |--------------|-------------------------|--------------------------|
@@ -463,36 +475,37 @@ We now predict the optical flow using the spiking neural network. Assume the pre
 | (1, 1)       | (0.0, -0.2)             | (0.0, -0.3)              |
 | (2, 2)       | (0.1, 0.3)              | (0.1, 0.3)               |
 
-## Step 5: Calculate Loss
+### Step 5: Calculate Loss
 
-### (a) End-Point Error (EPE) Loss
+#### (a) End-Point Error (EPE) Loss
 
-The End-Point Error (EPE) is calculated for each pixel:
+The **End-Point Error (EPE)** is calculated for each pixel using the following formula:
 
-EPE(x, y) = (û - u)² + (v̂ - v)²
-
-
+\[
+EPE(x, y) = (û - u)^2 + (v̂ - v)^2
+\]
 
 For our example:
 
-- **Pixel (0, 0)**: EPE = (0.2 - 0.3)² + (0.1 - 0.1)² = 0.1
-- **Pixel (1, 1)**: EPE = (0.0 - 0.0)² + (-0.2 - (-0.3))² = 0.1
-- **Pixel (2, 2)**: EPE = (0.1 - 0.1)² + (0.3 - 0.3)² = 0.0
+- **Pixel (0, 0)**: EPE = \((0.2 - 0.3)^2 + (0.1 - 0.1)^2 = 0.1\)
+- **Pixel (1, 1)**: EPE = \((0.0 - 0.0)^2 + (-0.2 - (-0.3))^2 = 0.1\)
+- **Pixel (2, 2)**: EPE = \((0.1 - 0.1)^2 + (0.3 - 0.3)^2 = 0.0\)
 
+The total EPE loss is the mean of the individual pixel errors:
 
-The total loss is the mean EPE over all pixels:
-Lₑₚₑ = (0.1 + 0.1 + 0.0) / 3 = 0.0667
+\[
+L_{EPE} = \frac{0.1 + 0.1 + 0.0}{3} = 0.0667
+\]
 
+#### (b) Photometric Consistency Loss
 
-### (b) Photometric Consistency Loss
+The **photometric consistency loss** compares the warped event frame at \( t_1 \) using the predicted flow with the event frame at \( t_2 \). The formula is:
 
-The photometric consistency loss compares the warped event frame at t₁ using the predicted flow with the event frame at t₂. The formula is:
+\[
+L_{photometric} = \frac{1}{N} \sum |I_{t1}(x, y) - I_{t2}(x + û, y + v̂)|
+\]
 
-Lₚₕₒₜₒ = (1/N) * Σ |Iₜ₁(x, y) - Iₜ₂(x + û, y + v̂)|
-
-
-
-#### Step 1: Warp Event Frame Using Predicted Flow
+##### Step 1: Warp Event Frame Using Predicted Flow
 
 For simplicity, we warp Bin 1 to align with Bin 2 using the predicted flow. The predicted optical flow for each pixel is:
 
@@ -502,35 +515,38 @@ For simplicity, we warp Bin 1 to align with Bin 2 using the predicted flow. The 
 | (1, 1)       | (0.0, -0.2)             |
 | (2, 2)       | (0.1, 0.3)              |
 
-#### Step 2: Calculate Photometric Loss
+##### Step 2: Calculate Photometric Loss
 
 The warped frame and target frame are compared pixel by pixel. For the nonzero pixels:
 
-- At **(0, 0)**:|0 - 0| = 0
-- At **(1, 1)**:|-1 - 0| = 1
-- At **(2, 2)**:|+1 - +1| = 0
+- At **(0, 0)**: \(|0 - 0| = 0\)
+- At **(1, 1)**: \(|-1 - 0| = 1\)
+- At **(2, 2)**: \(|+1 - +1| = 0\)
 
 The total photometric loss is:
 
-Lₚₕₒₜₒ = (0 + 1 + 0) / 3 = 0.333
+\[
+L_{photometric} = \frac{0 + 1 + 0}{3} = 0.333
+\]
 
+#### (c) Smoothness Loss
 
-### (c) Smoothness Loss
+**Smoothness loss** penalizes large gradients in the flow, encouraging smooth optical flow fields across neighboring pixels. The formula is:
 
-Smoothness loss penalizes large gradients in the flow, encouraging smooth optical flow fields across neighboring pixels. The formula is:
+\[
+L_{smoothness} = \frac{1}{N} \sum \left( | \nabla û(x, y) | + | \nabla v̂(x, y) | \right)
+\]
 
-Lₛₘₒₒₗ = (1/N) * Σ (|∇û(x, y)| + |∇v̂(x, y)|)
+Where \( \nabla û \) and \( \nabla v̂ \) are the gradients of the predicted optical flow in the \( x \) and \( y \) directions, respectively.
 
-
-We compute the gradient using finite differences between adjacent pixels. Assume the predicted flow values are padded with zeros for boundaries.
-
-For simplicity, you would compute the gradients for the predicted flow (û) and (v̂) over all pixels, then calculate the smoothness loss.
-
----
-
-## Conclusion
+### Conclusion
 
 This example walked through the process of collecting event data, converting it into spikes, predicting optical flow, and calculating various losses including EPE, photometric consistency, and smoothness loss. These steps demonstrate how spiking neural networks can be used for event-based optical flow estimation.
+
+## Usage
+
+To use this model, clone the repository and follow the instructions in the installation section. You can modify the event data, tuning parameters, or experiment with different encoding schemes to explore the behavior of the model in various scenarios.
+
 
 
 
