@@ -15,12 +15,12 @@ By successfully replicating the results, we aim to verify the claims in the pape
 
 ## 1.1. Paper summary
 
-The paper investigates the incremental learning dynamics of transformer models, where the rank of the difference between trained and initial weights increases progressively during training. The authors present both theoretical insights and empirical evidence to support their findings, shedding light on the structured nature of transformer training dynamics.
+The paper investigates the incremental learning dynamics of transformer models, where the rank of the difference between trained and initial weights increases progressively during training. The authors present both theoretical insights and empirical evidence to support their findings, shedding light on the structured nature of transformer training dynamics .
 
 The authors simplify the transformer model by assuming diagonal weight matrices for attention layers and small initialization.
 They prove that training proceeds in stages, where weights plateau near a saddle point for most of a stage. At the end of each stage, the rank of weight updates increases by at most one. These findings are derived using gradient flow dynamics and extend existing theories from simpler, linear networks to nonlinear transformer models.
 
-The model contributes the literature in theoretical and empirical result related to how transformers work. The paper identifies and rigorously analyzes the incremental rank growth during transformer training, previously unexplored in nonlinear attention-based models. It extends theories of incremental learning and low-rank bias from simpler linear networks to more complex nonlinear architectures, such as transformers. In empirical side, the paper demonstrates that incremental rank growth occurs in practice for models trained with standard optimizers (e.g., Adam), even when theoretical assumptions (e.g., diagonal weights) do not apply. They link their findings to LoRA, a fine-tuning method that constrains weight updates to low-rank subspaces, suggesting that the incremental dynamics observed in this work might explain LoRA's efficiency.
+The model contributes the literature in theoretical and empirical result related to how transformers work. The paper identifies and rigorously analyzes the incremental rank growth during transformer training, previously unexplored in nonlinear attention-based models. It extends theories of incremental learning[[4]](#4) and low-rank bias from simpler linear networks to more complex nonlinear architectures, such as transformers. In empirical side, the paper demonstrates that incremental rank growth occurs in practice for models trained with standard optimizers (e.g., Adam), even when theoretical assumptions (e.g., diagonal weights) do not apply. They link their findings to LoRA [[1]](#1) , a fine-tuning method that constrains weight updates to low-rank subspaces, suggesting that the incremental dynamics observed in this work might explain LoRA's efficiency.
 # 2. The method and our interpretation
 
 ## 2.1. The original method
@@ -32,7 +32,7 @@ The authors analyze transformer training dynamics under two simplifying assumpti
 
 Diagonal Weights: Each attention head’s weight matrices (
 $𝑊_𝐾 , 𝑊_𝑄 , 𝑊_𝑉 , 𝑊_𝑂$ ) are diagonal.
-Small Initialization: Weights are initialized with very small values (∼𝑂(𝛼), where 𝛼≪1).
+Small Initialization: Weights are initialized with very small values (∼𝑂(𝛼), where 𝛼≪1).  [[3]](#3)
 Using these assumptions, they derive:
 
 Discrete Stages in Training:
@@ -49,7 +49,7 @@ These dynamics generalize to nonlinear networks, extending prior works focused o
 
 Mathematical Formulation:
 
-The method uses gradient flow to track the evolution of weights:
+The method uses gradient flow [[2]](#2) to track the evolution of weights:
 
 $𝑑𝜃𝑑𝑡=−∇_𝜃 𝐿(𝜃)$
 Analysis reveals that weight updates are biased toward low-rank solutions, and rank increases step-by-step as the model escapes saddle points.
@@ -208,7 +208,10 @@ Singular values are normalized relative to the largest singular value to align w
 
 # 5. References
 
-@TODO: Provide your references here.
+#### <a id="1">[1]</a> Edward J Hu, Yelong Shen, Phillip Wallis, Zeyuan Allen-Zhu, Yuanzhi Li, Shean Wang, Lu Wang, and Weizhu Chen, Lora: Low-rank adaptation of large language models, arXiv preprint arXiv:2106.09685 (2021).
+#### <a id="2">[2]</a> Francis Bach, Effortless optimization through gradient flows, Machine Learning Research Blog. https://francisbach. com/gradient-flows (2020). 
+#### <a id="3">[3]</a> Arthur Jacot, Francois Gaston Ged, Berfin Simsek, Cl´ement Hongler, and Franck Gabriel, Saddle-to-saddle dynamics in deep linear networks: Small initialization training, symmetry, and sparsity, 2021.
+#### <a id="4">[4]</a> Jiawei Zhao, Yifei Zhang, Beidi Chen, Florian Sch¨afer, and Anima Anandkumar, Inrank: Incremental low-rank learning, arXiv preprint arXiv:2306.11250 (2023).
 
 # Contact
 
