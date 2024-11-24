@@ -78,14 +78,14 @@ We adjusted each image's dimensions so that the shorter side was 600 pixels whil
       - Detection Model Training:
         Stochastic gradient descent (SGD) with a momentum of 0.9 will be used for optimization.To avoid overfitting, a weight decay of 10^-4 was         applied.Using a warm-up technique, the learning rate was progressively changed from its initial setting of 0.02. The learning rate was            lowered by a factor of 10 at 30000 and 35000 iterations during the 40000 iterations of training.
       - False Negative Prediction Module (FNPM):
-        SGD optimization with a 10^4 initial learning rate. A cosine annealing scheduler was used to train for 2000 iterations, gradually lowering       the learning rate.
+        SGD optimization with a 10^-4 initial learning rate. A cosine annealing scheduler was used to train for 2000 iterations, gradually lowering       the learning rate.
   - Training Configuration
       - To guarantee a balanced sampling from each domain, the batch size for both source and target domain data was set at 4.
       - Five rounds of active sampling were conducted at 5k, 10k, 15k, 20k, and 25k iterations. The target samples that provided the most information     were chosen for annotation at the end of each round.
     - Key hyperparameters:
         - Variance threshold (𝛾) : 0.1
         - Dropout rate (𝜂): 0.1
-        - Number of variational inferences (𝑀 10 Exponential moving average (EMA) rate (𝛼): 0.9996 
+        - Number of variational inferences (𝑀): 10 Exponential moving average (EMA) rate (𝛼): 0.9996 
         - Weight of adversarial loss (𝜆): 0.01
   - Evaluation Metrics:
   The average precision (AP) metric at an intersection over union (IoU) threshold of 0.5 was used to assess the effectiveness of our               approach. For multi-class scenarios, such as Cityscapes to BDD100k (C -> B) and Cityscapes to Foggy Cityscapes (C -> F), we reported the           mean average precision (mAP) for each object class.
