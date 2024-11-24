@@ -45,7 +45,7 @@ In addition to the values of $f$, $\nabla{f}$ are used to supervise training. Th
 \mathfrak{L}_{sys-id} = \sum_{i} || f_{\theta}(x_i,u_i) - f(x_i,u_i)|| + || \nabla{f}_{\theta}(x_i, u_i) - \nabla{f}(x_i, u_i) ||
 ```
 
-### 2.1.1 The Value Function and Controller Design
+### 2.1.2 The Value Function and Controller Design
 
 According to the paper, so called control Hamiltonian $H$ is used for optimal control. $H$ is defined as
 
@@ -96,7 +96,7 @@ The depth and width of the MLPs used for the value function and the neural contr
 
 The weights of the controller MLP are initialized randomly, but no information is explicitly given for the network of the value function. We assume no change of style probbaly happened during method development. As a result, we initialize the weights of the MLP randomly also.
 
-### Data Generation
+### 2.2.3 Data Generation
 
 The data sets consist of the triples $(x, u, f(x,u))$. 
 
