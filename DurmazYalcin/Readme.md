@@ -24,24 +24,56 @@ The proposed method utilizes a simple U-Net framework to estimate the optical fl
 ![Network](https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/SpikeNetwork.png)
 
 Method (a) represents a framework from prior work that is already publicly available. In contrast, method (b) refers to the newly proposed framework, which is not yet publicly accessible. Our implementation will focus on method (b).
-
 ### Loss Function
-Loss function, $L^{u}$, is defined through two constraints
+Adaptive-SpikeNet employs two distinct loss paradigms—**supervised loss** and **self-supervised loss**—depending on the availability of labeled optical flow datasets. Below is a detailed explanation of how these approaches are utilized:
+
+## 1. Supervised Loss
+
+This approach is used when ground truth optical flow labels are available for the dataset, such as in datasets specifically created for optical flow tasks.
+
+### Loss Definition:
+The supervised loss directly compares the predicted optical flow $( \hat{f}(x, y) )$ to the ground truth flow $( f_{\text{true}}(x, y) )$.
+
+#### (a) End-Point Error (EPE):
+The End-Point Error (EPE) is the primary supervised loss function:
 
 $$
-L^{u} = l_{\text{photo}} + \alpha l_{\text{smooth}}
+L_{\text{EPE}} = \frac{1}{N} \sum_{(x, y)} \left( (\hat{u}(x, y) - u(x, y))^2 + (\hat{v}(x, y) - v(x, y))^2 \right)
 $$
 
+Where:
+
+- $( \hat{u}(x, y), \hat{v}(x, y) )$ are the predicted horizontal and vertical flow components at pixel \( (x, y) \),
+- $( u(x, y), v(x, y) )$ are the corresponding ground truth components,
+- $( N )$ is the total number of pixels.
+
+
+## 2. Self-Supervised Loss
+
+For datasets where ground truth optical flow is unavailable (e.g., real-world event-based datasets), Adaptive-SpikeNet employs a self-supervised loss based on the concept of **photometric consistency**.
+
+### Loss Definition:
+The self-supervised loss assumes that pixel intensities remain consistent across consecutive frames, except for motion-induced changes. It uses warping techniques to estimate the consistency of pixel intensities.
+
+#### (a) Photometric Loss:
 The photometric loss, $l_{\text{photo}}$, inserts that when the grayscale image frame at time $t+\Delta t$ is warped backward to align with the image frame at time $t$ using the estimated optical flow, the two frames should appear identical. Any discrepancy or inconsistency between the frames highlights a potential error in the estimated optical flow vectors.
 
 $$
 l_{\text{photo}} = \sum_{x, y} \rho\left(I_t(x, y) - I_{t + \Delta t}(x + u, y + v)\right)
 $$
 
+#### (b) Smoothness Loss:
 On the other hand, the smoothness loss, $l_{\text{smooth}}$​, enforces the assumption that neighboring pixels should exhibit similar optical flow values. While this may not hold true for every neighboring pixel, it is a reasonable assumption for most pixels within the image. To balance its contribution to the overall loss, this term is scaled by a parameter $\alpha$.
 
 $$
 l_{\text{smooth}} = \sum_{j}\sum_{i} \left( \lVert u_{i,j} - u_{i+1,j} \rVert + \lVert u_{i,j} - u_{i,j+1} \rVert + \lVert v_{i,j} - v_{i+1,j} \rVert + \lVert v_{i,j} - v_{i,j+1} \rVert \right)
+$$
+
+### Combined Loss:
+The self-supervised loss combines the photometric and smoothness terms:
+
+$$
+L^{u} = l_{\text{photo}} + \alpha l_{\text{smooth}}
 $$
 
 # 2. The method and our interpretation
