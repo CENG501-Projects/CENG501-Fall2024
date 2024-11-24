@@ -200,32 +200,191 @@ The RHM and the SHRM model parameters meaning nearly the same the only differenc
 5. Getting graphs from here
 6. Additional guidance on how to run Appendices
 
-@TODO: Describe the setup of the original paper and whether you changed any settings.
+---
+
+### Experiment 1 - Sample Complexity of LCN and CNN
+
+-> Refer to above for sample complexity
+-> Refer to above for LCN and CNN
+
+![Figure 3](assets/figure4.png)
+
+---
+
+### Experiment 2 - Benefit of Sparsity
+
+-> Refer to the percentage of important pixels
+-> Refer to the reformulated LCN sample complexity
+-> Add the graph from the paper
+
+![Figure 5](assets/figure5.png)
+
+---
+
+### Experiment 3 - LCN Sample Complexity, Synonym and Diffeomorphism Sensitivity
+
+**Goal**: Show that sample complexity of a LCN is equivalent to its sample complexity for synonymic sensitiviy and to its sample complexity for diffeomorphism sensitivity.
+
+#### Explanation of Experiment 3
+
+$P^*_S ≈ P^*_{LCN}$ and $P^*_D ≈ P^*_{LCN}$ where:
+
+- $P^*_S$ is the sample complexity of LCN for $S_2$. $S_2$ is the synonymic sensitivity at layer 2.
+- $P^*_D$ is the sample complexity of LCN for $D_2$. $D_2$ is the diffeomorphism sensitivity at layer 2.
+
+![Figure 6](assets/figure6.png)
+
+#### Implementation of Experiment 3
+
+@Todo Experiment 3
+
+---
+
+### Experiment 4 - Test Error vs Diffeomorphism Sensitivity
+
+**Goal** : Show that correlations of diffeomorphism and synonimic sensitivity of CNN networks match with common architectures trained on CIFAR10 dataset.
+
+#### Explanation of Experiment 4
+
+-> write
+
+![Figure 1](assets/figure1.png)
+![Figure 1 Explanation](assets/figure1_explanation.png)
+
+#### Implementation of Experiment 4
+
+@TODO experiment 4
+
+---
+
+### Experiment From Appendix A - Sparsity B
+
+**Goal** : Show that Sparsity A and B are equivalent.
+
+#### Explanation of Experiment A
+
+![Figure 7](assets/figure7.png)
+
+![Figure 8](assets/figure8.png)
+
+---
+
+### Experiment from Appendix B - Common Architecture Learning SRHM
+
+-> Common architectures learning sparsity.
+
+![Figure 9](assets/figure9.png)
+
+---
+
+### 
+
+### Experiment From Appendix D - Sample Complexity of LCN
+
+**Goal** : Empirically find the sample complexity $P^*$ of the LCN architecture.
+
+#### Explanation of Experiment D
+
+Formally show that $P^*_{LCN} ∼ C_0(s, L)(s_0 + 1)^Ln_cm^L$ where:
+
+- $C_0(s, L)$ is proportional to $s^{L/2}$.
+- $s$ is number of informative features.
+- $s_0$ is the number of uninformative features in a patch.
+- $n_c$ is number of classes.
+- $m$ is the number of synonyms per feature.
+- $L$ is the number of layers of the SRHM network.
+
+![Figure 10](assets/figure10.png)
+![Figure 11](assets/figure11.png)
+![Figure 12](assets/figure12.png)
+
+#### Implementation of Experiment D
+
+@TODO for Experiment D
+
+---
+
+### Experiment From Appendix E - Sample Complexity of CNN
+
+**Goal** : Empirically find the sample complexity $P^*$ of the CNN architecture.
+
+#### Explanation of Experiment E
+
+Formally show that $P^*_{CNN} ∼ C_1(s_0 + 1)^2n_cm^L$ where:
+
+- $C_1$ is a constant.
+- $s_0$ is the number of uninformative features in a patch.
+- $n_c$ is number of classes.
+- $m$ is the number of synonyms per feature.
+- $L$ is the number of layers of the SRHM network.
+
+![Figure 13](assets/figure13.png)
+![Figure 14](assets/figure14.png)
+![Figure 15](assets/figure15.png)
+
+#### Implementation of Experiment E
+
+@TODO impelemntation of experiment E
+
+---
+
+### Experiment From Appendix F - Sample Complexity of FCN
+
+**Goal** : Empirically find the sample complexity of a FCN (Fully Connected Network).
+
+#### Explanation of Experiment F
+
+In figure at the left, plot sample complexity to reach 10% test error vs sample complexity to reach 30% $S_2$ synonimic sensitivity. In figure at the right, it is the same expect x-axis is for sample complexity to reach 10% $D_2$ diffeomorphism sensitivity.
+
+![Figure 16](assets/figure16.png)
+
+#### Implementation
+
+@TODO
+
+---
+
+### Experiment From Appendix G - $S_k$ and $D_k$ Sensitivity To Permutations
+
+**Goal** : Plot the sensitivity of changes to $S_k$ and $D_k$, where k is the layer number.
+
+#### Explanation
+
+Correlation between test error 
+
+![Figure 17](assets/figure16.png)
+
+#### Implementation of Experiment G
+
+@TODO implemenetation of experiment G
+
+---
 
 ### 3.2. Running the code
 
 The code is structured as follows:
 
-- assets folder has figures from the paper.
-- src folder has the paper implementation. It has following subfolders:
-  - models has implementations of resnet, vgg etc
-  - SRHM has the papers implementation
-  - utils has utility functions such as CIFAR10 dataloader
-  - main.py is the code for
-- experiments.py is an annotated version of the paper. It reflects the code from main.py, but it is interactive.
-- requirements.txt has the dependencies required to run the experiments.
+- `assets` folder has figures from the paper.
+- `src` folder has the paper implementation. It contains:
+  - `models` has implementations of resnet, vgg etc
+  - `SRHM` has the papers implementation
+  - `utils` has utility functions such as CIFAR10 dataloader
+  - `main.py` is the code for
+- `tests` folder has tests for our implementations.
+- `experiments.ipynb` is an annotated version of the paper. It reflects the code from `main.py`, but it is interactive.
+- `requirements.txt` has the dependencies required to run the experiments.
 
 To run the code:
 
-1. Make sure you have Python 3.12 installed.
-2. Clone the repository or copy folder of this implementation. Make sure you are on the root directory of the project.
+1. Make sure you have `Python3.12` installed.
+2. Clone the repository or copy folder of this implementation. Make sure you are at the root directory of this project.
 3. Create a virtual environment using `python -m venv .venv`.
 4. Activate the venv using:
-   - Linux/Mac : `.venv/Scripts/activate`
+   - Linux/Mac : `source .venv/bin/activate`
    - Windows Powershell : `.venv/Scripts/activate.bat`
-   - Windows cmd : `source .venv/bin/activate`
+   - Windows cmd : `.venv/Scripts/activate.bat`
 5. Install dependencies with `pip install -r requirements.txt`
-6. Run the code from ``experiments.ipynb`` or from `src/main.py`
+6. Run the code from `experiments.ipynb` or from `src/main.py`
 
 ### 3.3. Results
 
