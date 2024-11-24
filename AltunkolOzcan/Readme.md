@@ -6,6 +6,10 @@ This readme file is an outcome of the [CENG501 (Spring 2024)](https://ceng.metu.
 
 @TODO: Introduce the paper (inc. where it is published) and describe your goal (reproducibility).
 
+For our CENG 501 Deep Learning term project, we implement the following paper on neural system identification and control: "Neural Optimal Control using Learned System Dynamics" [1]. The paper was published in Internation Conference on Robotics and Automation 2023, one of the most renowned and prestigious conferences in robotics. 
+
+The paper introduces neural networks to identify unknown nonlinear dynamics. Next, a neural optimal controller is developed using the identified dynamics. The results for both identification and control are demonstrated in four systems: Acrobot, Dubins car, Cartpole and Quadrotor. Since the primary goal of this project is to delve deep into the details of neural network implementations, we proceed to regenerate results incrementally. This means we implement system identification of some of these systems in the beginning. Later, as time permits, we implement the controllers for the systems identified. Once some systems have been studied end-to-end, we move on to investigate the remaining systems step-by-step.
+
 ## 1.1. Paper summary
 
 @TODO: Summarize the paper, the method & its contributions in relation with the existing literature.
@@ -41,6 +45,9 @@ This readme file is an outcome of the [CENG501 (Spring 2024)](https://ceng.metu.
 # 5. References
 
 @TODO: Provide your references here.
+
+[1] S. Engin and V. Isler, "Neural Optimal Control using Learned System Dynamics," 2023 IEEE International Conference on Robotics and Automation (ICRA), London, United Kingdom, 2023, pp. 953-960, doi: 10.1109/ICRA48891.2023.10160339.
+
 
 # Contact
 
