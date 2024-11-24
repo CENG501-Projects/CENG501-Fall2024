@@ -1,0 +1,7 @@
+There are two datasets which will be used for reproducing the results. The sources are given below. The datasets themselves are not included since they are too large. 
+
+CAER-S dataset can be directly downloaded from the following link:
+https://caer-dataset.github.io
+
+For the EMOTIC dataset, we have filled an access request form explaining the aim and got access. The request form can be found at the following link:
+https://github.com/rkosti/emotic
