@@ -1,18 +1,14 @@
 # Neural Optimal Control using Learned System Dynamics
 
-This readme file is an outcome of the [CENG501 (Spring 2024)](https://ceng.metu.edu.tr/~skalkan/DL/) project for reproducing a paper without an implementation. See [CENG501 (Spring 42) Project List](https://github.com/CENG501-Projects/CENG501-Fall2024) for a complete list of all paper reproduction projects. The commit history of the project is available through [this github repo link](https://github.com/emir-altunkol/CENG501-Project).
+This readme file is an outcome of the [CENG501 (Spring 2024)](https://ceng.metu.edu.tr/~skalkan/DL/) project for reproducing a paper without an implementation. See [CENG501 (Spring 42) Project List](https://github.com/CENG501-Projects/CENG501-Fall2024) for a complete list of all paper reproduction projects. The commit history of the project is available through [this github repo link](https://github.com/emir-altunkol/CENG501-Project) (The link will be available after the implementation.).
 
 # 1. Introduction
 
-@TODO: Introduce the paper (inc. where it is published) and describe your goal (reproducibility).
+Nonlinear optimal control problems are encountered in many areas of robotics, and several methods have been developed to solve these problems, including numerical methods, Nonlinear Model Predictive Control (NMPC), and Model-Based Reinforcement Learning (MBRL). However, these approaches have limitations in terms of providing either local or global solutions, requiring space discretization, lacking sample efficiency, and depending on knowledge of the true system dynamics. This paper, Neural Optimal Control using Learned System Dynamics [1], focuses on the control of the systems with unknown dynamics, using a neural controller. The proposed method includes two training steps. First, a multi-layer perceptron (MLP) is trained using Neural ODEs to learn the system dynamics. Then, this learned system dynamics is utilized to train the neural network based controller functions. The controller performance is evaluated using experiments done across four different control systems. The results are compared with the performance of other control methods in the literature, such as multiple MBRL algorithms and another neural network based controller that are developed to solve optimal control problems for the systems with unknown dynamics. According to the results, the proposed method outperforms the other methods in the presented test scenarios. The paper was published in International Conference on Robotics and Automation 2023, one of the most renowned and prestigious conferences in robotics.
 
-For our CENG501 Deep Learning term project, we implement the following paper on neural system identification and control: "Neural Optimal Control using Learned System Dynamics" [1]. The paper was published in International Conference on Robotics and Automation 2023, one of the most renowned and prestigious conferences in robotics. 
-
-The paper introduces neural networks to identify unknown nonlinear dynamics. Next, a neural optimal controller is developed using the identified dynamics. The results for both identification and control are demonstrated in four systems: Acrobot, Dubins car, Cartpole and Quadrotor. Since the primary goal of this project is to delve deep into the details of neural network implementations, we proceed to regenerate results incrementally. This means we implement system identification of some of these systems in the beginning. Later, as time permits, we implement the controllers for the systems identified. Once some systems have been studied end-to-end, we move on to investigate the remaining systems step-by-step.
+The aim of this project is to implement the methods given in the aforementioned paper, and reproduce its results as much as possible. The results for both system identification and control are demonstrated for four systems in the original paper: Acrobot, Dubins car, Cartpole and Quadrotor. Since the primary goal of this project is to delve deep into the details of neural network implementations, we will proceed to regenerate the results incrementally. This means we will first implement system identification for some of these systems in the beginning. Later, as time permits, we will implement the controllers for the systems identified. Once a system have been studied end-to-end, we will move on to investigate the remaining systems, progressing step-by-step.
 
 ## 1.1. Paper summary
-
-@TODO: Summarize the paper, the method & its contributions in relation with the existing literature.
 
 Optimal control is fundamental for robotics tasks such as navigation and locomotion, enabling systems to achieve desired outcomes while minimizing the defined costs. Common approaches to solving these problems include trajectory optimization methods, such as Nonlinear Model Predictive Control (NMPC), and numerical solutions to Hamilton-Jacobi-Bellman (HJB) equations. However, these methods face significant limitations: NMPC computes optimal control for a single initial state, requiring lengthy recomputations for each new state, which is impractical for real-time applications. On the other hand, solving HJB equations numerically necessitates grid-based discretization of the state space, limiting scalability to high-dimensional problems. This paper proposes a grid-free method for addressing these challenges. Unlike traditional local methods, which are limited to optimizing control laws for individual initial states, the proposed approach generates control laws for a wide range of initial states sampled from a large portion of the state space. This capability bridges the gap between local and global methods, and provides a compromise between these two approaches.
 
@@ -24,13 +20,13 @@ Figure 1 provides an overview of the proposed method, which offers a two-step ne
 
 <p align="center">Figure 1: Overview of the proposed optimal control method [1]</p>
 
-Hence, even if the true system dynamics is not known, the proposed method is able to learn the dynamics and train the controller accordingly. As many papers in the literature suggest model-based reinforcement learning (MBRL) strategies for the systems with unknown true dynamics, the performance of this method is compared with multiple MBRL methods proposed in the literature. During the experiments, the original state transition function f is utilized to assess the performance of various controllers. The results show that the proposed neural controller outperforms a comparable neural controller from the literature and several MBRL-based methods across multiple control tasks, including Dubins Car, Cartpole, Acrobot, and Quadrotor systems.
+The proposed method demonstrates the ability to learn system dynamics and train the controller effectively, even in the absence of true system dynamics. To evaluate its performance, the authors compare their approach against multiple Model-Based Reinforcement Learning (MBRL) methods commonly used for systems with unknown dynamics. During the experiments, the original state transition function $f$ is utilized to assess the performance of various controllers. According to the results presented in the paper, the proposed neural controller outperforms a comparable neural controller from the literature and several MBRL-based methods across multiple control tasks, including Dubins Car, Cartpole, Acrobot, and Quadrotor systems.
 
 # 2. The method and our interpretation
 
 ## 2.1. The original method
 
-@TODO: Explain the original method.
+The method proposed in the paper can be divided into two steps, each of which are explained below.
 
 ### 2.1.1 System Identification
 
@@ -41,7 +37,7 @@ Suppose the system obeys the following time independent dynamical equation:
 ```
 where $x$ is the state of the system and $u$ is the input. The first goal is to train a neural network to demonstrate the relationship between $x$ and $\dot{x}$; namely, to learn the $f$ function. 
 
-The original method uses a three layer MLP $f_{\theta}$ to represent the $f$ function. The network is trained in a supervised fashion using using data samples of the form $ (x, u, f(x,u))$. The activation functions are sine functions, although the paper also provides results with other activation functions such as tanh and ReLU for comparison. 
+The original method uses a three layer MLP $f_{\theta}$ to represent the $f$ function. The network is trained in a supervised fashion using using data samples of the form $(x, u, f(x,u))$. The activation functions are sine functions, although the paper also provides results with other activation functions such as tanh and ReLU for comparison. 
 
 In addition to the values of $f$, $\nabla{f}$ are used to supervise training. The authors have found this can help generate smoother learned systems dynamics. Consequently, the loss function for system identification is set as 
 
@@ -102,9 +98,9 @@ The weights of the controller MLP are initialized randomly, but no information i
 
 ### Data Generation
 
-The data sets consist of the triples $ (x, u, f(x,u))$. 
+The data sets consist of the triples $(x, u, f(x,u))$. 
 
-The state and input are said to be sampled uniformly in their respective spaces. However, experimental results actually provide no bounds for the spaces. We prefer to set artifical limits such as $ -5 < u < 5$ to simplify the sampling process.
+The state and input are said to be sampled uniformly in their respective spaces. However, experimental results actually provide no bounds for the spaces. We prefer to set artifical limits such as $-5 < u < 5$ to simplify the sampling process.
 
 In addition, it is explained that $f(x,u)$ are generated using the ground truth dynamics. The paper references [2], [3] at this point for Acrobot and Cartpole. However, we currently generate the datasets in MATLAB for the following reasons:
 
