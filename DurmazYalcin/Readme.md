@@ -91,19 +91,12 @@ As highlighted in the original paper, specialized hardware designed for spiking 
 The original method presents a hybrid model integrating conventional neural networks (CNNs) with spiking neural networks (SNNs). While SNNs are specifically employed for designing the encoders, the rest of the network operates on conventional image frames. Although SNNs do not enhance the system's performance, they significantly reduce inference time and energy consumption when deployed on appropriate hardware.
 
 ## 2.2. Our interpretation
-@TODO: Explain the parts that were not clearly explained in the original paper and how you interpreted them.
 
-* We can say that we have already dowloaded and examined the event datasets. We can refer to the visualization and our visualization codes. 
-* We can explain input representation.
-* We can explain how to back propagate the photometric loss? How to compute the jacobian of the photometric loss?
-
-# Adaptive-SpikeNet: Event-Based Optical Flow Estimation Using Spiking Neural Networks with Learnable Neural Dynamics
-
-## Overview
+### Overview
 
 The **Adaptive-SpikeNet** architecture leverages the unique properties of event-based cameras and spiking neural networks (SNNs) to efficiently estimate optical flow from sparse and asynchronous event data. A key innovation of Adaptive-SpikeNet lies in its **input representation**, specifically designed to capture the unique **spatial** and **temporal** structure of event-based data more effectively.
 
-## Event-Based Input Representation
+### Event-Based Input Representation
 
 Event cameras generate asynchronous streams of data, where each "event" corresponds to a change in brightness at a specific pixel, along with a timestamp. Unlike traditional frame-based cameras, this data is sparse and irregular. **Adaptive-SpikeNet** leverages these characteristics with the following features:
 
@@ -124,17 +117,7 @@ Event cameras generate asynchronous streams of data, where each "event" correspo
 - **Preservation of Sparsity**:  
   The representation avoids introducing redundancy. Sparse event data remains sparse in the input to the network, maintaining energy efficiency and computational speed.
 
-### Why This Matters
-
-The combination of these techniques ensures that both spatial structure (e.g., object edges, motion direction) and temporal resolution (e.g., event timing, flow velocity) are preserved and utilized effectively. This tailored input representation enhances the network's ability to:
-
-- Detect fine-grained motion patterns.
-- Adapt to varying speeds of motion.
-- Preserve critical information without overwhelming the computational pipeline.
-
-In essence, the input representation in Adaptive-SpikeNet bridges the gap between the asynchronous, sparse nature of event camera data and the spiking neural network's processing capabilities.
-
-## Event Binning Process
+### Event Binning Process
 
 In the Adaptive-SpikeNet framework, event bins are used to structure the sparse, asynchronous event data into a format suitable for spiking neural networks. The binning process can be broken down into the following steps:
 
@@ -292,28 +275,28 @@ The synaptic input 𝐼(𝑡) for a given neuron at time 𝑡 is determined by t
 
 For a pixel \((x, y)\), the synaptic input at time \(t\) is the sum of the contributions from all spikes that occurred before \(t\):
 
-\[
+$$
 I(t) = \sum_{(x', y')}\sum_{t_{spike}(x', y') < t} w(x', y') \cdot e(t - t_{spike}(x', y'))
-\]
+$$
 
 Where:
 
-- \( I(t) \) is the synaptic input at time \( t \),
-- \( w(x', y') \) is the synaptic weight from pixel \((x', y')\) (a learned parameter),
-- \( t_{spike}(x', y') \) is the timestamp of a spike from pixel \((x', y')\),
-- \( e(t - t_{spike}(x', y')) \) is the event-based function modeling the contribution of a spike from pixel \((x', y')\) at time \( t_{spike}(x', y') \).
+- $( I(t) )$ is the synaptic input at time $( t )$,
+- $( w(x', y') )$ is the synaptic weight from pixel $((x', y'))$ (a learned parameter),
+- $( t_{spike}(x', y') )$ is the timestamp of a spike from pixel $((x', y'))$,
+- $( e(t - t_{spike}(x', y')) )$ is the event-based function modeling the contribution of a spike from pixel $((x', y'))$ at time $( t_{spike}(x', y') )$.
 
 - Event Function
 
-The event function \( e(t - t_{spike}) \) represents the temporal influence of a spike over time. It is often modeled as a **decaying function**, such as exponential decay or a Gaussian kernel. For example:
+The event function $( e(t - t_{spike}) )$ represents the temporal influence of a spike over time. It is often modeled as a **decaying function**, such as exponential decay or a Gaussian kernel. For example:
 
-\[
+$$
 e(t - t_{spike}) = \exp\left( -\frac{(t - t_{spike})^2}{2\sigma^2} \right)
-\]
+$$
 
 Where:
 
-- \( \sigma \) controls the spread of the temporal influence of each spike.
+- $( \sigma )$ controls the spread of the temporal influence of each spike.
 
 **2. Spike Activity and Temporal Dynamics**
 
@@ -329,11 +312,11 @@ This mechanism allows the SNN to process both **spatial** and **temporal** depen
 In the context of **Adaptive-SpikeNet** for **optical flow estimation**, the synaptic input mechanism is used to capture both the **temporal dynamics** and **spatial dependencies** of event-based data.
 
 - **Motion Estimation**: The synaptic input at each neuron corresponds to the spikes from neighboring pixels, which encode changes in the scene.
-- **Optical Flow**: By processing the spikes over time, the network learns to associate temporal spike patterns with the motion of objects in the scene. The optical flow \( u(x, y) \) is estimated by examining how the event-based data evolves over time.
+- **Optical Flow**: By processing the spikes over time, the network learns to associate temporal spike patterns with the motion of objects in the scene. The optical flow $( u(x, y) )$ is estimated by examining how the event-based data evolves over time.
 
 **4. Summary of Synaptic Input Mechanism**
 
-- The synaptic input \( I(t) \) is calculated by summing the weighted contributions of all past spikes, where the weights and the decay kernel control the influence of each spike.
+- The synaptic input $( I(t) )$ is calculated by summing the weighted contributions of all past spikes, where the weights and the decay kernel control the influence of each spike.
 - The **temporal dynamics** of spikes, combined with the **spatial arrangement** of pixels, are essential for capturing motion in event-based systems.
 - Adaptive-SpikeNet uses these mechanisms to **learn the temporal patterns** of spikes and estimate motion (optical flow) in real-time.
 
@@ -366,20 +349,20 @@ Adaptive-SpikeNet employs two distinct loss paradigms—**supervised loss** and 
 This approach is used when ground truth optical flow labels are available for the dataset, such as in datasets specifically created for optical flow tasks.
 
 ### Loss Definition:
-The supervised loss directly compares the predicted optical flow \( \hat{f}(x, y) \) to the ground truth flow \( f_{\text{true}}(x, y) \).
+The supervised loss directly compares the predicted optical flow $( \hat{f}(x, y) )$ to the ground truth flow \( f_{\text{true}}(x, y) \).
 
 #### (a) End-Point Error (EPE):
 The End-Point Error (EPE) is the primary supervised loss function:
 
-\[
+$$
 L_{\text{EPE}} = \frac{1}{N} \sum_{(x, y)} \left( (\hat{u}(x, y) - u(x, y))^2 + (\hat{v}(x, y) - v(x, y))^2 \right)
-\]
+$$
 
 Where:
 
-- \( \hat{u}(x, y), \hat{v}(x, y) \) are the predicted horizontal and vertical flow components at pixel \( (x, y) \),
-- \( u(x, y), v(x, y) \) are the corresponding ground truth components,
-- \( N \) is the total number of pixels.
+- $( \hat{u}(x, y), \hat{v}(x, y) )$ are the predicted horizontal and vertical flow components at pixel \( (x, y) \),
+- $( u(x, y), v(x, y) )$ are the corresponding ground truth components,
+- $( N )$ is the total number of pixels.
 
 ### Purpose:
 This loss encourages the network to predict optical flow vectors that minimize the Euclidean distance from the ground truth, making it highly effective for labeled datasets like **FlyingChairs** or **FlyingThings3D**.
