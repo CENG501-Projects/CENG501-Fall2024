@@ -33,11 +33,17 @@ The paper proposes ZODE, which improves OOD detection by leveraging a collection
 - **Sample-Aware Selection:** The model zoo classifies an input as in-distribution (ID) if all models agree it is ID; otherwise, it is considered OOD. However, as the number of models increases, this naive approach is likely to accumulate errors, resulting in decreased performance.
 
 The following algorithm outlines the ZODE framework, which dynamically selects active models from a pre-trained model zoo to robustly classify inputs as ID or OOD:
+
 ![alt text](<images/score.png>) 
+
 Figure 1: The empirical distribution of the score function.
+
 ![alt text](<images/threshold.png>)
+
 Figure 2: The largest subscript that satisfies the threshold condition
+
 ![alt text](<images/algorithm.png>)
+
 Figure 3: Zoo-based OOD Detection Enhancement
 
 Theoretical analysis backs up the approach, showing that even as the model zoo expands, ZODE continuously maintains a high TPR while maintaining a low FPR. According to empirical findings, ZODE outperforms both single-model detectors and naive ensemble approaches by efficiently utilizing the advantages of multiple models.
