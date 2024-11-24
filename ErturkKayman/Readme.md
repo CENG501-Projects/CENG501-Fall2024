@@ -4,13 +4,13 @@ This readme file is an outcome of the [CENG501 (Spring 2024)](https://ceng.metu.
 
 # 1. Introduction
 
-The paper selected for our course project, "MonoATT: Online Monocular 3D Object Detection with Adaptive Token Transformer", is an online Mono3D framework authored by Yunsong Zhou, Hongzi Zhu, Quan Liu, Shan Chang, and Minyi Guo. This paper was presented at the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) 2023. Our goal is to reproduce the findings of this paper by implementing the proposed theoretical framework and methods as described, including the detailed formulas provided. We aim to develop and integrate all four modules to function as explained in the paper and get similar performance to the benchmark results given.
+The paper selected for our course project, "MonoATT: Online Monocular 3D Object Detection with Adaptive Token Transformer" [[1](https://arxiv.org/abs/2303.13018)], is an online Mono3D framework authored by Yunsong Zhou, Hongzi Zhu, Quan Liu, Shan Chang, and Minyi Guo. This paper was presented at the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) 2023. Our goal is to reproduce the findings of this paper by implementing the proposed theoretical framework and methods as described, including the detailed formulas provided. We aim to develop and integrate all four modules to function as explained in the paper and get similar performance to the benchmark results given.
 
 ## 1.1. Paper summary
 
 MonoATT is an online Mono3D framework designed for accurate 3D object detection from a single camera input. It specifically targets mobile devices where computational power is limited and response time is critical, such as in autonomous driving applications. The rising success of transformers in NLP in the recent years has also sparked a trend of trials to integrate them into existing visual domains such as 3D object detection. Similar to the other Mono3D methods, MonoATT utilizes transformers but also a custom multi-step procedure.
 
-Traditionally, Mono3D frameworks employ homogeneous grid-based vision tokens which presented two main issues: If a coarse grid is used, distant and small objects cannot be detected accurately enough. On the contrary, if a fine grid is used, increased computational complexity makes it quite a challenge to run on mobile applications. Recent works such as MonoDTR [x] and MonoDETR [x] have shown significant progress in monocular 3D object detection; however, their utilization of homogeneous grids leads to the mentioned problem. MonoATT addresses these challenges with a novel approach called Adaptive Token Transformer (ATT) by using heterogeneous tokens. This method assigns finer tokens to regions of the image that contain critical information (such as cars, pedestrians and bicycles), and coarser tokens to less important areas (sky, buildings and so on). This token distribution is based on these "keypoints", which are dynamically identified and prioritized by the framework.
+Traditionally, Mono3D frameworks employ homogeneous grid-based vision tokens which presented two main issues: If a coarse grid is used, distant and small objects cannot be detected accurately enough. On the contrary, if a fine grid is used, increased computational complexity makes it quite a challenge to run on mobile applications. Recent works such as MonoDTR [[2](https://arxiv.org/abs/2203.10981)] and MonoDETR [[3](https://arxiv.org/abs/2203.13310)] have shown significant progress in monocular 3D object detection; however, their utilization of homogeneous grids leads to the mentioned problem. MonoATT addresses these challenges with a novel approach called Adaptive Token Transformer (ATT) by using heterogeneous tokens. This method assigns finer tokens to regions of the image that contain critical information (such as cars, pedestrians and bicycles), and coarser tokens to less important areas (sky, buildings and so on). This token distribution is based on these "keypoints", which are dynamically identified and prioritized by the framework.
 
 
 <p align="center"> 
@@ -27,13 +27,11 @@ Experimental results on the KITTI 3D dataset demonstrate that MonoATT significan
 
 ## 2.1. The original method
 
+MonoATT consists of different parts. In particular, there are 4 modules. Cluster center estimation (CCE), Adaptive Token Transformer (ATT), Multistage Feature Reconstruction (MFR), and monocular 3D detection. The image is not directly fed to the network. As a first step, a feature map is created by using DLA-34 as backbone.
 
 <p align="center">
 <img src="https://github.com/user-attachments/assets/d394a131-5bf8-4add-935d-5257bdfebf04">     
 Figure 2. Top view archtitecture of the MonoATT. </p>
-
-
-MonoATT consists of different parts. In particular, there are 4 modules. Cluster center estimation (CCE), Adaptive Token Transformer (ATT), Multistage Feature Reconstruction (MFR), and monocular 3D detection. The image is not directly fed to the network. As a first step, a feature map is created by using DLA-34 as backbone.
 
 MonoATT uses adaptive tokens with irregular shapes and various sizes in order to accomplish two goals:
 1) Increasing the accuracy of both near and far objects by obtaining superior image features.
@@ -164,8 +162,13 @@ In MonoATT, GUPNet is used as a monocular 3D object detector.
 
 # 5. References
 
-@TODO: Provide your references here.
+[1] Zhou, Y., Zhu, H., Liu, Q., Chang, S., & Guo, M. (2023, March 23). MonoATT: Online Monocular 3D Object Detection with Adaptive Token Transformer. arXiv.org. https://arxiv.org/abs/2303.13018
+
+[2] Huang, K., Wu, T., Su, H., & Hsu, W. H. (2022, March 21). MonoDTR: Monocular 3D Object Detection with Depth-Aware Transformer. arXiv.org. https://arxiv.org/abs/2203.10981
+
+[3] Zhang, R., Qiu, H., Wang, T., Guo, Z., Xu, X., Cui, Z., Qiao, Y., Gao, P., & Li, H. (2022, March 24). MONODETR: depth-guided transformer for monocular 3D object detection. arXiv.org. https://arxiv.org/abs/2203.13310
 
 # Contact
 
-@TODO: Provide your names & email addresses and any other info with which people can contact you.
+- Çağatay Kayman - 1317kc@gmail.com
+- Erdem Ertürk - erdemerturkk@gmail.com
