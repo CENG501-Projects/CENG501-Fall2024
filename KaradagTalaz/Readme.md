@@ -166,8 +166,7 @@ The model computes $(k+1)th$ recompression coefficients through sequential opera
    - $RT(\cdot)$: Rounding and truncation
    - $k = 7$ (determined in the experiments of the official paper)
 
-Then, residual de-quantized coefficients after k compressions defined as: 
-   R = \frac{1}{k}\sum_{i=1}^{k}(Q_i - Q_{i-1})
+Then, residual de-quantized coefficients after k compressions defined as:  $ R = \frac{1}{k}\sum_{i=1}^{k}(Q_i - Q_{i-1}) $
 
 For the original Y-channel DCT coefficients $Q_0$​,  a clipping operation is applied with a threshold value T. Following this, the coefficients are converted into a binary volume. This binary conversion is represented as 
    $
