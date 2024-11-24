@@ -175,9 +175,7 @@ $$
 
 Then, residual de-quantized coefficients after k compressions defined as:  $R = \frac{1}{k}\sum_{i=1}^{k}(Q_i - Q_{i-1})$
 
-For the original Y-channel DCT coefficients $Q_0$​,  a clipping operation is applied with a threshold value T. Following this, the coefficients are converted into a binary volume. This binary conversion is represented as 
-   
-   $f: Q_0^{H\times W} \rightarrow \{0,1\}^{(T+1) \times H \times W}$
+For the original Y-channel DCT coefficients $Q_0$​,  a clipping operation is applied with a threshold value T. Following this, the coefficients are converted into a binary volume. This binary conversion is represented as $f: Q_0^{H\times W} \rightarrow \{0,1\}^{(T+1) \times H \times W}$
    
    Research by Yousfi and Fridrich (2020) demonstrated that this conversion method effectively captures the correlation between individual coefficients in the DCT histogram. Accordingly, the DCT coefficients $Q_0$​ are transformed into binary volumes as follows:
    
