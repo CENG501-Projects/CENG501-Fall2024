@@ -24,7 +24,12 @@ The paper introduces a novel approach to deep RL that:
 
 ## 2.1. The original method
 
-The RDE framework proposes a novel methodology to tackle primacy bias and performance collapses in deep reinforcement learning. It consists of three core components:
+The RDE framework proposes a novel methodology to tackle primacy bias and performance collapses in deep reinforcement learning. Overall diagram of the RDE is shown in the Figure 1, [[1]]. First, $N$ ensemble agents with unique sets of initialized parameters are created. Ensemble agents are adaptively composited into a single agent that interacts with the environment during the training phase. At every $T_{reset}$ time-step, a single agent $k$ is selected and all of its parameters $θ_k$ are reset by a resetting mechanism.
+
+<p align="center">
+  <img src="figures/overall_diagram_of_rde.png" alt="Cropped regions selected from an image available in COCO dataset with BYOL." style="width: 70%;"><br>
+  <em>Figure 1: Overall diagram of RDE</em>
+</p>
 
 ### 1. **Ensemble Agents**
    - The system is built on an ensemble of $N$ agents, all with identical neural network architectures but initialized with distinct random parameters. This initialization promotes diversity in agent behavior and learning.
