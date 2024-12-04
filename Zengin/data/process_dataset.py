@@ -19,50 +19,41 @@ class DatasetProcessor:
         self.processed_path = self.manager.processed_path
         self.dataset_name = dataset_name
         
-        # Create train and test directories
-        self.train_dir = self.processed_path / 'train'
+        
         self.test_dir = self.processed_path / 'test'
-        self.train_dir.mkdir(parents=True, exist_ok=True)
         self.test_dir.mkdir(parents=True, exist_ok=True)
 
-    def save_processed_image(self, img_tensor, label, idx, is_train):
+    def save_processed_image(self, img_tensor, label, idx):
         """Save processed tensor as image with its label"""
         
         img_array = img_tensor.permute(1, 2, 0).numpy()
-        
+       
         img_array = (img_array * np.array(self.manager.std) + np.array(self.manager.mean)) * 255
         img_array = np.clip(img_array, 0, 255).astype(np.uint8)
         img = Image.fromarray(img_array)
         
         
-        save_dir = self.train_dir if is_train else self.test_dir
-        class_dir = save_dir / str(label)
+        class_dir = self.test_dir / str(label)
         class_dir.mkdir(exist_ok=True)
         
         img_path = class_dir / f"{idx:05d}.png"
         img.save(img_path)
 
-    def process_dataset(self):
-        """Process and save both train and test datasets"""
-        logger.info(f"Processing {self.dataset_name} dataset...")
+    def process_test_dataset(self):
+        """Process and save test dataset only"""
+        logger.info(f"Processing {self.dataset_name} test dataset...")
         
        
-        train_dataset = self.manager.get_dataset(train=True)
-        logger.info("Processing training data...")
-        for idx, (img, label) in enumerate(tqdm(train_dataset)):
-            self.save_processed_image(img, label, idx, is_train=True)
-            
-        
         test_dataset = self.manager.get_dataset(train=False)
-        logger.info("Processing test data...")
+        logger.info(f"Processing {len(test_dataset)} test images...")
         for idx, (img, label) in enumerate(tqdm(test_dataset)):
-            self.save_processed_image(img, label, idx, is_train=False)
+            self.save_processed_image(img, label, idx)
             
-        logger.info(f"Finished processing {self.dataset_name} dataset")
-        logger.info(f"Processed data saved to {self.processed_path}")
+        logger.info(f"Finished processing {self.dataset_name} test dataset")
+        logger.info(f"Processed test data saved to {self.test_dir}")
 
-def process_all_datasets(config_path="config.yaml"):
-    """Process all datasets defined in config"""
+def process_test_datasets(config_path="config.yaml"):
+    """Process test sets for all datasets defined in config"""
     project_root = Path(__file__).parent.parent
     config_path = project_root / config_path
     
@@ -71,7 +62,7 @@ def process_all_datasets(config_path="config.yaml"):
     
     for dataset_name in config['datasets'].keys():
         processor = DatasetProcessor(config, dataset_name)
-        processor.process_dataset()
+        processor.process_test_dataset()
 
 if __name__ == "__main__":
-    process_all_datasets() 
+    process_test_datasets() 
