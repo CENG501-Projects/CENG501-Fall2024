@@ -1,0 +1,74 @@
+dataset:
+  name: "cifar100"                
+  raw_path: "data/raw/cifar100"   
+  processed_path: "data/processed/cifar100_224"  
+  image_size: 224                 
+  batch_size: 32                  
+  num_workers: 4                  
+  mean: [0.485, 0.456, 0.406]     
+  std: [0.229, 0.224, 0.225]      
+  name: "cifar10"
+  raw_path: "data/raw/cifar10"
+  processed_path: "data/processed/cifar10_224"
+  image_size: 224
+  batch_size: 32
+  num_workers: 4
+  mean: [0.485, 0.456, 0.406]
+  std: [0.229, 0.224, 0.225]
+
+
+models:
+  names:                          
+    - vit_b_16
+    - vit_l_16
+    - deit_b
+  device: "cpu"                  
+  pretrained: true
+  dropout_rate: 0.2
+  features_dim: 512
+
+
+explanations:
+  methods:                        
+    - grad_cam
+    - integrated_gradients
+    - rollout
+    - raw_attention
+  subsets: 10                     
+  perturbation: "mean"            
+
+
+metrics:
+  evaluate:                       
+    - saco
+    - auc
+    - aopc
+    - comprehensiveness
+    - log_odds
+
+
+output:
+  salience_maps: "results/salience_maps"     
+  metrics: "results/metrics"                 
+  visualizations: "results/visualizations"   
+  checkpoint_dir: "checkpoints/"            
+  log_dir: "logs/"                         
+  tensorboard_dir: "runs/"                 
+
+
+training:
+  epochs: 100
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  momentum: 0.9
+  optimizer: "adam"               
+  scheduler: "cosine"            
+  warmup_epochs: 5
+  early_stopping_patience: 10
+
+
+hardware:
+  gpu_id: 0
+  seed: 501
+  deterministic: true
+  benchmark: false 
