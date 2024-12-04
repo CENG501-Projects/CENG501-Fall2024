@@ -57,17 +57,7 @@ output:
   log_dir: "logs/"                         
   tensorboard_dir: "runs/"                 
 
-
-training:
-  epochs: 100
-  learning_rate: 0.001
-  weight_decay: 0.0001
-  momentum: 0.9
-  optimizer: "adam"               
-  scheduler: "cosine"            
-  warmup_epochs: 5
-  early_stopping_patience: 10
-
+  
 
 hardware:
   gpu_id: 0
