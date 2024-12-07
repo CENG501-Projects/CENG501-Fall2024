@@ -2,30 +2,30 @@
 
 
 # 1. Introduction
-The paper Inspecting Prediction Confidence for Detecting Black box Backdoor Attacks from the Thirty Eighth AAAI Conference on Artificial Intelligence was the inspiration for this thesis. Framed by Tong Wang and colleagues in this study, DTINSPECTOR introduces a solution to the dangerous backdoor attacks plaguing the deep learning model. These attacks also function as vulnerabilities and affect model prediction with a secret alteration of training data by making use of DTINSPECTOR to inspect training data prediction anomalies.
+The paper **"Inspecting Prediction Confidence for Detecting Black box Backdoor Attacks"** from the Thirty Eighth AAAI Conference on Artificial Intelligence was the inspiration for this thesis. Framed by Tong Wang and colleagues in this study, DTINSPECTOR introduces a solution to the dangerous backdoor attacks plaguing the deep learning model. These attacks also function as vulnerabilities and affect model prediction with a secret alteration of training data by making use of DTINSPECTOR to inspect training data prediction anomalies.
 We have aimed to reproduce, verify piece by piece, the DTINSPECTOR effectiveness through controlled experiments. We empirically evaluate the robustness and practical utility of Defense by replicating or providing evidence to the original results and by probing resistance of Defense to new data and attack settings.
 
 ## 1.1.	Paper Summary
-The paper 'Inspecting Prediction Confidence for detecting Black Box Backdoor Attacks' by Tong Wang et al. (Thirty Eighth AAAI Conference on Artificial Intelligence (AAAI-24)) presents DTINSPECTOR, a novel defense mechanism against black box backdoor attacks on deep learning models. In our work, we considered these attacks in which an output of the model is perturbed by injecting a trigger hidden in the training set, which is hard to learn as it can still maintain normal predictive accuracy on inputs.
+The paper 'Inspecting Prediction Confidence for detecting Black Box Backdoor Attacks' by Tong Wang et al. (Thirty Eighth AAAI Conference on Artificial Intelligence (AAAI-24)) presents DTINSPECTOR, a novel defense mechanism against black box backdoor attacks on deep learning models. In paper they considered these attacks in which an output of the model is perturbed by injecting a trigger hidden in the training set, which is hard to learn as it can still maintain normal predictive accuracy on inputs.
 ### 1.1.1.	Key Contributions:
 **•	Novel Perspective:** The Paper propose a novel approach that leverages the insight that backdoor attacks typically lead poisoned samples exhibiting higher prediction confidence than clean samples. Theoretical analysis and empirical testing show that this observation is of worth.
 
 **•	DTINSPECTOR Mechanism:** DTINSPECTOR is a defense method which uses a distribution transfer technique that magnifies the difference between normal and poisoned data and is built on top of the prediction confidence evaluation on data samples. This technique works well to detect and identify backdoor triggers independent of the backdoor trigger size or its pattern.
 
-**•	Extensive Evaluation:** Evaluations of DTINSPECTOR against different types of backdoor attacks on distinct datasets are extensively explained in the paper which shows that DTINSPECTOR outperforms other existing defenses like Neural Cleanse (NC), ABS, and others. on trained models and trained labels.
+**•	Extensive Evaluation:** Evaluations of DTINSPECTOR against different types of backdoor attacks on distinct datasets are extensively explained in the paper which shows that DTINSPECTOR outperforms other existing defenses like Neural Cleanse (NC), ABS, and others on trained models and trained labels.
 ### 1.1.2.	Relation to Existing Literature:
-The proposed method consists in advanced traditional defenses that either detect small sized triggers or analyze neuron activation patterns, both of which can be beaten by highly complex backdoor strategies. DTINSPECTOR is more adaptive to unseen attacks and more robust to changes in the trigger configurations when compared to previous methods.
+The proposed method consists of advanced traditional defenses that either detect small sized triggers or analyze neuron activation patterns, both of which can be beaten by highly complex backdoor strategies. DTINSPECTOR is more adaptive to unseen attacks and more robust to changes in the trigger configurations when compared to previous methods.
 
 
 ### 1.1.3.	Methodology:
 DTINSPECTOR first sorts training data by prediction confidence, applies learned patches to high confidence samples, and measures the shift in prediction outputs to detect anomalies. In contrast to previous methods capable of directly analyzing triggers or utilized as adjuncts only by relying on anomalies in model output without factoring in confidence levels, this approach directly analyzes triggers or relies on anomalies only by factoring in confidence levels, i.e., high confidence or low confidence.
 # 2. Threat Model
-In this paper, we address black box backdoor attacks on deep learning models where adversaries add malicious triggers to only a small portion of the training data they do not get access to the model or the training process. When these triggers are activated, only then the model makes wrong predictions. On regular inputs though, it performs normally and its hard to detect. To avoid raising suspicion, attacker only changes few data and labels as input.
+In the paper, they addressed black box backdoor attacks on deep learning models where adversaries add malicious triggers to only a small portion of the training data they do not get access to the model or the training process. When these triggers are activated, only then the model makes wrong predictions. On regular inputs though, it performs normally and its hard to detect. To avoid raising suspicion, attacker only changes few data and labels as input.
 
-As a countermeasure, we propose an attack detection mechanism called DTINSPECTOR that looks for such attacks by analyzing uncharacteristic patterns in the model prediction confidence. Defender is the one who has access to the model and its training data, and use tools like DTINSPECTOR. This tool finds and discards poisoned data effects. This protects the model from this type of attack.
+As a countermeasure, they proposed an attack detection mechanism called DTINSPECTOR that looks for such attacks by analyzing uncharacteristic patterns in the model prediction confidence. Defender is the one who has access to the model and its training data, and use tools like DTINSPECTOR. This tool finds and discards poisoned data effects. This protects the model from this type of attack.
 
 # 3. Key Observations from the Paper
-In this research paper, backdoor threats in deep learning models are detected at in depth. An effective black box backdoor attack usually produces unusually high prediction confidence on the poisoned training data, it says. During model inference, we use this elevated confidence to achieve a high Attack Success Rate (ASR), and in that way, it becomes an important indicator of data manipulation.
+In this research paper, backdoor threats in deep learning models are detected at in depth. An effective black box backdoor attack usually produces unusually high prediction confidence on the poisoned training data. During model inference, this elevated confidence is used to achieve a high Attack Success Rate (ASR), and in that way, it becomes an important indicator of data manipulation.
 ## 3.1 Theoretical and Empirical Support:
 **• Theoretical Analysis:** The paper shows how prediction confidence on poisoned training samples is related to the ASR of poisoned testing inputs. Risk function is used for expressing this relationship. The changes in model behavior due to backdoor attacks are quantified with this risk function.
 
@@ -39,12 +39,12 @@ In this research paper, backdoor threats in deep learning models are detected at
 ![image](https://github.com/user-attachments/assets/9fa608f4-bfe6-4252-bc28-cbf1de248a80)
 
 ## 3.2 Conclusion from Observations
-Finally, we conclude that backdoor attacks would not work well without substantial change in prediction confidence while the amount of poisoned data is kept small to negligible. In particular, this conclusion suggests development of defense mechanisms that detect and counteract such attacks by focusing on prediction confidence anomalies.
+Finally, they conclude that backdoor attacks would not work well without substantial change in prediction confidence while the amount of poisoned data is kept small to negligible. In particular, this conclusion suggests development of defense mechanisms that detect and counteract such attacks by focusing on prediction confidence anomalies.
 # 4. The method and our Interpretation
 ## 4.1. The original method
 This paper introduces DTINSPECTOR, a novel defense mechanism to detect black box backdoor attacks by evaluating deep learning model's prediction confidence levels. Uniquely, this method describes an innovative means to identify the effects of backdoor attacks and uses various steps to guarantee that the predictions of the model are not compromised.
 ### 4.1.1.	Data Segregation and Sampling
-**o	Sorting and Selection:** The training data is sorted by the first prediction confidence under each label, firstly. The data is then divided to show top K samples with highest confidence and bottom K samples with least confidence.
+**o	Sorting and Selection:** The training data is sorted by the first prediction confidence under each label. The data is then divided to show top K samples with highest confidence and bottom K samples with least confidence.
 
 ![image](https://github.com/user-attachments/assets/056800fe-7c0f-4f80-bb8e-3af693c0e643)
 
@@ -67,7 +67,7 @@ These pictures shows examples of the learned patches and how they alter the data
 ### 4.1.4.	Effectiveness and Validation
 o	This methodology is validated empirically through enormous tests among multiple datasets and attack scenarios. The effectiveness of defense is gauged by its ability to maintain high model accuracy while identifying and mitigating backdoor influences.
 
-This methodology ensures a robust defense against enormous backdoor attacks by focusing on the atypical prediction confidences induced by such attacks, providing a significant enhancement in security measures for deep learning models. The detailed and iterative approach of DTINSPECTOR, from data sampling to anomaly detection, offers a comprehensive defense strategy that is adaptable to various attack complexities.
+This methodology ensures a robust defense against enormous backdoor attacks by focusing on the typical prediction confidences induced by such attacks, providing a significant enhancement in security measures for deep learning models. The detailed and iterative approach of DTINSPECTOR, from data sampling to anomaly detection, offers a comprehensive defense strategy that is adaptable to various attack complexities.
 ## 4.2.  Our Interpretation of Methodology
 ### 4.2.1.	Data Segregation and Sampling:
 The paper mentions sorting data by prediction confidence and selecting high and low-confidence samples. But the exact criteria for these selections were not detailed. In our interpretation, we decided to determine the thresholds for high and low confidence. These threshold values will be based on standard deviation metrics from the overall dataset confidence distribution. It will select the most extreme cases that will reveal signs of potential tampering.
@@ -87,13 +87,13 @@ In the paper, validation approach focus on empirical tests without much mention 
 
 **o	Backdoor Attacks:** This paper evaluated the defense against six black-box backdoor attacks and demonstrate that DTINSPECTOR behaves robustly.
 ## 5.2	Adaptations and Changes for My Project:
-**o	Dataset Selection:** Finally, realizing that we couldn't make our model viable for all research problems, we decided to focus on CIFAR10 and GTSRB only. Although these datasets are still small enough for us to manage and hold their own weight to test out backdoor defense mechanisms.
+**o	Dataset Selection:** Finally, realizing that we couldn't make our model viable for all research problems, we decided to focus on CIFAR10 only. Although these datasets are still small enough for us to manage and hold their own weight to test out backdoor defense mechanisms.
 
 **o	Model Simplification:** Because the original paper can employ complex architectures, we will employ simpler versions of neural networks that require lesser computational power but still yield similar results as far as understanding and showcasing defense mechanisms against backdoor attacks are concerned.
 
-**o	Limited Attack Types:** Rather than using six different backdoor attacks, we will focuse on just two. The BADNET and TROJANNN. These attacks are well documented and can be reproduced for an undergraduate project, they provide a focused approach to testing and understanding the efficacy of a defense.
+**o	Limited Attack Types:** Rather than using six different backdoor attacks, we will focuse on just BADNET. This provide a focused approach to testing and understanding the efficacy of a defense.
 ## 5.3 Experimental Validation:
-o	We will then used a similar method to the original method, but with the simplifications to validate the effectiveness of my implementation of DTINSPECTOR. This will be about measuring the attack success rate(ASR) against the accuracy of the model.
+o	We will then used a similar method to the original method, but with the simplifications to validate the effectiveness of our implementation of DTINSPECTOR. This will be about measuring the attack success rate(ASR) against the accuracy of the model.
 
 
 # 6. Challenges and Mitigation in Original Paper:
