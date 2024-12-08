@@ -96,7 +96,7 @@ In the Table 1, LR is learning rate and WD is weight decay. BN and LN refer to B
 
 The hyperparameters for the LaS attention are as follows:
 
-**(i)** BBB, controlling $\alpha_c$
+**(i)** B, controlling $\alpha_c$
 
 **(ii)** the 1-D average pooling window size P
 
@@ -154,7 +154,7 @@ Figure 3: Original paper's accuracy results
 
 **Discussion:**  
 
-Our accuracy was much lower compared to the original paper. This could be because we used the setup for the LRA Image task, while the original paper might have used different settings for the sMNIST task. A smaller batch size might have also impacted the accuracy. It's possible that we made a mistake in processing or interpreting the model's output, which could have affected the accuracy results. This might include errors in how predictions were extracted, how metrics were calculated, or how data was handled in post-processing. Lastly, we couldn’t finish the first experiment with the full dataset because of Google Colab's runtime limits. All of them might be a reason of our low accuracy.
+Our accuracy was much lower compared to the original paper. This could be because we used the setup for the LRA Image task, while the original paper might have used different settings for the sMNIST task. A smaller batch size might have also impacted the accuracy. It's possible that we made a mistake in processing or interpreting the model's output. This might include errors in how predictions were extracted, how metrics were calculated, or how data was handled in post-processing. Lastly, we couldn’t finish the first experiment with the full dataset because of Google Colab's runtime limits. All of them might be a reason of our low accuracy.
 
 # 4. Conclusion
 
