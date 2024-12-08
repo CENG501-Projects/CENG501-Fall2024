@@ -127,15 +127,11 @@ Figure 1: Train loss for small sMNIST
 Figure 2: Validation loss for small sMNIST
 <img width="450" alt="Validation_loss_80_epochs" src="https://github.com/user-attachments/assets/c539fd73-ecc6-4033-bd3f-077d4c91b46d">
 
-Figure 3: Training and validation accuracies
+Figure 3: Training and validation accuracies for our implementation
 |                     | sMNIST | 
 |---------------------|--------|
-| **Attention-Based Models** |        |    
-| Transformer         | 98.90  | 
-| **LaS (ours)**      | **99.18** | 
-| **Non Attention-Based Models** |        | 
-| LSTM               | 98.90  | 
-| **S4**             | **99.63** | 
+| **Training** |    13.66    |  
+| **Validation** |    13.60    |  
 
 
 Fİgure 4: Original paper's accuracy results
