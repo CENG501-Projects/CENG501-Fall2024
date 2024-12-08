@@ -121,11 +121,13 @@ We conducted two experiments:
 
 **2nd Experiment (1/20 sMNIST Dataset and 80 Epochs):**
 
-Figure 1: Train loss for small sMNIST 
-<img width="450" alt="Train_loss_80_epochs" src="https://github.com/user-attachments/assets/08ec1f66-8e95-4031-81f7-0857b5b0222b">
+Figure 1: Train loss for small sMNIST   
 
-Figure 2: Validation loss for small sMNIST
-<img width="450" alt="Validation_loss_80_epochs" src="https://github.com/user-attachments/assets/c539fd73-ecc6-4033-bd3f-077d4c91b46d">
+<img width="450" alt="Train_loss_80_epochs" src="https://github.com/user-attachments/assets/08ec1f66-8e95-4031-81f7-0857b5b0222b">  
+
+Figure 2: Validation loss for small sMNIST  
+
+<img width="450" alt="Validation_loss_80_epochs" src="https://github.com/user-attachments/assets/c539fd73-ecc6-4033-bd3f-077d4c91b46d">  
 
 Figure 3: Training and validation accuracies for our implementation
 |                     | sMNIST | 
@@ -134,7 +136,8 @@ Figure 3: Training and validation accuracies for our implementation
 | **Validation** |    13.60    |  
 
 
-Fİgure 4: Original paper's accuracy results
+Figure 4: Original paper's accuracy results  
+
 <img width="169" alt="Papers_MNIST_results" src="https://github.com/user-attachments/assets/ad2ce844-7860-4b1b-9871-3cfcb8541344">
 
 
