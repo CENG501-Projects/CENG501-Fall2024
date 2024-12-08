@@ -9,7 +9,7 @@ An event-based camera is a new sensor modality that operates by detecting change
   <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/output.gif" alt="description" width="80%">
 </div>
 
-The gifs above depicts a small interval from [MVSEC](https://daniilidis-group.github.io/mvsec/) dataset. 
+The gif above depicts a small interval from [MVSEC](https://daniilidis-group.github.io/mvsec/) dataset. 
 - **Left**:A grayscale image captured by a conventional camera.
 - **Middle**: Accumulated events, where blue indicates positive polarity and red indicates negative polarity.
 - **Right**: A visualization of the optical flow, visualizing the motion vector for each pixel.
