@@ -20,7 +20,7 @@ While optical flow estimation from conventional camera images has seen significa
 
 A few attempts have been made to estimate optical flow from event streams using conventional neural networks, such as [E-RAFT](https://github.com/uzh-rpg/E-RAFT) and [EV-FlowNet](https://github.com/daniilidis-group/EV-FlowNet). These approaches rely on accumulated events to adapt traditional image-based techniques for event data.
 
-In contrast, Spike-FlowNet utilizes Integrate-and-Fire (IF) neurons, or spiking neurons. These are better suited to the asynchronous and sparse nature of event streams, providing a more natural fit for this type of data. We will discuss IN neurons in detail.
+In contrast, Spike-FlowNet utilizes Integrate-and-Fire (IF) neurons, or spiking neurons. These are better suited to the asynchronous and sparse nature of event streams, providing a more natural fit.
 
 
 ## 1.1. Paper summary
@@ -57,27 +57,30 @@ As shown in the figure above, a neuron produces an output (or spike) only when i
 As highlighted in the original paper, specialized hardware designed for spiking neural networks exists. On such hardware, spiking networks offer the advantage of significantly reduced power consumption, making them ideal for energy-efficient computations.
 
 ### Input Representation
-One of the challenges for working with event camera is the input representation. Contrary to traditional image frames, events arrive sparsly. Hence, it is a question mark how to feed the events into a network while conserving the temporal resolution of the events. C
+One of the key challenges in working with event cameras is handling the input representation. Unlike traditional image frames, events are sparse and arrive asynchronously. Therefore, it becomes crucial to design a method to feed these events into a network while preserving their temporal resolution.
 
 <div align="center">
   <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/InputFormat.png" alt="description" width="500">
 </div>
 
+The figure above, borrowed from [Spike-Net](https://arxiv.org/abs/2003.06696), illustrates how events are grouped into bins. To estimate the optical flow at a specific time instan $t_k$, the events within the time interval $(t_{k-1},t_{k+1})$ are divided into bins as shown in the figure. This binning process is applied separately for **on events** (positive polarity) and **off events** (negative polarity). Moreover, the bins are labeled as former group and latter group. As a result, we have 4 different categories for the bins. 
+
+<div align="center">
+  <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/bin_cat.png" alt="description" width="20%">
+</div>
+
+The proposed network takes a 4-channel event input. Each channel corresponds to one of the categories described above.
+
+
 ## Loss Function
-Adaptive-SpikeNet employs two distinct loss paradigms—**supervised loss** and **self-supervised loss**—depending on the availability of labeled optical flow datasets. Below is a detailed explanation of how these approaches are utilized:
+Adaptive-SpikeNet employs two distinct loss paradigms—**supervised loss** and **self-supervised loss**—depending on the availability of labeled optical flow datasets. 
 
-## 1. Supervised Loss
+#### 1. Supervised Loss
 
-This approach is used when ground truth optical flow labels are available for the dataset, such as in datasets specifically created for optical flow tasks.
-
-### Loss Definition:
-The supervised loss directly compares the predicted optical flow $( \hat{f}(x, y) )$ to the ground truth flow $( f_{\text{true}}(x, y) )$.
-
-#### (a) End-Point Error (EPE):
-The End-Point Error (EPE) is the primary supervised loss function:
+This approach is used when ground truth optical flow labels are available for the dataset. The supervised loss directly compares the predicted optical flow $( \hat{u}, \hat{v} )$ to the ground truth flow $( u, v )$. The overall loss is calculated by summing the errors for all pixels.
 
 $$
-L_{\text{EPE}} = \frac{1}{N} \sum_{(x, y)} \left( (\hat{u}(x, y) - u(x, y))^2 + (\hat{v}(x, y) - v(x, y))^2 \right)
+L_{\text{EPE}} = \frac{1}{N} \sum_{x, y} \left((\hat{u}(x,y) - u(x,y))^2 + (\hat{v}(x,y) - v(x,y))^2 \right)
 $$
 
 Where:
