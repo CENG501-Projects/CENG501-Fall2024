@@ -24,7 +24,7 @@ In contrast, Spike-FlowNet utilizes Integrate-and-Fire (IF) neurons, or spiking 
 
 
 ## 1.1. Paper summary
-[Adaptive Neural Spike Net](https://ieeexplore.ieee.org/document/5118217) introduces a U-Net architecture designed to estimate optical flow from event data. It incorporates a spiking neural network (SNN) to capture the high temporal resolution of events. The SNN is built using Integrate-and-Fire (IF) neurons, which will be explained in detail. The proposed framework is depicted in the illustration below.
+[Adaptive Neural Spike Net](https://ieeexplore.ieee.org/document/10160551) introduces a U-Net architecture designed to estimate optical flow from event data. It incorporates a spiking neural network (SNN) to capture the high temporal resolution of events. The SNN is built using Integrate-and-Fire (IF) neurons, which will be explained in detail. The proposed framework is depicted in the illustration below.
 
 <div align="center">
   <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/SpikeNetwork.png" alt="description" width="80%">
@@ -90,35 +90,32 @@ Where:
 - $( N )$ is the total number of pixels.
 
 
-## 2. Self-Supervised Loss
+#### 2. Self-Supervised Loss
 
-For datasets where ground truth optical flow is unavailable (e.g., real-world event-based datasets), Adaptive-SpikeNet employs a self-supervised loss based on the concept of **photometric consistency**.
-
-### Loss Definition:
-The self-supervised loss assumes that pixel intensities remain consistent across consecutive frames, except for motion-induced changes. It uses warping techniques to estimate the consistency of pixel intensities.
-
-#### (a) Photometric Loss:
-The photometric loss, $l_{\text{photo}}$, inserts that when the grayscale image frame at time $t+\Delta t$ is warped backward to align with the image frame at time $t$ using the estimated optical flow, the two frames should appear identical. Any discrepancy or inconsistency between the frames highlights a potential error in the estimated optical flow vectors.
+For datasets where ground truth optical flow is unavailable (e.g., real-world event-based datasets), Adaptive-SpikeNet employs gray-scale images to define a self-supervised loss. The loss has two components
+- **Photometric Loss:**
+  Assume that we have a predicted flow at time instant $t_k$. The photometric loss, $L_{\text{photo}}$ , inserts that when the grayscale image $I_k$ is warped using the estimated flow, it should be the same with the gray-scale image $I_{k+1}$.
 
 $$
-l_{\text{photo}} = \sum_{x, y} \rho\left(I_t(x, y) - I_{t + \Delta t}(x + u, y + v)\right)
+L_{\text{photo}} = \sum_{x, y} \rho\left(I_{k}(x + u, y + v) - I_{k+1}(x, y)\right)
 $$
 
-#### (b) Smoothness Loss:
-On the other hand, the smoothness loss, $l_{\text{smooth}}$​, enforces the assumption that neighboring pixels should exhibit similar optical flow values. While this may not hold true for every neighboring pixel, it is a reasonable assumption for most pixels within the image. To balance its contribution to the overall loss, this term is scaled by a parameter $\alpha$.
+  where $\rho(\cdot)$ is the Charbonnier loss. 
+- **Smoothness Loss:**
+  On the other hand, the smoothness loss, $L_{\text{smooth}}$​, enforces the assumption that neighboring pixels should exhibit similar optical flow values. While this may not hold true for every neighboring pixel, it is a reasonable assumption for most of the pixels within the image. To balance its contribution to the overall loss.
 
 $$
-l_{\text{smooth}} = \sum_{j}\sum_{i} \left( \lVert u_{i,j} - u_{i+1,j} \rVert + \lVert u_{i,j} - u_{i,j+1} \rVert + \lVert v_{i,j} - v_{i+1,j} \rVert + \lVert v_{i,j} - v_{i,j+1} \rVert \right)
-$$
-
-### Combined Loss:
-The self-supervised loss combines the photometric and smoothness terms:
-
-$$
-L^{u} = l_{\text{photo}} + \alpha l_{\text{smooth}}
+L_{\text{smooth}} = \sum_{j}\sum_{i} \left( \lVert u_{i,j} - u_{i+1,j} \rVert + \lVert u_{i,j} - u_{i,j+1} \rVert + \lVert v_{i,j} - v_{i+1,j} \rVert + \lVert v_{i,j} - v_{i,j+1} \rVert \right)
 $$
 
 
+Finally, the overall loss is expressed as
+
+$$
+L^{u} = L_{\text{photo}} + \alpha L_{\text{smooth}}
+$$
+
+where $\alpha$ is a hyperparameter to scale the effect of smoothness loss. 
 ## 2.2. Our interpretation
 
 ### Overview
