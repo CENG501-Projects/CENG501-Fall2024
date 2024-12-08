@@ -185,7 +185,7 @@ $$
 
 ## 3.1. Experimental setup
 
-# Architecture Implementation
+### Architecture Implementation
 
 
 The architecture in Figure 2 is designed to leverage the unique capabilities of event cameras for optical flow estimation. Event cameras provide asynchronous, high-temporal-resolution data, recording brightness changes as ON and OFF polarity events. These events are discretized into two spatiotemporal streams, the Former Events and the Latter Events, which represent brightness changes over two consecutive intervals. This discretization provides the foundational input for the network, encoding fine-grained motion information from the scene.
@@ -200,7 +200,7 @@ An additional component of the architecture is the spike accumulator (green arro
 
 The final output consists of full-scale flow predictions generated at multiple resolutions. This multi-resolution approach allows the network to capture fine-grained motion details while simultaneously providing a broader perspective on scene dynamics. Such a design is particularly effective in handling complex, high-speed motion scenarios, making it well-suited for tasks where precision and adaptability are essential.
 
-# Training Procedure
+### Training Procedure
 For the primal tests, we use the [DSEC](https://dsec.ifi.uzh.ch/) dataset because it provides highly accurate groundtruth data. However, not all sequences in the [DSEC](https://dsec.ifi.uzh.ch/) dataset include groundtruth optical flow. Therefore, we download and utilize only the sequences that contain groundtruth. Please organize the folder structure as follows:
 ```
 - path_to_dataset
