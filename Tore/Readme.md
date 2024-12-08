@@ -202,6 +202,24 @@ Singular values are normalized relative to the largest singular value to align w
 
 @TODO: Present your results and compare them to the original paper. Please number your figures & tables as if this is a paper.
 
+![image](https://github.com/user-attachments/assets/91232a6c-cf38-44b8-a734-0db85a94c28f)
+Figure 1: For an attention head in ViT trained on (a) CIFAR-10, we plot the normalized spectra of $W_KW^⊤_Q$ at initialization (in red), and of the learned perturbations to WKW⊤ Q at different iterations (in green).
+
+![image](https://github.com/user-attachments/assets/ca8c7793-d5fd-4032-a18c-256d7a1abfd6)
+![image](https://github.com/user-attachments/assets/e107d933-225e-4e58-951a-abb5f16751fb)
+![image](https://github.com/user-attachments/assets/332903ee-cb73-444f-a2c0-4ff5c7437739)
+Figure 2: (a) Loss versus rescaled time in the toy task of learning an attention head with diagonal weights, for various initialization scales α. The loss curves converge as α → 0 to a curve with stagewise loss plateaus and sharp decreases, as predicted by the theory; some stagewise learning behavior is already clear with α = 0.01. (b) Each line shows the evolution of one of the entries of diag(wQ)diag(wK) and diag(wV )diag(wO) over rescaled time, demonst
+
+![image](https://github.com/user-attachments/assets/b43e744a-65c4-42a9-9d54-3968f2a9f5b5)
+Figure 3: Validation of assumptions on the toy model of learning a single attention head. (a) Assumption 4.4: weights perturbed at a random time during training (solid lines) tend back to the near-stationary point (dashed lines). (b) Assumption 4.5: weights perturbed at the beginning of a stage (solid lines) have same nonlinear evolution a
+ViT, ImageNet (d) GPT-2, Wikitext-103
+
+![image](https://github.com/user-attachments/assets/6711ba82-448b-494f-8530-89eee3c7c702)
+Figure 4: Stable rank of $∆W_KW^⊤_Q$ (blue) and $∆W_V W^⊤_O$
+(orange) on an arbitrary chosen layer
+throughout training for four different pairs of networks and tasks. The stable rank of a matrix W
+is defined as $∥W∥^2_F/∥W∥^2_2$, and gives a smooth approximation of the rank. Mean and standard
+deviation (shaded area) are computed ac
 # 4. Conclusion
 
 @TODO: Discuss the paper in relation to the results in the paper and your results.
