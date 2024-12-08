@@ -127,6 +127,9 @@ The network employs a straightforward U-Net architecture, which has many similar
 ### Input Representation and Scaled Flows
 #### Visualization of Input Fromat
 Assume that we desire to estimate the optical flow at time instant $t_k$. We determine the half window size as $100$ msec. Then, we create the bins between time interval $(t_k-100,t_k+100)$ and visualize them in order to verify the implementation.
+<div align="center">
+  <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/InputRepresentation.gif" alt="description" width="80%">
+</div>
 
 #### Scaled Flows
 When backpropagation is applied at four different scales of optical flow, we adjust the motion values (optical flow) for each scale. For example, if an image is resized to be twice as large, the motion of each pixel also doubles. To ensure the motion stays accurate, we scale the optical flow values to match the size of the image at each scale. This way, the optical flow at each scale correctly represents the motion for that specific scale.
