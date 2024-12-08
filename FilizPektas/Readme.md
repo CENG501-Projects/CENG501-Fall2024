@@ -1,8 +1,8 @@
 # **Improving Generalization via Meta-Learning on Hard Samples**
 
 ## 
-
-## **1.Introduction**
+# 1. Paper Summary
+## **1.1. Introduction**
 
 Learned Reweighting is an approach that utilizes assigned weights on dataset to optimize validation dataset representation. The authors in this paper show that hard-to-classify instances has both theoretical connection and strong empirical evidence to generalization. 
 
@@ -19,7 +19,7 @@ The main claim of this paper is that if they create a dataset with hard to class
 3) Showing strict accuracy ordering of LRW Models based on validation set: easy \< random \< hard, which demonstrates the importance of optimizing LRW validation sets. Gaining clearly on ERM accross various domain datasets, outperforming various baselines.  
 4) Extending results to harder samples as a significant implier on higher generalization.
 
-## **2.Related work**
+## **1.2. Related work**
 
 * **Importance reweighting for Robustness:**
 
@@ -41,7 +41,7 @@ A recent work proposed to make a 2-level training on ERM models to improve the s
 
 ## 
 
-## **3\. Preliminaries: learned reweighting**
+## **1.3. Preliminaries: learned reweighting**
 
 This section of the paper outlines a framework for classifier learned reweighting (LRW). The basic idea is to reweight training data according to instance-specific weights in order to get better performance from a classifier on a validation dataset. Optimization of a two-level (or bi-level) objective function is used to accomplish the reweighting.
 
@@ -55,7 +55,7 @@ Notations:
 * ![](https://github.com/Sinasi3/Sinasi3/blob/main/3not4.jpg.png?raw=true): Classifier  
 * ![](https://github.com/Sinasi3/Sinasi3/blob/main/3not5.jpg.jpg?raw=true): Instance-wise weighting function
 
-### **3.1 Bi-Level optimization objective**
+### **1.3.1 Bi-Level optimization objective**
 
 ![A group of mathematical symbolsDescription automatically generated](https://github.com/Sinasi3/Sinasi3/blob/main/3not6.jpg.jpg?raw=true)
 
@@ -65,12 +65,14 @@ Notations:
 
   
 
-### **3.2.  Intuition and insights**
+### **1.3.2.  Intuition and insights**
 
 * The algorithm can indirectly modify training samples to enhance generalization because the training loss is weighted and the validation loss is unweighted.  
 * The model effectively treats validation performance as a "target for generalization" by iteratively updating ϕ  and 𝜃 to match the weighted training distribution with the validation distribution.
 
-## **4\. MOLERE(Meta-Optimization of the Learned Reweighting)**
+## **2 Method and Our Interpretation**
+## **2.1. Proposed Method**
+## **2.1.1. MOLERE(Meta-Optimization of the Learned Reweighting)**
 
 The hypothesis presented here is that **generalization in supervised learning** can be improved by combining two key ideas:
 
@@ -91,7 +93,7 @@ Notations:
 2. **Middle Level:** Given the validation set, find the optimal instance-wise weights ![](https://github.com/Sinasi3/Sinasi3/blob/main/4.7.jpg?ra6w=true) to minimize the weighted training loss.  
 3. **Inner Level:** Finally, minimize the weighted loss with respect to model parameters θ¸.
 
-### **4.1. Objective and generalization**
+### **2.1.2. Objective and generalization**
 
 In order to obtain theoretical understanding of generalization, the study further investigates the asymptotic behavior of MOLERE as the dataset size increases (𝑁 + 𝑀 → ∞). A weighting function ϕ(·)   that depends on both x and y was assumed. 
 
@@ -124,129 +126,64 @@ Suppose:
 
   ![A close up of symbolsDescription automatically generated](https://github.com/Sinasi3/Sinasi3/blob/main/11.png?raw=true)
 
-## **5.Efficient algorithm for validation optimization**
+## **2.1.3.Efficient algorithm for validation optimization**
 
 Creating a tractable meta-optimization method has two technical difficulties: 
 
 * How can we figure out which instances belong to the validation and training sets?   
 * How may the tri-level objective be solved effectively?
 
-### **5.1. Soft data assignment**
+### **2.1.4. Soft data assignment**
 
 * This article predicts the likelihood that each instance will be a member of the validation set using a "splitter" network.   
 * The splitter reduces the cross-entropy between the accuracy of the classifier and its predictions. To guarantee appropriate label distribution and consistency across train-test splits, two regularizers (1) are implemented.
 
-### **5.2. Meta-optimization with min-max objective**
+### **2.1.5. Meta-optimization with min-max objective**
 
 The tri-level optimization is reduced by the method to a bi-level formulation, where:
 
 * The splitter dynamically reassigns instances in an attempt to optimize validation set performance.  
 * For specified splits, the meta-network reduces validation error.
 
-## **6\. Deriving the update equations**
+## **2.1.6\. Deriving the update equations**
 
-### **6.1. Splitter network(Θ)**
+### **2.1.6.1. Splitter network(Θ)**
 
 * The goal is to maximize loss on hard instances while minimizing loss on the validation set to enhance generalization by accurately predicting the label pair (𝑥,𝑦).
 
   ![A close-up of a math problemDescription automatically generated](https://github.com/Sinasi3/Sinasi3/blob/main/12.png?raw=true)
 
-### **6.2. Meta-network (ϕ)**
+### **2.1.6.2. Meta-network (ϕ)**
 
 * The main objective is minimizing the validation error using the classifier's predictions.
 
   ![A black and white math symbolDescription automatically generated](https://github.com/Sinasi3/Sinasi3/blob/main/13.png?raw=true)
 
-### **6.3. Classifier network (θ)**
+### **2.1.6.3. Classifier network (θ)**
 
 * Optimizing weighted training loss on the training set D′.  
 * After e epochs of bi-level setup, ![](https://github.com/Sinasi3/Sinasi3/blob/main/14.png?raw=true) epochs occur on training data, where ![](https://github.com/Sinasi3/Sinasi3/blob/main/15.png?raw=true) accounts for K-times inner loop iterations.
 
   ![A black and white math symbolsDescription automatically generated with medium confidence](https://github.com/Sinasi3/Sinasi3/blob/main/16.png?raw=true)
 
-## **7\. Expected Experiments:**
+## **2.2. Our Interpretation:**
+## **2.2.1. Method Related Information**
+The authors included compared their learned reweighting methods first manually (the train-twice heuristic) and then automatically (using the meta-learning approach). Their main aim was to show that 'harder' instances on validation set ensures better accuracy. 'Harder' instances in this context is determined by finding the samples that have contributed the most to the distribution. This calculation is performed using probabilistic margin, which also considered inexact in the paper.
 
-Extensive experimentation has been evaluated in the paper. Before pooling, ranking, and repartitioning, training data for the ERM classifier is used in the train-twice heuristic for all datasets if a train-validation split is already available.
+To determine the harder instances, the authors introduced a 'train-twice heuristic' which is basically to find the contributing training instances using a baseline model firstly, then retraining the model with the provided data sampling. Following Methods in this heuristic are considered:
+- LRW-Hard: Lowest margin instances, which means the most representative instances are considered in the validation dataset.
+- LRW-Easy: Highest margin instances, which means the least representative instances are considered in the validation dataset. 
+- LRW-Random: Random instances are distributed to validation dataset.
 
-* Datasets that are utilized are as follows.
+## **2.2.2. Unclear Parts and Our Interpretations**
+In the paper, some of the approaches were not clearly mentioned. Here is what we saw as unclear.
 
-\- CIFAR-100, ImageNet-100, ImageNet-1K, Aircraft, Stanford Cars, Oxford-IIIT Fine-Grained Classification, Diabetic Retinopathy
+- Instructions on how ERM Classifier is constructed was left vague. We have checked the supplementary material, and we have seen different networks are used for different datasets, and we decided that aforementioned ERM Classifier is actually a network trained on that classifier using a Cross Entropy loss objective.
+- Gain over ERM in percentage was highly used in their graphics, but the authors did not specify how that is actually achieved. We ran the experiments at our implementation, and we have compared the accuracies. We have seen that gains over ERM is calculated by dividing the current model's accuracy result by the ERM model's accuracy result, and multiply by -1 if the nominator is less than the denominator.
+  
+Other than these parts, paper was quite detailed and clear about its methods and approaches, proving every mathematical aspect they used and explaining every method they implemented.
 
-* OOD Analysis is conducted on:
-
-\- ImageNet-A
-
-\- ImageNet-R
-
-* For models trained on ImageNet-1K
-
-\-Camelyon and iWildCam datasets are also utilized nfor WILDS Benchmark
-
-\-Country-shifted DR dataset is utilized for testing.
-
-\-Robustness of the model is tested Ä±n Inst.C-10 and Clothing 1M
-
-* Following Baselines are compared:
-
-\- ERM, MWN, FSR, L2R, MAPLE, BiLAW, GDW, StableNet, Margin Based Reweighting, Rho-loss
-
-## **8\. Result**
-
-### **8.1. In-distribution generalization:**
-
-#### **8.1.1 MOLERE improves classification accuracy**
-
-* In Fig.1,  gain over ERM can be seen in the strict order of LRW-Easy \< LRW-Random \< LRW-Hard  
-* LRW-Random shows modest gains over ERM in most datasets.  
-*  0.8% relative gain on ImageNet, 1.3% Ä±n Clothing-1M, 2.15% relative on CIFAR-100  
-* LRW-Opt matches or exceeds LRW-Hard.
-
-	To show that the possibility of LRW-Hard overfitting to the training data distribution in those results are not to be claimed, the authors also conducted tests on out-of-domain test sets.
-
-#### **8.1.2.  MOLERE outperforms reweighting baselines**
-
-![](https://github.com/Sinasi3/Sinasi3/blob/main/17.png?raw=true)
-LRWOpt is compared with FSR, MBR (provides protection for certain adversarial attacks.), MAPLE, MWN, StableNet, BiLAW.
-
-* "just train twice" also suggests that and ad-hoc upweighting of poor performing instances in a second round of training.
-
-* RHO-loss follows the harder version, selecting only some points from a batch which minimizes the holdout set loss for efficient training.  
-* LRW Clearly outperforms the other baseline methods across all datasets, with MAPLE and StableNet following. FST and Rho-loss perform similar to ERM only. MBR and MWN are the worst performers.
-
-#### **8.2. Out-of-distribution (OOD) generalization**
-
-Wilds benchmark is utilized on testing with OOD data slomh eiyj Diabetic Retinopathy. 
-
-ImageNet-A and ImageNet-R are also used for validation of OOD Testing. This experiment is primarily performed to check the generalizaton capacity and domain shift robustness of the model.
-![](https://github.com/Sinasi3/Sinasi3/blob/main/18.png?raw=true)
-Figure above confirms the model's generalization capability dominance on ERM classifiers (left) and the dominance on other reweighting baselines (right).
-
-### **8.3. Practical label noise settings**
-
-Inst. C-10 and Clothing 1M are used for testing the model on noise robustness. 
-![](https://github.com/Sinasi3/Sinasi3/blob/main/19.png?raw=true)
-Above table shows the comparison of bi-level approaches against LRWOpt. 0.85% gain on best performing GDW is observable.
-
-#### **8.4. Skewed labels** 
-
-![](https://github.com/Sinasi3/Sinasi3/blob/main/20.png?raw=true)
-Skewed labels on CIFAR-100 significanty outperforms other meta-learning based reweighting methods, achieving 2.22% gains.
-
-#### **8.5. MOLERE scales to large pretrained models**
-
-LRW-Hard, LRW-Easy and LRW-Random are analyzed along with the ERM Baseline on ViT-B/16 pretrained backbone and evaluated on ImageNet-1K.
-
-LRW-Hard Outperforms other methods significantly to other methods. It is also important to note that there is a 1.92% difference between LRW-Easy and LRW-Hard, which demonstrates the choice of the validation set affects the sensitivity of these techniques.
-
-#### ***8.6. Leveraging OOD val set: a heuristic solution***
-
-Datasets where hard instance datasets is available in MOLERE Context. For ImageNet-1K dataset, two datasets are frequently studied to gauge generalization properties of learned classifiers \- IN-A and IN-R datasets. Each datasets are portioned for LRW validation and testing. 
-
-![](https://github.com/Sinasi3/Sinasi3/blob/main/21.png?raw=true)
-
-#### **8.7. Margin maximization via meta-learning**
-
-Authors empirically claim that MOLERE affects a margin maximization effect, which implies that MOLERE classifiers are larger in margins in comparison to ERM Classifiers. Validation data are selected to be low-margin instances, which LRW Classifier upweights with instances most similar to the low-margin validation set (CIFAR-100 and ImageNet-100 are used for testing).
+## **3\. Result**
 
 ![](https://github.com/Sinasi3/Sinasi3/blob/main/22.png?raw=true)
 
