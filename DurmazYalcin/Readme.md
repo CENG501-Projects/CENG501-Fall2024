@@ -204,7 +204,7 @@ For the primal tests, we use the [DSEC](https://dsec.ifi.uzh.ch/) dataset becaus
   ...
 ```
 
-During training, it is necessary to sort the corresponding frames for each optical flow groundtruth. However, this sorting process is time-consuming and is repeated for every training epoch. To reduce the training time, pre-sorting the relevant events and saving them in a separate folder can significantly reduce training time. By doing this, we can directly load the relevant events from the pre-sorted files, eliminating the need for repeated sorting during each epoch. 
+During training, it is necessary to create the event bins for each optical flow groundtruth. However, this binning process is time-consuming and is repeated for every training epoch. To reduce the training time, pre-binning the relevant events and saving them in a separate folder can significantly reduce training time. By doing this, we can directly load the relevant events from the pre-binned files, eliminating the need for repeated binning during each epoch. 
 
 ## 3.2. Running the code
 
