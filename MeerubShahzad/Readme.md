@@ -2,8 +2,9 @@
 
 
 # 1. Introduction
-The paper **"Inspecting Prediction Confidence for Detecting Black box Backdoor Attacks"** from the Thirty Eighth AAAI Conference on Artificial Intelligence was the inspiration for this project. Framed by Tong Wang and colleagues introduces DTINSPECTOR, a solution to the dangerous backdoor attacks plaguing the deep learning model. These attacks also function as vulnerabilities and affect model prediction with a secret alteration of training data. In this paper, by making use of DTINSPECTOR, they inspect training data prediction anomalies.
-We have aimed to reproduce, verify piece by piece, the DTINSPECTOR effectiveness through controlled experiments. We empirically evaluate the robustness and practical utility of Defense by replicating evidence to the original results and by probing resistance of Defense to new data and attack settings.
+The paper **"Inspecting Prediction Confidence for Detecting Black box Backdoor Attacks"** from the Thirty Eighth AAAI Conference on Artificial Intelligence was the inspiration for this project. Published by Tong Wang and coworkers, the study proposes DTINSPECTOR, a defence mechanism for backdoor attack detection in deep learning. These attacks leverage on some latent triggers in the training data to change the model’s output while not affecting its performance on clean data.
+
+The goal of this study is to replicate and validate the performance of DTINSPECTOR through controlled testing. For the purpose of this work, due to resource limitations, we have restricted our analysis to CIFAR10 as the dataset and BADNET attack to assess DTINSPECTOR’s potential of detecting trojaned models and infected labels.
 
 ## 1.1.	Paper Summary
 The paper 'Inspecting Prediction Confidence for detecting Black Box Backdoor Attacks' by Tong Wang et al. (Thirty Eighth AAAI Conference on Artificial Intelligence (AAAI-24)) presents DTINSPECTOR, a novel defense mechanism against black box backdoor attacks on deep learning models. In paper they considered these attacks in which an output of the model is perturbed by injecting a trigger hidden in the training set, which is hard to learn as it can still maintain normal predictive accuracy on inputs.
@@ -20,9 +21,9 @@ The proposed method consists of advanced traditional defenses that either detect
 ### 1.1.3.	Methodology:
 DTINSPECTOR first sorts training data by prediction confidence, applies learned patches to high confidence samples, and measures the shift in prediction outputs to detect anomalies. In contrast to previous methods capable of directly analyzing triggers or utilized as adjuncts only by relying on anomalies in model output without factoring in confidence levels, this approach directly analyzes triggers or relies on anomalies only by factoring in confidence levels, i.e., high confidence or low confidence.
 # 2. Threat Model
-In the paper, they addressed black box backdoor attacks on deep learning models where adversaries add malicious triggers to only a small portion of the training data, they do not get access to the model or the training process. When these triggers are activated, only then the model makes wrong predictions. On regular inputs though, it performs normally and its hard to detect. To avoid raising suspicion, attacker only changes few data and labels as input.
+In the paper, a method is designed to address **black box backdoor attacks** on deep learning models where adversaries add malicious triggers to only a small portion of the training data, they do not get access to the model or the training process. When these triggers are activated, only then the model makes wrong predictions. On regular inputs though, it performs normally and its hard to detect. To avoid raising suspicion, attacker only changes few data and labels as input.
 
-As a countermeasure, they proposed an attack detection mechanism called DTINSPECTOR that looks for such attacks by analyzing uncharacteristic patterns in the model prediction confidence. Defender is the one who has access to the model and its training data, and use tools like DTINSPECTOR. This tool finds and discards poisoned data effects. This protects the model from this type of attack.
+As a countermeasure, they proposed an attack detection mechanism called **DTINSPECTOR** that looks for such attacks by analyzing uncharacteristic patterns in the model prediction confidence. Defender is the one who has access to the model and its training data, and use tools like DTINSPECTOR. This tool finds and discards poisoned data effects. This protects the model from this type of attack.
 
 # 3. Key Observations from the Paper
 In this research paper, backdoor threats in deep learning models are detected at in depth. An effective black box backdoor attack usually produces unusually high prediction confidence on the poisoned training data. During model inference, this elevated confidence is used to achieve a high Attack Success Rate (ASR), and in that way, it becomes an important indicator of data manipulation.
@@ -49,7 +50,7 @@ This paper introduces DTINSPECTOR, a novel defense mechanism to detect black box
 ![image](https://github.com/user-attachments/assets/056800fe-7c0f-4f80-bb8e-3af693c0e643)
 
 ### 4.1.2. Patch Learning and Application
-**o	Patch Design:** A specific patch δ is designed using only the high confidence samples. This patch is desired to shift the model's predictions from the current label to any other label.
+**o	Patch Design:** A specific patch **δ** is designed using only the high confidence samples. This patch is desired to shift the model's predictions from the current label to any other label.
 
 **o	Objective Function:** The patch is optimized through an objective function stated as:  
 
