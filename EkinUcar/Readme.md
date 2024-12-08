@@ -130,7 +130,7 @@ Figure 2: Validation loss for small sMNIST
 <img width="450" alt="Validation_loss_80_epochs" src="https://github.com/user-attachments/assets/c539fd73-ecc6-4033-bd3f-077d4c91b46d">  
 
 Figure 3: Training and validation accuracies for our implementation
-|                     | sMNIST | 
+|                     | Small (1/20) sMNIST | 
 |---------------------|--------|
 | **Training** |    13.66    |  
 | **Validation** |    13.60    |  
@@ -140,7 +140,9 @@ Figure 4: Original paper's accuracy results
 
 <img width="169" alt="Papers_MNIST_results" src="https://github.com/user-attachments/assets/ad2ce844-7860-4b1b-9871-3cfcb8541344">
 
+**Discussion:**  
 
+Our accuracy values were very low compared to the original paper's. This might be because we used the setup of the LRA Image task and different values might have been used for the sMNIST task in the original paper. Using smaller batch size could have affected the accuracy as well.  
 
 # 4. Conclusion
 
