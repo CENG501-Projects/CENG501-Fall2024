@@ -118,7 +118,9 @@ We conducted two experiments:
 ## 3.3. Results
 
 **1st Experiment (Full sMNIST Dataset and 2 Epochs):**
+
 Figure 1: Train loss for small sMNIST   
+
 ![train_loss_smnist_large](https://github.com/user-attachments/assets/1c815a5f-f31f-4820-a0f7-32f19138099e)
 
 <br><br>
