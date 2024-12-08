@@ -285,7 +285,9 @@ Knowing these JPEG compression concepts is crucial for following the paper's met
 
 ## 4.1. Experimental setup
 
-@TODO: Describe the setup of the original paper and whether you changed any settings.
+In the original paper, the model was trained on 8 RTX 2080 GPUs over 250 epochs. We trained the model in Google Colab with a L4 GPU over same number of epochs. The initial learning rate is 0.001 and batch size is 4 in the paper. We also used these settings. We set exponential decay gamma parameter as 0.9, as they did not give any information about that. The loss function was choosen pixel-level binary cross entropy, so we also used this loss function. Split ratio is not stated in the paper. We allocated 0.8 of the dataset to train and 0.2 to test. 
+
+In the paper, experiments were performed on each branch of a two-branch network and both of them together.
 
 ## 4.2. Running the code
 
@@ -293,7 +295,39 @@ Knowing these JPEG compression concepts is crucial for following the paper's met
 
 ## 4.3. Results
 
-@TODO: Present your results and compare them to the original paper. Please number your figures & tables as if this is a paper.
+### 4.3.1 Experiment I - RGB Stream on CIMD-R Subdataset
+
+![Training Loss](figures/training_loss_exp1.png)
+*Figure 10: Training Loss Curve*
+
+![Test Loss](figures/test_loss_exp1.png)
+*Figure 11: Test Loss Curve*
+
+![Training F1 Score](figures/training_f1_score_exp1.png)
+*Figure 12: Training F1 Score Curve*
+
+![Test F1 Score](figures/test_f1_score_exp1.png)
+*Figure 13: Test F1 Score Curve*
+
+![Ablation Results](figures/ablation_study.png)
+*Figure 14: The ablation study stated in the paper*
+
+
+When we compare the training and test results, it can be seen that there is a strong overfitting. The model may be memorizing because the training set is small. We think that this can be solved by data augmentation, but we did not apply it in the first experiment because it was not mentioned in the paper.
+
+At the end of training, we tried the model we saved with some inputs we selected from the training and test set. The results are below.
+
+![Inference I](figures/training_inference_exp1.png)
+*Figure 15: The prediction result of an positive image from training set. Left: original image, Middle: mask of image, Right: prediction of the model*
+
+![Inference II](figures/training_inference2_exp1.png)
+*Figure 16: The prediction result of an negative image from training set. Left: original image, Middle: mask of image, Right: prediction of the model*
+
+![Inference III](figures/test_inference1_exp1.png)
+*Figure 17: The prediction result of an positive image from test set. Left: original image, Middle: mask of image, Right: prediction of the model*
+
+![Inference IV](figures/test_inference2_exp1.png)
+*Figure 18: The prediction result of an negative image from test set. Left: original image, Middle: mask of image, Right: prediction of the model*
 
 # 5. Conclusion
 
