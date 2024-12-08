@@ -125,7 +125,7 @@ Figure 1: Train loss for small sMNIST
 
 <img width="450" alt="Train_loss_80_epochs" src="https://github.com/user-attachments/assets/08ec1f66-8e95-4031-81f7-0857b5b0222b">  
 
-
+<br><br><br>
 
 
 Figure 2: Validation loss for small sMNIST  
