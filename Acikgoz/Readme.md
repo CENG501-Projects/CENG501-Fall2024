@@ -2,19 +2,19 @@
 
 This README file is an outcome of the CENG501 (Spring 2024) project for reproducing a paper without an implementation. See CENG501 (Spring 42) Project List for a complete list of all paper reproduction projects.
 
-# 1. Introduction
+#  Introduction
 
-This project aims to reproduce and evaluate the paper “Unleashing Channel Potential: Space-Frequency Selection Convolution for SAR Object Detection”, published in CVPR 2024. The paper introduces the SFS-Conv module, a novel convolutional architecture that addresses the challenges of SAR object detection, such as high-resolution images, small objects, and significant noise (e.g., speckle noise). SAR images, commonly used in applications like ocean monitoring, resource exploration, and disaster investigation, demand efficient and robust detection algorithms.
+This project focuses on reproducing and evaluating the novel method proposed in the paper “Unleashing Channel Potential: Space-Frequency Selection Convolution for SAR Object Detection”, published in CVPR 2024. Synthetic Aperture Radar (SAR) imaging, widely used in applications such as ocean monitoring, disaster response, and aerial reconnaissance, presents unique challenges for object detection. These challenges include handling high-resolution imagery, detecting small-scale objects, and mitigating significant noise levels, particularly speckle noise. Existing convolutional architectures often struggle with these scenarios, suffering from redundant feature extraction and suboptimal generalization.
 
-The primary goal of this project is to:
+The paper introduces the Space-Frequency Selection Convolution (SFS-Conv) module as a solution to these challenges. The SFS-Conv leverages a novel shunt-perceive-select strategy to enhance feature representation by simultaneously integrating spatial and frequency domains. Building on this module, the paper also proposes the SFS-CNet architecture, a lightweight SAR detection network that achieves state-of-the-art (SoTA) performance with significantly reduced computational overhead.
 
-	1.	Implement the SFS-Conv module and the SFS-CNet architecture using PyTorch.
-	2.	Validate the claims of the paper by comparing performance on datasets like HRSID, SAR-Aircraft-1.0, and SSDD.
-	3.	Explore the benefits and limitations of the proposed approach to assess its practical usability and efficiency.
+The primary objectives of this project are as follows:
+	1.	Implementation: Reproduce the SFS-Conv module and SFS-CNet architecture in PyTorch, adhering closely to the paper’s methodology.
+	2.	Evaluation: Validate the effectiveness of the proposed method by benchmarking its performance on widely-used SAR datasets, including HRSID, SAR-Aircraft-1.0, and SSDD.
+	3.	Exploration: Analyze the design decisions, benefits, and limitations of the SFS-Conv module to assess its real-world applicability and potential for further refinement.
 
-The implementation not only aims to faithfully replicate the original method but also addresses any ambiguities or gaps in the paper by making reasonable assumptions and interpretations.
-
-# 1.1. Paper Summary
+This project emphasizes both faithful reproduction and critical analysis, addressing ambiguities in the paper through informed assumptions and innovative interpretations. By re-implementing the method, this work contributes to a deeper understanding of advanced SAR object detection techniques, bridging gaps between theoretical advancements and practical implementation.
+# Paper Summary
 
 Problem Definition
 
@@ -33,116 +33,298 @@ Key Contributions
 
 This method integrates spatial and frequency dimensions into a single convolutional layer, unlike existing methods that rely on additional modules, reducing redundancy and computational cost.
 
-# 2. The Method and Our Interpretation
+# The Method: Space-Frequency Selection Convolution for SAR Object Detection
 
-# 2.1. The Original Method
+The proposed method introduces the **Space-Frequency Selection Convolution (SFS-Conv)**, a novel approach to improve feature extraction in convolutional neural networks for synthetic aperture radar (SAR) object detection. Unlike traditional convolutional layers, SFS-Conv incorporates both spatial and frequency information, enabling enhanced feature diversity and robustness in noisy environments. The SFS-Conv module is the core building block of the **SFS-CNet** architecture, which achieves superior accuracy and efficiency in detecting small objects in high-resolution SAR images.
 
-The method proposed in the paper centers around the SFS-Conv module, which improves the representation capacity of convolutional layers by focusing on spatial and frequency features. The module is divided into three key components:
+---
 
-# 1. Shunt Mechanism
+## Overview of SFS-CNet Framework
 
-The input feature maps are split into two components:
+The **SFS-CNet Framework** integrates SFS-Conv modules into a multi-stage convolutional network specifically designed for SAR object detection. The framework combines hierarchical feature extraction, multi-scale feature fusion, and an optimized detection head to address the unique challenges of SAR imagery, such as small object sizes and high levels of noise.
 
-	•	Spatial Features: Provide spatial information about the objects and their surroundings.
-	•	Frequency Features: Capture variations in texture and reduce the impact of speckle noise using the Fractional Gabor Transform (FrGT).
+### Key Components of SFS-CNet
 
-# 2. Perceive Mechanism
+1. **Hierarchical Backbone Network**:
+   - Extracts features at multiple resolutions using SFS-Conv modules.
+   - Each stage includes downsampling layers to reduce spatial dimensions while increasing channel capacity, as shown in Figure 1.
 
-The Perceive stage refines features using:
+2. **Multi-Scale Feature Fusion**:
+   - Downsampling and upsampling layers enable detection of objects across varying scales.
+   - Skip connections ensure the preservation of fine-grained spatial details.
 
-	•	Spatial Perception Unit (SPU):
-	•	Utilizes multi-scale, dynamically adjustable convolutional kernels to capture object context, shape, and orientation.
-	•	Features hierarchical residual connections to expand the receptive field effectively.
-	•	Frequency Perception Unit (FPU):
-	•	Uses Fractional Gabor Kernels derived from FrGT to extract multi-scale texture and orientation information.
-	•	Suppresses noise and captures high-frequency features, enhancing feature diversity.
+3. **Decoupled Detection Head**:
+   - Separates object classification and bounding box regression tasks into independent modules.
+   - This decoupling improves detection accuracy by optimizing feature utilization for each task.
 
-# 3. Select Mechanism
+4. **Gradient-Induced Learning (GIL)**:
+   - A training strategy that emphasizes texture-sensitive object boundaries.
+   - Uses auxiliary loss functions based on gradient-based boundary refinement to improve feature learning.
 
-The Channel Selection Unit (CSU) adaptively fuses spatial and frequency features. It uses global average pooling and soft attention to compute channel-wise importance weights, ensuring that only the most discriminative features are preserved.
+![SFS-CNet Framework](./figures/sfscnet.png)
 
-Final Integration: SFS-CNet
+*Figure 1. The architecture of the SFS-CNet Framework.*
 
-The SFS-CNet architecture stacks SFS-Conv modules into a lightweight object detection framework. It includes:
+---
 
-	•	A backbone network for feature extraction.
-	•	Downsampling and upsampling layers for multi-scale detection.
-	•	A Gradient-Induced Learning (OGL) strategy during training to emphasize object-level texture details.
+## Space-Frequency Selection Convolution (SFS-Conv)
 
-# 2.2. Our Interpretation
+The **SFS-Conv** module is the core innovation of the paper. It is designed to enhance feature representation by simultaneously capturing spatial and frequency information. The module operates in three stages: **Shunt**, **Perceive**, and **Select**, as illustrated in Figure 2.
 
-Addressing Ambiguities
+---
 
-The paper, while comprehensive, leaves certain implementation details unclear, particularly around the following aspects:
+### Shunt Mechanism: Spatial-Frequency Splitting
 
-	1.	Fractional Gabor Transform (FrGT):
-	•	The FrGT’s integration with convolutional kernels is not fully detailed.
-	•	We interpreted this as a separable filter operation implemented in PyTorch, ensuring rotation and scale invariance.
-	2.	SPU Configuration:
-	•	The exact multi-scale kernel sizes and residual connection structures were not described.
-	•	We assumed progressively increasing kernel sizes (e.g., 3x3, 5x5, 7x7) with residual connections to expand the receptive field efficiently.
-	3.	Feature Fusion in CSU:
-	•	The paper uses “parameter-free” fusion without clear implementation steps.
-	•	We interpreted this as a soft attention mechanism where spatial and frequency feature maps are weighted and summed.
+The **Shunt Mechanism** divides the input feature map `X` into spatial (`X^s`) and frequency (`X^f`) components. This is controlled by a shunt ratio `α`, where `0 ≤ α ≤ 1`, as defined below:
 
-Design Decisions
+- `X^f = α * X`
+- `X^s = (1 - α) * X`
 
-	•	Implementation in PyTorch:
-	•	SPU and FPU were implemented as modular layers for flexibility.
-	•	FrGT was implemented using 2D discrete convolution with parameterized Gabor filters.
-	•	Hyperparameter Tuning:
-	•	Spatial-to-frequency shunt ratio (α) was tuned to balance spatial and frequency feature contributions.
-	•	Number of fractional Gabor orientations was set to 8 for optimal feature diversity without excessive computation.
+- **Spatial Features (`X^s`)**: Focus on the location and shape of objects, providing contextual spatial information.
+- **Frequency Features (`X^f`)**: Capture textural variations and suppress noise using the **Fractional Gabor Transform (FrGT)**.
 
-# 3. Experiments and Results
+The separation ensures that spatial and frequency features are processed independently, maximizing their respective contributions.
 
-3.1. Experimental Setup
+---
+
+### Perceive Mechanism: Feature Refinement
+
+The **Perceive Mechanism** processes the spatial and frequency features using specialized units to extract refined representations.
+
+#### Spatial Perception Unit (SPU)
+
+- **Purpose**: Captures object context, shape, and orientation using dynamically adjustable convolutional kernels.
+- **Operation**: Applies multiple kernel sizes `k ∈ {3x3, 5x5, 7x7}` to expand the receptive field.
+- **Formula**:
+  - `Y^s = Σ Conv_{k_i}(X^s) for i = 1 to n`
+- **Hierarchical Residual Connections**: Allow for efficient multi-scale feature aggregation without introducing gradient vanishing issues.
+
+#### Frequency Perception Unit (FPU)
+
+- **Purpose**: Enhances texture representation and mitigates speckle noise using the **Fractional Gabor Transform (FrGT)**.
+- **Operation**: Applies parameterized Gabor kernels to extract high-frequency features.
+- **Formula**:
+  - `Y^f = G_θ(X^f)`
+- **Key Advantage**: The FPU is rotationally and scale-invariant, making it highly effective in processing SAR imagery.
+
+---
+
+### Select Mechanism: Adaptive Feature Fusion
+
+The **Select Mechanism** combines the refined spatial (`Y^s`) and frequency (`Y^f`) features adaptively using a **Channel Selection Unit (CSU)**. This mechanism calculates channel-wise importance weights to retain only the most discriminative features.
+
+1. **Global Average Pooling (GAP)**:
+    - Computes global context for both spatial and frequency features:
+      - `β = SoftMax(GAP(Y^s))`
+      - `γ = SoftMax(GAP(Y^f))`
+
+2. **Weighted Fusion**:
+    - Combines spatial and frequency features based on the calculated weights:
+      - `Y = β * Y^s + γ * Y^f`
+
+This approach ensures that only the most relevant features are passed to subsequent layers, reducing redundancy and enhancing feature diversity.
+
+![SFS-Conv Module](./figures/sfsconv.png)
+
+*Figure 2. The Space-Frequency Selection Convolution (SFS-Conv) Module.*
+
+---
+
+## Mathematical Formulation of SFS-Conv
+
+To summarize the operations in SFS-Conv:
+
+1. **Shunt**:
+   - `X^f = α * X, X^s = (1 - α) * X`
+
+2. **Perceive**:
+   - Spatial features:
+     - `Y^s = Σ Conv_{k_i}(X^s) for i = 1 to n`
+   - Frequency features:
+     - `Y^f = G_θ(X^f)`
+
+3. **Select**:
+   - `β = SoftMax(GAP(Y^s)), γ = SoftMax(GAP(Y^f))`
+   - `Y = β * Y^s + γ * Y^f`
+
+---
+
+## Implementation Details
+
+- **Fractional Gabor Transform (FrGT)**: Implemented as a separable 2D convolution with parameterized Gabor filters for optimal rotation and scale invariance.
+- **Channel Selection Unit (CSU)**: Parameter-free for computational efficiency.
+- **Multi-Scale Kernel Design**: Dynamically adjustable kernel sizes in SPU enable the network to adapt to varying object scales.
+- **Shunt Ratio (`α`)**: Experimentally tuned to balance spatial and frequency contributions.
+
+The detailed design of SFS-Conv and its integration into the SFS-CNet framework demonstrates a holistic approach to SAR object detection, achieving significant improvements in accuracy, noise robustness, and computational efficiency.
+
+## Our Interpretation
+
+The implementation reflects a detailed and modular approach to replicating the methodology proposed in the "Unleashing Channel Potential: Space-Frequency Selection Convolution for SAR Object Detection" paper. This section elaborates on the design choices and interpretations made in the provided codebase.
+
+### Modular Design Overview
+
+The implementation emphasizes modularity, enabling ease of experimentation and extension:
+- **`sfs_conv.py`**: Implements the Space-Frequency Selection Convolution (SFS-Conv) module, including sub-units such as the Spatial Perception Unit (SPU), Frequency Perception Unit (FPU), and Channel Selection Unit (CSU).
+- **`sfs_cnet_model.py`**: Defines the SFS-CNet architecture, integrating multiple SFS-Conv modules for multi-scale SAR object detection.
+- **`sfs_cnet_blocks.py`**: Handles auxiliary components like Conv-BN-ReLU (CBR) blocks and the decoupled detection head.
+- **`hrsid_loader.py`**: Prepares and augments the HRSID dataset for model training and evaluation.
+- **`metric_util.py`**: Encapsulates the evaluation logic, providing metrics like mAP, Precision, Recall, and F1-Score.
+- **`train.py` and `test.py`**: Manage the training and testing pipelines, integrating all components seamlessly.
+
+### Space-Frequency Selection Convolution (SFS-Conv)
+
+The **SFS-Conv** module is the cornerstone of the implementation, designed to enhance feature diversity by combining spatial and frequency features. Its structure is as follows:
+
+#### Shunt Mechanism
+- The input feature maps are divided into spatial (`X^s`) and frequency (`X^f`) components based on a split ratio (`α`).
+- **Implementation**: Pointwise Convolutions (PWC) are applied to preprocess the components before further processing.
+
+#### Perceive Mechanism
+- **Spatial Perception Unit (SPU)**:
+  - Dynamically captures multi-scale spatial features using convolution kernels of varying sizes (e.g., 3×3, 5×5, 7×7).
+  - Includes hierarchical residual connections to expand the receptive field efficiently.
+- **Frequency Perception Unit (FPU)**:
+  - Utilizes Fractional Gabor Transform (FrGT) to extract high-frequency features and suppress noise.
+  - Configured with multiple scales and orientations to capture diverse textures.
+
+#### Select Mechanism
+- The Channel Selection Unit (CSU) fuses spatial and frequency features adaptively:
+  - **Global Average Pooling (GAP)** computes channel-wise importance.
+  - A soft attention mechanism weights and combines the features without adding trainable parameters.
+
+### SFS-CNet Architecture
+
+The **SFS-CNet** architecture leverages the SFS-Conv module for lightweight and efficient SAR object detection:
+- **Backbone**:
+  - Stacks of SFS-Conv modules interspersed with CBR blocks for hierarchical feature extraction.
+- **Detection Head**:
+  - Decoupled into classification and bounding box regression branches to improve detection accuracy.
+- **Object Gradient Learning (OGL)**:
+  - Incorporates edge information via a Canny-edge-based loss during training, enhancing object representation.
+
+### Dataset and Data Loading
+
+The **HRSID dataset** is processed using the `hrsid_loader.py` script:
+- Images are resized and augmented for robustness.
+- Efficient batching is employed to handle the high-resolution nature of SAR images.
+
+### Evaluation Metrics
+
+The **`metric_util.py`** script evaluates the model using:
+- **mAP, Precision, Recall, F1-Score, and Confusion Matrix**.
+- Outputs are visualized in the `test.py` script for detailed performance analysis.
+
+### Addressing Ambiguities in the Paper
+
+The paper left certain aspects ambiguous, which were addressed in the implementation:
+1. **Fractional Gabor Transform (FrGT)**:
+   - Interpreted as a parameterized separable convolution using Gabor filters.
+2. **SPU Configuration**:
+   - Kernel sizes were set experimentally (e.g., 3×3, 5×5, 7×7) to ensure multi-scale feature extraction.
+3. **CSU Fusion**:
+   - Implemented using a combination of GAP and attention mechanisms for adaptive fusion.
+
+### Design Decisions
+
+Several critical design choices were made to replicate and enhance the methodology:
+- **Framework**: PyTorch was selected for its flexibility and ease of implementing custom layers.
+- **Hyperparameter Optimization**:
+  - The spatial-to-frequency shunt ratio (`α`) was tuned to balance the contributions of spatial and frequency features.
+  - The number of Gabor orientations was optimized to improve feature diversity.
+
+### Limitations and Future Work
+
+- The implementation assumes certain configurations (e.g., kernel sizes and Gabor parameters) due to missing details in the paper.
+- Expanding the dataset and incorporating additional augmentation techniques may improve generalizability.
+- Advanced optimization strategies could further enhance model performance on challenging SAR datasets.
+
+This implementation faithfully reproduces the proposed method and contributes additional clarity and modularity, ensuring its applicability for future research and practical deployment.
+# Experiments and Results
+
+## Experimental Setup
 
 The experiments were conducted on a system with the following configuration:
 
-	•	GPU: NVIDIA RTX 4070 Ti (12 GB VRAM)
-	•	CPU: AMD Ryzen 5 3600X Processor
-	•	RAM: 32 GB
-	•	Framework: PyTorch
+- **GPU:** NVIDIA RTX 4070 Ti (12 GB VRAM)
+- **CPU:** AMD Ryzen 5 3600X Processor
+- **RAM:** 32 GB
+- **Framework:** PyTorch
 
-The paper’s datasets, such as HRSID, SAR-Aircraft-1.0, and SSDD, were used to evaluate performance. Hyperparameters such as learning rate, weight decay, and training epochs were configured as per the paper.
+The datasets used for evaluation include:
+- **HRSID**: A high-resolution SAR image dataset designed for object detection tasks.
 
-Code Structure:
+Key hyperparameters, such as learning rate, weight decay, and training epochs, were configured as per the original paper's recommendations.
 
+### Code Structure:
+
+```
 project/
 │
 ├── models/
-│   ├── sfs_conv.py        # Implementation of the SFS-Conv module
-│   ├── sfs_cnet.py        # Full SFS-CNet model
+│   ├── sfs_cnet_model.py     # Full SFS-CNet model
+│   ├── model_components/
+│       ├── sfs_conv.py        # Implementation of the SFS-Conv module
+│       ├── sfs_cnet_blocks.py # Building blocks for SFS-CNet
 │
 ├── datasets/
-│   ├── hrsid_data         # HRSID Data
-│   ├── hrdsid_loader.py   # Dataset loader for HRSID
+│   ├── hrsid_data/            # Dataset for HRSID
+│       ├── annotations/       # Annotation files (train/test JSON)
+│       ├── images/            # SAR images
+│   ├── hrsid_loader.py        # Data loader for HRSID dataset
 │
 ├── experiments/
-│   ├── train.py           # Training script
-│   ├── test.py            # Testing and evaluation script
+│   ├── train.py               # Training script
+│   ├── test.py                # Evaluation script
 │
-├── README.md              # This file
-├── requirements.txt       # Python dependencies
-└── config.yaml            # Configuration file for hyperparameters
+├── util/
+│   ├── metric_util.py         # Utility functions for metric calculations
+│	├── visual_util.py         # Utility functions for visualization
+│
+├── requirements.txt           # Python dependencies
+├── config.yaml                # Configuration file for hyperparameters
+├── README.md                  # This file
+├── train.sh                   # Shell script for training
+├── test.sh                    # Shell script for testing
+└── test_results.json          # Output test results
+```
+### Explanation of Misconfiguration and Results
 
-# 3.2. Running the Code
+During the training phase, a misconfiguration led to underfitting, with the model failing to effectively learn from the SAR datasets. Key issues included:
 
-The implementation is provided as a PyTorch model and can be executed with the following steps:
+- **Hyperparameter Misconfiguration**: Suboptimal learning rates, weight decay, and batch sizes hindered the model's ability to converge effectively.
+- **Prolonged Training Times**: Extended training left limited time for re-evaluation and adjustments.
+- **Evaluation Constraints**: Insufficient time to debug and rerun experiments resulted in poor performance metrics across all evaluated metrics.
 
-1.	Clone the repository.
-2.	Install dependencies using:
+Future efforts will focus on optimizing hyperparameters, implementing learning rate schedulers, and allocating more time for iterative improvements to achieve better alignment with the original paper's benchmarks.
+
+![Results with Underfitting](./figures/test_image.png)
+---
+
+## Running the Code
+
+The implementation is provided as a PyTorch-based project. Follow the steps below to run the code:
+
+
+### 1. Install Dependencies
+```bash
 pip install -r requirements.txt
-3.	Prepare the datasets and configure paths in config.yaml.
-4.	Train the model:
+```
+
+### 2. Configure the Dataset
+Prepare the datasets and configure the paths in the `config.yaml` file. Ensure that the directory structure matches the one outlined in the **Code Structure** section.
+
+### 3. Train the Model
+```bash
 python experiments/train.py --config config.yaml
-5.	Evaluate the model:
+```
+
+### 4. Evaluate the Model
+```bash
 python experiments/test.py --config config.yaml
+```
 
-## 3.3. Results
-
-@TODO: Present your results and compare them to the original paper. Please number your figures & tables as if this is a paper.
+---
 
 # 4. Conclusion
 

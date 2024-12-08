@@ -1,0 +1,1 @@
+python experiments/test.py --config config.yaml --checkpoint trained_models/sfs_cnet_epoch_10.pth --output test_results.json

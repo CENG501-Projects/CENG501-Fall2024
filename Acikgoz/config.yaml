@@ -1,0 +1,12 @@
+model:
+  num_classes: 3
+  base_channels: 32
+
+training:
+  num_epochs: 300
+  batch_size: 1
+  learning_rate: 0.01
+  weight_decay: 0.0005
+  momentum: 0.9
+  save_dir: "../trained_models"
+  input_size: [640, 640]
