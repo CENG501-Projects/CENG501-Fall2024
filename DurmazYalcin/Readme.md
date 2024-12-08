@@ -9,11 +9,18 @@ An event-based camera is a new sensor modality that operates by detecting change
   <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/output.gif" alt="description" width="80%">
 </div>
 
-The gifs above depicts traditional image frames on the left, while the middle panels shows accumulated events over time, MVSEC on the top, and the DSEC at the bottom. In the middle panel, blue represents positive polarity (increased intensity), and red represents negative polarity (decreased intensity). The rightmost panel, on the other hand, illustrates the optical flow.
+The gifs above depicts a small interval from [MVSEC](https://daniilidis-group.github.io/mvsec/) dataset. 
+- **Left**:A grayscale image captured by a conventional camera.
+- **Middle**: Accumulated events, where blue indicates positive polarity and red indicates negative polarity.
+- **Right**: A visualization of the optical flow, visualizing the motion vector for each pixel.
 
-The motion of each pixel between two successive images is referred to as dense **optical flow**. This information is crucial for numerous downstream tasks, including Simultaneous Localization and Mapping (SLAM) and odometry. While optical flow estimation from conventional image frames has been extensively studied and significantly advanced over the years, estimating optical flow from event-based cameras remains a challenging and less explored area due to the fundamentally different data representation and asynchronous nature of event streams.
+**Dense Optical Flow** refers to the motion of each pixel between two successive images. This information is critical for tasks like Simultaneous Localization and Mapping (SLAM) and odometry.
 
-A few attempts have been made to estimate optical flow from event streams using conventional neural networks, such as [E-RAFT](https://github.com/uzh-rpg/E-RAFT) and [EV-FlowNet](https://github.com/daniilidis-group/EV-FlowNet). These methods rely on accumulated events to compute the optical flow, effectively adapting traditional image-based approaches to event data. In contrast, Spike-FlowNet employs Integrate-and-Fire (IF) neurons, or spiking neurons, which are more aligned with the asynchronous and sparse nature of event streams.
+While optical flow estimation from conventional camera images has seen significant progress, estimating it from event-based cameras remains a challenging area. This is due to the unique, asynchronous nature of event streams and their fundamentally different data representation.
+
+A few attempts have been made to estimate optical flow from event streams using conventional neural networks, such as [E-RAFT](https://github.com/uzh-rpg/E-RAFT) and [EV-FlowNet](https://github.com/daniilidis-group/EV-FlowNet). These approaches rely on accumulated events to adapt traditional image-based techniques for event data.
+
+In contrast, Spike-FlowNet utilizes Integrate-and-Fire (IF) neurons, or spiking neurons. These are better suited to the asynchronous and sparse nature of event streams, providing a more natural fit for this type of data. We will discuss IN neurons in detail.
 
 
 ## 1.1. Paper summary
