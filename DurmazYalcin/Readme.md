@@ -100,7 +100,8 @@ $$
 L_{\text{photo}} = \sum_{x, y} \rho\left(I_{k}(x + u, y + v) - I_{k+1}(x, y)\right)
 $$
 
-  where $\rho(\cdot)$ is the Charbonnier loss. 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; where $\rho(\cdot)$ is the Charbonnier loss. 
+  
 - **Smoothness Loss:**
   On the other hand, the smoothness loss, $L_{\text{smooth}}$​, enforces the assumption that neighboring pixels should exhibit similar optical flow values. While this may not hold true for every neighboring pixel, it is a reasonable assumption for most of the pixels within the image. To balance its contribution to the overall loss.
 
@@ -116,10 +117,69 @@ L^{u} = L_{\text{photo}} + \alpha L_{\text{smooth}}
 $$
 
 where $\alpha$ is a hyperparameter to scale the effect of smoothness loss. 
+
 ## 2.2. Our interpretation
-- Talk about input representation
-- Talk about implementation choices
-- Talk about spike flownets
+The network employs a straightforward U-Net architecture, which has many similar examples available online. However, the following considerations are crucial:
+- The input representation should be manipulated carefully.
+- Unlike conventional ANNs, PyTorch does not natively support SNN structures. For this purpose, the [Spike-FlowNet GitHub](https://github.com/chan8972/Spike-FlowNet)  repository offers an implementation of SNNs, which can be adapted for this work.
+- Special attention must be paid to implementation of the loss function, as it directly impacts the network's performance for estimating the optical flow. 
+
+### Input Representation and Scaled Flows
+#### Visualization of Input Fromat
+Assume that we desire to estimate the optical flow at time instant $t_k$. We determine the time window as $100 \: msec$. Then, we create the bins and visualize them in order to verify the implementation.
+
+#### Scaled Flows
+When backpropagation is applied at four different scales of optical flow, we adjust the motion values (optical flow) for each scale. For example, if an image is resized to be twice as large, the motion of each pixel also doubles. To ensure the motion stays accurate, we scale the optical flow values to match the size of the image at each scale. This way, the optical flow at each scale correctly represents the motion for that specific scale.
+
+```python
+def get_scaled_flows(flow:np.array):
+    scaled_flows = []
+    old_height = flow.shape[0]
+    old_width  = flow.shape[1]
+
+    # Resize the flows by (1,2,4,8)
+    for idx in range(4):
+        new_height = int(old_height / (2**idx))
+        new_width  = int(old_width / (2**idx))
+        # Resize and divide by (2**idx)
+        scaled_flow = cv2.resize(flow, (new_width,new_height), interpolation=cv2.INTER_LINEAR) / (2**idx)
+        scaled_flows.append(scaled_flow)
+    return scaled_flows
+```
+
+### Integrate and Fire Neurons
+We utilize the IF neuron implementation from the [Spike-FlowNet GitHub](https://github.com/chan8972/Spike-FlowNet) as a starting point. However, the provided IF neuron does not include leakage. Since the proposed method requires a leaky IF neuron, we incorporate the leakage mechanism into the implementation.
+```python
+# IF neuron from Spike-FlowNet
+def IF_Neuron(membrane_potential, threshold):
+    global threshold_k
+    threshold_k = threshold
+    # check exceed membrane potential and reset
+    ex_membrane = nn.functional.threshold(membrane_potential, threshold_k, 0)
+    membrane_potential = membrane_potential - ex_membrane # hard reset
+    # generate spike
+    out = SpikingNN()(ex_membrane)
+    out = out.detach() + (1/threshold)*out - (1/threshold)*out.detach()
+
+    return membrane_potential, out
+```
+### Loss Function
+To implement supervised training, we need to incorporate the ground truth optical flow. However, as you may have noticed in the provided ground truth samples, not all pixels in a frame have corresponding ground truth optical flow. Therefore, we must first mask the pixels without valid ground truth values. The mask can be defined as follows:
+
+$$
+M(x, y) =
+\begin{cases} 
+1 & \text{if } \text{groundtruth}(x, y) \text{ is available}, \\
+0 & \text{otherwise}.
+\end{cases}
+$$
+
+The loss function is adjusted accordingly:
+
+$$
+L_{\text{EPE}} = \frac{1}{N} \sum_{x, y} M(x, y) \left((\hat{u}(x,y) - u(x,y))^2 + (\hat{v}(x,y) - v(x,y))^2 \right)
+$$
+
 
 # 3. Experiments and results
 
