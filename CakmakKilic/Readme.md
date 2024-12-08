@@ -97,13 +97,40 @@ When optimizing the weight values W, the rounding operator creates zero gradient
 
 ## 2.2. Our interpretation
 
-@TODO: Explain the parts that were not clearly explained in the original paper and how you interpreted them.
+In our implementation of the referenced paper, the following assumptions were made regarding data preprocessing, training parameters, and regularization techniques:
+
+### Data Preprocessing:
+
+We applied a series of standard data augmentation and normalization techniques:
+- transforms.RandomHorizontalFlip() to introduce horizontal flip augmentation.  
+- transforms.RandomCrop(32, padding=4) to perform random cropping with padding.  
+- Normalization with mean [0.4914, 0.4822, 0.4465] and standard deviation [0.2470, 0.2435, 0.2616] using transforms.Normalize().
+
+### Training Parameters:  
+- Batch size was set to 1024 for faster training.  
+- Initial learning rate was set to 0.001 as it is the default of Adam optimizer.
+
+
+For all regularization and compression techniques, we used above settings as baseline model and dataset preparation.
+
+### Early Stopping:  
+
+- 20% of the training data was reserved as the validation set.  
+- Early stopping was implemented with a patience of 10 epochs. It means that training was stopped if validation performance did not improve for 10 consecutive epochs.
+
+
+
 
 # 3. Experiments and results
 
 ## 3.1. Experimental setup
 
-@TODO: Describe the setup of the original paper and whether you changed any settings.
+In our experiments, we utilized the CIFAR-10 dataset, which consists of 50,000 training images and 10,000 test images distributed across 10 classes. To evaluate the robustness of the model to noisy training labels, we introduced label noise by randomly re-annotating a proportion s% of the training examples. Specifically, s% of the training samples were assigned random labels. The test set remained unchanged in all experiments.
+
+For the training process, we employed a ResNet-20 architecture trained for 200 epochs using the Adam optimizer. For ResNet20, we set batch size as 1024 for faster training. We adopted widely-used hyperparameters for the regularization techniques, such as a weight decay value of wd=0.01 and learning rate value of lr=0.001.
+
+To accelerate the training process, all experiments were conducted on a Google Colab A100 GPU, enabling faster computation.
+
 
 ## 3.2. Running the code
 
@@ -112,6 +139,11 @@ When optimizing the weight values W, the rounding operator creates zero gradient
 ## 3.3. Results
 
 @TODO: Present your results and compare them to the original paper. Please number your figures & tables as if this is a paper.
+
+<p align="center">
+  <img src="imgs/original-accuracy.png" alt="" style="width: 50%;"><br>
+  <em> Table 1: On Cifar10: (a) Accuracy gain with respect to the baseline model (no regularization applied) as a function of s. (b) Accuracy as a function of the percentage s of training examples randomly reannotated.(from the paper)</em>
+</p>
 
 # 4. Conclusion
 
@@ -128,6 +160,8 @@ When optimizing the weight values W, the rounding operator creates zero gradient
 3. X. Zhang, L. Yin, J. F. Cohn, S. Canavan, M. Reale, A. Horowitz, P. Liu, and J. M. Girard, "BP4D-Spontaneous: A High-Resolution Spontaneous 3D Dynamic Facial Expression Database," in Image and Vision Computing, vol. 32, no. 10, pp. 692-706, 2014. [Online]. Available: https://www.sciencedirect.com/science/article/pii/S0262885614001012.
 
 4. X. Zhang, L. Yin, J. F. Cohn, S. Canavan, M. Reale, and A. Horowitz, "A High-Resolution Spontaneous 3D Dynamic Facial Expression Database," in Proceedings of the 10th IEEE International Conference and Workshops on Automatic Face and Gesture Recognition (FG), 2013, pp. 1-6. [Online]. Available: https://doi.org/10.1109/FG.2013.6553788.
+
+5. He, K., Zhang, X., Ren, S., & Sun, J. (2015). Deep residual learning for image recognition. arXiv. https://arxiv.org/abs/1512.03385
 
 # Contact
 Yüksel Pelin Kılıç - pelinkilic97@gmail.com
