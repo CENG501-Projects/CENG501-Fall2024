@@ -44,10 +44,10 @@ The CIMD-R benchmark offers a thorough evaluation of image-editing models' abili
 </ul>
 
 Below are some examples from the CIMD-R Dataset:
-![](dataset_22.png)
+![](figures/dataset_22.png)
 *Figure 1: Left: original image, Middle: spliced image, Right: ground truth mask of spliced image.*
 
-![](dataset_87.png)
+![](figures/dataset_87.png)
 *Figure 2: Left: original image, Middle: spliced image, Right: ground truth mask of spliced image.*
 
 ## 2.2 The CIMD-Compressed (CIMD-C) Subset
@@ -62,14 +62,14 @@ The CIMD-C benchmark is a dataset designed to evaluate the ability of compressio
 </ul>
 
 Below is a example from the CIMD-C Dataset:
-![](dataset_102.png)
+![](figures/dataset_102.png)
 *Figure 3: Left: original image, Middle: spliced image, Right: ground truth mask of spliced image.*
 
 # 3. The Method
 
 ## 3.1. The Original Method
 
-![Overall Model Architecture](overall.jpg)
+![Overall Model Architecture](figures/overall.jpg)
 *Figure 4: The overall architecture of the proposed two-branch IMD network.*
 
 The network feed the inputs to two parallel branches to extract features from both RGB and frequency domains:
@@ -96,7 +96,7 @@ To succesfully identify small tampering regions, the model feeds the outputs of 
 The ASPP module, which consists of three dilated convolutional laters with different rates and a Global Average Pooling followed by 1x1 convolution, captures multi-scale information and long-range dependencies with various receptive fields.
 
 
-![ASPP](ASPP.jpg)
+![ASPP](figures/ASPP.jpg)
 *Figure 5: ASPP Module.*
 
 
@@ -108,7 +108,7 @@ The bottom-up channel attention features are calculated as:
 $F_{n} = {\cal C}(F_{n+1})\odot F_{n}, \;\; n=1,2,3$
 where ${\cal C}(\cdot)$ denotes the channel attention block shown in below figure and $\odot$ represents element-wise multiplication.
 
-![Channel Attention](CA.jpg)
+![Channel Attention](figures/CA.jpg)
 *Figure 6: Channel Attention Block.*
 
 As $F_{4}$ contains the highest level of semantic information, it remains unchanged at the channel level. A 1x1 convolutional layer is applied to the the feature maps $F_{n+1}$ to equalise number of channels with $F_{n}$ enabling the element wise-multiplication in the channel dimension. The transformed features are then fed to a Global Average Pooling $GAP(\cdot)$, followed by the excitation process $E(\cdot) = C^{'} \rightarrow C^{'}/r \rightarrow C^{'} $, $r = 4$, where $C^{'}$ is the transformed channel number. The channel attention is calculated as:
@@ -121,7 +121,7 @@ Then these feature maps $F_{2}$, $F_{3}$, and $F_{4}$ are upsampled using the bi
 $F_{m} = S(F_{m - 1}) \otimes F_{m}, \;\; m = 2, 3, 4$
 where $S(\cdot)$ is the spatial-attention in below figure. 
 
-![Spatial Attention](SA.jpg)
+![Spatial Attention](figures/SA.jpg)
 *Figure 7: Spatial Attention Block.*
 
 As $F_{1}$ contains the richest spatial information, it remains unchanged at the spatial level. 
@@ -139,7 +139,7 @@ where $h_m$ is the main heatmap, $h_s$ is the secondary heatmap, and $GMP$ is th
 
 The model introduces an innovative approach to detect compression artifacts in double-compressed images that works effectively regardless of whether the primary and secondary compressions use the same Quality Factor (QF) or different ones.
 
-![](Jpeg_learning.jpg)
+![](figures/Jpeg_learning.jpg)
 *Figure 8: The architecture of the proposed JPEG compression artifact learning model.*
 
 Traditional methods that rely on DCT histogram inconsistencies fail when images are compressed twice with the same Q-matrix because compression artifacts are minimal. The paper leverages a key observation: when a JPEG image undergoes repeated compression with the same QF, quantized DCT coefficient differences between consecutive compressions decrease monotonically. This property is used to detect tampered regions because:
@@ -229,7 +229,7 @@ JPEG compression is a lossy compression method that reduces image file size by s
    - Zigzag scanning to convert 2D array to 1D sequence
    - Run-length encoding followed by Huffman coding
 
-![JPEG Compression](JPEG_Compression.png)
+![JPEG Compression](figures/JPEG_Compression.png)
 *Figure 9: JPEG Compression Process. (Source: [Ri et al., 2020](https://doi.org/10.1007/s40799-019-00358-4))* 
 
 ### 3.2.2 JPEG Compression Concepts
@@ -285,7 +285,9 @@ Knowing these JPEG compression concepts is crucial for following the paper's met
 
 ## 4.1. Experimental setup
 
-@TODO: Describe the setup of the original paper and whether you changed any settings.
+In the original paper, the model was trained on 8 RTX 2080 GPUs over 250 epochs. We trained the model in Google Colab with a L4 GPU over same number of epochs. The initial learning rate is 0.001 and batch size is 4 in the paper. We also used these settings. We set exponential decay gamma parameter as 0.9, as they did not give any information about that. The loss function was choosen pixel-level binary cross entropy, so we also used this loss function. Split ratio is not stated in the paper. We allocated 0.8 of the dataset to train and 0.2 to test. 
+
+In the paper, experiments were performed on each branch of a two-branch network and both of them together.
 
 ## 4.2. Running the code
 
@@ -293,7 +295,39 @@ Knowing these JPEG compression concepts is crucial for following the paper's met
 
 ## 4.3. Results
 
-@TODO: Present your results and compare them to the original paper. Please number your figures & tables as if this is a paper.
+### 4.3.1 Experiment I - RGB Stream on CIMD-R Subdataset
+
+![Training Loss](figures/training_loss_exp1.png)
+*Figure 10: Training Loss Curve*
+
+![Test Loss](figures/test_loss_exp1.png)
+*Figure 11: Test Loss Curve*
+
+![Training F1 Score](figures/training_f1_score_exp1.png)
+*Figure 12: Training F1 Score Curve*
+
+![Test F1 Score](figures/test_f1_score_exp1.png)
+*Figure 13: Test F1 Score Curve*
+
+![Ablation Results](figures/ablation_study.png)
+*Figure 14: The ablation study stated in the paper*
+
+
+When we compare the training and test results, it can be seen that there is a strong overfitting. The model may be memorizing because the training set is small. We think that this can be solved by data augmentation, but we did not apply it in the first experiment because it was not mentioned in the paper.
+
+At the end of training, we tried the model we saved with some inputs we selected from the training and test set. The results are below.
+
+![Inference I](figures/training_inference_exp1.png)
+*Figure 15: The prediction result of an positive image from training set. Left: original image, Middle: mask of image, Right: prediction of the model*
+
+![Inference II](figures/training_inference2_exp1.png)
+*Figure 16: The prediction result of an negative image from training set. Left: original image, Middle: mask of image, Right: prediction of the model*
+
+![Inference III](figures/test_inference1_exp1.png)
+*Figure 17: The prediction result of an positive image from test set. Left: original image, Middle: mask of image, Right: prediction of the model*
+
+![Inference IV](figures/test_inference2_exp1.png)
+*Figure 18: The prediction result of an negative image from test set. Left: original image, Middle: mask of image, Right: prediction of the model*
 
 # 5. Conclusion
 

@@ -146,11 +146,24 @@ It is important to understand how to obtain $u(C_k)$ from the labels and attribu
 
 After learning $u(C_k)^{'}$, the crucial step is to obtain graph embeddings using substructure embeddings. The two methods SSA Pooling and Max Pooling enables us to learn more about graph. SSA Pooling activates the attention mechanism to create an attention to each embedding $u(C_k)$ and combining all the information coming from substructures with attentions leads to learn global features of the graph. Furthermore, Max Pooling selects the maximum values from the components and facilitates highlighting the most prominent local features.
 
+### Processing Data
+
+We first considered building the model over the dataset "MUTAG" which has $188$ graphs with total number of $3371$ nodes and $7442$ edges. Data is obtained as a data frame with column labels as follows:
+-"edge_index": for each graph, it consists of a list of two lists where corresponding indexes of two lists are connected with an edge. However, the symmetry is not exluceded. We see the same edge two times in the list.
+-"node_feat": for each node in a graph, there exists a one-hot vector standing as $1x7$ matrix keeping the type of the node such as a carbon or an oxygen atom.
+-"edge_attr": it will not be used in the proposed model.
+-"y": it shows the classified class of the graph as "0" or "1".
+-"num_nodes": it keeps number of the nodes in each graph.
+
+We needed to get rid of from the symmetry in the column "edge_index" not only to obtain an easier interpretation, but also to construct higher-order graphs. We achieved this and kept the information in new column with name "processed_edge_index". Moreover, in this paper, one of the key points is to pass higher-order graphs from the started one. Hence, we extracted the information of all edges as tuples and contained them in a new column of the data frame with name "edges". In the next step, we will create $2$-order and $3$-order graphs by using them.
+
 # 3. Experiments and results
 
 ## 3.1. Experimental setup
 
-@TODO: Describe the setup of the original paper and whether you changed any settings.
+We concentrated building the model first for $1$-order graphs which are directly given ones. Since node features are stored in the form of strings, we converted that column to a list to reach feature embedding of each node. In the model, we will update each feature embedding by taking neighbors' embeddings into account. Hence, we created a list called "adjacent_total" to keep which nodes are connected with which nodes. For instance, $0$-th index of $0$-th index of the list shows first node (with number $0$) of the first graph is connected to nodes with number $5$ and $1$. Then, a list called "features_total" is constructed to keep corresponding features of the nodes. Hence, we were ready to use neighbors' features to obtain Neighboring Substructure Aggregation.
+
+We tried to write the necessary code for substructure aggregation part. Attention between a node and each of its neighbors is obtained with proper results. However, our model for $u(C_k)^{'}_{sa}$ couldn't come up with meaningful results yet. What we have done can be followed via the files: "data_processing_code.py" and "model.py".
 
 ## 3.2. Running the code
 
@@ -158,7 +171,7 @@ After learning $u(C_k)^{'}$, the crucial step is to obtain graph embeddings usin
 
 ## 3.3. Results
 
-@TODO: Present your results and compare them to the original paper. Please number your figures & tables as if this is a paper.
+No results yet.
 
 # 4. Conclusion
 

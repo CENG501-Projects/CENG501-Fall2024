@@ -87,7 +87,29 @@ Below are some of our interpretations about aspects that were unclear in the pap
 
 ## 3.1. Experimental setup
 
-@TODO: Describe the setup of the original paper and whether you changed any settings.
+The original paper provides the following hyperparameters for the experimental setups for different Long Range Arena (LRA) tasks:
+
+Table 1: Hyperparameter Configurations
+<img width="900" alt="LRA parameters" src="https://github.com/user-attachments/assets/ad5f033b-7d65-49b5-af5a-d59dce0dd289">
+
+In the Table 1, LR is learning rate and WD is weight decay. BN and LN refer to Batch Normalization and Layer Normalization, respectively.
+
+The hyperparameters for the LaS attention are as follows:
+
+**(i)** B, controlling $\alpha_c$
+
+**(ii)** the 1-D average pooling window size P
+
+The authors built their experiments upon the existing S4 repository. In all experiments, they used causal transformers with 8 heads, and aligned training procedures and hyperparameters with the S4 repository. In another words, they used the default hyperparameters used in the S4 repository for the ones that are not specified in the above table. Dropout was set to 0 in all cases.
+
+We ran our first experiment on Sequential MNIST (sMNIST); however, the paper does not provide setup details for this. For this reason, we used the setup parameters of the LRA Image task with the exception of batch size and number of epochs. We reduced the batch size to 10 to not exceed the Google Colab T4 GPU RAM. We also reduced the number of epochs due to limited runtime of Google Calob. Similar to the original paper, we built our code upon the existing S4 repository. Also, we adapted the Transformer architecture from [3] to hanve more flexibility in our architecture.
+
+We conducted two experiments:
+
+**(i)** First experiment uses the whole dataset and the model is trained for two epochs.
+
+**(ii)** Second experiment uses 1/20 of the dataset and the model is trained for 80 epochs.
+
 
 ## 3.2. Running the code
 
@@ -95,7 +117,37 @@ Below are some of our interpretations about aspects that were unclear in the pap
 
 ## 3.3. Results
 
-@TODO: Present your results and compare them to the original paper. Please number your figures & tables as if this is a paper.
+**1st Experiment (Full sMNIST Dataset and 2 Epochs):**
+
+Figure 1: Train and Validation loss for sMNIST   
+
+![image](https://github.com/user-attachments/assets/fdb9e367-402d-4029-ba85-b49bcb20a4da)
+
+
+**2nd Experiment (1/20 sMNIST Dataset and 80 Epochs):**
+
+Figure 2: Train and Validation loss for small sMNIST 
+
+![image(2)](https://github.com/user-attachments/assets/d34e6291-61c8-41d5-bae4-e7c61f1da04f)
+
+
+Table 2: Training and validation accuracies for our implementation
+|                     | Small (1/20) sMNIST | Full sMNIST|
+|---------------------|--------|----------|
+| **Training** |    13.66    | 10.348 |
+| **Validation** |    13.60    | 8.633 | 
+
+<br><br>
+
+Figure 3: Original paper's accuracy results  
+
+<img width="350" alt="Papers_MNIST_results" src="https://github.com/user-attachments/assets/ad2ce844-7860-4b1b-9871-3cfcb8541344">
+
+<br><br>
+
+**Discussion:**  
+
+Our accuracy was much lower compared to the original paper. This could be because we used the setup for the LRA Image task, while the original paper might have used different settings for the sMNIST task. A smaller batch size might have also impacted the accuracy. It's possible that we made a mistake in processing or interpreting the model's output. This might include errors in how predictions were extracted, how metrics were calculated, or how data was handled in post-processing. Lastly, we couldn’t finish the first experiment with the full dataset because of Google Colab's runtime limits. All of them might be a reason of our low accuracy.
 
 # 4. Conclusion
 
@@ -105,6 +157,7 @@ Below are some of our interpretations about aspects that were unclear in the pap
 
 [1] Zimerman, I., & Wolf, L. (2024). Viewing Transformers Through the Lens of Long Convolutions Layers. Proceedings of Machine Learning Research, 235, 62815-62831.  
 [2] Press, O., Smith, N. A., & Lewis, M. (2021). Train short, test long: Attention with linear biases enables input length extrapolation. arXiv preprint arXiv:2108.12409.
+[3] https://github.com/jadore801120/attention-is-all-you-need-pytorch/tree/master
 
 # Contact
 

@@ -6,7 +6,7 @@ This readme file is an outcome of the [CENG501 (Spring 2024)](https://ceng.metu.
 
 Out-of-Distribution (OOD) detection addresses a critical problem in deploying neural networks for real-world applications: how to maintain reliable performance when faced with unfamiliar data that is not part of the original training distribution. The paper “Gradient-Regularized Out-of-Distribution Detection” by Sina Sharifi et al., introduces a novel approach to enhance OOD detection robustness. Traditional OOD detection methods often rely solely on scoring functions and thresholds for classification, but they neglect the rich local information present in the gradient of the score function.
 
-The authors propose GReg+, a method that incorporates gradient regularization and energy-based sampling. This approach not only improves the model’s ability to distinguish between In-Distribution (ID) and OOD samples but also ensures that the local score behavior is consistent, reducing sensitivity to small perturbations. GReg+ achieves this by coupling a gradient-regularized loss function with a clustering-based sampling method to select informative OOD samples, especially in the presence of large auxiliary datasets.
+The authors propose GReg+, a method that incorporates gradient regularization and energy-based sampling. This approach not only improves the model’s ability to distinguish between In-Distribution (ID) and OOD samples but also ensures that the local score behavior is consistent, reducing sensitivity to small perturbations. GReg+ achieves this by coupling a gradient-regularized loss function (GReg) with a clustering-based sampling method to select informative OOD samples, especially in the presence of large auxiliary datasets.
 
 As part of our CENG501 (Spring 2024) project, we aim to reproduce the results of this paper, analyze its key contributions, and interpret its method to better understand the practical application of gradient regularization and energy-based sampling.
 
@@ -36,7 +36,7 @@ As stated in the paper, the main approach in the literature for OOD detection is
 
 ![Energy Loss](./Figures/EnergyLoss.png)
 
-where $m_{in} and $m_{aux} are threshold used to filter out ID and OOD samples. If the energy score of an ID (or OOD) sample is low (high) enough, then it is excluded from the loss calculation.
+where $m_{in}$ and $m_{aux}$ are threshold used to filter out ID and OOD samples. If the energy score of an ID (or OOD) sample is low (high) enough, then it is excluded from the loss calculation.
 
 The method, named Greg+ [1], consists of two main parts. In contrast to state-of-the-art methods which only focus on the value of the score function, Greg+ proposes a new regularization term added to the loss, obtained by regularizing the gradient of the score function. In addition, a novel energy-based sampling method is proposed to select more informative examples from the dataset during training, which is expecially important when the auxiliary dataset is large.
 
