@@ -89,10 +89,10 @@ Below are some of our interpretations about aspects that were unclear in the pap
 
 The original paper provides the following hyperparameters for the experimental setups for different Long Range Arena (LRA) tasks:
 
-
+Table 1: Hyperparameter Configurations
 <img width="900" alt="LRA parameters" src="https://github.com/user-attachments/assets/ad5f033b-7d65-49b5-af5a-d59dce0dd289">
 
-In the table, LR is learning rate and WD is weight decay. BN and LN refer to Batch Normalization and Layer Normalization, respectively.
+In the Table 1, LR is learning rate and WD is weight decay. BN and LN refer to Batch Normalization and Layer Normalization, respectively.
 
 The hyperparameters for the LaS attention are as follows:
 
@@ -138,11 +138,11 @@ Figure 3: Validation loss for small sMNIST
 
 <br><br>
 
-Table 1: Training and validation accuracies for our implementation
-|                     | Small (1/20) sMNIST | 
-|---------------------|--------|
-| **Training** |    13.66    |  
-| **Validation** |    13.60    |  
+Table 2: Training and validation accuracies for our implementation
+|                     | Small (1/20) sMNIST | Full sMNIST|
+|---------------------|--------|----------|
+| **Training** |    13.66    | 10.348 |
+| **Validation** |    13.60    | 8.633 | 
 
 <br><br>
 
