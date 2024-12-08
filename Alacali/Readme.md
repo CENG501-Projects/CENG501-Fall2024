@@ -131,7 +131,7 @@ $G_i = G_{\text{global}}, D_i = D_{\text{global}}, for i in [1, K]$
 
    <p align="center">
   <img src="figures/Architectural Details.png" style="width: 70%;"><br>
-  <em>Figure 1: IFL-GAN system model</em>
+  <em>Figure 3: Architectural Details of IFL-GAN </em>
 </p>
 
 
@@ -139,7 +139,38 @@ $G_i = G_{\text{global}}, D_i = D_{\text{global}}, for i in [1, K]$
 
 ## 3.1. Experimental setup
 
-@TODO: Describe the setup of the original paper and whether you changed any settings.
+As shared in part 2.2, it is decided that since the IFL-GAN is created as a combination of different subnetworks and 
+### First Experiment with Central GAN
+
+#### Objective and Architecture
+Generator: Converts random noise (NOISE_DIM=100) into realistic 28x28 images using layers of linear transformations, reshaping, transposed convolutions, batch normalization, ReLU, and Tanh activations.
+
+Discriminator: Distinguishes real images from fake ones using convolutional layers, batch normalization, and LeakyReLU activation, outputting a single probability value.
+
+#### Experimental Setup
+Dataset: MNIST, normalized to [-1, 1].
+
+#### Training Procedure
+- Train Discriminator:
+
+Calculate loss (real_loss) for real images.
+Calculate loss (fake_loss) for fake images.
+Minimize combined loss (real_loss + fake_loss).
+
+- Train Generator:
+
+Generate fake images and calculate loss (gen_loss) based on discriminator output.
+Update the generator to maximize the discriminator’s error on fake images.
+#### Hypothesis
+Loss Trends:
+Discriminator loss is expected to start high, then decreases as it improves.
+Generator loss decreases as generated images become realistic.
+
+
+Hyperparameters: Learning rate = 0.0002, batch size = 256, Adam optimizer with betas = (0.5, 0.999).
+
+### Second Experiment with IID FL-GAN
+
 
 ## 3.2. Running the code
 
