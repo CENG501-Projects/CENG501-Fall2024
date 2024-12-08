@@ -285,7 +285,7 @@ Knowing these JPEG compression concepts is crucial for following the paper's met
 
 ## 4.1. Experimental setup
 
-In the original paper, the model was trained on 8 RTX 2080 GPUs over 250 epochs. We trained the model in Google Colab with a L4 GPU over same number of epochs. The initial learning rate is 0.001 and batch size is 4 in the paper. We also used these settings. We set exponential decay gamma parameter as 0.9, as they did not give any information about that. The loss function was choosen pixel-level binary cross entropy, so we also used this loss function. Split ratio is not stated in the paper. We allocated 0.8 of the dataset to train and 0.2 to test. 
+In the original paper, the model was trained with 8 RTX 2080 GPUs for 250 epochs. We trained the model in Google Colab with a L4 GPU over the same number of epochs. We set the initial learning rate to 0.001, batch size to 4 and used pixel-level binary cross entropy for the loss function as mentioned in the paper. The gamma value of exponential decay was not stated in the paper so, we set it to a typical value of 0.9. Also, train test split ratio was not given in the paper and we decided to allocate 0.8 of the dataset to train and 0.2 to test. 
 
 In the paper, experiments were performed on each branch of a two-branch network and both of them together.
 
@@ -318,22 +318,24 @@ In the paper, experiments were performed on each branch of a two-branch network 
 ![Ablation Results](figures/ablation_study.png)
 *Figure 16: The ablation study stated in the paper*
 
+![Experiment Results](figures/experiment_results.png)
+*Figure 17: The experiment results stated in the paper*
 
-When we compare the training and test results, it can be seen that there is a strong overfitting. The model may be memorizing because the training set is small. We think that this can be solved by data augmentation, but we did not apply it in the first experiment because it was not mentioned in the paper.
+When we compare the training and test results, it can be easily seen that the model strongly overfits to the training data. This may be due to the fact that the CIMD dataset containing only 600 images, 100 image per each category (copy move, remove, splice and their authentic counterparts). We plan to address this issue by using data augmentation, but we did not apply it in our first experiment because no data augmentation methods was mentioned in the paper.
 
-At the end of training, we tried the model we saved with some inputs we selected from the training and test set. The results are below.
+After training the model, we fed the model some selected inputs from the training and the test set to visualize the performance of the model. The results are below.
 
 ![Inference I](figures/training_inference_exp1.png)
-*Figure 17: The prediction result of an positive image from training set. Left: original image, Middle: mask of image, Right: prediction of the model*
+*Figure 18: The prediction result of an positive image from training set. Left: original image, Middle: mask of image, Right: prediction of the model*
 
 ![Inference II](figures/training_inference2_exp1.png)
-*Figure 18: The prediction result of an negative image from training set. Left: original image, Middle: mask of image, Right: prediction of the model*
+*Figure 19: The prediction result of an negative image from training set. Left: original image, Middle: mask of image, Right: prediction of the model*
 
 ![Inference III](figures/test_inference1_exp1.png)
-*Figure 19: The prediction result of an positive image from test set. Left: original image, Middle: mask of image, Right: prediction of the model*
+*Figure 20: The prediction result of an positive image from test set. Left: original image, Middle: mask of image, Right: prediction of the model*
 
 ![Inference IV](figures/test_inference2_exp1.png)
-*Figure 20: The prediction result of an negative image from test set. Left: original image, Middle: mask of image, Right: prediction of the model*
+*Figure 21: The prediction result of an negative image from test set. Left: original image, Middle: mask of image, Right: prediction of the model*
 
 # 5. Conclusion
 
