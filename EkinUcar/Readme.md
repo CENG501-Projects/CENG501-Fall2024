@@ -126,17 +126,10 @@ Figure 1: Train and Validation loss for sMNIST
 
 **2nd Experiment (1/20 sMNIST Dataset and 80 Epochs):**
 
-Figure 2: Train loss for small sMNIST   
+Figure 2: Train and Validation loss for small sMNIST 
 
-<img width="450" alt="Train_loss_80_epochs" src="https://github.com/user-attachments/assets/08ec1f66-8e95-4031-81f7-0857b5b0222b">  
+![image(2)](https://github.com/user-attachments/assets/d34e6291-61c8-41d5-bae4-e7c61f1da04f)
 
-<br><br>
-
-Figure 3: Validation loss for small sMNIST  
-
-<img width="450" alt="Validation_loss_80_epochs" src="https://github.com/user-attachments/assets/c539fd73-ecc6-4033-bd3f-077d4c91b46d">  
-
-<br><br>
 
 Table 2: Training and validation accuracies for our implementation
 |                     | Small (1/20) sMNIST | Full sMNIST|
