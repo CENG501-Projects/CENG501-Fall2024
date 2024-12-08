@@ -19,13 +19,37 @@ A few attempts have been made to estimate optical flow from event streams using 
 
 
 ## 1.1. Paper summary
-### Proposed Framework
-[Adaptive Neural Spike Net](https://ieeexplore.ieee.org/document/5118217) proposes a U-Net framework to estimate the optical flow from events. The paper employs Integrate and Fire (IF) neurons to construct a spiking neural network (SNN). In contrary to traditional convolutional networks, IF neurons has a membrane potatial. An IF neuron outputs a signal only when its membrane potantial exceeds a threshold. The paper employs SNNs to caputure the high temporal resolution of the events. The proposed framework is illustrated below. 
+[Adaptive Neural Spike Net](https://ieeexplore.ieee.org/document/5118217) introduces a U-Net architecture designed to estimate optical flow from event data. It incorporates a spiking neural network (SNN) to capture the high temporal resolution of events. The SNN is built using Integrate-and-Fire (IF) neurons, which will be explained in detail. The proposed framework is depicted in the illustration below.
 ![Network](https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/SpikeNetwork.png)
 
-Method (a) represents a framework from prior work that is already publicly available. In contrast, method (b) refers to the newly proposed framework, which is not yet publicly accessible. Our implementation will focus on method (b).
+The figure above shows a hybrid model that combines artificial neural networks (ANNs) and spiking neural networks (SNNs). SNNs are used for the encoders, while the rest of the network relies on traditional ANNs.
 
-In the Figure above, we see a hybrid model integrating conventional neural networks (ANNs) with spiking neural networks (SNNs). While SNNs are specifically employed for designing the encoders, the rest of the network is consists of conventional ANNs.
+The network takes event data as input, stored in a special format, and outputs optical flow at four different scales. Backpropagation is applied simultaneously across all scales.
+
+If ground truth optical flow data is available in public datasets, we can use it to define a loss function and train the model directly. However, this is often not the case. To address this, the paper proposes a self-supervised training method that uses grayscale images to define a loss for the estimated optical flow. Both training approaches are discussed in detail. We will discuss both policiy in detail. 
+
+# 2. The method and our interpretation
+
+## 2.1. The original method
+The original method has three main components:
+- Spiking Neural Network (SNN)
+- Input Representation of Event Stream
+- Loss Function
+We will examine each one seperatly.
+
+### Spiking Neural Network
+The original work begins by describing the Integrate-and-Fire (IF) neuron model.
+
+<div align="center">
+  <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/if_neuron.png" alt="description" width="500">
+</div>
+
+As shown in the figure above, a neuron produces an output (or spike) only when its accumulated state exceeds a set threshold. For this work, the authors use leaky Integrate-and-Fire (LIF) neurons. A network built with these neurons is called a spiking neural network (SNN)
+
+As highlighted in the original paper, specialized hardware designed for spiking neural networks exists. On such hardware, spiking networks offer the advantage of significantly reduced power consumption, making them ideal for energy-efficient computations.
+
+### Input Representation
+One of the challenges for working with event camera is the input representation. Contrary to traditional image frames, events arrive sparsly. Hence, it is a question mark how to feed the events into a network while conserving the temporal resolution of the events. C
 
 
 ## Loss Function
@@ -79,29 +103,6 @@ The self-supervised loss combines the photometric and smoothness terms:
 $$
 L^{u} = l_{\text{photo}} + \alpha l_{\text{smooth}}
 $$
-
-# 2. The method and our interpretation
-
-## 2.1. The original method
-
-In this section, we will discuss
-- what Spiking Network is.
-- the porposed input representation
-- the loss function.
-
-
-
-The original work begins by describing what a spiking neural network (SNN) is. For the convenience of the reader, we also provide a brief explanation of the Integrate-and-Fire (IF) neuron model.
-
-<img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/if_neuron.png" alt="description" width="600">
-
-As illustrated in the figure above, a neuron generates an output (or spike) only when its integrated state surpasses a predefined threshold. Due to the nature of our problem, the authors of the paper employ leaky Integrate-and-Fire (LIF) neurons. A neural network constructed using IF neurons is referred to as a spiking neural network.
-
-As highlighted in the original paper, specialized hardware designed for spiking neural networks exists. On such hardware, spiking networks offer the advantage of significantly reduced power consumption, making them ideal for energy-efficient computations.
-
-### Input Representation
-One of the challenges for working with event camera is the input representation. Contrary to traditional image frames, events arrive sparsly. Hence, it is a question mark how to feed the events into a network while conserving the temporal resolution of the events. The first contribution of the paper is the proposed input format, which we will discuss in more detail.  
-
 
 
 ## 2.2. Our interpretation
