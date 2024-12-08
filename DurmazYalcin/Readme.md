@@ -3,7 +3,7 @@
 This readme file is an outcome of the [CENG501 (Spring 2024)](https://ceng.metu.edu.tr/~skalkan/DL/) project for reproducing a paper without an implementation. See [CENG501 (Spring 42) Project List](https://github.com/CENG501-Projects/CENG501-Fall2024) for a complete list of all paper reproduction projects.
 
 # 1. Introduction
-An event-based camera is a new sensor modality that operates by detecting changes in log pixel intensity rather than capturing entire frames. When a change in log intensity occurs at any pixel, the camera reports the pixel’s coordinates, the polarity of the change (indicating whether the intensity increased or decreased), and the precise timestamp of the event as a tuple {x,y,t,p} in Address Event Represenattion(AER). This unique approach enables the camera to achieve high temporal resolution, capturing rapid motion. It also delivers a high dynamic range, allowing it to perform effectively in scenes with extreme lighting contrasts. Furthermore, its design significantly reduces power consumption, making it an energy-efficient alternative to traditional frame-based imaging systems.
+An event-based camera is a new sensor modality that operates by detecting changes in log pixel intensity rather than capturing entire frames. When a change in log intensity occurs at any pixel, the camera reports the pixel’s coordinates, the polarity of the change (indicating whether the intensity increased or decreased), and the precise timestamp of the event as a tuple {x,y,t,p}. This unique approach enables the camera to achieve high temporal resolution, capturing rapid motion. It also delivers a high dynamic range, allowing it to perform effectively in scenes with extreme lighting contrasts. Furthermore, its design significantly reduces power consumption, making it an energy-efficient alternative to traditional frame-based imaging systems.
 
 
 <p float="left">
@@ -13,17 +13,21 @@ An event-based camera is a new sensor modality that operates by detecting change
 
 The gifs above depicts traditional image frames on the left, while the middle panels shows accumulated events over time, MVSEC on the top, and the DSEC at the bottom. In the middle panel, blue represents positive polarity (increased intensity), and red represents negative polarity (decreased intensity). The rightmost panel, on the other hand, illustrates the optical flow.
 
-The motion of each pixel between two successive images is referred to as dense optical flow. This information is crucial for numerous downstream tasks, including Simultaneous Localization and Mapping (SLAM) and odometry, where understanding motion dynamics is fundamental. While optical flow estimation from conventional image frames has been extensively studied and significantly advanced over the years, estimating optical flow from event-based cameras remains a challenging and less explored area due to the fundamentally different data representation and asynchronous nature of event streams.
+The motion of each pixel between two successive images is referred to as dense **optical flow**. This information is crucial for numerous downstream tasks, including Simultaneous Localization and Mapping (SLAM) and odometry. While optical flow estimation from conventional image frames has been extensively studied and significantly advanced over the years, estimating optical flow from event-based cameras remains a challenging and less explored area due to the fundamentally different data representation and asynchronous nature of event streams.
 
-A few attempts have been made to estimate optical flow from event streams using conventional neural networks, such as E-RAFT and EV-Flownet. These methods rely on accumulated events to compute the optical flow, effectively adapting traditional image-based approaches to event data. In contrast, Spike-FlowNet employs Integrate-and-Fire (IF) neurons, or spiking neurons, which are more aligned with the asynchronous and sparse nature of event streams.
+A few attempts have been made to estimate optical flow from event streams using conventional neural networks, such as [E-RAFT](https://github.com/uzh-rpg/E-RAFT) and [EV-FlowNet](https://github.com/daniilidis-group/EV-FlowNet). These methods rely on accumulated events to compute the optical flow, effectively adapting traditional image-based approaches to event data. In contrast, Spike-FlowNet employs Integrate-and-Fire (IF) neurons, or spiking neurons, which are more aligned with the asynchronous and sparse nature of event streams.
 
 
 ## 1.1. Paper summary
 ### Proposed Framework
-The proposed method utilizes a simple U-Net framework to estimate the optical flow as illustrated below.
+[Adaptive Neural Spike Net](https://ieeexplore.ieee.org/document/5118217) proposes a U-Net framework to estimate the optical flow from events. The paper employs Integrate and Fire (IF) neurons to construct a spiking neural network (SNN). In contrary to traditional convolutional networks, IF neurons has a membrane potatial. An IF neuron outputs a signal only when its membrane potantial exceeds a threshold. The paper employs SNNs to caputure the high temporal resolution of the events. The proposed framework is illustrated below. 
 ![Network](https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/SpikeNetwork.png)
 
 Method (a) represents a framework from prior work that is already publicly available. In contrast, method (b) refers to the newly proposed framework, which is not yet publicly accessible. Our implementation will focus on method (b).
+
+In the Figure above, we see a hybrid model integrating conventional neural networks (ANNs) with spiking neural networks (SNNs). While SNNs are specifically employed for designing the encoders, the rest of the network is consists of conventional ANNs.
+
+
 ## Loss Function
 Adaptive-SpikeNet employs two distinct loss paradigms—**supervised loss** and **self-supervised loss**—depending on the availability of labeled optical flow datasets. Below is a detailed explanation of how these approaches are utilized:
 
@@ -80,6 +84,13 @@ $$
 
 ## 2.1. The original method
 
+In this section, we will discuss
+- what Spiking Network is.
+- the porposed input representation
+- the loss function.
+
+
+
 The original work begins by describing what a spiking neural network (SNN) is. For the convenience of the reader, we also provide a brief explanation of the Integrate-and-Fire (IF) neuron model.
 
 <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/if_neuron.png" alt="description" width="600">
@@ -88,7 +99,10 @@ As illustrated in the figure above, a neuron generates an output (or spike) only
 
 As highlighted in the original paper, specialized hardware designed for spiking neural networks exists. On such hardware, spiking networks offer the advantage of significantly reduced power consumption, making them ideal for energy-efficient computations.
 
-The original method presents a hybrid model integrating conventional neural networks (CNNs) with spiking neural networks (SNNs). While SNNs are specifically employed for designing the encoders, the rest of the network operates on conventional image frames. Although SNNs do not enhance the system's performance, they significantly reduce inference time and energy consumption when deployed on appropriate hardware.
+### Input Representation
+One of the challenges for working with event camera is the input representation. Contrary to traditional image frames, events arrive sparsly. Hence, it is a question mark how to feed the events into a network while conserving the temporal resolution of the events. The first contribution of the paper is the proposed input format, which we will discuss in more detail.  
+
+
 
 ## 2.2. Our interpretation
 
