@@ -183,7 +183,7 @@ This setup highlights the framework's adaptability to different models and datas
     - Significant increase in AFIE for deeper layers (0.01848, 0.00209, 0.10121, 0.09494, 0.06627).
 
 <p align="center">
-  <img src="Pesen/figures/Table1.png" alt="AlexNet on MNIST" style="width: 70%;"><br>
+  <img src="figures/Table1.png" alt="AlexNet on MNIST" style="width: 70%;"><br>
   <em>Figure 1: The evaluation of each convolutional layer for AlexNet on MNIST.</em>
 </p>
 
