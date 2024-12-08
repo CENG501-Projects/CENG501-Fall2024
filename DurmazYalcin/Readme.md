@@ -233,7 +233,7 @@ During training, it is necessary to create the event bins for each optical flow 
 ## 3.3. Results
 Inside the [DSEC](https://dsec.ifi.uzh.ch/) dataset, we identified 8,211 frames with optical flow as ground truth. Of these, 8,170 frames were used for training, while the remaining 41 frames were set aside for validation. The network was trained for 30 epochs, and the training and validation losses are reported below.
 <div align="center">
-  <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/training_losses.png" alt="description" width="60%">
+  <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/training_losses.png" alt="description" width="50%">
 </div>
 
 The validation loss is smaller than the training loss because the validation set includes a simpler scenario with relatively stable and moderate optical flow. In contrast, the training set contains samples with higher optical flow vectors.
