@@ -228,8 +228,20 @@ During training, it is necessary to create the event bins for each optical flow 
 @TODO: Explain your code & directory structure and how other people can run it.
 
 ## 3.3. Results
+Inside the [DSEC](https://dsec.ifi.uzh.ch/) dataset, we identified 8,211 frames with optical flow as ground truth. Of these, 8,170 frames were used for training, while the remaining 41 frames were set aside for validation. The network was trained for 30 epochs, and the training and validation losses are reported below.
+<div align="center">
+  <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/training_losses.png" alt="description" width="60%">
+</div>
 
-@TODO: Present your results and compare them to the original paper. Please number your figures & tables as if this is a paper.
+The validation loss is smaller than the training loss because the validation set includes a simpler scenario with relatively stable and moderate optical flow. In contrast, the training set contains samples with higher optical flow vectors.
+
+Finally, we visualize sample estimations from the network, showing both the ground truth optical flow and the estimated flow. It is important to note that the ground truth is available only for a sparse set of pixels. To facilitate comparison, we apply the same mask to the estimated flow, resulting in a masked estimated flow. This masking is done purely for your convenience to directly compare the ground truth with the estimation.
+<div align="center">
+  <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/ESvsGT.gif" alt="description" width="95%">
+</div>
+
+
+
 
 # 4. Conclusion
 
