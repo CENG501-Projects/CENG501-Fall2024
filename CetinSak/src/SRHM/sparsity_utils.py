@@ -48,6 +48,10 @@ def sample_hierarchical_rules_type_a(num_features, num_layers, m, num_classes, s
     return all_levels_paths, all_levels_tuples
 
 def sample_hierarchical_rules_type_b(num_features, num_layers, m, num_classes, s, s0, seed=0):
+    import torch
+    import random
+    from itertools import product
+
     random.seed(seed)
     all_levels_paths = [torch.arange(num_classes)]
     all_levels_tuples = []
@@ -57,30 +61,37 @@ def sample_hierarchical_rules_type_b(num_features, num_layers, m, num_classes, s
         old_features = list(set([i.item() for i in old_paths]))
         num_old_features = len(old_features)
 
-        # Generate tuples with sparsity s(s_0 + 1) s informative s*s_0 uninformative
+        # Generate tuples with sparsity s(s_0 + 1): s informative and s * s0 uninformative
         sparse_tuple_size = s * (s0 + 1)
         possible_tuples = list(product(range(num_features), repeat=s))
         num_new_tuples = m * num_old_features
 
+        # Validate sufficient tuples for the layer
+        assert len(possible_tuples) >= num_new_tuples, "Not enough features to choose from with sparsity constraints!"
+
         random.shuffle(possible_tuples)
         selected_tuples = possible_tuples[:num_new_tuples]
 
-        # sparse format 
+        # Create sparse format
         new_tuples = []
         for tup in selected_tuples:
             sparse_tup = [-1] * sparse_tuple_size  # Initialize as uninformative
             available_positions = list(range(sparse_tuple_size))  # All positions are available
-
+            
+            # Ensure informative features maintain order
             for value in tup:
-                # Preserve the order of the values in the tuple.
-                valid_positions = [pos for pos in available_positions if pos > (sparse_tup.index(value) if value in sparse_tup else -1)]
+                # Find valid positions
+                valid_positions = [
+                    pos for pos in available_positions
+                    if len([p for p in available_positions if p > pos]) >= (len(tup) - tup.index(value) - 1)
+                ]
+                assert valid_positions, "Not enough valid positions to maintain order!"
                 
-                position = random.choice(valid_positions)  
+                position = random.choice(valid_positions)  # Choose a valid position
                 sparse_tup[position] = value
-                available_positions.remove(position)
+                available_positions.remove(position)  # Update available positions
 
             new_tuples.append(sparse_tup)
-
 
         new_tuples = torch.tensor(new_tuples, dtype=torch.int64).reshape(-1, m, sparse_tuple_size)
 
@@ -92,7 +103,6 @@ def sample_hierarchical_rules_type_b(num_features, num_layers, m, num_classes, s
         all_levels_paths.append(new_paths)
 
     return all_levels_paths, all_levels_tuples
-
 
 
 def sample_data_from_paths(samples_indices, paths, m, num_classes, num_layers, s, s0, seed=0, seed_reset_layer=42):
