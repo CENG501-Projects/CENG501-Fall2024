@@ -117,8 +117,8 @@ The original paper evaluates the proposed GReg and GReg+ methods on benchmark da
   - For all datasets, energy-based sampling is applied to select OOD (out-of-distribution) samples efficiently during training, as described in the original paper.
 
 - **Adjustments in Our Implementation:**
-	 - In our experiments, we modified the initial learning rate for GReg+ on the CIFAR benchmarks:
-	 - Instead of starting with  0.1 , we used  0.01  for the entire training process.
+	 - In our experiments, we modified the initial learning rate for GReg on the CIFAR benchmarks:
+	 - Instead of starting with  1 , we used  0.01  for the entire training process.
 	 - This adjustment was made to observe the impact of learning rate changes on convergence stability and model performance.
 
 ## 3.2. Running the code
