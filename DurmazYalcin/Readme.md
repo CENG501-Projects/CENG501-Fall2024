@@ -205,23 +205,23 @@ The final output consists of full-scale flow predictions generated at multiple r
 
 ### Training Procedure
 For the primal tests, we use the [DSEC](https://dsec.ifi.uzh.ch/) dataset because it provides highly accurate groundtruth data. However, not all sequences in the [DSEC](https://dsec.ifi.uzh.ch/) dataset include groundtruth optical flow. Therefore, we download and utilize only the sequences that contain groundtruth. Please organize the folder structure as follows:
-```
-- path_to_dataset
-  - thun_00_a
-  - zurich_city_01_a
-  - zurich_city_02_a
-    zurich_city_02_a_optical_flow_forward_timestamps.txt
-    - zurich_city_02_a_events_left
-      events.h5
-      rectify_map.h5
-    - zurich_city_02_a_optical_flow_forward_event
-      <flow_name_0>.png
-      <flow_name_1>.png
-      <flow_name_1>.png
+```bash
+├── path_to_dataset
+      ├── thun_00_a
+      ├── zurich_city_01_a
+      ├── zurich_city_02_a
+          ├──zurich_city_02_a_optical_flow_forward_timestamps.txt
+          ├── zurich_city_02_a_events_left
+              ├── events.h5
+              ├── rectify_map.h5
+          ├── zurich_city_02_a_optical_flow_forward_event
+              ├── <flow_name_0>.png
+              ├── <flow_name_1>.png
+              ├── <flow_name_1>.png
+              ...
+      ├── zurich_city_02_c
+      ├── zurich_city_02_d
       ...
-  - zurich_city_02_c
-  - zurich_city_02_d
-  ...
 ```
 
 During training, it is necessary to create the event bins for each optical flow groundtruth. However, this binning process is time-consuming and is repeated for every training epoch. To reduce the training time, pre-binning the relevant events and saving them in a separate folder can significantly reduce training time. By doing this, we can directly load the relevant events from the pre-binned files, eliminating the need for repeated binning during each epoch. 
