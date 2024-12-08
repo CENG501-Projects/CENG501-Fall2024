@@ -96,7 +96,7 @@ In the table, LR is learning rate and WD is weight decay. BN and LN refer to Bat
 
 The hyperparameters for the LaS attention are as follows:
 
-**(i)** BBB, controlling alpha_c
+**(i)** BBB, controlling $\alpha_c$
 
 **(ii)** the 1-D average pooling window size P
 
@@ -108,7 +108,7 @@ We conducted two experiments:
 
 **(i)** First experiment uses the whole dataset and the model is trained for two epochs.
 
-**(ii)** Second experiment uses 1/10 of the dataset and the model is trained for 80 epochs.
+**(ii)** Second experiment uses 1/20 of the dataset and the model is trained for 80 epochs.
 
 
 ## 3.2. Running the code
@@ -119,7 +119,7 @@ We conducted two experiments:
 
 **1st Experiment (Full sMNIST Dataset and 2 Epochs):**
 
-**2nd Experiment (1/20 sMNIST Datase and 80 Epochs):**
+**2nd Experiment (1/20 sMNIST Dataset and 80 Epochs):**
 
 Figure 1: Train loss for small sMNIST 
 <img width="450" alt="Train_loss_80_epochs" src="https://github.com/user-attachments/assets/08ec1f66-8e95-4031-81f7-0857b5b0222b">
