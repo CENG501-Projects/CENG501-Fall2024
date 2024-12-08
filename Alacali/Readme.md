@@ -78,7 +78,7 @@ Low Diversity: Uniform weighting may reduce diversity and fidelity in generated 
 
 These limitations motivate the development of Improved Federated Learning GAN (IFL-GAN), which uses Maximum Mean Discrepancy (MMD) for weighted aggregation to address these issues effectively.
 
-## 2.2. IFL-GAN
+## 2.1.1 IFL-GAN
 
 IFL-GAN introduces an MMD-based mechanism to aggregate local GAN updates, assigning weights dynamically based on each local GAN's convergence status. 
 
@@ -91,7 +91,7 @@ Unlike traditional Federated Averaging (FedAvg), which equally weights updates (
   <em>Figure 2: IFL-GAN Algorithm</em>
 </p>
 
-## 2.2.1. IFL-GAN Algorithm Steps
+## 2.1.2. IFL-GAN Algorithm Steps
 
 Step 1: Initialization
 A global GAN model is initialized, consisting of a generator $G_{global}$, and a discriminator $D_{global}$. The global model parameters are distributed to all $K$ clients.
@@ -121,7 +121,19 @@ $G_i = G_{\text{global}}, D_i = D_{\text{global}}, for i in [1, K]$
 
 ## 2.2. Our interpretation
 
-@TODO: Explain the parts that were not clearly explained in the original paper and how you interpreted them.
+  The overall aim of the work is represented thoroughly in the paper. However, the basic model that is tried to be improved upon, namely the FL-GAN is not discussed algorithm-wise. So it has been decided that to create a better understanding of the idea a more modular approach should be followed. In this part, the nuances will be discussed and in the experimental setup part (Part 3) the modularity will be shared.
+
+1. The Discussion of the Method of FL-GAN
+  As discussed in the previous chapters, the aim of studying GANs using the framework of federated learning is to fully utilize the distributed data across different devices for learning purposes. Thus, the results obtained from FL-GAN, the legacy framework that is the first study to combine both ideas, are used as a benchmark for the performance comparison of IFL-GAN. As this is going to be the first GAN and Federated Learning implementation of the author of this repository, it is decided that the GAN structure should be studied briefly. After that, the iid local dataset division, client model aggregation and global parameter distribution mechanisms is decided to be introduced to the basic model for FL-GAN application.
+
+2. Shared Architectural Details
+   In figure 3, the architectural details that are used in the study are shared. In detail, the IFL-GAN framework has been tried on three different datasets, namely MNIST, CIFAR10, and SVHN datasets are divided into non-iid groups to simulate local datasets of the users. However, according to the data input dimensions, the architectures shared in figure 3 are not consistent. For instance, a data from MNIST dataset is a 28x28 grayscale image but the architecture is started with a 1x224 fully connected layer. So, the architecture shared in the paper is created as a model but it is decided that to get ahold of the GAN model first, a proven GAN structure is going to be used until the original idea is understood.
+
+   <p align="center">
+  <img src="figures/Architectural Details.png" style="width: 70%;"><br>
+  <em>Figure 1: IFL-GAN system model</em>
+</p>
+
 
 # 3. Experiments and results
 
