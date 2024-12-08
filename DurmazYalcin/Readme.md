@@ -63,7 +63,7 @@ One of the key challenges in working with event cameras is handling the input re
   <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/InputFormat.png" alt="description" width="500">
 </div>
 
-The figure above, borrowed from [Spike-Net](https://arxiv.org/abs/2003.06696), illustrates how events are grouped into bins. To estimate the optical flow at a specific time instan $t_k$, the events within the time interval $(t_{k-1},t_{k+1})$ are divided into bins as shown in the figure. This binning process is applied separately for **on events** (positive polarity) and **off events** (negative polarity). Moreover, the bins are labeled as former group and latter group. As a result, we have 4 different categories for the bins. 
+The figure above, borrowed from [Spike-Net](https://arxiv.org/abs/2003.06696), illustrates how events are grouped into bins. To estimate the optical flow at a specific time instant $t_k$, the events within the time interval $(t_{k-1},t_{k+1})$ are divided into bins as shown in the figure. This binning process is applied separately for **on events** (positive polarity) and **off events** (negative polarity). Moreover, the bins are labeled as former group and latter group. As a result, we have 4 different categories for the bins. 
 
 <div align="center">
   <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/bin_cat.png" alt="description" width="20%">
