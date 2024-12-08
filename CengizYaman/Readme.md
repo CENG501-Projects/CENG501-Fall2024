@@ -93,21 +93,28 @@ Additionally, the hardware resources used and comptational complexity of experim
 
 # 3. Experiments and results
 
-## 3.1. Experimental setup
-
+### 3.1. Experimental Setup
 The original paper evaluates the proposed GReg and GReg+ methods on benchmark datasets, including CIFAR-10, CIFAR-100, and ImageNet. The authors utilize a combination of pre-trained and from-scratch models with various optimization strategies:
 
-1.CIFAR Benchmarks:
-Models are pre-trained and fine-tuned for GReg experiments over 20 epochs using SGD with cosine annealing.
-For GReg+, models are trained from scratch for 50 epochs with an initial learning rate of 0.1, followed by an additional 10 epochs with a reduced learning rate of 0.01.
-Hyperparameters:  \lambda_S = 0.1 ,  \lambda_{\nabla S} = 1 .
+- **CIFAR Benchmarks**
+  - Models are pre-trained and fine-tuned for GReg experiments over 20 epochs using SGD with cosine annealing.
+  - For GReg+, models are trained from scratch for 50 epochs with an initial learning rate of 0.1, followed by an additional 10 epochs with a reduced learning rate of 0.01.
+  - Hyperparameters:
+    ```
+    λ_S = 0.1
+    λ_∇S = 1
+    ```
 
-2.ImageNet Benchmarks:
-The experiments involve fine-tuning a DenseNet-121 model, leveraging an auxiliary dataset from ImageNet-1K.
-Learning rate: 10^{-4}, reduced to 10^{-5} at epoch 10, using the Adam optimizer.
+- **ImageNet Benchmarks**
+  - The experiments involve fine-tuning a DenseNet-121 model, leveraging an auxiliary dataset from ImageNet-1K.
+  - Learning rate:
+    ```
+    10^-4, reduced to 10^-5 at epoch 10
+    ```
+    using the Adam optimizer.
 
-
-For all datasets, energy-based sampling is applied to select OOD samples efficiently during training, as described in the original paper.
+- **Common Setup for All Datasets**
+  - For all datasets, energy-based sampling is applied to select OOD (out-of-distribution) samples efficiently during training, as described in the original paper.
 
 ## 3.2. Running the code
 
