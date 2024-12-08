@@ -296,6 +296,8 @@ During the training phase, a misconfiguration led to underfitting, with the mode
 - **Prolonged Training Times**: Extended training left limited time for re-evaluation and adjustments.
 - **Evaluation Constraints**: Insufficient time to debug and rerun experiments resulted in poor performance metrics across all evaluated metrics.
 
+- Results about "average_accuracy": 0.010703363914373088.
+
 Future efforts will focus on optimizing hyperparameters, implementing learning rate schedulers, and allocating more time for iterative improvements to achieve better alignment with the original paper's benchmarks.
 
 ![Results with Underfitting](./figures/test_image.png)
