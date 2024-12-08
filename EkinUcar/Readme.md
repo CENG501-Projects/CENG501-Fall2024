@@ -125,12 +125,13 @@ Figure 1: Train loss for small sMNIST
 
 <img width="450" alt="Train_loss_80_epochs" src="https://github.com/user-attachments/assets/08ec1f66-8e95-4031-81f7-0857b5b0222b">  
 
-<br><br><br>
-
+<br><br>
 
 Figure 2: Validation loss for small sMNIST  
 
 <img width="450" alt="Validation_loss_80_epochs" src="https://github.com/user-attachments/assets/c539fd73-ecc6-4033-bd3f-077d4c91b46d">  
+
+<br><br>
 
 Table 1: Training and validation accuracies for our implementation
 |                     | Small (1/20) sMNIST | 
@@ -138,10 +139,13 @@ Table 1: Training and validation accuracies for our implementation
 | **Training** |    13.66    |  
 | **Validation** |    13.60    |  
 
+<br><br>
 
 Figure 3: Original paper's accuracy results  
 
 <img width="350" alt="Papers_MNIST_results" src="https://github.com/user-attachments/assets/ad2ce844-7860-4b1b-9871-3cfcb8541344">
+
+<br><br>
 
 **Discussion:**  
 
