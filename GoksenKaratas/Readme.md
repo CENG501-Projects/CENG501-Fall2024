@@ -100,8 +100,8 @@ After integrating all components together, the final loss is formulated as the f
 
 ---
 
-
 ## 2.2. Our interpretation
+
 The paper conducts several experiments to evaluate the effectiveness of the proposed framework. The authors state that they reproduced the original CAER approaches from scratch to ensure a fair comparison. In this section, they report using the training setups from the original papers directly.
 
 At this point, we assume that they reproduced the architecture, integrated the proposed framework with this architecture, and then started training using the aforementioned setup. However, it is unclear whether they mean training the CAER models with the stated setup first, then wrapping the framework around the trained models and further train the combined architecture, using unreported training parameters.
@@ -117,8 +117,18 @@ In this paper, experiments are conducted on two large-scale image-based CAER dat
 * EMOT-Net[3]
 * CAER-Net[4]
 * GNN-CNN[5]
-*  CD-Net[6]
-*  EmotiCon[7]
+* CD-Net[6]
+* EmotiCon[7]
+
+The authors state that they conducted their experiments following the original paper's experimental setups, detailed as follows:
+* EmotiCon: The EMOTIC dataset was used to train the EmotiCon model with a batch size of 32 for 75 epochs. The training process employed the Adam optimizer with a learning rate of 0.0001 and was conducted on an NVIDIA GeForce GTX 1080 Ti GPU.
+* CD-Net: The CD-NET model was trained on the CAER-S and EMOTIC datasets using a batch size of 64 for 61 epochs. The Stochastic Gradient Descent (SGD) optimizer was applied with a learning rate of 0.001 for the backbone and 0.01 for other layers, along with a weight decay of 5×10⁻⁴. A cosine decay learning rate scheduler was employed, and the training was conducted on an NVIDIA GeForce GTX 1080 Ti GPU.
+* GNN-CNN: The GNN-CNN model was trained on the EMOTIC dataset with a batch size of 64, a learning rate of 0.001, and a weight decay of 5 × 10⁻⁴.
+* CAER-Net: The CAER-Net model was trained from scratch using an initial learning rate of 5 × 10⁻³, which was reduced by a factor of 10 every 4 epochs. The training employed the cross-entropy loss function with a batch size of 32.
+  For the CAER dataset, videos were sampled at 10 frames per second, and 16 frame non-overlapping clips were extracted for training. Facial clips (VF) were resized to 96 × 96, while contextual clips (VC) were resized to 128 × 171 and then cropped to 112 × 112 during training. The CAER-S dataset was used with inputs resized to 224 × 224. During the testing phase, 16 frame clips with an 8 frame overlap were used, applying a single center crop for contextual parts.
+* EMOT-Net: The EMOT-Net model is trained end-to-end using stochastic gradient descent with momentum, allowing all parameters to be learned jointly. The first two modules are initialized with pre-trained models from Places and ImageNet, while the fusion network is trained from scratch. After testing various batch sizes (e.g., 26, 78, 108), a batch size of 52 was selected based on its superior validation performance.
+
+
 
 The effectiveness of the five given CLEF-based methods are compared against existing state-of-the-art models such as:
 * HLCR [8]
@@ -136,8 +146,22 @@ The effectiveness of the five given CLEF-based methods are compared against exis
 @TODO: Explain your code & directory structure and how other people can run it.
 
 ## 3.3. Results
+We have implemented the CLEF architecture and begun our initial experiments. As a starting point, we integrated an existing implementation of the CAER-Net model [REF] as the factual branch of our framework. For the non-invasive context branch, we utilized ResNet152. The primary goal of these initial experiments is to verify the correctness of our interpretation of the framework.
+Looking ahead, we plan to incorporate public implementations of additional CAER models, as well as develop our implementations from scratch. We also aim to compare the performance of pre-trained versions of these models -if they exist- against versions we train ourselves.
+<p align="center"> <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/GoksenKaratas/images/Figure1.png" alt="Plots" width="800"> 
+  
+<em>Figure 1: Train and Validation Loss Plots</em>
+</p>
 
-@TODO: Present your results and compare them to the original paper. Please number your figures & tables as if this is a paper.
+As of this time, we have conducted two full experiments with this architecture and have performed numerous smaller tests to validate our implementation. The results of the full experiments are presented in Table 1, with corresponding training and validation losses illustrated in Figure 1.
+Analyzing the results, we observe that the implemented architecture is learning. However, at this stage, we cannot make direct comparisons to the results reported in related papers, as those experiments are time and resource consuming.
+
+<br>
+<p align="center"> <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/GoksenKaratas/images/Table1.jpeg" alt="Table" width="800"> 
+  
+<em>Table 1: Results of the preliminary experiments</em>
+</p>
+
 
 # 4. Conclusion
 
