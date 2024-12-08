@@ -121,27 +121,35 @@ We conducted two experiments:
 
 **2nd Experiment (1/20 sMNIST Dataset and 80 Epochs):**
 
-Figure 1: Train loss for small sMNIST 
-<img width="450" alt="Train_loss_80_epochs" src="https://github.com/user-attachments/assets/08ec1f66-8e95-4031-81f7-0857b5b0222b">
+Figure 1: Train loss for small sMNIST   
 
-Figure 2: Validation loss for small sMNIST
-<img width="450" alt="Validation_loss_80_epochs" src="https://github.com/user-attachments/assets/c539fd73-ecc6-4033-bd3f-077d4c91b46d">
+<img width="450" alt="Train_loss_80_epochs" src="https://github.com/user-attachments/assets/08ec1f66-8e95-4031-81f7-0857b5b0222b">  
 
-Figure 3: Training and validation accuracies
-|                     | sMNIST | pMNIST |
-|---------------------|--------|--------|
-| **Attention-Based Models** |        |        |
-| Transformer         | 98.90  | 97.90  |
-| **LaS (ours)**      | **99.18** | **98.05** |
-| **Non Attention-Based Models** |        |        |
-| LSTM               | 98.90  | 95.11  |
-| **S4**             | **99.63** | **98.70** |
+<br><br>
 
+Figure 2: Validation loss for small sMNIST  
 
-Fİgure 4: Original paper's accuracy results
-<img width="169" alt="Papers_MNIST_results" src="https://github.com/user-attachments/assets/ad2ce844-7860-4b1b-9871-3cfcb8541344">
+<img width="450" alt="Validation_loss_80_epochs" src="https://github.com/user-attachments/assets/c539fd73-ecc6-4033-bd3f-077d4c91b46d">  
 
+<br><br>
 
+Table 1: Training and validation accuracies for our implementation
+|                     | Small (1/20) sMNIST | 
+|---------------------|--------|
+| **Training** |    13.66    |  
+| **Validation** |    13.60    |  
+
+<br><br>
+
+Figure 3: Original paper's accuracy results  
+
+<img width="350" alt="Papers_MNIST_results" src="https://github.com/user-attachments/assets/ad2ce844-7860-4b1b-9871-3cfcb8541344">
+
+<br><br>
+
+**Discussion:**  
+
+Our accuracy values were very low compared to the original paper's. This might be because we used the setup of the LRA Image task and different values might have been used for the sMNIST task in the original paper. Using smaller batch size could have affected the accuracy as well.  
 
 # 4. Conclusion
 

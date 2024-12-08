@@ -102,7 +102,11 @@ After integrating all components together, the final loss is formulated as the f
 
 
 ## 2.2. Our interpretation
-The implementation details provided by the authors appear to be sufficient for re-implementing the paper at the time of creating this README file. This section may be updated as the implementation study progresses.
+The paper conducts several experiments to evaluate the effectiveness of the proposed framework. The authors state that they reproduced the original CAER approaches from scratch to ensure a fair comparison. In this section, they report using the training setups from the original papers directly.
+
+At this point, we assume that they reproduced the architecture, integrated the proposed framework with this architecture, and then started training using the aforementioned setup. However, it is unclear whether they mean training the CAER models with the stated setup first, then wrapping the framework around the trained models and further train the combined architecture, using unreported training parameters.
+
+Throughout our experiments, we aim to clarify which interpretation is correct. Additionally, we attempted to contact the corresponding author for clarification on this matter. If they provide further details about the setup, we will adjust our experimental design accordingly. For now, we proceed with our current assumption.
 
 # 3. Experiments and results
 
