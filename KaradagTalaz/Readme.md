@@ -318,7 +318,7 @@ In the paper, experiments were performed on each branch of a two-branch network 
 ![Ablation Results](figures/ablation_study.png)
 *Figure 16: The ablation study stated in the paper*
 
-![Experiment Results](figures/experiment_results.png)
+![Experiment Results](figures/evaluation_results.png)
 *Figure 17: The experiment results stated in the paper*
 
 When we compare the training and test results, it can be easily seen that the model strongly overfits to the training data. This may be due to the fact that the CIMD dataset containing only 600 images, 100 image per each category (copy move, remove, splice and their authentic counterparts). We plan to address this issue by using data augmentation, but we did not apply it in our first experiment because no data augmentation methods was mentioned in the paper.
