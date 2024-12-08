@@ -87,7 +87,8 @@ Below are some of our interpretations about aspects that were unclear in the pap
 
 ## 3.1. Experimental setup
 
-Since the original paper didn’t provide setup details for the Sequential MNIST (sMNIST) task, we used the setup parameters of the Long Range Arena (LRA) Image task with the exception of batch size and number of epochs. The original paper’s setup for LRA tasks (including Image) are shown below: <br>
+Since the original paper didn’t provide setup details for the Sequential MNIST (sMNIST) task, we used the setup parameters of the Long Range Arena (LRA) Image task with the exception of batch size and number of epochs. The original paper’s setup for LRA tasks (including Image) are shown below:
+
 
 
 <img width="900" alt="LRA parameters" src="https://github.com/user-attachments/assets/ad5f033b-7d65-49b5-af5a-d59dce0dd289">
@@ -97,6 +98,7 @@ Here LR is learning rate and WD is weight decay. BN and LN refer to Batch Normal
 In the original paper, $\alpha_0$ ($\alpha$ value of the first attention head) is set to 0 and the rest of $\alpha_c$ is chosen to be exponential-uniformly distributed in the range [0, B]. We used the same configuration.
 
 **Batch size:** Due to GPU RAM constraints, we reduced the batch size from 50 to 10.  
+
 **Number of epochs:** We reduced the number of epochs due to time constraints. We did 2 experiments: (i) With the full sMNIST dataset and 2 epochs. (ii) With 1/20 of the sMNIST dataset and 80 epochs.
 
 
