@@ -50,52 +50,73 @@ Theoretical analysis backs up the approach, showing that even as the model zoo e
 
 ## 2.2. Our interpretation
 
-The ZODE method successfully balances accuracy with practical usability. Transforming detection scores into p-values is a clever way to standardize outputs from different models, and the use of the Benjamini-Hochberg procedure helps prevent error accumulation seen in naive ensembles while maintaining consistency.
+ZODE provides a new way of balancing accuracy and usability in out-of-distribution detection. ZODE standardizes the outputs from different models by converting detection scores into p-values, hence allowing effective integration within the model zoo. More importantly, it leverages the Benjamini-Hochberg procedure to dynamically adjust the detection thresholds, which prevents error accumulation and thus maintains consistent detection performance.
 
-Because it utilizes the model zoo to its fullest potential and dynamically adjusts to each test input, the sample-aware model selection is especially powerful. However, implementing sample-aware model selection in real-world scenarios could be challenging due to the need for storing validation data and performing per-sample model selection, which can be computationally expensive and memory-intensive for large-scale systems. Parallel computing might help but could add complexity.
+In our reproduction, simplicity and modularity were found to be the strong points of ZODE. The use of the model zoo brings flexibility in the approach, making it appropriate for different datasets and tasks. Regarding the practical implementation of ZODE, there are several challenges to be considered, such as high computational overhead due to model selection for each sample, storage of validation data, and higher memory and processing requirements for large-scale systems; parallel computing and distributed processing can reduce these issues.
 
-The quality and diversity of the model zoo are the key to ZODE’s success, but building such a zoo might be an issue for teams with limited resources. Despite these challenges, ZODE represents a substantial advancement in OOD detection, providing solid theoretical background as well as useful applications.
+The quality and diversity of the model zoo are of prime importance for the success of ZODE. In practice, such a zoo is very resource-expensive to build, which may limit its utility for small teams. However, leaving practical matters aside, ZODE is a theoretically well-grounded and very strong method that improves OOD detection in many important ways.
 
 # 3. Experiments and results
 
 ## 3.1. Experimental setup
 
-The authors of the paper evaluated ZODE on two main datasets: CIFAR10 [3] and ImageNet-1K [4], representing in-distribution (ID) data, with various out-of-distribution (OOD) datasets used for evaluation.
+First, we conducted experiments with a simplified configuration for reproducibility compared to that in the original paper. The following is the major experimental setup:
 
-### Datasets:
-- CIFAR10 (ID) and six OOD datasets: SVHN [5], LSUN [6], iSUN [7], Texture [8], Places365 [9], and CIFAR100 [10].
-- ImageNet-1K (ID) and four OOD datasets: subsets of Places365, iNaturalist [11], SUN [12], and Texture.
+- ID Dataset: CIFAR10, for in-distribution detection.
+- OOD Datasets: SVHN, Places365, and Texture datasets.
+- Model Zoo: ResNet18, ResNet34, and ResNet50, all pre-trained on ImageNet.
+- Significance Level (α): It has been set to 0.05 to maintain 95% TPR for ID samples.
+- Batch Size: 256 for all data loaders.
 
-### Metrics:
-The experiments were evaluated using:
-- True Positive Rate (TPR) for ID samples.
-- False Positive Rate (FPR) for OOD samples at a TPR of 95%.
-- Area Under the ROC Curve (AUC), capturing overall performance across varying thresholds.
+This setup emphasizes computational efficiency and resource constraints by reducing the number of OOD datasets and models in the zoo. While this is a slight deviation from the original study, it provides a practical baseline for evaluating the performance of ZODE in a controlled environment.
 
-### Model Zoo:
-- **CIFAR Experiments:** The zoo consisted of seven pre-trained models (e.g., ResNet18, ResNet50, DenseNet, etc.), varying in architecture and loss functions (including contrastive loss for diversity).
-- **ImageNet Experiments:** A larger zoo with diverse architectures, including ResNet50*, ResNeXt101, Swin Transformer models, and DinoV2, pre-trained on different datasets with varying resolutions.
+The evaluation was performed by following the same methodology described in the paper:
 
-### Baseline Methods:
-The paper compared ZODE against state-of-the-art OOD detectors, including methods like Maximum Softmax Probability (MSP), Energy-based models, KNN, and Mahalanobis distance.
+1. Metrics:
 
-Thresholds and Hyperparameters:
-- ZODE used the Benjamini-Hochberg procedure to adjust detection thresholds dynamically.
-- Key hyperparameters like significance levels for p-values (αα) were tuned to maintain a TPR of 95% for ID samples.
+    - TPR for ID samples
+    - FPR for OOD samples at 95% TPR.
+    - AUC-ROC for overall performance. 
 
-### Our Adjustments
+2. Validation Features: features extracted from the CIFAR10 test set for calibrating and adjusting thresholds with ZODE. 
+3. Hyperparameter Tuning: The α threshold was adjusted in order to optimally adjust the detection performance while maintaining TPR for ID samples. 
 
-For our implementation, we plan to:
-
-- Use the same datasets and evaluation metrics as the original paper to ensure consistency.
-- Construct the model zoo with accessible pre-trained models from standard repositories like PyTorch or TensorFlow.
-- Test to see how scaling the zoo size and tuning hyperparameters affect ZODE’s performance.
-
-These steps aim to reproduce the results while accounting for practical limitations, such as model availability and computational resources.
+This simplified experimental design therefore allowed us to test the working of ZODE efficiently and to validate its effectiveness under simplified conditions.
 
 ## 3.2. Running the code
 
-@TODO: Explain your code & directory structure and how other people can run it.
+To reproduce the results, follow these steps:
+
+1. **Download the Datasets**:
+   - Before running the main experiment, you need to download the required datasets using the `download_datasets.py` script. This will download CIFAR10 and the specified OOD datasets (SVHN, Places365, and Texture).
+   
+   - To download the datasets, run the following command:
+     ```bash
+     python download_datasets.py --data_dir data
+     ```
+
+2. **Setup the Environment**:
+   - Make sure you have the necessary Python libraries installed, including `torch`, `torchvision`, and `scipy`.
+
+3. **Code Structure**:
+   - The experiment is structured into modular components:
+     - `data.loaders`: Handles dataset loading and DataLoader creation.
+     - `model.zoo`: Manages the pre-trained models in the model zoo.
+     - `zode.algorithm`: Implements the ZODE algorithm, including p-value computation and the Benjamini-Hochberg correction.
+     - `zode.evaluation`: Provides evaluation metrics such as TPR, FPR, and AUC.
+
+4. **Running the Experiment**:
+   - Once the datasets are downloaded, you can run the experiment using:
+     ```bash
+     python main.py --data_dir data --batch_size 256 --alpha 0.05
+     ```
+   - This will initialize the model zoo, extract features, and evaluate ZODE on the specified OOD datasets.
+
+5. **Expected Output**:
+   - The script will output the results for each OOD dataset, including TPR, FPR, and AUC metrics, which are summarized in the final evaluation.
+
+This process is designed to ensure that the experiments are reproducible and can be extended to other datasets or model configurations.
+
 
 ## 3.3. Results
 
