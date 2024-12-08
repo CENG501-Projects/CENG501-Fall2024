@@ -109,7 +109,14 @@ In the original paper, $\alpha_0$ ($\alpha$ value of the first attention head) i
 
 ## 3.3. Results
 
-@TODO: Present your results and compare them to the original paper. Please number your figures & tables as if this is a paper.
+**1st Experiment (Full sMNIST Dataset and 2 Epochs):**
+
+**2nd Experiment (1/20 sMNIST Datase and 80 Epochs):**
+
+<img width="700" alt="Train_loss_80_epochs" src="https://github.com/user-attachments/assets/08ec1f66-8e95-4031-81f7-0857b5b0222b">
+
+<img width="700" alt="Validation_loss_80_epochs" src="https://github.com/user-attachments/assets/c539fd73-ecc6-4033-bd3f-077d4c91b46d">
+
 
 # 4. Conclusion
 
