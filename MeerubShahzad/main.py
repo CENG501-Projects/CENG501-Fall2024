@@ -244,8 +244,6 @@ plt.ylabel("Mean Anomaly Index")
 plt.title("Detecting Trojaned Models")
 plt.legend()
 plt.show()
-import numpy as np
-import matplotlib.pyplot as plt
 
 poisoning_rates = np.linspace(0, 0.12, 6)  
 ba_values = [] 
