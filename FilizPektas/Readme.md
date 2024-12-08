@@ -179,8 +179,7 @@ Other than these parts, paper was quite detailed and clear about its methods and
 ## **3.3. Result**
 We have conducted the LRW-Hard, LRW-Easy and LRW-Random calculations and compared them over ERM baseline. We have conducted the experiment on CIFAR-100 dataset with Wide-ResNet28-10 implementation that we have provided. Here is our resulting graph:
 
-![WhatsApp Görsel 2024-12-06 saat 17 26 11_4c083e49](https://github.com/user-attachments/assets/bb3f2099-3b83-4530-8d61-60646d8faf95)
-
+![CIFAR-100 Gains](https://github.com/user-attachments/assets/f6fdef3a-b743-4713-83dd-26a54df68554)
 
 
 ## **9.References**
