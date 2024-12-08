@@ -171,7 +171,7 @@ We tried to write the necessary code for substructure aggregation part. Attentio
 
 ## 3.3. Results
 
-@TODO: Present your results and compare them to the original paper. Please number your figures & tables as if this is a paper.
+No results yet.
 
 # 4. Conclusion
 
