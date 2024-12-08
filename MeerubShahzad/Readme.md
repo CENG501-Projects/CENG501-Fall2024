@@ -406,6 +406,22 @@ To resolve such matters, the anomaly indices require computation, all of which b
 
 <img width="414" alt="image" src="https://github.com/user-attachments/assets/51e56c89-e781-4fa0-b77d-a3b5c0679a13">
 
+## 8.6 Comparison of Results: Prediction Confidence and BA/ASR vs. Poisoning Rate
+
+In poisoning attacks, our results differ from the findings of the paper. While, in our visualization both BA and poisoning confidence drop and remain relatively low at intermediate poisoning rates (8–10%) before increasing partially, the paper shows BA to be consistently high (~85–90%) and ASR to quickly reach saturation (~95%). Further, our prediction confidence values range between 0.45 and 0.51, which are less, especially for poisoning confidence as compared to the paper where both benign confidence ~0.96 and poisoning confidence ~0.98 values are more stable.
+
+Such variations might be due to variations in model architecture, or in ways of computing corresponding metrics. Adapting the approach used by this paper may help in obtaining the results that align with papers result.
+
+Our Models Visulization:
+
+![image](https://github.com/user-attachments/assets/b6190ca3-6108-40d8-9291-0b350fc7ef11)
+
+Papers visualization:
+
+![image](https://github.com/user-attachments/assets/1b0163bc-688a-46ad-8809-a24db88af797)
+
+
+
 
 # 9. Conclusion
 
