@@ -87,20 +87,28 @@ Below are some of our interpretations about aspects that were unclear in the pap
 
 ## 3.1. Experimental setup
 
-Since the original paper didn’t provide setup details for the Sequential MNIST (sMNIST) task, we used the setup parameters of the Long Range Arena (LRA) Image task with the exception of batch size and number of epochs. The original paper’s setup for LRA tasks (including Image) are shown below:
-
+The original paper provides the following hyperparameters for the experimental setups for different Long Range Arena (LRA) tasks:
 
 
 <img width="900" alt="LRA parameters" src="https://github.com/user-attachments/assets/ad5f033b-7d65-49b5-af5a-d59dce0dd289">
 
-Here LR is learning rate and WD is weight decay. BN and LN refer to Batch Normalization and Layer Normalization.
+In the table, LR is learning rate and WD is weight decay. BN and LN refer to Batch Normalization and Layer Normalization, respectively.
 
-In the original paper, $\alpha_0$ ($\alpha$ value of the first attention head) is set to 0 and the rest of $\alpha_c$ is chosen to be exponential-uniformly distributed in the range [0, B]. We used the same configuration.
+The hyperparameters for the LaS attention are as follows:
 
-**Batch size:** Due to GPU RAM constraints, we reduced the batch size from 50 to 10.  
+**(i)** BBB, controlling alpha_c
 
-**Number of epochs:** We reduced the number of epochs due to time constraints. We did 2 experiments: (i) With the full sMNIST dataset and 2 epochs. (ii) With 1/20 of the sMNIST dataset and 80 epochs.
+**(ii)** the 1-D average pooling window size P
 
+The authors built their experiments upon the existing S4 repository. In all experiments, they used causal transformers with 8 heads, and aligned training procedures and hyperparameters with the S4 repository. In another words, they used the default hyperparameters used in the S4 repository for the ones that are not specified in the above table. Dropout was set to 0 in all cases.
+
+We ran our first experiment on Sequential MNIST (sMNIST); however, the paper does not provide setup details for this. For this reason, we used the setup parameters of the LRA Image task with the exception of batch size and number of epochs. We reduced the batch size to 10 to not exceed the Google Colab T4 GPU RAM. We also reduced the number of epochs due to limited runtime of Google Calob. Similar to the original paper, we built our code upon the existing S4 repository.
+
+We conducted two experiments:
+
+**(i)** First experiment uses the whole dataset and the model is trained for two epochs.
+
+**(ii)** Second experiment uses 1/10 of the dataset and the model is trained for 80 epochs.
 
 
 ## 3.2. Running the code
