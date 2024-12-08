@@ -2,7 +2,7 @@ import tomllib as toml
 import copy
 from pprint import pprint
 
-from __init__ import experiment_run
+from src.experiments.experiment_runner import experiment_run
 
 class Config:
     def __init__(self, input_dict) -> None:
@@ -13,7 +13,8 @@ class Config:
 
 
 def load_config(config_path):
-    config_toml = toml.load(config_path)
+    with open(config_path, "rb") as f:
+        config_toml = toml.load(f)
 
     assert config_toml["dataset"]["dataset"], "dataset.dataset cannot be None."
     assert config_toml["model"]["net"], "model.net cannot be None."
@@ -61,7 +62,7 @@ def enumerate_config(config):
     return dict_results
 
 if __name__ == "__main__":
-    config_dict_list, config_args_list = load_config("exp1_config.toml")
+    config_dict_list, config_args_list = load_config("src/experiments/exp1_config.toml")
 
     for config_dict, args in zip(config_dict_list, config_args_list):
         print("Running experiment with following config:")
