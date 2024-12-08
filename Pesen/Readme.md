@@ -131,14 +131,14 @@ This work implements and extends a pruning framework for convolutional neural ne
 #### Completed Experiments
 1. AlexNet on MNIST:
 We applied AFIE-guided pruning to AlexNet, pre-trained and fine-tuned on the MNIST dataset. The pruning effectively reduced model complexity while maintaining a satisfactory trade-off between compression and accuracy.
-- **Findings:** Pruning achieved a significant reduction in the number of parameters while maintaining high accuracy, making it suitable for lightweight applications.
+  - **Findings:** Pruning achieved a significant reduction in the number of parameters while maintaining high accuracy, making it suitable for lightweight applications.
 2. VGG-16 on CIFAR-10:
 Using VGG-16, we pruned filters while preserving performance on the CIFAR-10 dataset. Pruning ratios were dynamically allocated based on AFIE scores.
-- **Findings:** Despite being a larger network, VGG-16 demonstrated robustness under pruning, with modest accuracy degradation.
+  - **Findings:** Despite being a larger network, VGG-16 demonstrated robustness under pruning, with modest accuracy degradation.
 #### Ongoing Experiment
 3. ResNet-50 on ImageNet:
 Currently, we are training and pruning ResNet-50 on the ImageNet dataset. Due to the model's complexity and the dataset's size, training and fine-tuning remain ongoing. Results are expected to demonstrate how the pruning framework scales to larger models and datasets.
-- **Status:** Training completed for 50 epochs, with 150 epochs remaining. Results will be updated upon completion.  
+  - **Status:** Training completed for 50 epochs, with 150 epochs remaining. Results will be updated upon completion.  
 
 ## 3.1. Experimental setup
 #### Original Paper Setup
@@ -146,15 +146,15 @@ The original pruning framework was applied to standard convolutional neural netw
 #### Our Setup
 We extended the framework by testing on additional architectures and datasets:  
 1. AlexNet on MNIST:
-- Input size adjusted to 224×224 to accommodate the model architecture.
-- Training conducted with default hyperparameters and early stopping.
+  - Input size adjusted to 224×224 to accommodate the model architecture.
+  - Training conducted with default hyperparameters and early stopping.
 2. VGG-16 on CIFAR-10:
-- CIFAR-10 images were resized to match the input requirements of VGG-16.  
-- Augmentation and normalization followed standard practices for CIFAR-10.
+  - CIFAR-10 images were resized to match the input requirements of VGG-16.  
+  - Augmentation and normalization followed standard practices for CIFAR-10.
 3. ResNet-50 on ImageNet:
-- Implemented dynamic pruning ratios guided by AFIE scores.
-- Fine-tuning employs Adam optimizer with early stopping.
-- Training is conducted on 200 epochs (current status: 50 completed).
+  - Implemented dynamic pruning ratios guided by AFIE scores.
+  - Fine-tuning employs Adam optimizer with early stopping.
+  - Training is conducted on 200 epochs (current status: 50 completed).
 
 #### Adjustments:  
 Incorporated extensive error handling to address issues such as channel mismatches in BatchNorm layers and incompatibilities in model layers after pruning. Additionally, we updated the pruning process to include AFIE-based dynamic ratio allocation for better adaptability across layers.  
