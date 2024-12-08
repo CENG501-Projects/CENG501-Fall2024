@@ -205,15 +205,6 @@ This setup highlights the framework's adaptability to different models and datas
      - Learning rate, optimizer settings, or weight regularization might differ from the original paper. These factors could affect the balance of AFIE scores across layers.
   4. Pruning and Fine-tuning Dynamics:
      - If pruning ratios or AFIE thresholds are not tuned specifically for MNIST, deeper layers might retain unimportant filters longer, skewing AFIE distributions.
-     
-<p align="center">
-  <img src="figures/Table2_1stTrain.png" alt="AlexNet on MNIST" style="width: 70%;"><br>
-  <em>Figure 1: First Training: The evaluation of each convolutional layer for VGG-16 on CIFAR-10..</em>
-</p>
-<p align="center">
-  <img src="figures/Table2_2ndTrain.png" alt="AlexNet on MNIST" style="width: 70%;"><br>
-  <em>Figure 1: Second Training: The evaluation of each convolutional layer for VGG-16 on CIFAR-10..</em>
-</p>
 
 ### Recommendations for Refinement:
   1. Regularization Adjustments:
@@ -234,6 +225,15 @@ This setup highlights the framework's adaptability to different models and datas
   - Comparison to Original Paper:
     - The original paper reports better accuracy progression over epochs, even on CIFAR-10. The rapid decline in my results suggests either a training instability or improper data loading (e.g., class imbalance or corruption).
     - CIFAR-10's complexity (compared to MNIST) may have exposed hyperparameter or architectural inadequacies.
+     
+<p align="center">
+  <img src="figures/Table2_1stTrain.png" alt="AlexNet on MNIST" style="width: 70%;"><br>
+  <em>Figure 1: First Training: The evaluation of each convolutional layer for VGG-16 on CIFAR-10..</em>
+</p>
+<p align="center">
+  <img src="figures/Table2_2ndTrain.png" alt="AlexNet on MNIST" style="width: 70%;"><br>
+  <em>Figure 1: Second Training: The evaluation of each convolutional layer for VGG-16 on CIFAR-10..</em>
+</p>
 
 2. AFIE Progression Across Layers:
   - First Training:
