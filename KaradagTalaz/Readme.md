@@ -309,8 +309,14 @@ In the paper, experiments were performed on each branch of a two-branch network 
 ![Test F1 Score](figures/test_f1_score_exp1.png)
 *Figure 13: Test F1 Score Curve*
 
+![Training F1 Score](figures/training_accuracy_exp1.png)
+*Figure 14: Training Accuracy Curve*
+
+![Test F1 Score](figures/test_accuracy_exp1.png)
+*Figure 15: Test Accuracy Curve*
+
 ![Ablation Results](figures/ablation_study.png)
-*Figure 14: The ablation study stated in the paper*
+*Figure 16: The ablation study stated in the paper*
 
 
 When we compare the training and test results, it can be seen that there is a strong overfitting. The model may be memorizing because the training set is small. We think that this can be solved by data augmentation, but we did not apply it in the first experiment because it was not mentioned in the paper.
@@ -318,16 +324,16 @@ When we compare the training and test results, it can be seen that there is a st
 At the end of training, we tried the model we saved with some inputs we selected from the training and test set. The results are below.
 
 ![Inference I](figures/training_inference_exp1.png)
-*Figure 15: The prediction result of an positive image from training set. Left: original image, Middle: mask of image, Right: prediction of the model*
+*Figure 17: The prediction result of an positive image from training set. Left: original image, Middle: mask of image, Right: prediction of the model*
 
 ![Inference II](figures/training_inference2_exp1.png)
-*Figure 16: The prediction result of an negative image from training set. Left: original image, Middle: mask of image, Right: prediction of the model*
+*Figure 18: The prediction result of an negative image from training set. Left: original image, Middle: mask of image, Right: prediction of the model*
 
 ![Inference III](figures/test_inference1_exp1.png)
-*Figure 17: The prediction result of an positive image from test set. Left: original image, Middle: mask of image, Right: prediction of the model*
+*Figure 19: The prediction result of an positive image from test set. Left: original image, Middle: mask of image, Right: prediction of the model*
 
 ![Inference IV](figures/test_inference2_exp1.png)
-*Figure 18: The prediction result of an negative image from test set. Left: original image, Middle: mask of image, Right: prediction of the model*
+*Figure 20: The prediction result of an negative image from test set. Left: original image, Middle: mask of image, Right: prediction of the model*
 
 # 5. Conclusion
 
