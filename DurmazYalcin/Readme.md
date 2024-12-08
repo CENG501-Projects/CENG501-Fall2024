@@ -5,11 +5,9 @@ This readme file is an outcome of the [CENG501 (Spring 2024)](https://ceng.metu.
 # 1. Introduction
 An event-based camera is a new sensor modality that operates by detecting changes in log pixel intensity rather than capturing entire frames. When a change in log intensity occurs at any pixel, the camera reports the pixel’s coordinates, the polarity of the change (indicating whether the intensity increased or decreased), and the precise timestamp of the event as a tuple {x,y,t,p}. This unique approach enables the camera to achieve high temporal resolution, capturing rapid motion. It also delivers a high dynamic range, allowing it to perform effectively in scenes with extreme lighting contrasts. Furthermore, its design significantly reduces power consumption, making it an energy-efficient alternative to traditional frame-based imaging systems.
 
-
-<p float="left">
-  <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/MVSEC_indoor_flying1.gif" width="100%" />
-  <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/output.gif" width="100%" />
-</p>
+<div align="center">
+  <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/output.gif" alt="description" width="80%">
+</div>
 
 The gifs above depicts traditional image frames on the left, while the middle panels shows accumulated events over time, MVSEC on the top, and the DSEC at the bottom. In the middle panel, blue represents positive polarity (increased intensity), and red represents negative polarity (decreased intensity). The rightmost panel, on the other hand, illustrates the optical flow.
 
@@ -20,7 +18,10 @@ A few attempts have been made to estimate optical flow from event streams using 
 
 ## 1.1. Paper summary
 [Adaptive Neural Spike Net](https://ieeexplore.ieee.org/document/5118217) introduces a U-Net architecture designed to estimate optical flow from event data. It incorporates a spiking neural network (SNN) to capture the high temporal resolution of events. The SNN is built using Integrate-and-Fire (IF) neurons, which will be explained in detail. The proposed framework is depicted in the illustration below.
-![Network](https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/SpikeNetwork.png)
+
+<div align="center">
+  <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/SpikeNetwork.png" alt="description" width="80%">
+</div>
 
 The figure above shows a hybrid model that combines artificial neural networks (ANNs) and spiking neural networks (SNNs). SNNs are used for the encoders, while the rest of the network relies on traditional ANNs.
 
@@ -51,6 +52,9 @@ As highlighted in the original paper, specialized hardware designed for spiking 
 ### Input Representation
 One of the challenges for working with event camera is the input representation. Contrary to traditional image frames, events arrive sparsly. Hence, it is a question mark how to feed the events into a network while conserving the temporal resolution of the events. C
 
+<div align="center">
+  <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/InputFormat.png" alt="description" width="500">
+</div>
 
 ## Loss Function
 Adaptive-SpikeNet employs two distinct loss paradigms—**supervised loss** and **self-supervised loss**—depending on the availability of labeled optical flow datasets. Below is a detailed explanation of how these approaches are utilized:
