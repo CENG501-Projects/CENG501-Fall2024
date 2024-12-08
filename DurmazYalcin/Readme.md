@@ -126,7 +126,7 @@ The network employs a straightforward U-Net architecture, which has many similar
 
 ### Input Representation and Scaled Flows
 #### Visualization of Input Fromat
-Assume that we desire to estimate the optical flow at time instant $t_k$. We determine the time window as $100 \: msec$. Then, we create the bins and visualize them in order to verify the implementation.
+Assume that we desire to estimate the optical flow at time instant $t_k$. We determine the half window size as $100$ msec. Then, we create the bins between time interval $(t_k-100,t_k+100)$ and visualize them in order to verify the implementation.
 
 #### Scaled Flows
 When backpropagation is applied at four different scales of optical flow, we adjust the motion values (optical flow) for each scale. For example, if an image is resized to be twice as large, the motion of each pixel also doubles. To ensure the motion stays accurate, we scale the optical flow values to match the size of the image at each scale. This way, the optical flow at each scale correctly represents the motion for that specific scale.
@@ -184,8 +184,27 @@ $$
 # 3. Experiments and results
 
 ## 3.1. Experimental setup
+For the primal tests, we use the [DSEC](https://dsec.ifi.uzh.ch/) dataset because it provides highly accurate groundtruth data. However, not all sequences in the [DSEC](https://dsec.ifi.uzh.ch/) dataset include groundtruth optical flow. Therefore, we download and utilize only the sequences that contain groundtruth. Please organize the folder structure as follows:
+```
+- path_to_dataset
+  - thun_00_a
+  - zurich_city_01_a
+  - zurich_city_02_a
+    zurich_city_02_a_optical_flow_forward_timestamps.txt
+    - zurich_city_02_a_events_left
+      events.h5
+      rectify_map.h5
+    - zurich_city_02_a_optical_flow_forward_event
+      <flow_name_0>.png
+      <flow_name_1>.png
+      <flow_name_1>.png
+      ...
+  - zurich_city_02_c
+  - zurich_city_02_d
+  ...
+```
 
-@TODO: Describe the setup of the original paper and whether you changed any settings.
+During training, it is necessary to sort the corresponding frames for each optical flow groundtruth. However, this sorting process is time-consuming and is repeated for every training epoch. To reduce the training time, pre-sorting the relevant events and saving them in a separate folder can significantly reduce training time. By doing this, we can directly load the relevant events from the pre-sorted files, eliminating the need for repeated sorting during each epoch. 
 
 ## 3.2. Running the code
 
