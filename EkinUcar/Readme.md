@@ -113,9 +113,26 @@ In the original paper, $\alpha_0$ ($\alpha$ value of the first attention head) i
 
 **2nd Experiment (1/20 sMNIST Datase and 80 Epochs):**
 
-<img width="700" alt="Train_loss_80_epochs" src="https://github.com/user-attachments/assets/08ec1f66-8e95-4031-81f7-0857b5b0222b">
+Figure 1: Train loss for small sMNIST 
+<img width="450" alt="Train_loss_80_epochs" src="https://github.com/user-attachments/assets/08ec1f66-8e95-4031-81f7-0857b5b0222b">
 
-<img width="700" alt="Validation_loss_80_epochs" src="https://github.com/user-attachments/assets/c539fd73-ecc6-4033-bd3f-077d4c91b46d">
+Figure 2: Validation loss for small sMNIST
+<img width="450" alt="Validation_loss_80_epochs" src="https://github.com/user-attachments/assets/c539fd73-ecc6-4033-bd3f-077d4c91b46d">
+
+Figure 3: Training and validation accuracies
+|                     | sMNIST | pMNIST |
+|---------------------|--------|--------|
+| **Attention-Based Models** |        |        |
+| Transformer         | 98.90  | 97.90  |
+| **LaS (ours)**      | **99.18** | **98.05** |
+| **Non Attention-Based Models** |        |        |
+| LSTM               | 98.90  | 95.11  |
+| **S4**             | **99.63** | **98.70** |
+
+
+Fİgure 4: Original paper's accuracy results
+<img width="169" alt="Papers_MNIST_results" src="https://github.com/user-attachments/assets/ad2ce844-7860-4b1b-9871-3cfcb8541344">
+
 
 
 # 4. Conclusion
