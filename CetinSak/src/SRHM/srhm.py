@@ -7,17 +7,23 @@ from itertools import *
 import random
 import numpy as np
 
+from src.SRHM.sparsity_utils import *
+from src.utils.utils import *
+
 class SparseRandomHierarchyModel(Dataset):
     """
     Implement the Sparse Random Hierarchy Model (SRHM) as a PyTorch dataset.
     """
 
-    def __init__(self,
+    def __init__(
+            self,
             num_features=8,
             m=2,  # features multiplicity
             num_layers=2,
             num_classes=2,
             s=2,
+            s0 =1,
+            sparsity_type='a',
             seed=0,
             max_dataset_size=None,
             seed_traintest_split=0,
@@ -27,56 +33,101 @@ class SparseRandomHierarchyModel(Dataset):
             transform=None,
             testsize=-1,
             seed_reset_layer=42,):
-        pass
+        
+        torch.manual_seed(seed)
+        self.num_features = num_features
+        self.m = m
+        self.num_layers = num_layers
+        self.num_classes = num_classes
+        self.s = s
+        self.s0 = s0
+        self.seed = seed
+        self.max_dataset_size = max_dataset_size
+        self.seed_traintest_split = seed_traintest_split
+        self.train = train
+        self.input_format = input_format
+        self.whitening = whitening
+        self.transform = transform
+        self.testsize = testsize
+        self.seed_reset_layer = seed_reset_layer
+        
+        ## Set sparsity functions
+        if sparsity_type == 'a':
+            print("SRHM: Using sparsity type A")
+            self.sample_hierarchical_rules = sample_hierarchical_rules_type_a
+        elif sparsity_type == 'b':
+            print("SRHM: Using sparsity type B")
+            self.sample_hierarchical_rules = sample_hierarchical_rules_type_b
+        ## Many other sparsity strategies here...
+        else:
+            raise ValueError("Sparsity type not recognized")
 
-    def sample_hierarchical_rules():
-        """
-        Build hierarchy of features.
-        :param num_features: number of features to choose from at each layer (short: `n`).
-        :param num_layers: number of layers in the hierarchy (short: `l`)
-        :param m: features multiplicity (number of ways in which a feature can be made from sub-feat.)
-        :param num_classes: number of different classes
-        :param s: sub-features tuple size
-        :param seed: sampling sub-features seed
-        :return: features hierarchy as a list of length num_layers.
-                Each layer contains all paths going from label to layer.
-        """
-        random.seed(seed)
-        all_levels_paths = [torch.arange(num_classes)]
-        all_levels_tuples = []
-        for l in range(num_layers):
-            old_paths = all_levels_paths[-1].flatten()
-            # unique features in the previous level
-            old_features = list(set([i.item() for i in old_paths]))
-            num_old_features = len(old_features)
-            # new_features = list(combinations(range(num_features), 2))
-            # generate all possible new features at this level
-            new_tuples = list(product(*[range(num_features) for _ in range(s)]))
-            assert (
-                    len(new_tuples) >= m * num_old_features
-            ), "Not enough features to choose from!!"
-            random.shuffle(new_tuples)
-            # samples as much as needed
-            new_tuples = new_tuples[: m * num_old_features]
-            new_tuples = list(sum(new_tuples, ()))  # tuples to list
+        self.sample_data_from_paths = sample_data_from_paths
+        
+        ## Generate the dataset
+        paths, _ = self.sample_hierarchical_rules(
+            self.num_features, self.num_layers, self.m, self.num_classes, self.s, self.s0, self.seed
+        )
 
-            new_tuples = torch.tensor(new_tuples)
+        ## Check Pmax calculation.
+        Pmax = self.m ** ((self.s ** self.num_layers - 1) // (self.s - 1)) * self.num_classes
+        assert Pmax < 1e19 
+        if max_dataset_size is None or max_dataset_size > Pmax:
+            max_dataset_size = Pmax
+        if testsize == -1:
+            testsize = min(max_dataset_size // 5, 20000)
 
-            new_tuples = new_tuples.reshape(-1, m, s)  # [n_features l-1, m, 2]
+        g = torch.Generator()
+        g.manual_seed(seed_traintest_split)
 
-            # next two lines needed because not all features are necessarily samples in previous level
-            old_feature_to_index = dict([(e, i) for i, e in enumerate(old_features)])
-            old_paths_indices = [old_feature_to_index[f.item()] for f in old_paths]
 
-            new_paths = new_tuples[old_paths_indices]
+        if Pmax < 5e6:  # there is a crossover in computational time of the two sampling methods around this value of Pmax
+            samples_indices = torch.randperm(Pmax, generator=g)[:max_dataset_size]
+        else:
+            samples_indices = torch.randint(Pmax, (2 * max_dataset_size,), generator=g)
+            samples_indices = torch.unique(samples_indices)
+            perm = torch.randperm(len(samples_indices), generator=g)[:max_dataset_size]
+            samples_indices = samples_indices[perm]
 
-            all_levels_tuples.append(new_tuples)
-            all_levels_paths.append(new_paths)
+        if train and testsize:
+            samples_indices = samples_indices[:-testsize]
+        else:
+            samples_indices = samples_indices[-testsize:]
 
-        return all_levels_paths, all_levels_tuples
+        self.x, self.targets = self.sample_data_from_paths(
+            samples_indices, paths, m, num_classes, num_layers, s, s0=s0, seed=seed, seed_reset_layer=seed_reset_layer
+        )
+        
 
-    def sample_data_from_paths():
-        pass
+        # encode input pairs instead of features
+        if "pairs" in input_format:
+            self.x = pairing_features(self.x, num_features)
+
+        if 'onehot' not in input_format:
+            assert not whitening, "Whitening only implemented for one-hot encoding"
+
+        if "binary" in input_format:
+            self.x = dec2bin(self.x)
+            self.x = self.x.permute(0, 2, 1)
+        elif "long" in input_format:
+            self.x = self.x.long() + 1
+        elif "decimal" in input_format:
+            self.x = ((self.x[:, None] + 1) / num_features - 1) * 2
+        elif "onehot" in input_format:
+            self.x = F.one_hot(
+                self.x.long(),
+                num_classes=num_features if 'pairs' not in input_format else num_features ** 2
+            ).float()
+            self.x = self.x.permute(0, 2, 1)
+
+            if whitening:
+                inv_sqrt_n = (num_features - 1) ** -.5
+                self.x = self.x * (1 + inv_sqrt_n) - inv_sqrt_n
+
+        else:
+            raise ValueError
+
+        self.transform = transform
 
     def __len__(self):
         return len(self.targets)
