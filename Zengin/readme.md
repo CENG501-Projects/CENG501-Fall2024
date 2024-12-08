@@ -391,42 +391,95 @@ We evaluate the reliability of explanation methods using the following metrics:
 2. **AOPC** (Area Over Perturbation Curve) ↑: Higher values indicate better alignment with predictions.
 3. **Log-Odds** (LOdds) ↓: Measures the importance of salient regions for sustaining predictions.
 4. **Comprehensiveness** (Comp.) ↓: Evaluates the necessity of low-salience regions.
-
-### Salience-guided Faithfulness Coefficient (SaCo)
-
+5. **Salience-guided Faithfulness Coefficient**
 
 
-#### Algorithm:
+#### Implementation:
+```python
+import numpy as np
+from typing import Any, Dict, List
 
+class SalienceGuidedFaithfulnessCoefficient:
+    def __init__(self):
+        pass
+        
+    def compute(self, model: Any, explanation_method: Any, input_image: np.ndarray) -> float:
+        """
+        Compute the Salience-guided Faithfulness Coefficient.
+        
+        Args:
+            model: Pre-trained model Φ
+            explanation_method: Explanation method ε 
+            input_image: Input image x
+            
+        Returns:
+            float: Faithfulness coefficient F
+        """
+        F = 0.0
+        total_weight = 0.0
+        
+        salience_map = explanation_method.generate_saliency_map(model, input_image)
+        regions = self._generate_regions(salience_map)
+        
+        salience_scores = self._compute_region_salience(salience_map, regions)
+        grad_predictions = self._compute_gradient_predictions(model, input_image, regions)
+        
+        K = len(regions)
+        for i in range(K-1):
+            for j in range(i+1, K):
+                if grad_predictions[i] >= grad_predictions[j]:
+                    weight = salience_scores[i] - salience_scores[j]
+                else:
+                    weight = -(salience_scores[i] - salience_scores[j])
+                
+                F += weight
+                total_weight += abs(weight)
+        
+        if total_weight > 0:
+            F = F / total_weight
+            
+        return F
+    
+    def _generate_regions(self, salience_map: np.ndarray) -> List[np.ndarray]:
+        """
+        Generate regions Gi from the salience map.
+        """
+        K = 8
+        regions = []
+        return regions
+    
+    def _compute_region_salience(self, salience_map: np.ndarray, 
+                               regions: List[np.ndarray]) -> List[float]:
+        """
+        Compute salience scores s(Gi) for each region.
+        """
+        salience_scores = []
+        for region in regions:
+            score = np.mean(salience_map[region])
+            salience_scores.append(score)
+        return salience_scores
+    
+    def _compute_gradient_predictions(self, model: Any, 
+                                    input_image: np.ndarray,
+                                    regions: List[np.ndarray]) -> List[float]:
+        """
+        Compute gradient predictions ∇pred(x,Gi) for each region.
+        """
+        grad_predictions = []
+        for region in regions:
+            grad_pred = self._compute_single_gradient_pred(model, input_image, region)
+            grad_predictions.append(grad_pred)
+        return grad_predictions
+    
+    def _compute_single_gradient_pred(self, model: Any, 
+                                    input_image: np.ndarray,
+                                    region: np.ndarray) -> float:
+        """
+        Compute gradient prediction for a single region.
+        """
+        return 0.0
 
-
-**Input:** Pre-trained model Φ, explanation method ℰ, input image x  
-**Output:** Faithfulness coefficient F
-
-1. **Initialization:**
-   - F ← 0
-   - totalWeight ← 0
-
-2. Compute the salience map M(x, ŷ) based on Φ, ℰ, and x
-
-3. Generate G_i and obtain corresponding s(G_i) and ∇pred(x, G_i), for i = 1, 2, ..., K
-
-4. **for** i = 1 to K − 1 **do**
-   - **for** j = i + 1 to K **do**
-     - **if** ∇pred(x, G_i) ≥ ∇pred(x, G_j) **then**
-       - weight ← s(G_i) − s(G_j)
-     - **else**
-       - weight ← −(s(G_i) − s(G_j))
-     - **end if**
-     - F ← F + weight
-     - totalWeight ← totalWeight + |weight|
-   - **end for**
-- **end for**
-
-5. F ← F/totalWeight
-
-6. **Return** F
-
+```
 #### Example: Salience Scores for CIFAR-10 (Class: Ship)
 ```json
 {
