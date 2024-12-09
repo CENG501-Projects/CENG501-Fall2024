@@ -218,7 +218,9 @@ Figure 3: Validation of assumptions on the toy model of learning a single attent
 ViT, ImageNet (d) GPT-2, Wikitext-103
 
 ![image](https://github.com/user-attachments/assets/6711ba82-448b-494f-8530-89eee3c7c702)
-
+a)CIFAR10
+![image](https://github.com/user-attachments/assets/7b961fe1-55d7-4c1b-af51-5fe02ba7bcb5)
+b)CIFAR100
 Figure 4: Stable rank of $∆W_KW^⊤_Q$ (blue) and $∆W_V W^⊤_O$
 (orange) on an arbitrary chosen layer
 throughout training for four different pairs of networks and tasks. The stable rank of a matrix W
