@@ -146,7 +146,7 @@ The effectiveness of the five given CLEF-based methods are compared against exis
 @TODO: Explain your code & directory structure and how other people can run it.
 
 ## 3.3. Results
-We have implemented the CLEF architecture and begun our initial experiments. As a starting point, we integrated an existing implementation of the CAER-Net model [REF] as the factual branch of our framework. For the non-invasive context branch, we utilized ResNet152. The primary goal of these initial experiments is to verify the correctness of our interpretation of the framework.
+We have implemented the CLEF architecture and begun our initial experiments. As a starting point, we integrated an existing implementation of the CAER-Net model [15] as the factual branch of our framework. For the non-invasive context branch, we utilized ResNet152. The primary goal of these initial experiments is to verify the correctness of our interpretation of the framework.
 Looking ahead, we plan to incorporate public implementations of additional CAER models, as well as develop our implementations from scratch. We also aim to compare the performance of pre-trained versions of these models -if they exist- against versions we train ourselves.
 <p align="center"> <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/GoksenKaratas/images/Figure1.png" alt="Plots" width="800"> 
   
@@ -196,6 +196,8 @@ Analyzing the results, we observe that the implemented architecture is learning.
 [13] DingkangYang,ShuaiHuang,ShunliWang,YangLiu,Peng Zhai, Liuzhen Su, Mingcheng Li, and Lihua Zhang. Emotion recognition for multiple context awareness. In Proceedings of the European Conference on Computer Vision (ECCV), pages 144–162, 2022. 2, 3, 6, 7
 
 [14] Qinquan Gao, Hanxin Zeng, Gen Li, and Tong Tong. Graph reasoning-based emotion recognition network. IEEE Access, 9:6488–6497, 2021. 2, 3, 6, 7
+
+[15] https://github.com/ndkhanh360/CAER
 
 # Contact
 
