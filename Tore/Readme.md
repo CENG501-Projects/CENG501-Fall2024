@@ -206,12 +206,13 @@ For running the code in Results.jpynb you need to download the dataset in the fi
 
 Figure 1: For an attention head in ViT trained on (a) CIFAR-10, we plot the normalized spectra of $W_KW^⊤_Q$ at initialization (in red), and of the learned perturbations to WKW⊤ Q at different iterations (in green).
 
-![image](https://github.com/user-attachments/assets/ca8c7793-d5fd-4032-a18c-256d7a1abfd6)
-![image](https://github.com/user-attachments/assets/e107d933-225e-4e58-951a-abb5f16751fb)
+![image](https://github.com/user-attachments/assets/14d07de2-aa95-45ff-9d89-7cf004201116)
+![image](https://github.com/user-attachments/assets/92e57351-e812-4cba-b4a1-454b48bcd7d4)
 
 Figure 2: (a) Loss versus rescaled time in the toy task of learning an attention head with diagonal weights, for various initialization scales α. The loss curves converge as α → 0 to a curve with stagewise loss plateaus and sharp decreases, as predicted by the theory; some stagewise learning behavior is already clear with α = 0.01. (b) Each line shows the evolution of one of the entries of diag(wQ)diag(wK) and diag(wV )diag(wO) over rescaled time, demonst
 
-![image](https://github.com/user-attachments/assets/b43e744a-65c4-42a9-9d54-3968f2a9f5b5)
+![image](https://github.com/user-attachments/assets/4b6fbbd2-33d2-4782-b1c5-99c87f898296)
+
 
 Figure 3: Validation of assumptions on the toy model of learning a single attention head. (a) Assumption 4.4: weights perturbed at a random time during training (solid lines) tend back to the near-stationary point (dashed lines). (b) Assumption 4.5: weights perturbed at the beginning of a stage (solid lines) have same nonlinear evolution a
 ViT, ImageNet (d) GPT-2, Wikitext-103
