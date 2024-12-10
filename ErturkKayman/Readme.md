@@ -140,7 +140,17 @@ In MonoATT, GUPNet is used as a monocular 3D object detector.
 
 ## 2.2. Our interpretation
 
-@TODO: Explain the parts that were not clearly explained in the original paper and how you interpreted them.
+The paper provides a new perspective for vision transformers. Especially, by introducing some new learnable concepts, they further increase the capabilities of a vision transformer model. However, some points are unclear in the paper. 
+
+While extracting the feature map, s-factor is unclear. The writers have used 5 as s-factor in their previous paper. However, we did not implement the exact backbone in the paper yet. We have used ResNet-34 for simplicity. In the future, we will try different s-factor values for feature extraction. 
+
+In the cluster center estimation part,it is not clear which CNN architecture is used for semantic scoring. It is only mentioned that it is a regression branch from CenterNet. Currently, we did not have time to try different CNN architectures. We currently use a simple KMeans algorithm for cluster center estimation.
+
+In the Adaptive Token Transformer part, the number of loops N is unclear. After some research and trials, we have decided to make it generic so that we loop until all tokens are aggregated. 
+
+In the Outline-preferred Token Grouping part, hyperparameter B is unclear. We still could not decide the B value exactly. 
+
+In Multi-stage Feature Reconstruction part, the number of loops N is unclear. We implemented MFR as it aggregates all tokens in a single step for now.
 
 # 3. Experiments and results
 
