@@ -62,7 +62,7 @@ def enumerate_config(config):
     return dict_results
 
 if __name__ == "__main__":
-    config_dict_list, config_args_list = load_config("src/experiments/exp1_config.toml")
+    config_dict_list, config_args_list = load_config("src/experiments/exp1a_config.toml")
 
     for config_dict, args in zip(config_dict_list, config_args_list):
         print("Running experiment with following config:")

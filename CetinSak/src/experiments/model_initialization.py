@@ -32,7 +32,7 @@ def model_initialization(args, input_dim, ch):
             num_layers=args.net_layers,
             input_channels=ch,
             h=args.width,
-            # filter_size=args.filter_size,
+            filter_size=args.filter_size,
             out_dim=num_outputs,
             bias=args.bias,
         )
@@ -54,8 +54,8 @@ def model_initialization(args, input_dim, ch):
 
     net = net.to(args.device)
 
-    # if args.device == "cuda":
-    #     net = torch.nn.DataParallel(net)
-    #     cudnn.benchmark = True
+    if args.device == "cuda":
+        net = torch.nn.DataParallel(net)
+        cudnn.benchmark = True
 
     return net
