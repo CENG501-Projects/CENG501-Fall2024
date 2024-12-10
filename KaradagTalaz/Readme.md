@@ -198,7 +198,13 @@ In an $8×8$ block of DCT coefficients, each position corresponds to a specific 
 ## 3.2 Our Interpretation
 While reading this paper we encountered a number of image processing and compression concepts that we were not familiar with. Assuming that the reader may also be unfamiliar with these concepts, we wanted to provide a brief explanation of these concepts. 
 
-## 3.2.1 JPEG Compression
+### 3.2.1 Upscaling Prediction Resolution
+In the proposed architecture, the RGB stream produces feature maps with dimensions (H/4, W/4), where H and W represent the input image's height and width, respectively. While generating the final segmentation map requires matching the output dimensions to the input dimensions, the authors did not explicitly detail their upsampling methodology. To address this dimensional discrepancy, we implemented bilinear interpolation to upsample the RGB stream's heatmap to match the original input resolution.
+
+### 3.2.2 Image-level Classification of Predictions
+The authors did not explicitly describe their approach for image-level classification, which is necessary for computing image-level accuracy metrics. In our implementation, we adopted a binary classification strategy wherein an image is categorized as manipulated if any pixel in the prediction map exceeds a threshold probability of 50%, indicating potential manipulation.
+
+### 3.2.3 JPEG Compression
 JPEG compression is a lossy compression method that reduces image file size by selectively discarding visual information that is less noticeable to human perception. This trade-off between file size and image quality allows for significant storage savings at the cost of some visual degradation, where the amount of quality loss can be controlled through compression parameters. The process involves several steps:
 
 1. Color Space Conversion:
@@ -232,7 +238,7 @@ JPEG compression is a lossy compression method that reduces image file size by s
 ![JPEG Compression](figures/JPEG_Compression.png)
 *Figure 9: JPEG Compression Process. (Source: [Ri et al., 2020](https://doi.org/10.1007/s40799-019-00358-4))* 
 
-### 3.2.2 JPEG Compression Concepts
+### 3.2.4 JPEG Compression Concepts
 
 1. DCT Coefficients:
    - JPEG compression converts image blocks into frequency domain using Discrete Cosine Transform
