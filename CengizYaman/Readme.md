@@ -134,6 +134,9 @@ For ImageNet experiments, 10 random classes of ImageNet is used as ID dataset, a
 
 **Table 1**: Validation Results and Original Results on iSUN OOD Dataset
 
+- **Discussion of Our Results**
+There is a significant deviation between our results and the original results. The main reason behind this could be the number of epochs and the initial learning rate. Although training loss was decreasing and validation accuracy was increasing, we finished training at epoch 20 to follow the experimental setup specified in the paper. In addition, we couldn't use the original initial learning rate (lr = 1.0), as we got NaN loss values for each epoch.
+
 # 4. Conclusion
 
 @TODO: Discuss the paper in relation to the results in the paper and your results.
