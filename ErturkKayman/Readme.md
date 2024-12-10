@@ -164,7 +164,23 @@ In Multi-stage Feature Reconstruction part, the number of loops N is unclear. We
 
 ## 3.3. Results
 
-@TODO: Present your results and compare them to the original paper. Please number your figures & tables as if this is a paper.
+We have obtained the depthmap images created by the network. 
+
+They do not look right at all. We are working on it.
+![image](https://github.com/user-attachments/assets/6bb8b8db-ea88-405f-ac78-2c90cf916da0)
+
+![image](https://github.com/user-attachments/assets/979e8737-cb10-4e15-a5ed-c54292d51b2e)
+
+
+We have calculated the precision-recall graph. KITTI dataset 3D benchmark is tested on AP40 values on IOU 0.7. However, it looks like our network could not predict a single car correctly. Hence, precision recall curves look as follows. 
+
+![car_detection_3D_AP](https://github.com/user-attachments/assets/57e3a035-8c28-432e-8165-3f7f765b8f99)
+
+Expected AP40 values for different datasets from the original implementations are,
+
+![image](https://github.com/user-attachments/assets/0ea9c088-07e2-40e9-885b-3b3ff3b226bb)
+
+
 
 # 4. Conclusion
 
