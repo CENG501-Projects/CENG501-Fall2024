@@ -1,0 +1,51 @@
+diff --git a/tools/demo.py b/tools/demo.py
+index b16598d..675c563 100644
+--- a/tools/demo.py
++++ b/tools/demo.py
+@@ -50,7 +50,7 @@ def make_parser():
+         "--device",
+         default="cpu",
+         type=str,
+-        help="device to run our model, can either be cpu or gpu",
++        help="device to run our model, can either be cpu or gpu or mps",
+     )
+     parser.add_argument("--conf", default=0.3, type=float, help="test conf")
+     parser.add_argument("--nms", default=0.3, type=float, help="test nms threshold")
+@@ -152,6 +152,8 @@ class Predictor(object):
+             img = img.cuda()
+             if self.fp16:
+                 img = img.half()  # to FP16
++        elif self.device == "mps":
++            img = img.to(torch.device("mps"))
+ 
+         with torch.no_grad():
+             t0 = time.time()
+@@ -272,6 +274,8 @@ def main(exp, args):
+         model.cuda()
+         if args.fp16:
+             model.half()  # to FP16
++    elif args.device == "mps":
++        model.to(torch.device("mps"))
+     model.eval()
+ 
+     if not args.trt:
+diff --git a/yolox/models/yolo_head.py b/yolox/models/yolo_head.py
+index 3e51768..ab3a49e 100644
+--- a/yolox/models/yolo_head.py
++++ b/yolox/models/yolo_head.py
+@@ -242,8 +242,13 @@ class YOLOXHead(nn.Module):
+             shape = grid.shape[:2]
+             strides.append(torch.full((*shape, 1), stride))
+ 
+-        grids = torch.cat(grids, dim=1).type(dtype)
+-        strides = torch.cat(strides, dim=1).type(dtype)
++        if dtype.startswith("torch.mps"):
++            grids = torch.cat(grids, dim=1).to("cpu")
++            strides = torch.cat(strides, dim=1).to("cpu")
++            outputs = outputs.to("cpu")
++        else:
++            grids = torch.cat(grids, dim=1).type(dtype)
++            strides = torch.cat(strides, dim=1).type(dtype)
+ 
+         outputs = torch.cat([
+             (outputs[..., 0:2] + grids) * strides,
