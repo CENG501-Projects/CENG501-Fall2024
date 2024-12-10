@@ -39,7 +39,10 @@ The RCM architecture comprises four main modules.
 In this section, we will provide a detailed explanation of the four key modules that make up the proposed approach. Each module plays a crucial role in ensuring conflict-free local feature matching with dynamic view switching. Each module's functionality, design, and implementation will be discussed comprehensively to provide a clear understanding of how they contribute to the overall system's effectiveness.
 
 #### 2.1.1. **U-Net Feature Extraction**: 
-Extends a VGG-style encoder from SuperPoint [2] to generate fine features (used in RCM and RCMLite variants).
+
+In the paper, it was mentioned that a VGG encoder similar to the one used in SuperPoint was employed.
+
+
 #### 2.1.2. **View Switching**: 
 The View Switching Module is one of the core innovations of RCM, designed to dynamically adjust the roles of source and target images based on their scale differences. By detecting and addressing scale variations between image pairs, this module ensures that the larger-scale image is designated as the source, maximizing the number of matchable points and significantly improving the overall matching accuracy.
 
@@ -157,6 +160,66 @@ The **Fine Matching Module** is the final stage in RCM that refines the coarse m
 4. **Enhanced Downstream Task Performance:**
    - The refined matches are used in downstream tasks like **pose estimation** and **3D reconstruction**, significantly improving the performance of these tasks by providing high-quality keypoint correspondences.
 
+---
+
+#### **Supervision in the Paper**
+
+The supervision loss in the paper consists of four components, each targeting a specific aspect of the matching process:
+
+
+
+##### **1. Coarse Matching Loss (\(L_c^m\))**
+- **Purpose**: Optimizes the coarse matching step by maximizing the probability of correct matches.
+- **Formula**:
+  \[
+  L_c^m = - \frac{1}{|M_{gt}|} \sum_{(i, j) \in M_{gt}} \log P_c(i, j)
+  \]
+  - \(M_{gt}\): Ground-truth matches.
+  - \(P_c(i, j)\): Matching probability for a pair of points.
+
+
+
+##### **2. Dustbin Loss (\(L_c^d\))**
+- **Purpose**: Handles non-matchable sparse features by assigning them to a "dustbin."
+- **Formula**:
+  \[
+  L_c^d = - \frac{1}{|U_{gt}|} \sum_{i \in U_{gt}} \log P_c(i, \text{dustbin})
+  \]
+  - \(U_{gt}\): Non-matchable sparse features.
+
+
+
+##### **3. Fine Matching Loss (\(L_f\))**
+- **Purpose**: Refines the match positions during fine matching to be closer to ground-truth positions.
+- **Formula**:
+  \[
+  L_f = \frac{1}{|K|} \sum_{k=1}^{K} \|p_{refined}^k - p_{gt}^k\|_2^2
+  \]
+  - \(p_{refined}\): Refined positions.
+  - \(p_{gt}\): Ground-truth positions.
+  - \(K\): Number of matches.
+
+
+
+##### **4. View Switcher Loss (\(L_{vs}\))**
+- **Purpose**: Ensures the view switcher correctly identifies whether to swap the source and target images.
+- **Formula**:
+  \[
+  L_{vs} = - \left[y_{vs} \log \sigma(v_{pred}) + (1 - y_{vs}) \log (1 - \sigma(v_{pred}))\right]
+  \]
+  - \(v_{pred}\): Predicted logits for view switching.
+  - \(y_{vs}\): Ground-truth label.
+
+
+
+##### **Combined Loss**
+The total supervision loss is the sum of all components:
+\[
+L_{total} = L_c^m + L_c^d + L_f + L_{vs}
+\]
+
+This structure allows the model to optimize global alignment, precise local matches, and adapt to scale variations effectively.
+
 
 ### Parameters
 
@@ -180,7 +243,115 @@ The **Fine Matching Module** is the final stage in RCM that refines the coarse m
 
 ## 2.2. Our interpretation
 
-@TODO: Explain the parts that were not clearly explained in the original paper and how you interpreted them.
+### 2.2.1 U-Net Feature Extraction
+
+The paper did not provide specific implementation details. Therefore, the VGG-based encoder architecture from SuperPoint was analyzed and implemented as the encoder for this project. Subsequently, to construct a U-Net architecture as depicted in the figure, a U-Net decoder was integrated with the encoder. Although Batch Normalization was not used in Superpoint, it is used because it was in the U-Net architecture.
+
+![U-Net Architecture](imgs/unet.png)
+
+**Generating and Combining Feature Maps:**
+The paper does not specify how multi-resolution feature maps from the U-Net architecture (1/2, 1/4, 1/8, and 1/16 scales) should be merged. To address this ambiguity, the following approach was implemented to create a unified representation:
+
+**For Coarse Features:**
+The encoder and decoder layers generate feature maps at four different resolutions, with the following dimensions:
+
+a: 128x108x108
+b: 128x216x216
+c: 64x432x432
+d: 64x864x864
+These feature maps are processed as follows:
+
+Upsampling: Lower-resolution feature maps are upsampled to match the highest resolution (64x864x864) using bilinear interpolation.
+Pooling: Higher-resolution feature maps are downsampled to match the desired resolution through average pooling.
+Concatenation: After alignment, all feature maps are concatenated along the channel dimension to produce a coarse feature map with dimensions 256x864x864.
+**For Fine Features:**
+Fine features are derived directly from the final layer of the U-Net decoder.
+
+This map is retained at its original resolution of 64x864x864, ensuring high-detail information is preserved for fine matching tasks.
+Rationale Behind the Process:
+This methodology is designed to ensure optimal information density for both coarse and fine matching stages:
+
+Coarse Features: Aim to capture broad context and relationships with a dense representation that spans a large receptive field.
+Fine Features: Retain high-resolution details crucial for precision during fine matching tasks.
+This feature extraction and merging process fills in the gaps left by the paper regarding multi-resolution combination and ensures efficient transfer of information to the subsequent modules.
+
+
+### 2.2.2 View Switching Module
+**Implementation of CNN Layers:**
+The paper states that a lightweight CNN is used in the view switching module but does not provide detailed layer parameters. Based on the missing details, the CNN architecture was designed with the following configuration:
+
+**First Convolutional Block:**
+
+A convolutional layer with 20 input channels and 10 output channels is used, with a kernel size of 3x3, stride of 1, and padding of 1.
+This is followed by batch normalization to stabilize training and ReLU activation to introduce non-linearity.
+A max pooling layer with a kernel size of 2x2 and stride of 2 reduces the spatial dimensions by half.
+**Second Convolutional Block:**
+
+A second convolutional layer with 10 input channels and 20 output channels, with similar kernel size, stride, and padding settings as the first block.
+This is also followed by batch normalization, ReLU activation, and max pooling to further reduce the spatial dimensions.
+Feature Compression:
+
+To reduce the spatial dimensions to 1x1, an adaptive average pooling layer is applied. This ensures compatibility with downstream fully connected layers, regardless of the input size.
+**Linear Output Layer:**
+
+A flattening operation transforms the 1x1x20 output into a 1D vector, which is fed into a linear layer with a single output. This serves as the binary classification output for deciding whether to switch the view.
+**Input Adjustment for the Detection Head:**
+The detection head is based on the SuperPoint architecture; however, the input size in this module differs from the original SuperPoint implementation. To resolve this mismatch, the input size was adjusted to fit the specific dimensions required by the feature maps generated in the view switching module. This adjustment ensures seamless integration without altering the core functionality of the SuperPoint detection head.
+
+### 2.2.3 Conflict-Free Coarse Matching
+**Position Encoder Implementation:**
+The paper mentions a basic Multi-Layer Perceptron (MLP) used in the position encoder but lacks detailed specifications. Based on this, the following design was implemented:
+
+**Input Representation:**
+
+The input to the position encoder consists of three components:
+x and y coordinates of the feature position.
+A confidence score s for the feature.
+This is represented as a 3-dimensional input vector [𝑥, 𝑦, 𝑠]
+MLP Architecture:
+
+First Linear Layer: Maps the 3-dimensional input to a 64-dimensional space using nn.Linear(3, 64).
+ReLU Activation: Introduces non-linearity to improve the learning capability of the model.
+Second Linear Layer: Further maps the 64-dimensional intermediate representation to the final feature dimension specified by feature_dim.
+ReLU Activation: Applied again to ensure non-linear transformations and robustness in feature encoding.
+### 2.2.4 Dataset Preprocess
+
+** Preprocessing Challenges with MegaDepth and Homography Estimation Datasets  **
+
+**Dataset Characteristics and Size:**  
+MegaDepth and similar homography estimation datasets are known for their large size and complexity due to the inclusion of both image and depth information. For instance, the MegaDepth dataset (used for training in paper) alone exceeds **600 GB**, containing a vast collection of images, corresponding depth maps, and camera pose information. These datasets are essential for training feature matching models but require extensive preprocessing to transform raw data into a format suitable for training.  
+
+**Preprocessing Requirements:**  
+Before training, several steps must be undertaken to extract meaningful pairs of features and images:  
+
+1. **From Point Clouds to Image Space:**  
+   - Depth maps and camera poses must be utilized to project points from the 3D space (point clouds) back to the image space. This step involves back-projecting 3D points onto their corresponding 2D pixel coordinates using the camera intrinsics and extrinsics provided in the dataset.  
+
+2. **Extracting Matching Points:**  
+   - After projection, corresponding points between image pairs must be identified. This requires determining pixel-level correspondences based on overlapping regions and ensuring consistency with the underlying depth and pose information.  
+   - Ground-truth matches must be filtered to remove outliers caused by occlusions, noise in depth maps, or inaccuracies in camera pose estimates.  
+
+3. **Generating Feature Pairs:**  
+   - The final output of preprocessing should include **image pairs with matched feature points**, which are then used as input for training the feature matching model.  
+   - This involves creating compact data structures containing image pairs, associated features, and confidence scores for each correspondence.  
+
+**Challenges in the Preprocessing Pipeline:**  
+
+1. **Scale and Computational Overhead:**  
+   - Due to the large size of datasets like MegaDepth, preprocessing is computationally intensive, requiring significant storage and processing power.  
+   - Efficient batching and caching mechanisms are necessary to handle large-scale data transformations.  
+
+2. **Methodological Complexity:**  
+   - While the general methodology for preprocessing is described in related works, precise implementation details are often dataset-specific and must be adapted for compatibility with the training framework.  
+   - For example, different datasets may provide depth maps in varying formats or resolutions, necessitating custom handling and interpolation techniques.  
+
+3. **Incomplete Preprocessing Pipeline:**  
+   - The details of a complete pipeline that transforms raw MegaDepth data into a format compatible with the current model is not published.  
+   - Key challenges include ensuring consistency in projected matches, handling missing or incomplete metadata, and optimizing the pipeline for scalability.  
+
+The preprocessing steps outlined here draw from methodologies described in prior works on feature matching and homography estimation. Studies utilizing datasets such as MegaDepth, HPatches, and Aachen Day-Night offer valuable insights, particularly regarding projection techniques and match filtering. However, practical implementation remains dataset-specific, requiring iterative refinement based on the available data and training objectives.  
+  
+The preprocessing of datasets like MegaDepth is a critical step in preparing data for feature matching models, involving a multi-stage pipeline of projection, matching, and pairing. Although foundational methods have been surveyed and adapted, the finalization of a fully functional preprocessing pipeline tailored to the current model is ongoing. For these reasons, the first experiments have not yet been completed.
 
 # 3. Experiments and results
 
@@ -204,6 +375,7 @@ The **Fine Matching Module** is the final stage in RCM that refines the coarse m
 
 - RCM: Conflict-Free Local Feature Matching with Dynamic View Switching [1]
 - SuperPoint: Self-Supervised Interest Point Detection and Description [2]
+- U-Net https://lmb.informatik.uni-freiburg.de/people/ronneber/u-net/
 
 # Contact
 
