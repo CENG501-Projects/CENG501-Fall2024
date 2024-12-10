@@ -120,7 +120,8 @@ In this paper, experiments are conducted on two large-scale image-based CAER dat
 * CD-Net[6]
 * EmotiCon[7]
 
-The authors state that they conducted their experiments following the original paper's experimental setups, detailed as follows:
+The authors state that they conducted their experiments following the original papers' experimental setups, detailed as follows:
+
 * EMOT-Net: The EMOT-Net model is trained end-to-end using stochastic gradient descent with momentum, allowing all parameters to be learned jointly. The first two modules are initialized with pre-trained models from Places and ImageNet, while the fusion network is trained from scratch. Also, a batch size of 52 was selected.
 * CAER-Net: The CAER-Net model was trained from scratch using an initial learning rate of 5 × 10⁻³, which was reduced by a factor of 10 every 4 epochs. The training employed the cross-entropy loss function with a batch size of 32.
   For the CAER dataset,  facial clips (VF) were resized to 96 × 96, while contextual clips (VC) were resized to 128 × 171 and then cropped to 112 × 112 during training. The CAER-S dataset was used with inputs resized to 224 × 224.
