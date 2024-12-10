@@ -2,7 +2,7 @@
 num_features = 10
 m = 10
 s = 2
-s0 = 2
+s0 = 0
 num_layers = 2
 num_classes = 10
 input_format = "onehot" # can be decimal, binary, pairs or onehot
