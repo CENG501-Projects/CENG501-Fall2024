@@ -176,20 +176,16 @@ In the ideal case, both losses should converge to 50%.
 
 2- Images after 2nd, 11th and 100th Epochs
 
-<div style="display: flex; justify-content: center; align-items: center; gap: 20px;">
-  <div>
-    <img src="figures/image_at_epoch_0002.png" style="width: 100%;">
-    <p align="center"><em>Figure 5: Generator Image after 2nd Epoch</em></p>
-  </div>
-  <div>
-    <img src="figures/image_at_epoch_0011.png" style="width: 100%;">
-    <p align="center"><em>Figure 6: Generator Image after 11th Epoch</em></p>
-  </div>
-  <div>
-    <img src="figures/image_at_epoch_0101.png" style="width: 100%;">
-    <p align="center"><em>Figure 7: Generator Image after 100th Epoch</em></p>
-  </div>
+
+<div style="display: flex; flex-direction: row; gap: 20px;">
+    <img src="figures/image_at_epoch_0002.png" style="width: 200px;">
+    <p><em>Images after 2nd Epoch</em></p>
+    <img src="figures/image_at_epoch_0011.png" style="width: 200px;">
+    <p><em>Images after 11th Epoch</em></p>
+    <img src="figures/image_at_epoch_0101.png" style="width: 200px;">
+    <p><em>Images after 100th Epoch</em></p>
 </div>
+
 
 
 ### Second Experiment with IID FL-GAN
