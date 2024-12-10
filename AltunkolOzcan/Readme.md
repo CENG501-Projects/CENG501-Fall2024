@@ -154,7 +154,7 @@ Taslak:
   -- Hopefully yukarıdakinin aynısı :')
    
    
-### 3.1.1. --
+### 3.1.1. Training and testing of Acrobot System Identification
 
 As explained in the previous section, Acrobot is trained using random samples from the space. Then, a previously unknown trajectory is tested by giving the neural network to an ODE solver. Here, we first detail the network training procedure and provide various results.
 
