@@ -14,22 +14,23 @@ def sample_hierarchical_rules_type_a(num_features, num_layers, m, num_classes, s
     
     for l in range(num_layers):
         old_paths = all_levels_paths[-1].flatten()
-        old_features = list(set([i.item() for i in old_paths]))
-        num_old_features = len(old_features)
+        print(old_paths)
+        old_features_set = set([i.item() for i in old_paths])
+        old_features_set.discard(-1)
+        old_features = list(old_features_set)
+        num_old_features = len(old_features) 
+
+        # [0, 0] -> [-1, -1, 0 | -1, -1 0]
 
         # Generate tuples with sparsity s(s_0 + 1) s informative s*s_0 uninformative
         sparse_tuple_size = s * (s0 + 1)
-        possible_tuples = list(product(range(num_features+1), repeat=s))
+        possible_tuples = list(product(range(num_features), repeat=s))
         num_new_tuples = m * num_old_features
 
-        assert len(possible_tuples) >= num_new_tuples
+        assert len(possible_tuples)*s*(s0+1) >= num_new_tuples, f"{num_features}**{s}={len(possible_tuples)} < {num_new_tuples}"
 
         random.shuffle(possible_tuples)
         selected_tuples = possible_tuples[:num_new_tuples]
-        print("selected tuples:")
-        print(selected_tuples)
-        print(f"Number of new tuples: {num_new_tuples}")
-        print(f"Length of individual tuple: {len(selected_tuples[0])}")
 
         # [ 1,1 ,1,1, 1,1]
 
@@ -39,14 +40,14 @@ def sample_hierarchical_rules_type_a(num_features, num_layers, m, num_classes, s
             sparse_tup = [-1] * sparse_tuple_size  
             for i, value in enumerate(tup):
                 random_val_in_the_patch = random.randint(0, s0)
-                print(f"i is {i}, idx is {i * (s0 + 1) + random_val_in_the_patch}, sparse_tup_len is {sparse_tuple_size}")
                 sparse_tup[i * (s0 + 1) + random_val_in_the_patch] = value  
             new_tuples.append(sparse_tup)
 
         new_tuples = torch.tensor(new_tuples, dtype=torch.int64).reshape(-1, m, sparse_tuple_size)
 
         old_feature_to_index = {e: i for i, e in enumerate(old_features)}
-        old_paths_indices = [old_feature_to_index[f.item()] for f in old_paths]
+        print(old_feature_to_index)
+        old_paths_indices = [old_feature_to_index[f.item()] for f in old_paths if f != -1]
         new_paths = new_tuples[old_paths_indices]
 
         all_levels_tuples.append(new_tuples)

@@ -115,8 +115,8 @@ class SparseRandomHierarchyModel(Dataset):
             self.x = ((self.x[:, None] + 1) / num_features - 1) * 2
         elif "onehot" in input_format:
             self.x = F.one_hot(
-                self.x.long(),
-                num_classes=num_features if 'pairs' not in input_format else num_features ** 2
+                self.x.long()+1,
+                num_classes=num_features+1 if 'pairs' not in input_format else num_features ** 2
             ).float()
             self.x = self.x.permute(0, 2, 1)
 
