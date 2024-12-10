@@ -140,7 +140,6 @@ Learning rate is initialized as 0.02 and after each epoch it is reduced by 10%. 
 ## 3.1. Experimental setup
 
 
-
 HELLOO BEN GELDİM
 
 Taslak:
@@ -156,6 +155,23 @@ Taslak:
    
    
 ### 3.1.1. --
+
+As explained in the previous section, Acrobot is trained using random samples from the space. Then, a previously unknown trajectory is tested by giving the neural network to an ODE solver. Here, we first detail the network training procedure and provide various results.
+
+System identification network is made up of a three layer MLP with sine activations. Hidden layers have 32 and 10 neurons. Loss function of this network is the ordinary mean square error (MSE) of the predicted $f_{\theta}$, just as in the paper. We have set the hyperparameters by trial-and-error and this particular experiment is conducted with the following parameters:
+
+  - Batch time = 32 s
+  - Batch size = 64 starting points
+  - Dataset time = 128 s
+  - Dataset size = 8192 data points
+  - Iterations per epoch = 1000
+  - Epochs = 15
+  - Test frequency = every 20 iterations
+  - Initial learning rate = 0.02
+  - Learning rate decay rate = 10%
+  - Optimizer = Adam
+
+The first plot Figure XX shows the average loss per epoch.
 
 ### 3.1.2. Training and Testing of Dubins Car Trajectories
 
