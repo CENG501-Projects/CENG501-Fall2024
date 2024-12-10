@@ -121,7 +121,11 @@ For ImageNet experiments, 10 random classes of ImageNet is used as ID dataset, a
 
 ## 3.3. Results
 
-@TODO: Present your results and compare them to the original paper. Please number your figures & tables as if this is a paper.
+## 3.3.1 First Experiment
+
+![Figure 1: Training results of GReg experiment on ResNet-18 and CIFAR-10](./Figures/greg_cifar10_resnet18.png)
+
+**Figure 1**: Training results of GReg experiment on ResNet-18 and CIFAR-10
 
 # 4. Conclusion
 
