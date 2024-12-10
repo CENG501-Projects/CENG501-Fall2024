@@ -156,7 +156,55 @@ In Multi-stage Feature Reconstruction part, the number of loops N is unclear. We
 
 ## 3.1. Experimental setup
 
-@TODO: Describe the setup of the original paper and whether you changed any settings.
+We haven't completely developed the MonoATT model; hence, for experimenting and getting familiar with deep learning network, we have altered and simplified steps of our model. Below is a comparison table of original paper and our implementation:
+
+| Aspect                  | MonoATT Paper               | Our Implementation         | Status/Comments                        |
+|-------------------------|-----------------------|----------------------------|----------------------------------------|
+| *Backbone*            | DLA-34               | ResNet-34                  | Simpler but effective                  |
+| *Adaptive Token Transformer (ATT)* | Learned scoring + multi-stage | k-means + single-stage attention | Simplified |
+| *Multi-stage Feature Reconstruction (MFR)* | Global/local integration    | Single-stage reconstruction            | Basic, functional                  |
+| *Detection Head*      | GUPNet               | Custom detection head       | Similar in purpose                     |
+| *Loss Function*       | Composite losses      | Smooth L1 loss              | Needs refinement                       |
+| *Evaluation*          | KITTI metrics        | Basic evaluation scripts    | Needs refinement                      |
+
+We have used the libraries and tools:
+  - *PyTorch:* Framework for model development and training.
+  - *Torchvision:* For pre-trained backbones (e.g., ResNet).
+  - *NumPy & Pandas:* For dataset manipulation and numerical operations.
+  - *KITTI Dataset:* Used for training and evaluation.
+  - *Matplotlib:* For visualizing results (predictions and bounding boxes).
+
+We have implemented (fully or partially):
+- Dataset Loading:
+    Parsed the KITTI dataset to load images and their corresponding 3D bounding box annotations.
+    Applied transformations (e.g., resizing, normalization) to preprocess the images.
+    Handled variable-sized bounding boxes using a custom collate function.
+- Backbone Feature Extraction:
+    Used ResNet-34 (pre-trained) as the feature extractor to generate a low-resolution feature map from input images.
+    Output: Feature maps of shape (B, 512, H, W).
+- Adaptive Token Transformer (Simplified):
+    Flattened the feature map into tokens and clustered them using k-means to identify regions of interest.
+    Applied a single-layer attention mechanism to refine these tokens.
+    Output: Refined tokens of shape (B, num_clusters, embed_dim).
+- Multi-stage Feature Reconstruction (Simplified):
+    Used a fully connected layer and convolutional layers to reconstruct the pixel-level feature map from refined tokens.
+    Added skip connections to preserve original spatial information.
+    Output: Reconstructed feature maps of shape (B, C, H, W).
+- Mono3D Detection Head:
+    Designed a detection head to predict 3D bounding box parameters:
+        Location: (x, y, z)
+        Dimensions: (h, w, l)
+        Orientation: (theta)
+    Output: Tensor of shape (B, 7, H’, W’).
+- Loss Function:
+    Implemented a composite loss to minimize errors in location, dimensions, and orientation predictions using Smooth L1 Loss.
+- Training:
+    Trained the model on the KITTI dataset for 30 epochs using the basic pipeline.
+    Updated the loss function to a meaningful one and resumed training for further epochs.
+- Evaluation:
+    Developed scripts to evaluate the model on the validation set.
+    Outputs predictions for 3D bounding boxes and visualizes results.
+
 
 ## 3.2. Running the code
 
@@ -167,19 +215,23 @@ In Multi-stage Feature Reconstruction part, the number of loops N is unclear. We
 We have obtained the depthmap images created by the network. 
 
 They do not look right at all. We are working on it.
-![image](https://github.com/user-attachments/assets/6bb8b8db-ea88-405f-ac78-2c90cf916da0)
+<p align="center">
+<img src=https://github.com/user-attachments/assets/6bb8b8db-ea88-405f-ac78-2c90cf916da0>
 
-![image](https://github.com/user-attachments/assets/979e8737-cb10-4e15-a5ed-c54292d51b2e)
-
+<img src=https://github.com/user-attachments/assets/979e8737-cb10-4e15-a5ed-c54292d51b2e>
+</p>
 
 We have calculated the precision-recall graph. KITTI dataset 3D benchmark is tested on AP40 values on IOU 0.7. However, it looks like our network could not predict a single car correctly. Hence, precision recall curves look as follows. 
 
-![car_detection_3D_AP](https://github.com/user-attachments/assets/57e3a035-8c28-432e-8165-3f7f765b8f99)
+<p align="center">
+<img src=https://github.com/user-attachments/assets/57e3a035-8c28-432e-8165-3f7f765b8f99>
+</p>
 
 Expected AP40 values for different datasets from the original implementations are,
 
-![image](https://github.com/user-attachments/assets/0ea9c088-07e2-40e9-885b-3b3ff3b226bb)
-
+<p align="center">
+<img src=https://github.com/user-attachments/assets/0ea9c088-07e2-40e9-885b-3b3ff3b226bb>
+</p>
 
 
 # 4. Conclusion
