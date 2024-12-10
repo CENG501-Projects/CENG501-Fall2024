@@ -23,7 +23,7 @@ class SparseRandomHierarchyModel(Dataset):
             num_classes=2,
             s=2,
             s0 =1,
-            sparsity_type='b',
+            sparsity_type='a',
             seed=0,
             max_dataset_size=None,
             seed_traintest_split=0,
