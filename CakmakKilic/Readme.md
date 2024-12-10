@@ -142,7 +142,17 @@ To accelerate the training process, all experiments were conducted on a Google C
 
 <p align="center">
   <img src="imgs/original-accuracy.png" alt="" style="width: 50%;"><br>
-  <em> Table 1: On Cifar10: (a) Accuracy gain with respect to the baseline model (no regularization applied) as a function of s. (b) Accuracy as a function of the percentage s of training examples randomly reannotated.(from the paper)</em>
+  <em> Figure 1: On Cifar10: (a) Accuracy gain with respect to the baseline model (no regularization applied) as a function of s. (b) Accuracy as a function of the percentage s of training examples randomly reannotated.(from the paper)</em>
+</p>
+
+<p align="center">
+  <img src="imgs/baseline.png" alt="" style="width: 50%;"><br>
+  <em> Figure 2: On Cifar10: Effect of Noisy Annotations on ResNet Performance</em>
+</p>
+
+<p align="center">
+  <img src="imgs/early_stopping.png" alt="" style="width: 50%;"><br>
+  <em> Figure 3: On Cifar10: Effect of Noisy Annotations on ResNet Performance with Early Stopping</em>
 </p>
 
 # 4. Conclusion
