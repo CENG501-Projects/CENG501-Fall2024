@@ -122,12 +122,12 @@ In this paper, experiments are conducted on two large-scale image-based CAER dat
 
 The authors state that they conducted their experiments following the original papers' experimental setups, detailed as follows:
 
-* EMOT-Net: The EMOT-Net model is trained end-to-end using stochastic gradient descent with momentum, allowing all parameters to be learned jointly. The first two modules are initialized with pre-trained models from Places and ImageNet, while the fusion network is trained from scratch. Also, a batch size of 52 was selected.
-* CAER-Net: The CAER-Net model was trained from scratch using an initial learning rate of 5 × 10⁻³, which was reduced by a factor of 10 every 4 epochs. The training employed the cross-entropy loss function with a batch size of 32.
+* **EMOT-Net:** The EMOT-Net model is trained end-to-end using stochastic gradient descent with momentum, allowing all parameters to be learned jointly. The first two modules are initialized with pre-trained models from Places and ImageNet, while the fusion network is trained from scratch. Also, a batch size of 52 was selected.
+* **CAER-Net:** The CAER-Net model was trained from scratch using an initial learning rate of 5 × 10⁻³, which was reduced by a factor of 10 every 4 epochs. The training employed the cross-entropy loss function with a batch size of 32.
   For the CAER dataset,  facial clips (VF) were resized to 96 × 96, while contextual clips (VC) were resized to 128 × 171 and then cropped to 112 × 112 during training. The CAER-S dataset was used with inputs resized to 224 × 224.
-* GNN-CNN: The GNN-CNN model was trained on the EMOTIC dataset with a batch size of 64, a learning rate of 0.001, and a weight decay of 5 × 10⁻⁴.
-* CD-Net: The CD-NET model was trained on the CAER-S and EMOTIC datasets using a batch size of 64 for 61 epochs. The Stochastic Gradient Descent (SGD) optimizer was applied with a learning rate of 0.001 for the backbone and 0.01 for other layers, along with a weight decay of 5×10⁻⁴. A cosine decay learning rate scheduler was employed, and the training was conducted on an NVIDIA GeForce GTX 1080 Ti GPU.
-* EmotiCon: The EmotiCon model was trained on EMOTIC dataset with a batch size of 32 for 75 epochs. The training process employed the Adam optimizer with a learning rate of 0.0001 and was conducted on an NVIDIA GeForce GTX 1080 Ti GPU.
+* ** GNN-CNN:** The GNN-CNN model was trained on the EMOTIC dataset with a batch size of 64, a learning rate of 0.001, and a weight decay of 5 × 10⁻⁴.
+* **CD-Net:** The CD-NET model was trained on the CAER-S and EMOTIC datasets using a batch size of 64 for 61 epochs. The Stochastic Gradient Descent (SGD) optimizer was applied with a learning rate of 0.001 for the backbone and 0.01 for other layers, along with a weight decay of 5×10⁻⁴. A cosine decay learning rate scheduler was employed, and the training was conducted on an NVIDIA GeForce GTX 1080 Ti GPU.
+* **EmotiCon:** The EmotiCon model was trained on EMOTIC dataset with a batch size of 32 for 75 epochs. The training process employed the Adam optimizer with a learning rate of 0.0001 and was conducted on an NVIDIA GeForce GTX 1080 Ti GPU.
 
 
 
