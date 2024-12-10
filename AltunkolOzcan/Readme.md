@@ -131,13 +131,15 @@ The system identification network uses the $f_\theta$ values to train the networ
 
 For testing, we actually generate a random trajectory this time. This is done by producing random inputs, and using odeint() method of Pytorch to solve the original differential equation with the inputs. Then, at every 20 iterations the neural network is similarly used in the odeint() to generate a predicted trajectory starting from the same initial condition. If the network succesfully manages to capture the time derivatives and if the numerical differential equation solver is accurately tuned for the system, then the results must match. The ODE solver method is selected as the Fourth Order Runge Kutta with 3/8 rule. This solver has a fixed step size. We found it useful because it significantly reduces the testing times. However, the drawback is that the data frequency has to be very high for the method to produce reliable results. Currently, a trajectory of 128 seconds is generated with 8192 data points, corresponding to 64 Hz.
 
-The Neural ODE network consists of three layer MLP with sine activation functions. The input layer has 5 neurons: 4 states and a single torque input. The output has four layers for the time derivatives of the states. Learning rate is initialized as 0.02 and after each epoch it is reduced by 10%. Each batch consists of 32 seconds and 64 initial points. Each epoch is 1000 iterations and there are 50 epochs. We save the modle parameters after each epoch so a manual early stopping is implemented. 
+The Neural ODE network consists of three layer MLP with sine activation functions. The input layer has 5 neurons: 4 states and a single torque input. The output has four layers for the time derivatives of the states. The hidden layers have 32 and 10 neurons. 
+
+Learning rate is initialized as 0.02 and after each epoch it is reduced by 10%. Each batch consists of 32 seconds and 64 initial points. Each epoch is 1000 iterations and there are 50 epochs. We save the modle parameters after each epoch so a manual early stopping is implemented. 
 
 # 3. Experiments and results
 
 ## 3.1. Experimental setup
 
-@TODO: Describe the setup of the original paper and whether you changed any settings.
+
 
 HELLOO BEN GELDİM
 
@@ -150,11 +152,12 @@ Taslak:
     --- Güzel plotlar, finito
 
 -  Acrobot Testleri
-  --
+  -- Hopefully yukarıdakinin aynısı :')
+   
    
 ### 3.1.1. Training and Testing of Dubin's Car Trajectories
 
-### 3.1.2. --
+### 3.1.2. Trainin and Testing of Acrobot
 
 ## 3.2. Running the code
 
