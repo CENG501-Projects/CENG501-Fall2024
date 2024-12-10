@@ -135,6 +135,23 @@ The system identification network uses the $f_\theta$ values to train the networ
 
 @TODO: Describe the setup of the original paper and whether you changed any settings.
 
+HELLOO BEN GELDİM
+
+Taslak:
+-  Dubin's Car Testleri
+  
+  -- NeuralODE Kodunun anlaşılıp denemeler yapılması
+  -- Dubin's car için data üretilmesi ve trajectory verileriyle eğitilmesi, single trajectory training on time and inital state batches
+    --- Exponential learning rate, layer structures, activation functions and dying neurons, data visualisation, parameter export/pre-training, training with different trajectories (to be continued)
+    --- Güzel plotlar, finito
+
+-  Acrobot Testleri
+  --
+   
+### 3.1.1. Training and Testing of Dubin's Car Trajectories
+
+### 3.1.2. --
+
 ## 3.2. Running the code
 
 @TODO: Explain your code & directory structure and how other people can run it.
