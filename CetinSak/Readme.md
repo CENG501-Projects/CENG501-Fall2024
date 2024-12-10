@@ -114,10 +114,6 @@ The SRHM distinguishes itself from the RHM by incorporating a sparsity factor, i
 - **CNN**
   For a CNN, The number of parameters is proportional to the filter size $`s(s_0 + 1)`$ and does not scale with the input size $`d`$. This reduction in parameters makes CNNs more efficient than LCNs.While sparsity still affects the effective input size, weight sharing reduces its impact. The sample complexity scales quadratically with $`(s_0+1)`$ instead of exponentially. By knowing these and from the experimental results, they found that sample complexity $`P^*_{CNN} \sim C_1 (s_0 + 1)^2 n_c m^L`$($`C_1`$ is a constant dependent on the architecture and training conditions.).
 
--> SHRM, Sample Complexity, Sparsity ve Diffeomorphism, Derivation of Sample complexity for CNN and LCN (CNN but no weight sharing)
-
-@TODO: Explain the original method.
-
 ### 2.2. Our interpretation
 
 The output of the Sparse Random Hierarchical Model (SRHM) is a **set of generated hierarchical data points** that follow a structured and sparse pattern. Specifically:
@@ -183,12 +179,6 @@ The RHM and the SHRM model parameters meaning nearly the same the only differenc
 
 - The total inut dimension is modified from $`d=s^L`$ to $`d = (s(s_0 +1))^L`$ where the $`s_0`$ is the sparsity factor(number of the uninformative elements in a chunk).
 
-@TODO: Explain the parts that were not clearly explained in the original paper and how you interpreted them.
-
--> Interpret the output of SHRM, how should data look etc.
--> Interpret how S_k and D_k was calculated.
--> In RHM code, what does each parameter correspond to here
-
 ## 3. Experiments and results
 
 ### 3.1. Experimental setup
@@ -221,7 +211,20 @@ The first plot is drawn for selecting the 10% error rate. The second and third p
 
 #### Implementation of Experiment 1
 
-@Todo exp1
+Implementation of Experiment 1 is under `src/experiments` and can be run using `python -m src.experiments.experiment_orchestrator --config_name exp1N_config.toml` where N is a, b or c.
+Due to GPU restrictions and bugs in the code, results for hyperparameters `N=3` and `s0!=0` are not reported as of 11.12.2024.
+
+Figures below show our results for experiment figure B and C. For figure A, we see that our plots agree with the result provided by authors.
+
+![Experiment 1 B m=4](assets/exp1b_layer2_numf4.png)
+![Experiment 1 B m=6](assets/exp1b_layer2_numf6.png)
+![Experiment 1 B m=8](assets/exp1b_layer2_numf8.png)
+![Experiment 1 B m=10](assets/exp1b_layer2_numf10.png)
+
+![Experiment 1 C m=3](assets/exp1c_layer2_numf3.png)
+![Experiment 1 C m=6](assets/exp1c_layer2_numf6.png)
+![Experiment 1 C m=9](assets/exp1c_layer2_numf9.png)
+![Experiment 1 C m=12](assets/exp1c_layer2_numf12.png)
 
 ---
 
