@@ -170,6 +170,10 @@ Generator loss decreases as generated images become realistic.
 In the ideal case, both losses should converge to 50%.
 
 
+![](https://github.com/CENG501_Fall2024/alacali/figures/central_gan_1st_try.gif)
+
+
+
 ### Second Experiment with IID FL-GAN
 
 
