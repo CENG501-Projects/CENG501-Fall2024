@@ -76,7 +76,7 @@ where each term is another cost function defined as
 \mathcal{L}_{\text{final}} = \left\lVert V_{\Phi}(x_f, t_f) - G(x_f) \right\rVert_1.
 ```
 
-The running and terminal costs are defined as $L(x_t, u_t, t) = (u_t - u^{\*})^TR(u_t - u^{\*})$ and $G(x_f) = (x_f - x^{\*})^T P (x_f - x^{\*})$ respectively. Here, P and R are matrices representing the relative importance of the cost terms, x^{\*} and u^{\*} are the desired state and actions. The authors state that they used $P = I_d$ and $R = 0.01*I_m$, where $I_m$ and $I_d$ are identity matrices. The paper also declares the parameters used as $\alpha_{cost} = 1$, $\alpha_{HJB} = 1$, $\alpha_{final} = 0.01$. Adam optimizer is used with a decaying learning rate starting from 0.01.
+The running and terminal costs are defined as $L(x_t, u_t, t) = (u_t - u^{\*})^TR(u_t - u^{\*})$ and $G(x_f) = (x_f - x^{\*})^T P (x_f - x^{\*})$ respectively. Here, P and R are matrices representing the relative importance of the cost terms, $x^{\*}$ and $u^{\*}$ are the desired state and actions. The authors state that they used $P = I_d$ and $R = 0.01*I_m$, where $I_m$ and $I_d$ are identity matrices. The paper also declares the parameters used as $\alpha_{cost} = 1$, $\alpha_{HJB} = 1$, $\alpha_{final} = 0.01$. Adam optimizer is used with a decaying learning rate starting from 0.01.
 
 ## 2.2. Our interpretation
 
@@ -112,7 +112,7 @@ The direct calculation of the Jacobian is difficult. So, unlike the data generat
 
 ### 2.2.4 Example Systems
 
-#### 2.2.4.1 Acrobot
+#### 2.2.4.1. Acrobot
 
 One of the systems the paper tests is Acrobot, which is an underactuated double pendulum. Its dynamic equations are given as
 
@@ -125,7 +125,7 @@ where
 ```
 The resulting state space is four dimensional with single input. 
 
-The paper explains that states and inputs are sampled uniformly from their respective spaces, but it does not disclose the limits of those spaces. Thus, we resort to some made up limits. Here ```math |u| < 1```, ```math |x_i|<10```. Note that only the initial samples are drawn with respect to these limits and the trajectories may violate them.
+The paper explains that states and inputs are sampled uniformly from their respective spaces, but it does not disclose the limits of those spaces. Thus, we resort to some made up limits. Here $|u|<1$, $|x_i|<10$. Note that only the initial samples are drawn with respect to these limits and the trajectories may violate them.
 
 The system identification network uses the $f_\theta$ values to train the network. We generate these values with a Python code, which is the converted version of the existing MATLAB code at [5]. First random inputs are generated. Then the inputs are used to evaluate state derivatives together with randomly sampled states. This gets rid of the need to generate an actual trajectory for training data. The random samples with the derivative values at the samples constitute the training dataset. 
 
@@ -134,6 +134,21 @@ For testing, we actually generate a random trajectory this time. This is done by
 The Neural ODE network consists of three layer MLP with sine activation functions. The input layer has 5 neurons: 4 states and a single torque input. The output has four layers for the time derivatives of the states. The hidden layers have 32 and 10 neurons. 
 
 Learning rate is initialized as 0.02 and after each epoch it is reduced by 10%. Each batch consists of 32 seconds and 64 initial points. Each epoch is 1000 iterations and there are 50 epochs. We save the modle parameters after each epoch so a manual early stopping is implemented. 
+
+#### 2.2.4.2. Dubins Car
+
+One other system that is used in testing is the Dubins Car. The dynamics of the system is given in the implemented paper as
+```math
+\begin{bmatrix} 
+\dot{x}_t & \dot{y}_t & \dot{\psi}_t
+\end{bmatrix}^\top = 
+\begin{bmatrix} 
+v_t \cos(\psi_t) & v_t \sin(\psi_t) & \alpha_t \cdot \frac{v_t}{r} 
+\end{bmatrix}^\top
+```
+where $(x_t, y_t)$ denotes the position of the robot, and $\psi_t$ denotes the heading angle. There are two control inputs, the linear velocity $v_t \in [0, v_{max}]$ and the steering $\alpha_t \in [-1, 1]$ [1]. Here, the parameters characterizing the system $v_{max}$ and $r$ are not given. Hence, they are chosen arbitrarily as equal to 1 while doing experiments on this system. 
+
+The sampling frequency of the generated true data points are also not given. We used a sampling frequency of 80 Hz (i.e. a second is divided into 80 equally-distant time instants). The chosen time horizon for the trajectories, the method of the ODE solver, number of epochs and iterations, the amount of momentum used during training and batch sizes are also not given in the paper. These parameters also will be determined by experimentation. Finally, specific number of neurons in the three layer MLP structure are also not given in the paper, which are to be optimized by conducting experiments.
 
 # 3. Experiments and results
 
@@ -154,7 +169,7 @@ Taslak:
   -- Hopefully yukarıdakinin aynısı :')
    
    
-### 3.1.1. Training and testing of Acrobot System Identification
+### 3.1.1. Training and Testing of Acrobot System Identification
 
 As explained in the previous section, Acrobot is trained using random samples from the space. Then, a previously unknown trajectory is tested by giving the neural network to an ODE solver. Here, we first detail the network training procedure and provide various results.
 
@@ -172,7 +187,8 @@ System identification network is made up of a three layer MLP with sine activati
   - Optimizer = Adam
   - Weights initialization = Xavier uniform initialization with zero bias
 
-The first plot Figure XX shows the average loss per epoch.
+The first plot Figure 2 shows the average loss per epoch.
+
 <p align="center">
   <img src="/../main/AltunkolOzcan/images/loss-during-training.png" alt="Average loss at each epoch">
 </p>
@@ -182,12 +198,12 @@ The first plot Figure XX shows the average loss per epoch.
 </p>
 <p align="center">Figure 3: Loss over the whole training data every 20 iterations</p>
 
-The training data seems promising but the loss is over the predicted state derivatives. when a state trajectory prediction is made using the learned dynamics, th error is actually integrated. In previously unseen test data as in Figure 4 and 5, we see the poor performance of the network.
+The training data seems promising but the loss is over the predicted state derivatives. when a state trajectory prediction is made using the learned dynamics, the error is actually integrated. In previously unseen test data as in Figure 4 and 5, we see the poor performance of the network.
+
 <p align="center">
   <img src="/../main/AltunkolOzcan/images/test1.png" alt="A random trajectory test">
 </p>
 <p align="center">Figure 4: A random trajectory test</p>
-
 
 <p align="center">
   <img src="/../main/AltunkolOzcan/images/test2.png" alt="A random trajectory test">
@@ -195,11 +211,26 @@ The training data seems promising but the loss is over the predicted state deriv
 <p align="center">Figure 5: A random trajectory test</p>
 
 At this stage, we have saved the network weights. We will proceed with more training using the saved weights with different hyperparameters.
+
 ### 3.1.2. Training and Testing of Dubins Car Trajectories
 
 To reduce the complexity of debugging and the training procedure, a step-by-step method is followed to do a system identification of a Dubins Car system. Firstly, we experimented with the example code for learning a dynamical system using NeuralODEs (from the original implementation repo of NeuralODE paper [6]). By modifying this code, we created a training script to train a neural network to learn a specific Dubins Car trajectory. Using the assumed parameters and the data generation procedure explained in 2.4.4.2, a Dubins Car system trajectory is generated for a specified initial condition, time horizon, a random input vector, and a sampling frequency; by solving the system ODE, using Euler's method implemented inside the ```odeint``` function. This true trajectory is then used for obtaining batches of smaller trajectory sections, which consists of a group of trajectories starting from random time instants and continues for a specific duration. These batches are used to train the neural network by forward and backward passes at each iteration, inside an iteration loop. After a specific number of iterations, the whole trajectory is constructed using the network being trained and the average of absolute value differences between the true and predicted trajectories are printed to the screen. The trajectories also printed on the screen using matplotlib functions, in time domain and phase plane configurations.
 
--loss function
+The system identification section of the implemented paper does not actually use ODE solvers and NeuralODEs; instead it trains the MLP to learn the system dynamics by learning the derivatives of the system states. While training the controller, however, the ODE solvers are used to evaluate trajectories. The Dubins Car is a reasonably simple system, and training multiple neural networks simultaneously for the control system training part would be difficult. Hence, as an intermediate step (and as an experiment to exercise the methods), Dubins Car system identification experiments aimed to learn the system trajectories by calculating the loss function directly from the predicted and true trajectories, using $L_1$ loss. Many experimnts are done by changing all of the hyperparameters and network structure, including activation functions. Using ReLU activations sometimes detrimentally affect the network performance, which is realized by visualising the activations and observing that all of the neurons die in some cases. Since the paper proposed sine as the activation, We also used sine instead of hyperbolic tangent or some other activation function. As the learning stops after some iterations for constant learning rates, we use an exponentially decaying learning rate. Here is the summary of the parameters of the learning procedure for learning a single trajectory of Dubins Car:
+
+  - Batch time = 100 s
+  - Batch size = 20 starting points
+  - Dataset time horizon = 800 s
+  - Dataset size = 64000 data points
+  - Iterations per epoch = 200
+  - Epochs = 20
+  - Test frequency = every 20 iterations
+  - Initial learning rate = 0.001
+  - Learning rate decay rate = 10%
+  - Optimizer = Adam
+  - Weights initialization = Random with zero mean and 0.1 standard deviation, with zero bias
+
+After the system successfully learned a specific trajectory, the model parameters are exported and imported again to train the model with a different random trajectory. This procedure is done multiple times; however, the training performance does not seem to increase for small number of trajectories. We believe that we need to implement a single learning procedure to train using a larger set of trajectories, so that the system dynamics is captured by the network more robustly. Some examplery results of the last experiments (i.e. training the pre-trained model to predict other random trajectories) are given below.
 
 
 ## 3.2. Running the code
