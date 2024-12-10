@@ -13,28 +13,29 @@ from src.SRHM.optim_loss import loss_func, regularize, opt_algo, measure_accurac
 from src.SRHM.utils import cpu_state_dict, args2train_test_sizes
 from src.SRHM.observables import locality_measure, state2permutation_stability, state2clustering_error
 
-DEBUG = True
 
-if DEBUG:
-    from src.SRHM.reference_code.hierarchical import RandomHierarchyModel as DataModel
-else:
-    from src.SRHM.srhm import SparseRandomHierarchyModel as DataModel
+
+
+from src.SRHM.reference_code.hierarchical import RandomHierarchyModel as RHM
+from src.SRHM.srhm import SparseRandomHierarchyModel as SRHM
 
 # Models
 
-def experiment_run(args):
+def experiment_run(idx, experiment_name, args):
 
     args.ptr, args.pte = args2train_test_sizes(args)
 
-    with open(args.output, "wb+") as handle:
+    output_idx = f"outputs/{experiment_name}_{idx}.pkl"
+
+    with open(output_idx, "wb+") as handle:
         pickle.dump(args, handle)
     try:
         for data in run(args):
-            with open(args.output, "wb") as handle:
+            with open(output_idx, "wb") as handle:
                 pickle.dump(args, handle)
                 pickle.dump(data, handle)
     except:
-        os.remove(args.output)
+        os.remove(output_idx)
         raise
 
 def run(args):
@@ -192,9 +193,9 @@ def train(args, trainloader, net0, criterion):
     for epoch in range(args.epochs):
 
         # layerwise training
-        if epoch % (args.epochs // args.net_layers + 1) == 0:
+        if epoch % (args.epochs // args.num_layers + 1) == 0:
             if 'layerwise' in args.net:
-                l = epoch // (args.epochs // args.net_layers + 1)
+                l = epoch // (args.epochs // args.num_layers + 1)
                 net.init_layerwise_(l)
                 print(f'Layer-wise training up to layer {l}.', flush=True)
 
@@ -326,6 +327,10 @@ def dataset_initialization(args):
     nc = args.num_classes
 
     transform = None
+    if args.dataset == "rhm":
+        DataModel = RHM
+    elif args.dataset == "srhm":
+        DataModel = SRHM
 
     trainset = DataModel(
         num_features=args.num_features,
@@ -333,6 +338,7 @@ def dataset_initialization(args):
         num_layers=args.num_layers,
         num_classes=nc,
         s=args.s, # tuples size
+        s0=args.s0,
         input_format=args.input_format,
         whitening=args.whitening,
         seed=args.seed_init,
@@ -348,6 +354,7 @@ def dataset_initialization(args):
             num_layers=args.num_layers,
             num_classes=nc,
             s=args.s, # tuples size
+            s0=args.s0,
             input_format=args.input_format,
             whitening=args.whitening,
             seed=args.seed_init,

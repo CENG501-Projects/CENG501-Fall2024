@@ -13,6 +13,11 @@ def model_initialization(args, input_dim, ch):
     """
 
     num_outputs = 1 if args.loss == "hinge" else args.num_classes
+    
+    net_layers = args.num_layers
+    filter_size = args.s
+    if args.dataset == "srhm":
+        filter_size = args.s * (args.s0 + 1)
 
     ### Define network architecture ###
     torch.manual_seed(args.seed_net)
@@ -21,7 +26,7 @@ def model_initialization(args, input_dim, ch):
 
     if args.net == "fcn":
         net = FCN(
-            num_layers=args.net_layers,
+            num_layers=net_layers,
             input_channels=ch * input_dim,
             h=args.width,
             out_dim=num_outputs,
@@ -29,19 +34,19 @@ def model_initialization(args, input_dim, ch):
         )
     elif args.net == "lcn":
         net = LCN(
-            num_layers=args.net_layers,
+            num_layers=net_layers,
             input_channels=ch,
             h=args.width,
-            filter_size=args.filter_size,
+            filter_size=filter_size,
             out_dim=num_outputs,
             bias=args.bias,
         )
     elif args.net == "cnn":
         net = CNN(
-            num_layers=args.net_layers,
+            num_layers=net_layers,
             input_channels=ch,
             h=args.width,
-            patch_size=args.filter_size,
+            patch_size=filter_size,
             out_dim=num_outputs,
             bias=args.bias,
         )

@@ -1,6 +1,9 @@
 import tomllib as toml
 import copy
 from pprint import pprint
+import argparse
+import os
+
 
 from src.experiments.experiment_runner import experiment_run
 
@@ -62,9 +65,18 @@ def enumerate_config(config):
     return dict_results
 
 if __name__ == "__main__":
-    config_dict_list, config_args_list = load_config("src/experiments/exp1a_config.toml")
+    parser = argparse.ArgumentParser()
 
-    for config_dict, args in zip(config_dict_list, config_args_list):
+    parser.add_argument("--config_name", type=str, default="exp1a_config.toml")
+    parser.add_argument("--config_path", type=str, default="src/experiments")
+    args = parser.parse_args()
+
+    config_name = args.config_name.replace(".toml", "")
+    config_path = os.path.join(args.config_path, args.config_name)
+
+    config_dict_list, config_args_list = load_config(config_path)
+
+    for idx, (config_dict, args) in enumerate(zip(config_dict_list, config_args_list)):
         print("Running experiment with following config:")
         pprint(config_dict)
-        experiment_run(args)
+        experiment_run(idx, config_name, args)

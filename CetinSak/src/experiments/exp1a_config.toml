@@ -12,9 +12,6 @@ whitening = 0
 net = "lcn" # can be cnn, fcn or lcn
 random_features = 0
 width = 512
-net_layers = 2
-filter_size = 2
-stride = 2
 batch_norm = 0
 bias = 0
 
@@ -42,8 +39,8 @@ save_init_net=1
 save_best_net=1
 save_last_net=1
 save_dynamics=1
-pickle = "outputs/output.pkl"
-output = "outputs/output.pkl"
+pickle = "outputs/output"
+output = "outputs/output"
 
 [pytorch]
 device = "cpu"
@@ -55,7 +52,7 @@ seed_net = -1 # network initalisation
 seed_trainset = -1 # training sample
 
 [dataset]
-dataset = "hier1"
+dataset = "rhm" # 
 ptr = 0.8 # Fraction of training points
 pte = 0.2 # Fraction of test points
 batch_size = 4
