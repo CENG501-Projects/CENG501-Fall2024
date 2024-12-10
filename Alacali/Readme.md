@@ -169,9 +169,27 @@ Discriminator loss is expected to start high relatively, then decreases as it im
 Generator loss decreases as generated images become realistic.
 In the ideal case, both losses should converge to 50%.
 
+#### Results
 
-![](https://github.com/CENG501_Fall2024/alacali/figures/central_gan_1st_try.gif)
+1- Generator and Discriminator Losses during 100 Epochs
+![](https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/Alacali/figures/central_gan_1st_try.gif)
 
+2- Images after 2nd, 11th and 100th Epochs
+
+<div style="display: flex; justify-content: center; align-items: center; gap: 20px;">
+  <div>
+    <img src="figures/image_at_epoch_0002.png" style="width: 100%;">
+    <p align="center"><em>Figure 5: Generator Image after 2nd Epoch</em></p>
+  </div>
+  <div>
+    <img src="figures/image_at_epoch_0011.png" style="width: 100%;">
+    <p align="center"><em>Figure 6: Generator Image after 11th Epoch</em></p>
+  </div>
+  <div>
+    <img src="figures/image_at_epoch_0101.png" style="width: 100%;">
+    <p align="center"><em>Figure 7: Generator Image after 100th Epoch</em></p>
+  </div>
+</div>
 
 
 ### Second Experiment with IID FL-GAN
