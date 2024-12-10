@@ -170,9 +170,31 @@ System identification network is made up of a three layer MLP with sine activati
   - Initial learning rate = 0.02
   - Learning rate decay rate = 10%
   - Optimizer = Adam
+  - Weights initialization = Xavier uniform initialization with zero bias
 
 The first plot Figure XX shows the average loss per epoch.
+<p align="center">
+  <img src="/../main/AltunkolOzcan/images/loss-during-training.png" alt="Average loss at each epoch">
+</p>
+<p align="center">Figure 2: Average loss at each epoch</p>
+<p align="center">
+  <img src="/../main/AltunkolOzcan/images/loss-during-testing.png" alt="Loss over the whole training data every 20 iterations">
+</p>
+<p align="center">Figure 3: Loss over the whole training data every 20 iterations</p>
 
+The training data seems promising but the loss is over the predicted state derivatives. when a state trajectory prediction is made using the learned dynamics, th error is actually integrated. In previously unseen test data as in Figure 4 and 5, we see the poor performance of the network.
+<p align="center">
+  <img src="/../main/AltunkolOzcan/images/test1.png" alt="A random trajectory test">
+</p>
+<p align="center">Figure 4: A random trajectory test</p>
+
+
+<p align="center">
+  <img src="/../main/AltunkolOzcan/images/test2.png" alt="A random trajectory test">
+</p>
+<p align="center">Figure 5: A random trajectory test</p>
+
+At this stage, we have saved the network weights. We will proceed with more training using the saved weights with different hyperparameters.
 ### 3.1.2. Training and Testing of Dubins Car Trajectories
 
 To reduce the complexity of debugging and the training procedure, a step-by-step method is followed to do a system identification of a Dubins Car system. Firstly, we experimented with the example code for learning a dynamical system using NeuralODEs (from the original implementation repo of NeuralODE paper [6]). By modifying this code, we created a training script to train a neural network to learn a specific Dubins Car trajectory. Using the assumed parameters and the data generation procedure explained in 2.4.4.2, a Dubins Car system trajectory is generated for a specified initial condition, time horizon, a random input vector, and a sampling frequency; by solving the system ODE, using Euler's method implemented inside the ```odeint``` function. This true trajectory is then used for obtaining batches of smaller trajectory sections, which consists of a group of trajectories starting from random time instants and continues for a specific duration. These batches are used to train the neural network by forward and backward passes at each iteration, inside an iteration loop. After a specific number of iterations, the whole trajectory is constructed using the network being trained and the average of absolute value differences between the true and predicted trajectories are printed to the screen. The trajectories also printed on the screen using matplotlib functions, in time domain and phase plane configurations.
