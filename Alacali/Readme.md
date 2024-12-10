@@ -121,13 +121,13 @@ $G_i = G_{\text{global}}, D_i = D_{\text{global}}, for i in [1, K]$
 
 ## 2.2. Our interpretation
 
-  The overall aim of the work is represented thoroughly in the paper. However, the basic model that is tried to be improved upon, namely the FL-GAN is not discussed algorithm-wise. So it has been decided that to create a better understanding of the idea a more modular approach should be followed. In this part, the nuances will be discussed and in the experimental setup part (Part 3) the modularity will be shared.
+  The overall aim of the work is represented thoroughly in the paper. However, the basic model that is tried to be improved upon, namely the FL-GAN is not discussed algorithm-wise. So it has been decided that to create a better understanding of the idea a more modular approach should be followed. In this part, the nuances will be discussed and in the experimental setup part (Part 3), the modularity will be shared.
 
 1. The Discussion of the Method of FL-GAN
-  As discussed in the previous chapters, the aim of studying GANs using the framework of federated learning is to fully utilize the distributed data across different devices for learning purposes. Thus, the results obtained from FL-GAN, the legacy framework that is the first study to combine both ideas, are used as a benchmark for the performance comparison of IFL-GAN. As this is going to be the first GAN and Federated Learning implementation of the author of this repository, it is decided that the GAN structure should be studied briefly. After that, the iid local dataset division, client model aggregation and global parameter distribution mechanisms is decided to be introduced to the basic model for FL-GAN application.
+  As discussed in the previous chapters, the aim of studying GANs using the framework of federated learning is to fully utilize the distributed data across different devices for learning purposes. Thus, the results obtained from FL-GAN are used as a benchmark for the performance comparison of IFL-GAN in the paper. As this is going to be the first GAN and Federated Learning implementation of the author of this repository, it is decided that the GAN structure should be studied briefly. After that, the iid local dataset division, client model aggregation and global parameter distribution mechanisms are decided to be introduced to the basic model for FL-GAN application.
 
 2. Shared Architectural Details
-   In figure 3, the architectural details that are used in the study are shared. In detail, the IFL-GAN framework has been tried on three different datasets, namely MNIST, CIFAR10, and SVHN datasets are divided into non-iid groups to simulate local datasets of the users. However, according to the data input dimensions, the architectures shared in figure 3 are not consistent. For instance, a data from MNIST dataset is a 28x28 grayscale image but the architecture is started with a 1x224 fully connected layer. So, the architecture shared in the paper is created as a model but it is decided that to get ahold of the GAN model first, a proven GAN structure is going to be used until the original idea is understood.
+   In figure 3, the architectural details used in the study are shared. In detail, the IFL-GAN framework has been tried on three different datasets: MNIST, CIFAR10, and SVHN datasets. These are divided into non-iid groups to simulate local datasets of the users. However, according to the supposed data input dimensions, the architectures shared in figure 3 are not consistent. For instance, a data from MNIST dataset is a 28x28 grayscale image but the discriminator architecture is started with a 1x28 fully connected layer. So, it is decided that to get ahold of the GAN model first, a proven GAN structure is going to be used until the original idea is understood. Also, in [2], deep convolutional networks are introduced such that fully connected hidden layers are removed for deeper architectures. Such models can be trained on edge devices for better performance as well.
 
    <p align="center">
   <img src="figures/Architectural Details.png" style="width: 70%;"><br>
@@ -139,7 +139,7 @@ $G_i = G_{\text{global}}, D_i = D_{\text{global}}, for i in [1, K]$
 
 ## 3.1. Experimental setup
 
-As shared in part 2.2, it is decided that since the IFL-GAN is created as a combination of different subnetworks and 
+As shared in part 2.2, it is decided that since the IFL-GAN consists of a number of locally trained GANs, firstly some variations of different GAN networks are studied. 
 ### First Experiment with Central GAN
 
 #### Objective and Architecture
@@ -149,6 +149,7 @@ Discriminator: Distinguishes real images from fake ones using convolutional laye
 
 #### Experimental Setup
 Dataset: MNIST, normalized to [-1, 1].
+Hyperparameters: Learning rate = 0.0002, batch size = 256, Adam optimizer with betas = (0.5, 0.999).
 
 #### Training Procedure
 - Train Discriminator:
@@ -161,13 +162,13 @@ Minimize combined loss (real_loss + fake_loss).
 
 Generate fake images and calculate loss (gen_loss) based on discriminator output.
 Update the generator to maximize the discriminator’s error on fake images.
+
 #### Hypothesis
 Loss Trends:
-Discriminator loss is expected to start high, then decreases as it improves.
+Discriminator loss is expected to start high relatively, then decreases as it improves.
 Generator loss decreases as generated images become realistic.
+In the ideal case, both losses should converge to 50%.
 
-
-Hyperparameters: Learning rate = 0.0002, batch size = 256, Adam optimizer with betas = (0.5, 0.999).
 
 ### Second Experiment with IID FL-GAN
 
