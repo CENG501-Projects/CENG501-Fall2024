@@ -94,32 +94,26 @@ Additionally, the hardware resources used and comptational complexity of experim
 # 3. Experiments and results
 
 ### 3.1. Experimental Setup
-The original paper evaluates the proposed GReg and GReg+ methods on benchmark datasets, including CIFAR-10, CIFAR-100, and ImageNet. The authors utilize a combination of pre-trained and from-scratch models with various optimization strategies:
+The original paper uses CIFAR-10, CIFAR-100 and ImageNet as ID datasets for training.
+For CIFAR experiments, 300K RandomImages is used as auxiliary OOD dataset. The model is evaluated using six different OOD datasets including Textures, SVHN, Places365, LSUN-cropped, LSUN-resized and iSUN. Results are evaluated on ResNet-18, WRN-40 and DenseNet-101.
+For ImageNet experiments, 10 random classes of ImageNet is used as ID dataset, and the rest of the dataset is used as the auxiliary OOD data. For evaluation of the model, 1000 random samples from Textures, Places, SUN and iNaturalist are used as OOD dataset. Results are evaluated on DenseNet-121.
 
 - **CIFAR Benchmarks**
-  - Models are pre-trained and fine-tuned for GReg experiments over 20 epochs using SGD with cosine annealing.
+  - Corresponding architectures are fine-tuned for GReg experiments over 20 epochs using SGD (with momentum of 0.9 and weight decay of 0.0001) with cosine annealing (with a maximum learning rate of 1 and a minimum of 0.0001). 
   - For GReg+, models are trained from scratch for 50 epochs with an initial learning rate of 0.1, followed by an additional 10 epochs with a reduced learning rate of 0.01.
-  - Hyperparameters:
-    ```
-    λ_S = 0.1
-    λ_∇S = 1
-    ```
+  - Following [], $\lambda_S$ and $\lambda_{\Delta S}$ are set as 0.1 and 1, respectively.
+  - Batch size of 64 is used.
 
 - **ImageNet Benchmarks**
-  - The experiments involve fine-tuning a DenseNet-121 model, leveraging an auxiliary dataset from ImageNet-1K.
-  - Learning rate:
-    ```
-    10^-4, reduced to 10^-5 at epoch 10
-    ```
-    using the Adam optimizer.
+  - The experiments involve only fine-tuning a DenseNet-121 model, using ADAM optimizer with an initial learning rate of 1e-4 and decrase the learning rate to 1e-5 at epoch 10. GReg and GReg+ are then runned to reach epochs 20 and 15, respectively.
+  - Batch size of 32 is used.
 
 - **Common Setup for All Datasets**
-  - For all datasets, energy-based sampling is applied to select OOD (out-of-distribution) samples efficiently during training, as described in the original paper.
+  - For all datasets, Greg+ uses energy-based sampling to select OOD (out-of-distribution) samples efficiently during training, as described in the original paper.
 
 - **Adjustments in Our Implementation:**
-	 - In our experiments, we modified the initial learning rate for GReg on the CIFAR benchmarks:
-	 - Instead of starting with  1 , we used  0.01  for the entire training process.
-	 - This adjustment was made to observe the impact of learning rate changes on convergence stability and model performance.
+  - In our experiments, we modified the initial learning rate for GReg on the CIFAR benchmarks. Instead of starting with 1.0, we used 0.01 as the initial learning rate for cosine annealing.
+  - This adjustment was made as we experienced NaN loss values with 1.0 as initial learning rate.
 
 ## 3.2. Running the code
 
