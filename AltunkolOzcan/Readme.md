@@ -110,6 +110,25 @@ The system identification network is supervised by the gradients of the function
 
 The direct calculation of the Jacobian is difficult. So, unlike the data generation for $f(x,u)$, we do not use MATLAB and the ground truth equations. Instead, Pytorch's automatic differentiation engine [4] will likely be used to generate the ground truth Jacobian of $f$. 
 
+### 2.2.4 Example Systems
+
+#### 2.2.4.1 Acrobot
+
+One of the systems the paper tests is Acrobot, which is an underactuated double pendulum. Its dynamic equations are given as
+
+```math
+\mathbf{M(q)\ddot{q} + C(q,\dot{q})\dot{q} = \tau_g(q) + Bu},
+```
+where 
+```math
+\mathbf{q = [\theta_1, \theta_2]^T}, \mathbf{u = \tau}.
+```
+The resulting state space is four dimensional with single input. 
+
+The paper explains that states and inputs are sampled uniformly from their respective spaces, but it does not disclose the limits of those spaces. Thus, we resort to some made up limits. Here ```math |u| < 1```, ```math |x_i|<10```. Note that only the initial samples are drawn with respect to these limits and the trajectories may violate them.
+
+The system identification network uses the $f_\theta$ values to train the network. We generate these values with a Python code, which is the converted version of the existing MATLAB code at [5]. First random inputs are generated. Then the inputs are used to evaluate state derivatives together with randomly sampled states. This gets rid of the need to generate an actual trajectory for training data. The random samples with the derivative values at the samples constitute the training dataset. 
+
 # 3. Experiments and results
 
 ## 3.1. Experimental setup
@@ -140,6 +159,7 @@ The direct calculation of the Jacobian is difficult. So, unlike the data generat
 
 [4] "Autograd: Automatic Differentiation," PyTorch Tutorials, Accessed: Nov. 24, 2024. [Online]. Available: https://pytorch.org/tutorials/beginner/blitz/autograd_tutorial.html
 
+[5] Matthew Kelly (2024). Acrobot Derivation and Simulation (https://github.com/MatthewPeterKelly/Acrobot_Derivation_Matlab), GitHub. Retrieved December 10, 2024.
 
 # Contact
 
