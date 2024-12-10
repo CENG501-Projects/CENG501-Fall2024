@@ -52,7 +52,7 @@ seed_net = -1 # network initalisation
 seed_trainset = -1 # training sample
 
 [dataset]
-dataset = "rhm" # 
+dataset = "srhm" # 
 ptr = 0.8 # Fraction of training points
 pte = 0.2 # Fraction of test points
 batch_size = 4

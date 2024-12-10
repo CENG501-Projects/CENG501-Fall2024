@@ -19,7 +19,7 @@ def sample_hierarchical_rules_type_a(num_features, num_layers, m, num_classes, s
 
         # Generate tuples with sparsity s(s_0 + 1) s informative s*s_0 uninformative
         sparse_tuple_size = s * (s0 + 1)
-        possible_tuples = list(product(range(num_features), repeat=s))
+        possible_tuples = list(product(range(num_features), repeat=sparse_tuple_size))
         num_new_tuples = m * num_old_features
 
         assert len(possible_tuples) >= num_new_tuples
@@ -63,7 +63,7 @@ def sample_hierarchical_rules_type_b(num_features, num_layers, m, num_classes, s
 
         # Generate tuples with sparsity s(s_0 + 1): s informative and s * s0 uninformative
         sparse_tuple_size = s * (s0 + 1)
-        possible_tuples = list(product(range(num_features), repeat=s))
+        possible_tuples = list(product(range(num_features), repeat=sparse_tuple_size))
         num_new_tuples = m * num_old_features
 
         # Validate sufficient tuples for the layer

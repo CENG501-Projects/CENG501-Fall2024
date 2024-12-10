@@ -60,7 +60,11 @@ def enumerate_config(config):
         for sub_dict in sub_config.values():
             for key, value in sub_dict.items():
                 if isinstance(value, (list, tuple)):
-                    sub_dict[key] = value[0]    
+                    sub_dict[key] = value[0]
+                if key == "m" and isinstance(value, str):
+                    sub_dict[key] = sub_dict[value]
+                if key == "num_classes" and isinstance(value, str):
+                    sub_dict[key] = sub_dict[value]
     
     return dict_results
 
