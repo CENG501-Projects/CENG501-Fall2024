@@ -228,11 +228,11 @@ This setup highlights the framework's adaptability to different models and datas
      
 <p align="center">
   <img src="figures/Table2_1stTrain.png" alt="AlexNet on MNIST" style="width: 70%;"><br>
-  <em>Figure 1: First Training: The evaluation of each convolutional layer for VGG-16 on CIFAR-10..</em>
+  <em>Figure 2: First Training: The evaluation of each convolutional layer for VGG-16 on CIFAR-10..</em>
 </p>
 <p align="center">
   <img src="figures/Table2_2ndTrain.png" alt="AlexNet on MNIST" style="width: 70%;"><br>
-  <em>Figure 1: Second Training: The evaluation of each convolutional layer for VGG-16 on CIFAR-10..</em>
+  <em>Figure 3: Second Training: The evaluation of each convolutional layer for VGG-16 on CIFAR-10..</em>
 </p>
 
 2. AFIE Progression Across Layers:
@@ -271,7 +271,57 @@ This setup highlights the framework's adaptability to different models and datas
   - Regularization: Use dropout or weight decay to reduce over-reliance on early layers.
   - Layer-wise Fine-tuning: Fine-tune deeper layers individually to boost their AFIE contributions.
 
+### 3.3.3 The evaluation of each convolutional layer for ResNet-50 on ImageNet.
+1. Accuracy Progression
+  - Your Results:
+    - Epoch 1: Accuracy = 32.64%
+    - Epoch 50: Accuracy = 58.84%
+    - Epoch 150: Accuracy = 60.84%
+  - Original Paper:
+    - Accuracy starts significantly higher and improves consistently across epochs. ResNet-50 typically achieves 75%+ top-1 accuracy on ImageNet when trained fully.
+  - Analysis:
+    - My results show improvement over epochs, but the accuracy is considerably below the paper's reported values.
+    - Potential causes:
+        1. Hyperparameter Tuning: Learning rate, weight decay, and optimizer parameters might not be optimized.
+        2. Pruning: Overaggressive pruning early in training might have hindered feature representation, limiting final accuracy.
 
+<p align="center">
+  <img src="figures/Table3.png" alt="AlexNet on MNIST" style="width: 70%;"><br>
+  <em>Figure 4:  The evaluation of each convolutional layer for ResNet-50 on ImageNet.</em>
+</p>
+
+2. AFIE Progression Across Layers
+  - My Results:
+      - Early AFIE values are consistently low, with slight increases over epochs. Several layers remain effectively unused (AFIE ~ 0).
+      - Spikes in AFIE values occur sporadically, e.g., Epoch 50 shows a notable increase for specific layers (e.g., layer 9: 0.00778) but remains inconsistent.
+      - Deeper layers maintain almost negligible AFIE values, indicating underutilization.
+  - Original Paper:
+    - AFIE values show smoother progression across layers, with deeper layers becoming more significant over time, reflecting efficient utilization of filters.
+  - Analysis:
+    - Your AFIE values suggest:
+      - Early Layer Dominance: Initial reliance on early-layer filters limits the network's ability to extract hierarchical features.
+      - Underutilization of Deeper Layers: Despite pruning, deeper layers remain inactive, potentially due to insufficient training or unbalanced pruning ratios.
+      - Irregular Pruning Strategy: The pruning may have disproportionately affected specific layers, leading to uneven AFIE distribution.
+#### Probable Causes for Discrepancies:
+1. Training Configuration Issues:
+  - Learning Rate Scheduling:
+    - A cosine annealing scheduler or step decay with warm restarts might improve optimization.
+2. Pruning Impact:
+  - Early aggressive pruning might have disrupted the representational capacity of the network, particularly in deeper layers.
+  - AFIE spikes indicate imbalanced pruning thresholds or inconsistent fine-tuning across layers.
+3. Dataset Complexity:
+  - ImageNet's complexity (e.g., 1,000 classes, high intraclass variance) may expose inadequacies in pruning strategies or fine-tuning steps more acutely than simpler datasets like MNIST or CIFAR-10.
+
+#### Probable Approaches to the Next Training
+1. Balanced Pruning Ratios:
+  - Dynamically adjust pruning ratios across layers to preserve deeper-layer features.
+  - Re-evaluate pruning thresholds using AFIE distribution as feedback.
+2. Hyperparameter Tuning:
+  - Experiment with larger batch sizes, learning rate schedules (e.g., cosine decay), and optimizers like SGD with momentum.
+3. Extended Training and Augmentation:
+  - Extend training epochs to 90+ and include advanced augmentation strategies (e.g., color jitter, random erasing) to enhance generalization.
+4. Post-Pruning Fine-Tuning:
+  - Fine-tune individual layers iteratively post-pruning to balance AFIE values across the network.
 
 
 # 4. Conclusion
