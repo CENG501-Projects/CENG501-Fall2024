@@ -50,6 +50,9 @@ This module exists specifically for detecting the relation of people between fra
 - A type of neural network being used in this matrix to predict how objects will move.
 - This makes it easier to track objects that might overlap or partially block each other in crowded scenes.
 
+![Figures/interaction-correlation-matrix.png](Figures/interaction-correlation-matrix.png)
+
+The figure above demonstrates how the correlation matrix work in the interaction module.
 
 ### 2.1.3 Refind Module (Long-range Association)
 
@@ -73,11 +76,13 @@ For object detection, in the paper, it's not quite stated which trained version 
 
 I'll be using PyTorch for my implementation for Interaction and Refind modules. The modules are trained by MOT17 and MOT20 datasets, like in the paper. If I'll have some time, I'll also doing some extra training with other datasets to see how it effect the results from the paper.
 
+The formats provided by MOT datasets (MOT17 and MOT20) and the required format by the paper is a bit different. Hence, I've wrote a data conversion script to change the format of the data before starting the training.
+
 # 3. Experiments and results
 
 ## 3.1. Experimental setup
 
-I'm using a MacBook Air M2 with 16 GB of ram with 8 GPUs to setup my environment. I'll be using PyTorch for implementations.
+I'm using a MacBook Air M2 with 16 GB of ram with 8 GPUs to setup my environment. I'll be using PyTorch for implementations. The inputs will be first sent to YOLOX for object detection by frame by frame. Then, the two stage machine learning architecture will be used (interaction and refind modules) to find the relationship between frames for each person.
 
 ## 3.2. Running the code
 
@@ -85,7 +90,7 @@ I'm using a MacBook Air M2 with 16 GB of ram with 8 GPUs to setup my environment
 
 ## 3.3. Results
 
-@TODO: Present your results and compare them to the original paper. Please number your figures & tables as if this is a paper.
+I mostly worked with Interaction Module up until this point. I've done several tests with my implementation, and trained the interaction module using 1/4 of the dataset from MOT20. The results do not show something meaningful yet, however I'll be working on the implementation and continue my implementation on both interaction and refind modules.
 
 # 4. Conclusion
 
