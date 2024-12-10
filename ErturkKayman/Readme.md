@@ -219,6 +219,7 @@ They do not look right at all. We are working on it.
 <img src=https://github.com/user-attachments/assets/6bb8b8db-ea88-405f-ac78-2c90cf916da0>
 
 <img src=https://github.com/user-attachments/assets/979e8737-cb10-4e15-a5ed-c54292d51b2e>
+Figure 5,6. Input images and heatmap pairs. Generated from 30-epoch trained network.
 </p>
 
 We have calculated the precision-recall graph. KITTI dataset 3D benchmark is tested on AP40 values on IOU 0.7. However, it looks like our network could not predict a single car correctly. Hence, precision recall curves look as follows. 
@@ -226,11 +227,13 @@ We have calculated the precision-recall graph. KITTI dataset 3D benchmark is tes
 <p align="center">
 <img src=https://github.com/user-attachments/assets/57e3a035-8c28-432e-8165-3f7f765b8f99>
 </p>
+<p align="center"> Figure 7. Precision recall curve of Car category (test set) </p>
 
-Expected AP40 values for different datasets from the original implementations are,
+Expected AP40 values for different datasets from the original implementations are:
 
 <p align="center">
 <img src=https://github.com/user-attachments/assets/0ea9c088-07e2-40e9-885b-3b3ff3b226bb>
+Figure 8. Expected AP40 values table from the paper.
 </p>
 
 
