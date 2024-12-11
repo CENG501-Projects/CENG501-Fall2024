@@ -148,27 +148,12 @@ v_t \cos(\psi_t) & v_t \sin(\psi_t) & \alpha_t \cdot \frac{v_t}{r}
 ```
 where $(x_t, y_t)$ denotes the position of the robot, and $\psi_t$ denotes the heading angle. There are two control inputs, the linear velocity $v_t \in [0, v_{max}]$ and the steering $\alpha_t \in [-1, 1]$ [1]. Here, the parameters characterizing the system $v_{max}$ and $r$ are not given. Hence, they are chosen arbitrarily as equal to 1 while doing experiments on this system. 
 
-The sampling frequency of the generated true data points are also not given. We used a sampling frequency of 80 Hz (i.e. a second is divided into 80 equally-distant time instants). The chosen time horizon for the trajectories, the method of the ODE solver, number of epochs and iterations, the amount of momentum used during training and batch sizes are also not given in the paper. These parameters also will be determined by experimentation. Finally, specific number of neurons in the three layer MLP structure are also not given in the paper, which are to be optimized by conducting experiments.
+The sampling frequency of the generated true data points are also not given. We used a sampling frequency of 80 Hz (i.e. a second is divided into 80 equally-distant time instants). The chosen time horizon for the trajectories, the method of the ODE solver, number of epochs and iterations, the amount of momentum used during training and batch sizes are also not given in the paper. These parameters also will be determined by experimentation. Finally, the specific number of neurons in the hidden layer of the three layer MLP structure are also not given in the paper, which are to be optimized by conducting experiments.
 
 # 3. Experiments and results
 
 ## 3.1. Experimental setup
 
-
-HELLOO BEN GELDİM
-
-Taslak:
--  Dubin's Car Testleri
-  
-  -- NeuralODE Kodunun anlaşılıp denemeler yapılması
-  -- Dubin's car için data üretilmesi ve trajectory verileriyle eğitilmesi, single trajectory training on time and inital state batches
-    --- Exponential learning rate, layer structures, activation functions and dying neurons, data visualisation, parameter export/pre-training, training with different trajectories (to be continued)
-    --- Güzel plotlar, finito
-
--  Acrobot Testleri
-  -- Hopefully yukarıdakinin aynısı :')
-   
-   
 ### 3.1.1. Training and Testing of Acrobot System Identification
 
 As explained in the previous section, Acrobot is trained using random samples from the space. Then, a previously unknown trajectory is tested by giving the neural network to an ODE solver. Here, we first detail the network training procedure and provide various results.
@@ -228,9 +213,25 @@ The system identification section of the implemented paper does not actually use
   - Initial learning rate = 0.001
   - Learning rate decay rate = 10%
   - Optimizer = Adam
+  - Number of neurons in the MLP layers: 5 - 50 - 20 - 3
   - Weights initialization = Random with zero mean and 0.1 standard deviation, with zero bias
 
-After the system successfully learned a specific trajectory, the model parameters are exported and imported again to train the model with a different random trajectory. This procedure is done multiple times; however, the training performance does not seem to increase for small number of trajectories. We believe that we need to implement a single learning procedure to train using a larger set of trajectories, so that the system dynamics is captured by the network more robustly. Some examplery results of the last experiments (i.e. training the pre-trained model to predict other random trajectories) are given below.
+After the system successfully learned a specific trajectory, the model parameters are exported and imported again to train the model with a different random trajectory. This procedure is done multiple times; however, the training performance does not seem to increase for small number of trajectories. We believe that we need to implement a single learning procedure to train using a larger set of trajectories, so that the system dynamics is captured by the network more robustly. Some examplary results of the last experiments (i.e. training the pre-trained model to predict other random trajectories) are given below.
+
+<p align="center">
+  <img src="/../main/AltunkolOzcan/images/epoch2_iter100.PNG" alt="Test of the predicted trajectory">
+</p>
+<p align="center">Figure 6: True and predicted trajectories in the beginning of the training</p>
+
+<p align="center">
+  <img src="/../main/AltunkolOzcan/images/epoch19_iter40.PNG" alt="Test of the predicted trajectory">
+</p>
+<p align="center">Figure 7: True and predicted trajectories at the end of the training</p>
+
+<p align="center">
+  <img src="/../main/AltunkolOzcan/images/loss_per_epoch.PNG" alt="Loss per epoch">
+</p>
+<p align="center">Figure 8: Loss value at the end of each epoch</p>
 
 
 ## 3.2. Running the code
