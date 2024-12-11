@@ -269,7 +269,27 @@ All other details seems clear right now. We may have to update this section duri
 
 ## 3.1. Experimental setup
 
-@TODO: Describe the setup of the original paper and whether you changed any settings.
+### Original Paper Setup:
+
+## 3.1. Experimental setup
+
+### Original Paper Setup
+
+The authors conducted experiments on the COCO 2017 detection dataset using the following configuration:
+
+- **Dataset**: COCO 2017 (train: 118K images, val: 5K images)
+- **Backbone**: ResNet-50-4scale
+- **Training Schedule**: 12 epochs and 24 epochs 
+- **Batch Size**: 64
+- **Optimizer**: AdamW with weight decay 1e-4
+- **Learning Rate**: Initial 1e-4, decreased by 0.1 at epoch 11
+
+### Our Modified Setup
+
+We kept everything as described in the paper except batch-size. All details that are not mentioned in the paper are inherited from default parameters of the baseline model (DINO). Due to hardware constraints we had to reduce the batch-size. We performed the experiments in two settings: 
+
+1. We reduced batch-size to 4 and trained 12 epoch (Will be referred as AudDETR_bs4).
+2. We start training with batch-size 4 and after 9th epoch, we reduced it to 2 since we had to switch to another machine with less memory (Will be referred as AugDETR_bs_drop).
 
 ## 3.2. Running the code
 
@@ -277,7 +297,29 @@ All other details seems clear right now. We may have to update this section duri
 
 ## 3.3. Results
 
-@TODO: Present your results and compare them to the original paper. Please number your figures & tables as if this is a paper.
+### Experiment 1: DINO (4-scale) + HAE (12 Epoch) = +0.6 AP (Expected)
+
+| Model              | AP   | AP_50 | AP_75 | AP_S | AP_M | AP_L |
+|-------------------|------|-------|-------|------|------|------|
+| DINO (bs=2) (reported)    | 49.0 | 66.6  | 53.5  | 32.0 | 52.3 | 63.0 |
+| DINO + HAE (reported)     | 49.6 (+0.6) | 67.0 (+0.4) | 54.2 (+0.7) | 31.8 (-0.2) | 52.9 (+0.6) | 63.8 (+0.8) |
+| DINO + HAE (bs=4)         | 48.9 (-0.1) | 65.8 (-0.8) | 53.4 (-0.1) | 31.0 (-1.0) | 52.0 (-0.3) | 63.7 (+0.7) |
+| DINO + HAE (bs=drop 4->2) | 49.4 (+0.4) | 66.6 (+0.0) | 54.0 (+0.5) | 32.4 (+0.4) | 52.4 (+0.1) | 64.1 (+1.1) |
+
+<div align="center">
+<img src="assets/loss_comparison.png" width="800"/>
+<p><b>Figure 1:</b> Training and validation loss curves for DINO baseline and our HAE implementations with different batch size settings.</p>
+</div>
+
+<div align="center">
+<img src="assets/detection_metrics.png" width="800"/>
+<p><b>Figure 2:</b> Detection metrics comparison across different object scales. The metrics include Average Precision (AP) and Average Recall (AR) at various scales and thresholds.</p>
+</div>
+
+#### Discussion
+
+The loss curves were promising. Both the training and validation losses decreased consistently, with no signs of overfitting. Moreover, it seems both settings converged faster than the baseline DINO model. However, the AP results did not align with the expected +0.6 AP improvement. The setting with batch-size 4 had the least loss on the validation set, but the AP results were even lower than the baseline. Consistent incerease in AP_large indicates we are on the right track since the performance on large objects is the main concern of the paper. We guess that the problem might be related to the batch-size reduction, which could have affected the model's learning dynamics. We will investigate this further in the next experiments. 
+
 
 # 4. Conclusion
 
