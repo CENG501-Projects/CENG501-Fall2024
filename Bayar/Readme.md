@@ -269,10 +269,6 @@ All other details seems clear right now. We may have to update this section duri
 
 ## 3.1. Experimental setup
 
-### Original Paper Setup:
-
-## 3.1. Experimental setup
-
 ### Original Paper Setup
 
 The authors conducted experiments on the COCO 2017 detection dataset using the following configuration:
@@ -293,7 +289,48 @@ We kept everything as described in the paper except batch-size. All details that
 
 ## 3.2. Running the code
 
-@TODO: Explain your code & directory structure and how other people can run it.
+Trained Checkpoints: [Google Drive](https://drive.google.com/drive/folders/12nbbSn_1UuJDJvZICWBUuo_6abNauSfN?usp=sharing)
+
+### Installation
+
+1. install pytorch and torchvision with cuda support. You can follow the instructions on the [official website](https://pytorch.org/get-started/locally/).
+```bash
+pip install torch torchvision
+```
+
+2. Install the required packages.
+```bash
+pip install -r requirements.txt
+```
+3. Compile the deformable attention module.
+```bash
+cd models/dino/ops
+python setup.py build install
+cd ../../..
+```
+
+### Training
+
+```bash
+python main.py \
+	--output_dir logs/DINO/R50-MS4 -c config/DINO/DINO_4scale.py --coco_path {/path/to/coco} \
+	--options dn_scalar=100 embed_init_tgt=TRUE \
+	dn_label_coef=1.0 dn_bbox_coef=1.0 use_ema=False \
+	dn_box_noise_scale=1.0 --use_hae
+```
+
+### Evaluation
+
+```bash
+python main.py \
+  --output_dir logs/DINO/R50-MS4-%j \
+	-c config/DINO/DINO_4scale.py --coco_path {/path/to/coco}
+	--eval --resume {/path/to/checkpoint}
+	--options dn_scalar=100 embed_init_tgt=TRUE \
+	dn_label_coef=1.0 dn_bbox_coef=1.0 use_ema=False \
+	dn_box_noise_scale=1.0 --use_hae
+```
+
 
 ## 3.3. Results
 
