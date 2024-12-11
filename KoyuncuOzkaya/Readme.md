@@ -140,11 +140,16 @@ the network. Generated Moving Octree can also be utilised to modify the position
 
 ## 2.2. Our interpretation
 
-### Octomap Gneration
-In the paper, it is not mentioned how the authors implemented the octree stucture. We are planning to use the existing octomap library to generate the octree structure given in [4].
+### Depth Completiom
+Since the paper focuses on the data set which does not primarily contain depth frame, we first assume there is no depth data coming from a stereo or similar type camera; instead, datasets have RGB and Lidar data. However, our imlpementation will be both compatible with datasets having RGB-D data and datasets having only Lidar data for depth sensing. 
 
-### Utilization of the Camera Pose
-In the paper, it is mentioned that the camera pose is utilised to generate the octree structure and create the positional encodings but it is not mentioned how to do it. We will use the camera pose to generate rays for the sparse sampling process, and get the positional information along this ray. 
+Since the Lidar data is way sparser then an RGB frame, a completion method is needed to match the depth and color without losing information. Here, we are using CompletionFormer as it is used in Swift-Mapping. "Given sparse depths and the corresponding RGB images, depth completion aims at spatially propagating the sparse measurements throughout the whole image to get a dense depth prediction" [[2]](#2-y-zhang-x-guo-m-poggi-z-zhu-g-huang-and-s-mattoccia-completionformer-depth-completion-with-convolutions-and-vision-transformers-2023-ieeecvf-conference-on-computer-vision-and-pattern-recognition-cvpr-vancouver-bc-canada-2023-pp-18527-18536-doi-101109cvpr52729202301777).
+
+### Simultaneous Localization and Mapping
+Since we are assuming that we neither have a pose data nor calculating our own from various sensor outputs, we are utilizing nice-slam [[4]](#5-zhu-z-peng-s-larsson-v-xu-w-bao-h-cui-z-oswald-m-r--pollefeys-m-2022-nice-slam-neural-implicit-scalable-encoding-for-slam-2022-ieeecvf-conference-on-computer-vision-and-pattern-recognition-cvpr-httpsdoiorg101109cvpr52688202201245) to obtain the camera pose data since it is needed to construct the 3D environment while mapping.
+
+### Octree Data Structure
+During our experiments we saw that nice-slam consumes a lot of GPU memory as its own. As the Swift-Mapping propeses, we will store the 3D colored urban environment data by generating an octree data structure and integrating it into our custom nice-slam implementation to get better performance to reach real-time processing for the future work. 
 
 ### Training of the Network
 In the paper, the training setting is not presented. We will try different training approaches to effectively train the network.
@@ -153,11 +158,44 @@ In the paper, the training setting is not presented. We will try different train
 
 ## 3.1. Experimental setup
 
-@TODO: Describe the setup of the original paper and whether you changed any settings.
+We first set the software environment to be able to use different software packages at once. To do that we first generate a docker container since each user has the possibility to face a compability issue while dealing with the third party software packages. We are using the same or similar software as it is used by the authors of Swift-Mapping.
+
+One can setup the software environment following the below steps:
+-  Install [Docker Engine](https://docs.docker.com/engine/install/) and create a docker usergroup and add the user in it following [the guide](https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user).
+-  Install [VS Code](https://code.visualstudio.com/) and the required [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension pack.
+-  After setting up the container inside VS Code, run [the script](https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/KoyuncuOzkaya/script.sh) with sudo privileges.
+-  At the last stage, follow the guides written inside the software package's README files.
 
 ## 3.2. Running the code
+The following directory structure is used with the datasets included:
 
-@TODO: Explain your code & directory structure and how other people can run it.
+```
+.
+├── CompletionFormer/
+│   ├── data_json/
+│   ├── experiments/
+│   ├── KITTIDC_L1L2.pt
+│   ├── kitti_depth/
+│   ├── media/
+│   ├── README.md
+│   ├── src/
+│   └── utils/
+├── nice-slam/
+│   ├── configs/
+│   ├── Datasets/
+│   ├── environment.yaml
+│   ├── media/
+│   ├── output/
+│   ├── pretrained/
+│   ├── README.md
+│   ├── run.py
+│   ├── scripts/
+│   ├── src
+│   └── visualizer.py
+└── script.sh
+```
+
+@TODO: Add proper execution, training and evaluation guides
 
 ## 3.3. Results
 
@@ -174,7 +212,7 @@ In the paper, the training setting is not presented. We will try different train
 #### [1] Wu, Ke, Kaizhao Zhang, Mingzhe Gao, Jieru Zhao, Zhongxue Gan, and Wenchao Ding. “Swift-Mapping: Online Neural Implicit Dense Mapping in Urban Scenes.” Proceedings of the AAAI Conference on Artificial Intelligence 38, no. 6 (March 24, 2024): 6048–56. https://doi.org/10.1609/aaai.v38i6.28420.
 #### [2] Y. Zhang, X. Guo, M. Poggi, Z. Zhu, G. Huang and S. Mattoccia, "CompletionFormer: Depth Completion with Convolutions and Vision Transformers," 2023 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), Vancouver, BC, Canada, 2023, pp. 18527-18536, doi: 10.1109/CVPR52729.2023.01777.
 #### [3] J. Luiten, T. Fischer and B. Leibe, "Track to Reconstruct and Reconstruct to Track," in IEEE Robotics and Automation Letters, vol. 5, no. 2, pp. 1803-1810, April 2020, doi: 10.1109/LRA.2020.2969183.
-#### [4] https://github.com/OctoMap/octomap
+#### [4] Zhu, Z., Peng, S., Larsson, V., Xu, W., Bao, H., Cui, Z., Oswald, M. R., & Pollefeys, M. (2022). Nice-slam: Neural implicit scalable encoding for slam. 2022 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). https://doi.org/10.1109/cvpr52688.2022.01245
 
 
 # Contact
