@@ -9,4 +9,5 @@ training:
   weight_decay: 0.0005
   momentum: 0.9
   save_dir: "../trained_models"
+  log_dir: "../logs"
   input_size: [640, 640]

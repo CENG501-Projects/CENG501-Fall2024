@@ -279,7 +279,11 @@ project/
 │
 ├── util/
 │   ├── metric_util.py         # Utility functions for metric calculations
-│	├── visual_util.py         # Utility functions for visualization
+│	  ├── visual_util.py         # Utility functions for visualization
+│
+├── logs/
+│
+├── figures/
 │
 ├── requirements.txt           # Python dependencies
 ├── config.yaml                # Configuration file for hyperparameters
