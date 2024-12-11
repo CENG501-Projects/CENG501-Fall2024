@@ -1,0 +1,6 @@
+[submodule "KoyuncuOzkaya/nice-slam"]
+	path = KoyuncuOzkaya/nice-slam
+	url = https://github.com/cvg/nice-slam.git
+[submodule "KoyuncuOzkaya/CompletionFormer"]
+	path = KoyuncuOzkaya/CompletionFormer
+	url = https://github.com/youmi-zym/CompletionFormer.git
