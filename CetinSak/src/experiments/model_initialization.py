@@ -17,7 +17,7 @@ def model_initialization(args, input_dim, ch):
     net_layers = args.num_layers
     filter_size = args.s
     if args.dataset == "srhm":
-        filter_size = args.s * (args.s0 + 1)
+        filter_size = (args.s0 + 1)
 
     ### Define network architecture ###
     torch.manual_seed(args.seed_net)

@@ -26,6 +26,8 @@ class NonOverlappingConv1d(nn.Module):
 
     def forward(self, x):
         bs, cin, d = x.shape
+        print("Shape of forward is:", x.shape)
+        print(f"x will be viewed as : ({bs},1,{cin},{d}//{self.patch_size},{self.patch_size})")
         x = x.view(bs, 1, cin, d // self.patch_size, self.patch_size) # [bs, 1, cin, space // patch_size, patch_size]
         x = x * self.weight # [bs, cout, cin, space // patch_size, patch_size]
         x = x.sum(dim=[-1, -3]) # [bs, cout, space // patch_size]

@@ -1,15 +1,15 @@
 [srhm]
-num_features = 10
-m = 10
+num_features = 6
+m = 6
 s = 2
-s0 = 0
+s0 = 4
 num_layers = 2
-num_classes = 10
+num_classes = 6
 input_format = "onehot" # can be decimal, binary, pairs or onehot
 whitening = 0
 
 [model]
-net = "lcn" # can be cnn, fcn or lcn
+net = "cnn" # can be cnn, fcn or lcn
 random_features = 0
 width = 512
 batch_norm = 0

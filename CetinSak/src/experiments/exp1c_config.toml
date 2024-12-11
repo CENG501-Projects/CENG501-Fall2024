@@ -9,7 +9,7 @@ input_format = "onehot" # can be decimal, binary, pairs or onehot
 whitening = 0
 
 [model]
-net = "lcn" # can be cnn, fcn or lcn
+net = "cnn" # can be cnn, fcn or lcn
 random_features = 0
 width = 512
 batch_norm = 0
