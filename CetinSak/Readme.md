@@ -415,7 +415,7 @@ The code is structured as follows:
 
 To run the code:
 
-1. Make sure you have `Python3.12` installed.
+1. Make sure you have `Python3.11` installed. Some imports do not work with `Python3.12`.
 2. Clone the repository or copy folder of this implementation. Make sure you are at the root directory of this project.
 3. Create a virtual environment using `python -m venv .venv`.
 4. Activate the venv using:
