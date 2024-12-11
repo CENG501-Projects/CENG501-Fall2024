@@ -112,20 +112,31 @@ The proposed method involves additional computational overhead due to the FNPM a
 ### 2.3.5. Domain Gap
 The effectiveness of the method depends on the degree of domain gap between the source and target domains. If the gap is significant, additional techniques like domain adaptation or transfer learning may be necessary to improve performance.
 
+### 2.3.5 Augmentations
+The paper mentions several actions that can be taken as strong augmentation but does not clearly provide exact actions so, we implemented a strong data augmentation pipeline inspired by methods described in the referenced paper. The augmentation includes techniques like resizing with aspect ratio preservation, color jittering, random grayscale application, Gaussian blur, and solarization.
 
 # 3. Experiments and results
-
+We implemented the supervised student model of the framework, we yet have to dive into active sampling and unsupervised domain adaptation parts of the framework.
+Note: At this phase we could not manage to run successfuly the training process with high number of iterations and epochs. That is why we have gotten onderfitted model with flactuating training and validation loss. 
 ## 3.1. Experimental setup
-
-@TODO: Describe the setup of the original paper and whether you changed any settings.
+The implementation that is followed by the paper runs 30k epoch but as we do not have enough computational power for this process for initial phase we did applied 100 epochs.
+For our implementation, we followed the training setup described in the paper for both the detection model and the False Negative Prediction Module (FNPM). For the detection models, we used Stochastic Gradient Descent (SGD) with a momentum of 0.9, a weight decay of \(10<sup>-4</sup>\), and started with a learning rate of 0.02. We also included a warm-up phase at the beginning of training. The model was trained for 40,000 iterations, and the learning rate was reduced by a factor of 10 at the 30,000 and 35,000 iteration marks. For the FNPM, we used a separate SGD optimizer with a smaller starting learning rate of \(10<sup>-4</sup>\). This part of the training lasted for 2,000 iterations, with a cosine annealing scheduler to gradually adjust the learning rate. We used this scheduler before starting active sampling to make sure the FNPM was optimized independently, avoiding any interference with the detection model.
 
 ## 3.2. Running the code
-
-@TODO: Explain your code & directory structure and how other people can run it.
+At first you need to install the datasets; For the first phase we only used Cityscapes dataset, and put it into Datasets folder under the main project folder with the same level with Codes folder. Afterwards, we run the function written in Collector module to reorganize the images under the datasets in a way that collects images from different cities(folders) into train/all_data, val/all_data and test/all_data. 
+In the Codes folder we add Model_Results folder where we keep track and wights of training process and this let us add up new epoch runs instead of starting from scratch. 
 
 ## 3.3. Results
 
-@TODO: Present your results and compare them to the original paper. Please number your figures & tables as if this is a paper.
+
+The training process for the Faster R-CNN model with a VGG16 backbone did not go as expected. From the graph of training and validation losses, it is clear that the model struggled to learn properly. Both the training and validation losses fluctuate a lot throughout the 50 epochs, and there is no clear sign that the losses are decreasing steadily. This indicates that the training process failed to converge, meaning the model did not successfully optimize its performance.
+
+The validation loss is often higher than the training loss, which suggests that the model may be overfitting to the training data and not generalizing well to new data. The loss function used by Faster R-CNN combines different components like classification loss, regression loss, and region proposal network (RPN) loss. However, the way the losses behaved shows that the model was not able to minimize them effectively.
+
+This unstable behavior could be caused by several issues, such as a learning rate that is too high, noisy or incorrect data, or problems in how the model was set up or trained. To fix this, adjustments like fine-tuning the learning rate, improving the data quality, or checking the annotations might help. For now, the results show that the training process was unsuccessful and needs improvement.
+
+![image](https://github.com/user-attachments/assets/7b036eac-b55b-493f-9045-37fe46f8708f)
+
 
 # 4. Conclusion
 
