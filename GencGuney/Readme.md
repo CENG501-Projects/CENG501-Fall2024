@@ -120,6 +120,53 @@ This process is designed to ensure that the experiments are reproducible and can
 
 ## 3.3. Results
 
+### 3.3.1. First Results
+
+The initial results reveal some inconsistencies with the thresholding method, rendering the outcomes unreliable at this stage. Nevertheless, the Maximum Softmax Probability (MSP) scores provided below have been accurately computed, and the validation tests have been successfully executed.
+
+NOTE: As mentioned above, the ID dataset used is CIFAR-10 whereas the OOD datasets experimented are SVHN, Places365 and Texture. In addition, the model zoo contains Resnet18, Resnet34, Resnet50, DenseNet121 and Resnet18 with contrastive loss.
+
+### MSP Score Statistics for Datasets
+
+|                Model         |   Dataset   |  Mean   |   Std   |   Min   |   Max   |
+|------------------------------|-------------|---------|---------|---------|---------|
+| ResNet18                    | SVHN        | 0.2416  | 0.2087  | 0.0086  | 0.9849  |
+| ResNet34                    | SVHN        | 0.4132  | 0.2287  | 0.0426  | 0.9983  |
+| ResNet50                    | SVHN        | 0.6418  | 0.2507  | 0.0442  | 1.0000  |
+| DenseNet121                 | SVHN        | 0.5720  | 0.2736  | 0.0162  | 1.0000  |
+| ResNet18_Contrastive        | SVHN        | 0.2416  | 0.2087  | 0.0086  | 0.9849  |
+| ResNet18                    | Places365   | 0.4397  | 0.2631  | 0.0226  | 1.0000  |
+| ResNet34                    | Places365   | 0.4888  | 0.2685  | 0.0262  | 1.0000  |
+| ResNet50                    | Places365   | 0.5028  | 0.2716  | 0.0160  | 1.0000  |
+| DenseNet121                 | Places365   | 0.4783  | 0.2660  | 0.0209  | 1.0000  |
+| ResNet18_Contrastive        | Places365   | 0.4397  | 0.2631  | 0.0226  | 1.0000  |
+| ResNet18                    | Texture     | 0.4166  | 0.2830  | 0.0154  | 1.0000  |
+| ResNet34                    | Texture     | 0.4714  | 0.2831  | 0.0161  | 1.0000  |
+| ResNet50                    | Texture     | 0.4792  | 0.2896  | 0.0193  | 1.0000  |
+| DenseNet121                 | Texture     | 0.4518  | 0.2923  | 0.0178  | 1.0000  |
+| ResNet18_Contrastive        | Texture     | 0.4166  | 0.2830  | 0.0154  | 1.0000  |
+
+
+### ZODE Algorithm Output
+|                Model         |    Dataset     |    TP   |    TN   |    FP   |    FN   | Precision |  Recall   |  F1-Score | Threshold  |
+|-----------------------------|----------------|---------|---------|---------|---------|-----------|-----------|-----------|------------|
+| ResNet18                   | SVHN           |      0  |  10000  |      0  |  26032  | NaN       | 0.000000  | NaN       | 0.008626   |
+| ResNet34                   | SVHN           |      0  |  10000  |      0  |  26032  | NaN       | 0.000000  | NaN       | 0.042626   |
+| ResNet50                   | SVHN           |  26031  |     13  |   9987  |      1  | 0.722722  | 0.999962  | 0.839033  | 1.000000   |
+| DenseNet121                | SVHN           |      0  |  10000  |      0  |  26032  | NaN       | 0.000000  | NaN       | 0.016236   |
+| ResNet18_Contrastive       | SVHN           |      0  |  10000  |      0  |  26032  | NaN       | 0.000000  | NaN       | 0.008626   |
+| ResNet18                   | Places365      |  35929  |      1  |   9999  |    571  | 0.782290  | 0.984356  | 0.871767  | 0.993372   |
+| ResNet34                   | Places365      |      0  |  10000  |      0  |  36500  | NaN       | 0.000000  | NaN       | 0.026214   |
+| ResNet50                   | Places365      |      0  |  10000  |      0  |  36500  | NaN       | 0.000000  | NaN       | 0.016026   |
+| DenseNet121                | Places365      |      0  |  10000  |      0  |  36500  | NaN       | 0.000000  | NaN       | 0.020905   |
+| ResNet18_Contrastive       | Places365      |  35929  |      1  |   9999  |    571  | 0.782290  | 0.984356  | 0.871767  | 0.993372   |
+| ResNet18                   | Texture        |   5487  |      1  |   9999  |    153  | 0.354320  | 0.972872  | 0.519455  | 0.993372   |
+| ResNet34                   | Texture        |      0  |  10000  |      0  |   5640  | NaN       | 0.000000  | NaN       | 0.016145   |
+| ResNet50                   | Texture        |      0  |  10000  |      0  |   5640  | NaN       | 0.000000  | NaN       | 0.019346   |
+| DenseNet121                | Texture        |      0  |  10000  |      0  |   5640  | NaN       | 0.000000  | NaN       | 0.017756   |
+| ResNet18_Contrastive       | Texture        |   5487  |      1  |   9999  |    153  | 0.354320  | 0.972872  | 0.519455  | 0.993372   |
+
+
 @TODO: Present your results and compare them to the original paper. Please number your figures & tables as if this is a paper.
 
 # 4. Conclusion
