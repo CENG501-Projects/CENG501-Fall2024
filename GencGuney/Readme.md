@@ -166,9 +166,6 @@ NOTE: As mentioned above, the ID dataset used is CIFAR-10 whereas the OOD datase
 | DenseNet121                | Texture        |      0  |  10000  |      0  |   5640  | NaN       | 0.000000  | NaN       | 0.017756   |
 | ResNet18_Contrastive       | Texture        |   5487  |      1  |   9999  |    153  | 0.354320  | 0.972872  | 0.519455  | 0.993372   |
 
-
-@TODO: Present your results and compare them to the original paper. Please number your figures & tables as if this is a paper.
-
 # 4. Conclusion
 
 @TODO: Discuss the paper in relation to the results in the paper and your results.
