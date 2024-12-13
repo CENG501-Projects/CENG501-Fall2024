@@ -198,8 +198,32 @@ The following directory structure is used with the datasets included:
 @TODO: Add proper execution, training and evaluation guides
 
 ## 3.3. Results
+After setting the environment and the packages to be able to run on different data sets, we obtain the following results of reconstruction of the nice-slam implementation. Also, on of the right, generated frames can be seen while tracking operation is executed
 
-@TODO: Present your results and compare them to the original paper. Please number your figures & tables as if this is a paper.
+<table>
+  <tr>
+    <td align="center">
+      <img src="./media/apartment_niceslam.gif" height="200px" /><br>
+      <b>The result of reconstruction (example 1)</b>
+    </td>
+    <td align="center">
+      <img src="./media/apartment_depth_color.gif" height="200px" /><br>
+      <b>Tracking operation</b>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="./media/room_niceslam.gif" height="200px" /><br>
+      <b>The result of reconstruction (example 2)</b>
+    </td>
+    <td align="center">
+      <img src="./media/room_depth_color.gif" height="200px" /><br>
+      <b>Tracking operation</b>
+    </td>
+  </tr>
+</table>
+
+@TODO: Improve the results section
 
 
 # 4. Conclusion
