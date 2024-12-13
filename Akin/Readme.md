@@ -90,7 +90,11 @@ I'm using a MacBook Air M2 with 16 GB of ram with 8 GPUs to setup my environment
 
 ## 3.3. Results
 
-I mostly worked with Interaction Module up until this point. I've done several tests with my implementation, and trained the interaction module using 1/4 of the dataset from MOT20. The results do not show something meaningful yet, however I'll be working on the implementation and continue my implementation on both interaction and refind modules.
+I've mostly worked on the interaction modules. The main idea behind interaction module is to predict the next position of a person by understanding the relations between people and their actions.
+
+![Figures/loss.png](Figures/loss.png)
+
+The figure above shows training loss during the training of the interaction module.
 
 # 4. Conclusion
 
