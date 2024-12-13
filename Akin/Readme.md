@@ -94,7 +94,7 @@ I've mostly worked on the interaction modules. The main idea behind interaction 
 
 ![Figures/loss.png](Figures/loss.png)
 
-The figure above shows training loss during the training of the interaction module.
+The figure above shows training and validation loss during the training of the interaction module.
 
 # 4. Conclusion
 
