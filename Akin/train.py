@@ -1,3 +1,5 @@
+import numpy as np
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -6,111 +8,131 @@ from torch.utils.data import DataLoader, Dataset
 
 from load import load_data
 
-class MOT20Dataset(Dataset):
-    def __init__(self, data_path, transform=None):
-        self.data_path = data_path
-        self.transform = transform
+class MOTDataset(Dataset):
+    def __init__(self):
         self.data = self.load_data()
 
     def load_data(self):
-        return load_data(self.data_path)
+        inputs, outputs = load_data('gt1.txt')
+        inputs2, outputs2 = load_data('gt2.txt')
+        inputs3, outputs3 = load_data('gt3.txt')
+        inputs5, outputs5 = load_data('gt5.txt')
+
+        inputs = inputs + inputs2 + inputs3 + inputs5
+        outputs = outputs + outputs2 + outputs3 + outputs5
+
+        return inputs, outputs
 
     def __len__(self):
-        return len(self.data[0])
+        return len(self.data)
 
     def __getitem__(self, idx):
-        tracklets, gt_offsets = self.data
-        item = [tracklets[idx], gt_offsets[idx]]
+        tracklets, outputs = self.data
 
-        if self.transform:
-            item = self.transform(item)
-
-        return item
-
+        return tracklets[idx], outputs[idx]
 
 class InteractionModule(nn.Module):
-    def __init__(self, input_dim, hidden_dim, threshold=0.6):
+    def __init__(self, input_dim=8, hidden_dim=64, output_dim=4):
         super(InteractionModule, self).__init__()
+        # Linear transformation for embedding
         self.embedding = nn.Linear(input_dim, hidden_dim)
+
         self.query = nn.Linear(hidden_dim, hidden_dim)
         self.key = nn.Linear(hidden_dim, hidden_dim)
-        self.asymmetric_conv = nn.Sequential(
-            nn.Conv2d(hidden_dim, hidden_dim, kernel_size=(1, 3), padding=(0, 1)),
-            nn.Conv2d(hidden_dim, hidden_dim, kernel_size=(3, 1), padding=(1, 0)),
+
+        self.prelu = nn.PReLU()
+        self.conv1 = nn.Conv2d(1, 1, kernel_size=(1, 3), padding=(0, 1))
+        self.conv2 = nn.Conv2d(1, 1, kernel_size=(3, 1), padding=(1, 0))
+
+        # Graph Convolution Network
+        self.gcn = nn.Sequential(
+            nn.Linear(output_dim, hidden_dim),
             nn.PReLU()
         )
-        self.sigmoid = nn.Sigmoid()
-        self.threshold = threshold
-        self.final_mlp = nn.Sequential(
-            nn.Linear(hidden_dim, hidden_dim),
+
+        self.prediction = nn.Sequential(
+            nn.Linear(hidden_dim, hidden_dim // 2),
             nn.ReLU(),
-            nn.Linear(hidden_dim, 4)  # Predicting offsets (x, y, w, h)
+            nn.Linear(hidden_dim // 2, output_dim)
         )
 
-    def forward(self, tracklet_features):
-        # Step 1: Embedding and attention computation
-        embedded = self.embedding(tracklet_features)
-        query = self.query(embedded)  # (batch_size, num_tracklets, hidden_dim)
-        key = self.key(embedded)     # (batch_size, num_tracklets, hidden_dim)
-        attention = torch.bmm(query, key.transpose(1, 2)) / (query.size(-1) ** 0.5)
-        attention = F.softmax(attention, dim=-1)  # (batch_size, num_tracklets, num_tracklets)
+    def forward(self, inputs):
+        o = inputs[:,:,:4]
 
-        # Step 2: Prepare attention for convolution
-        # Add a channel dimension and expand to (batch_size, hidden_dim, num_tracklets, num_tracklets)
-        attention = attention.unsqueeze(1).repeat(1, embedded.size(-1), 1, 1)
+        x = self.embedding(inputs)
 
-        # Step 3: Asymmetric convolution for interaction modeling
-        attention = self.asymmetric_conv(attention)
+        q = self.query(x)
+        k = self.key(x)
 
-        # Step 4: Mask significant interactions
-        interaction_mask = (self.sigmoid(attention) > self.threshold).float()
-        interaction_matrix = interaction_mask * attention
+        attention_scores = F.softmax(torch.bmm(q, k.transpose(1, 2)) / np.sqrt(k.size(-1)), dim=-1)
 
-        # Step 5: Motion prediction
-        interaction_matrix = interaction_matrix.mean(dim=1)  # Reduce channel dimension back
-        fused_features = torch.bmm(interaction_matrix, embedded)
-        predicted_offsets = self.final_mlp(fused_features)
+        conv_features = attention_scores
+        for _ in range(10):
+            conv_features = self.conv1(conv_features) + self.conv2(conv_features)
+            conv_features = self.prelu(conv_features)
 
-        return predicted_offsets
+        mask = torch.sigmoid(conv_features)
+        mask = (mask > 0.5).float()
 
-# Training Loop
-def train_interaction_module(data_loader, model, criterion, optimizer, num_epochs=10):
+        adjacency_matrix = mask * attention_scores
+
+        gcn_features = self.gcn(torch.mm(adjacency_matrix.squeeze(0), o.squeeze(0)).unsqueeze(0))
+
+        predictions = self.prediction(gcn_features)
+
+        return predictions
+
+def validate_model(model, val_dataloader, criterion, device='cuda'):
+    model.eval()
+    val_loss = 0.0
+    with torch.no_grad():
+        for inputs, targets in val_dataloader:
+            inputs, targets = inputs.to(device), targets.to(device)
+
+            predictions = model(inputs)
+
+            loss = criterion(predictions, targets)
+
+            val_loss += loss.item()
+
+    return val_loss
+
+# Define the training loop
+def train_model(model, dataloader, val_dataloader, optimizer, criterion, num_epochs=10, device='cuda'):
+    model.to(device)
+
     for epoch in range(num_epochs):
         model.train()
         epoch_loss = 0
+        for inputs, targets in dataloader:
+            inputs, targets = inputs.to(device), targets.to(device)
 
-        for tracklet_features, ground_truth_offsets in data_loader:
             # Forward pass
-            predicted_offsets = model(tracklet_features)
+            optimizer.zero_grad()
+            predicted_offsets = model(inputs)
 
             # Compute loss
-            loss = criterion(predicted_offsets, ground_truth_offsets)
-            epoch_loss += loss.item()
+            loss = criterion(predicted_offsets, targets)
 
-            # Backward pass and optimization
-            optimizer.zero_grad()
+            epoch_loss += loss.item()
             loss.backward()
             optimizer.step()
 
-        print(f"Epoch {epoch + 1}/{num_epochs}, Loss: {epoch_loss / len(data_loader):.4f}")
 
-    print("Training completed.")
+        val_loss = validate_model(model, val_dataloader, criterion, device=device)
 
+        print(f"Epoch {epoch+1}/{epochs}, Train Loss: {total_loss/len(dataloader):.4f}, Val Loss: {val_loss/len(val_dataloader):.4f}")
+        # print(f"{total_loss/len(dataloader):.4f}")
 
-# Main
+# Example usage
 if __name__ == "__main__":
-    # Device setup
-    device = torch.device("mps")
+    train_dataset = MOTDataset()
+    val_dataset = MOTDataset()
+    train_loader = DataLoader(train_dataset, batch_size=1, shuffle=True)
+    val_loader = DataLoader(val_dataset, batch_size=1, shuffle=True)
 
-    # Dataset and DataLoader
-    # transform = transforms.Compose([transforms.ToTensor()])
-    dataset = MOT20Dataset(data_path="gt.txt")
-    data_loader = DataLoader(dataset, batch_size=16, shuffle=True)
-
-    # Model, Loss, Optimizer
-    interaction_module = InteractionModule(input_dim=8, hidden_dim=128)
+    model = InteractionModule()
     criterion = nn.MSELoss()  # Example loss function for offset prediction
-    optimizer = optim.Adam(interaction_module.parameters(), lr=1e-3)
+    optimizer = optim.Adam(model.parameters(), lr=1e-3)
 
-    # Train
-    train_interaction_module(data_loader, interaction_module, criterion, optimizer, num_epochs=100)
+    train_model(model, train_loader, val_loader, optimizer, criterion, num_epochs=40, device='mps')
