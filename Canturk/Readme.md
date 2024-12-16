@@ -163,7 +163,7 @@ We needed to get rid of from the symmetry in the column "edge_index" not only to
 
 We concentrated building the model first for $1$-order graphs which are directly given ones. Since node features are stored in the form of strings, we converted that column to a list to reach feature embedding of each node. In the model, we will update each feature embedding by taking neighbors' embeddings into account. Hence, we created a list called "adjacent_total" to keep which nodes are connected with which nodes. For instance, $0$-th index of $0$-th index of the list shows first node (with number $0$) of the first graph is connected to nodes with number $5$ and $1$. Then, a list called "features_total" is constructed to keep corresponding features of the nodes. Hence, we were ready to use neighbors' features to obtain Neighboring Substructure Aggregation.
 
-We tried to write the necessary code for substructure aggregation part. Attention between a node and each of its neighbors is obtained with proper results. However, our model for $u(C_k)^{'}_{sa}$ couldn't come up with meaningful results yet. What we have done can be followed via the files: "data_processing_code.py" and "model.py".
+We tried to write the necessary code for substructure aggregation part. Attention between a node and each of its neighbors is obtained with proper results. Our model for $u(C_k)^{'}_{sa}$ came up with meaningful results.
 
 ## 3.2. Running the code
 
