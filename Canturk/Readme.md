@@ -171,7 +171,7 @@ We tried to write the necessary code for substructure aggregation part. Attentio
 
 ## 3.3. Results
 
-No results yet.
+![Image](./images/Firstresults.PNG)
 
 # 4. Conclusion
 
