@@ -2,6 +2,7 @@
 import torch
 from torch.utils.data import Dataset
 import torch.nn.functional as F
+import torchshow as ts
 
 from itertools import *
 import random
@@ -97,6 +98,25 @@ class SparseRandomHierarchyModel(Dataset):
         self.x, self.targets = self.sample_data_from_paths(
             samples_indices, paths, m, num_classes, num_layers, s, s0=s0, seed=seed, seed_reset_layer=seed_reset_layer
         )
+
+        mode = "test"
+        if train:
+            mode = "train"
+        
+        grouped_examples = {label: [] for label in self.targets.unique().tolist()}
+        for label, example in zip(self.targets, self.x):
+            grouped_examples[label.item()].append(example)
+
+        for label, ex_list in grouped_examples.items():
+            print(f"Label: {label}")
+            ts.save(torch.stack(ex_list, dim=0), f"torchshow/categorized_{self.num_layers}_{self.s}_{self.s0}_{self.m}_{mode}_{label}.png")
+
+        ts.save(self.x, f"torchshow/examples_{self.num_layers}_{self.s}_{self.s0}_{self.m}_{mode}.png")
+        self.x = self.x+1
+        print(f"There are {len(self.x)} examples")
+        print(f"There are {len(self.targets)} labels")
+
+        self.sanity_check_sparsity(self.x[0])
         
 
         # encode input pairs instead of features
@@ -115,7 +135,7 @@ class SparseRandomHierarchyModel(Dataset):
             self.x = ((self.x[:, None] + 1) / num_features - 1) * 2
         elif "onehot" in input_format:
             self.x = F.one_hot(
-                self.x.long()+1,
+                self.x.long(),
                 num_classes=num_features+1 if 'pairs' not in input_format else num_features ** 2
             ).float()
             self.x = self.x.permute(0, 2, 1)
@@ -128,6 +148,28 @@ class SparseRandomHierarchyModel(Dataset):
             raise ValueError
 
         self.transform = transform
+
+    def sanity_check_sparsity(self, x):
+        print(f"Feature/all ratio in example: %{(torch.count_nonzero(x)/torch.numel(x))*100}")
+        print(f"Feature/all in example: {torch.count_nonzero(x)}/{torch.numel(x)}")
+
+        expected_meaningful = self.s ** self.num_layers
+        expected_total = (self.s * (self.s0 + 1)) ** self.num_layers
+        print(f"Expected feature/all: {expected_meaningful}/{expected_total}")
+
+        assert expected_meaningful == torch.count_nonzero(x), "Expected number of meaningful features do not match with actual."
+        assert expected_total == torch.numel(x), "Expected length of last layer vector does not match with the actual."
+
+        targets_unique = torch.unique(self.targets, return_counts=True) 
+        class_count = len(targets_unique[0].tolist())
+        print(f"Expected class count: {class_count}")
+        print(f"Actual class count: {self.num_classes}")
+
+        assert class_count == self.num_classes, "Expected class count and actual class count does not match."
+
+        counts = targets_unique[1].float()
+        counts = counts/counts.sum()
+        print(f"Class distribution : - {torch.unique(self.targets, return_counts=True)} - {counts}")
 
     def __len__(self):
         return len(self.targets)

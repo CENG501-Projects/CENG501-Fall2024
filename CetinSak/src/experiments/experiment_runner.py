@@ -197,13 +197,13 @@ def train(args, trainloader, net0, criterion):
             if 'layerwise' in args.net:
                 l = epoch // (args.epochs // args.num_layers + 1)
                 net.init_layerwise_(l)
-                print(f'Layer-wise training up to layer {l}.', flush=True)
 
         net.train()
         train_loss = 0
         correct = 0
         total = 0
         for batch_idx, (inputs, targets) in enumerate(trainloader):
+
             inputs, targets = inputs.to(args.device), targets.to(args.device)
             optimizer.zero_grad()
             outputs = net(inputs)

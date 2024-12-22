@@ -63,8 +63,8 @@ def sample_hierarchical_rules_type_a(num_features, num_layers, m, num_classes, s
 
         print("Old feature to index is:", old_feature_to_index)
         print("Number of new paths is:", new_paths.shape)
-
-        # ts.save(new_paths, f"torchshow/paths_{l}.png")
+        
+        ts.save(new_paths, f"torchshow/paths_{l}_{s}_{s0}_{m}.png")
 
         all_levels_tuples.append(new_tuples)
         all_levels_paths.append(new_paths)
@@ -158,6 +158,7 @@ def sample_data_from_paths(samples_indices, paths, m, num_classes, num_layers, s
             left_right = left_right[None].repeat(len(samples_indices), 1)
             indices.append(left_right)
 
+        # Synonyms happen here (probably)
         if l >= seed_reset_layer:
             np.random.seed(seed + 42 + l)
             perm = torch.randperm(len(samples_indices))
@@ -183,5 +184,4 @@ def sample_data_from_paths(samples_indices, paths, m, num_classes, num_layers, s
     yi = y[:, None].repeat(1, sparse_tuple_size ** (num_layers - 1))
     x = x[tuple([yi, *indices])].flatten(1)
 
-    print(x.shape,y.shape)
     return x, y
