@@ -126,9 +126,9 @@ For ImageNet experiments, 10 random classes of ImageNet is used as ID dataset, a
 ![Figure 1: Training results of GReg experiment on ResNet-18 and CIFAR-10](./Figures/greg_cifar10_resnet18.png)
 
 **Figure 1**: Training Plots of GReg Experiment on ResNet-18 and CIFAR-10
-| iSUN | LSUN | a |
-|      | AUROC     | FPR95     |
+| iSUN | LSUN |
 |--------------|--------------|--------------|
+|      | AUROC     | FPR95     |
 | Our Results | 66.00 | 94.72 |
 | Original Results | 98.33 | 6.2 |
 
