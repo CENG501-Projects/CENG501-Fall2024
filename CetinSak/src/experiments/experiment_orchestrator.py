@@ -5,7 +5,7 @@ import argparse
 import os
 
 
-from src.experiments.experiment_runner import experiment_run
+from src.experiments.experiment_runner import experiment_run, experiment_diffeo_run, experiment_synonym_run
 
 class Config:
     def __init__(self, input_dict) -> None:
@@ -85,7 +85,7 @@ if __name__ == "__main__":
         print("Running experiment with following config:")
         pprint(config_dict)
 
-        assert args.diffeo_retry_count > 1 and args.synonym_retry_count > 1, "Cannot run synonym and diffeo experiment at the same time"
+        assert not (args.diffeo_retry_count > 1 and args.synonym_retry_count > 1), "Cannot run synonym and diffeo experiment at the same time"
 
         if args.diffeo_retry_count > 1:
             print("Running diffeo experiment")
@@ -94,4 +94,5 @@ if __name__ == "__main__":
             print("Running synonym experiment")
             experiment_synonym_run(idx, config_name, args)
         else:
+            print("Running normal experiment")
             experiment_run(idx, config_name, args)

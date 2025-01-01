@@ -126,7 +126,7 @@ class SparseRandomHierarchyModel(Dataset):
         # ts.save(self.x, f"torchshow/examples_{self.num_layers}_{self.s}_{self.s0}_{self.m}_{mode}.png")
         self.x = self.x+1
         print(f"There are {len(self.x)} examples")
-        print(f"There are {len(self.targets)} labels")
+        print(f"There are {len(self.targets)} targets")
 
         self.sanity_check_sparsity(self.x[0])
         

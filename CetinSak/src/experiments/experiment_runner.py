@@ -347,7 +347,7 @@ def experiment_initialization(args):
 
     if testset:
         testloader = torch.utils.data.DataLoader(
-            testset, batch_size=100, shuffle=False, num_workers=0)
+            testset, batch_size=args.batch_size, shuffle=False, num_workers=0)
     else:
         testloader = None
 
@@ -364,9 +364,9 @@ def dataset_initialization(args):
 
     nc = args.num_classes
 
-    if "seed_synonym" in args:
+    if args.seed_synonym:
         seed_p = args.seed_synonym
-    elif "seed_diffeo" in args:
+    elif args.seed_diffeo:
         seed_p = args.seed_diffeo
 
     transform = None
