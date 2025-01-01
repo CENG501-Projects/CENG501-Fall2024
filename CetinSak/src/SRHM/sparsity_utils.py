@@ -8,7 +8,7 @@ import numpy as np
 from src.utils.utils import number2base
 import torchshow as ts
 
-def sample_hierarchical_rules_type_a(num_features, num_layers, m, num_classes, s, s0, seed=0):
+def sample_hierarchical_rules_type_a(num_features, num_layers, m, num_classes, s, s0, seed=0, diffeo_layer_start=42):
     random.seed(seed)
     all_levels_paths = [torch.arange(num_classes)]
     all_levels_tuples = []
@@ -43,6 +43,8 @@ def sample_hierarchical_rules_type_a(num_features, num_layers, m, num_classes, s
         for tup in selected_tuples:
             sparse_tup = [-1] * sparse_tuple_size  
             for i, value in enumerate(tup):
+                if l == diffeo_layer_start:
+                    random.seed(diffeo_layer_start)
                 random_val_in_the_patch = random.randint(0, s0)
                 sparse_tup[i * (s0 + 1) + random_val_in_the_patch] = value  
             new_tuples.append(sparse_tup)
