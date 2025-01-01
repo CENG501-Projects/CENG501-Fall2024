@@ -43,7 +43,7 @@ pickle = "outputs/output"
 output = "outputs/output"
 
 [pytorch]
-device = "cpu"
+device = "cuda"
 dtype = "float32"
 
 [seeds]

@@ -4,12 +4,14 @@ from torch.utils.data import Dataset
 import torch.nn.functional as F
 import torchshow as ts
 
+import copy
 from itertools import *
 import random
 import numpy as np
 
 from src.SRHM.sparsity_utils import *
 from src.utils.utils import *
+from src.SRHM.diffeomorphism_utilities import *
 
 class SparseRandomHierarchyModel(Dataset):
     """
@@ -28,6 +30,7 @@ class SparseRandomHierarchyModel(Dataset):
             seed=0,
             max_dataset_size=None,
             seed_traintest_split=0,
+            apply_diffeo=False,
             train=True,
             input_format='onehot',
             whitening=0,
@@ -51,7 +54,8 @@ class SparseRandomHierarchyModel(Dataset):
         self.transform = transform
         self.testsize = testsize
         self.seed_reset_layer = seed_reset_layer
-        
+        self.apply_diffeo = apply_diffeo
+
         ## Set sparsity functions
         if sparsity_type == 'a':
             print("SRHM: Using sparsity type A")
@@ -109,9 +113,9 @@ class SparseRandomHierarchyModel(Dataset):
 
         for label, ex_list in grouped_examples.items():
             print(f"Label: {label}")
-            ts.save(torch.stack(ex_list, dim=0), f"torchshow/categorized_{self.num_layers}_{self.s}_{self.s0}_{self.m}_{mode}_{label}.png")
+            # ts.save(torch.stack(ex_list, dim=0), f"torchshow/categorized_{self.num_layers}_{self.s}_{self.s0}_{self.m}_{mode}_{label}.png")
 
-        ts.save(self.x, f"torchshow/examples_{self.num_layers}_{self.s}_{self.s0}_{self.m}_{mode}.png")
+        # ts.save(self.x, f"torchshow/examples_{self.num_layers}_{self.s}_{self.s0}_{self.m}_{mode}.png")
         self.x = self.x+1
         print(f"There are {len(self.x)} examples")
         print(f"There are {len(self.targets)} labels")
@@ -184,6 +188,13 @@ class SparseRandomHierarchyModel(Dataset):
 
         if self.transform:
             x, y = self.transform(x, y)
+
+
+        if self.apply_diffeo:
+            wodiffeo_x = copy.deepcopy(x)
+            x = apply_diffeomorphism(x, self.s, self.s0, seed=idx)
+
+            return x,wodiffeo_x, y
 
         # if self.background_noise:
         #     g = torch.Generator()

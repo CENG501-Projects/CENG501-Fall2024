@@ -58,6 +58,7 @@ class LocallyHierarchicalNet(nn.Module):
         y = y.mean(dim=[-1])
         y = y @ self.beta / self.beta.size(0)
         return y
+    
 
 
 class LocallyConnected1d(nn.Module):
@@ -128,3 +129,13 @@ class LocallyHierarchicalNet(nn.Module):
         y = y.mean(dim=[-1])
         y = y @ self.beta / self.beta.size(0)
         return y
+    
+    def get_layer_output(self, x, k):
+        if k >= len(self.net) or k < 0:
+            raise ValueError(f"Layer index k={k} is out of bounds. Total layers: {len(self.net)}")
+        
+        for i, layer in enumerate(self.net):
+            x = layer(x) 
+            if i == k:
+                return x
+    

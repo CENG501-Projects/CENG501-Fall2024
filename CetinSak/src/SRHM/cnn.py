@@ -65,6 +65,15 @@ class CNN(nn.Module):
         y = y.mean(dim=[-1])
         y = y @ self.beta / self.beta.size(0)
         return y
+    
+    def get_layer_activation(self, x, k):
+        if k >= len(self.hier) or k < 0:
+            raise ValueError(f"Layer index k={k} is out of bounds. Total layers: {len(self.hier)}")
+        
+        for i, layer in enumerate(self.hier):
+            x = layer(x)
+            if i == k:
+                return x
 
 
 class CNNLayerWise(nn.Module):    # only for patch_size = 2!!
@@ -105,3 +114,12 @@ class CNNLayerWise(nn.Module):    # only for patch_size = 2!!
         y = y.mean(dim=[-1])
         y = y @ self.beta / self.beta.size(0)
         return y
+    
+    def get_layer_activation(self, x, k):
+        if k >= len(self.hier) or k < 0:
+            raise ValueError(f"Layer index k={k} is out of bounds. Total layers: {len(self.hier)}")
+        
+        for i, layer in enumerate(self.hier):
+            x = layer(x)
+            if i == k:
+                return x
