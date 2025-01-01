@@ -8,7 +8,7 @@ import numpy as np
 from src.utils.utils import number2base
 import torchshow as ts
 
-def sample_hierarchical_rules_type_a(num_features, num_layers, m, num_classes, s, s0, seed=0, diffeo_layer_start=42):
+def sample_hierarchical_rules_type_a(num_features, num_layers, m, num_classes, s, s0, seed=0, diffeo_layer_start=42, seed_diffeo=0):
     random.seed(seed)
     all_levels_paths = [torch.arange(num_classes)]
     all_levels_tuples = []
@@ -44,7 +44,7 @@ def sample_hierarchical_rules_type_a(num_features, num_layers, m, num_classes, s
             sparse_tup = [-1] * sparse_tuple_size  
             for i, value in enumerate(tup):
                 if l == diffeo_layer_start:
-                    random.seed(diffeo_layer_start)
+                    random.seed(seed_diffeo)
                 random_val_in_the_patch = random.randint(0, s0)
                 sparse_tup[i * (s0 + 1) + random_val_in_the_patch] = value  
             new_tuples.append(sparse_tup)
@@ -70,9 +70,10 @@ def sample_hierarchical_rules_type_a(num_features, num_layers, m, num_classes, s
 
         all_levels_tuples.append(new_tuples)
         all_levels_paths.append(new_paths)
-
         print("")
 
+    # set seed back to normal
+    random.seed(seed)
     return all_levels_paths, all_levels_tuples
 
 def sample_hierarchical_rules_type_b(num_features, num_layers, m, num_classes, s, s0, seed=0):
@@ -133,7 +134,7 @@ def sample_hierarchical_rules_type_b(num_features, num_layers, m, num_classes, s
     return all_levels_paths, all_levels_tuples
 
 
-def sample_data_from_paths(samples_indices, paths, m, num_classes, num_layers, s, s0, seed=0, seed_reset_layer=42):
+def sample_data_from_paths(samples_indices, paths, m, num_classes, num_layers, s, s0, seed=0, synonym_start_layer=42):
     Pmax = m ** ((s ** num_layers - 1) // (s - 1)) * num_classes
     sparse_tuple_size = s * (s0 + 1)
 
@@ -161,7 +162,7 @@ def sample_data_from_paths(samples_indices, paths, m, num_classes, num_layers, s
             indices.append(left_right)
 
         # Synonyms happen here (probably)
-        if l >= seed_reset_layer:
+        if l >= synonym_start_layer:
             np.random.seed(seed + 42 + l)
             perm = torch.randperm(len(samples_indices))
             samples_indices = samples_indices[perm]

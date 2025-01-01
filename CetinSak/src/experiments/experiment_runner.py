@@ -21,6 +21,44 @@ from src.SRHM.srhm import SparseRandomHierarchyModel as SRHM
 
 # Models
 
+def experiment_synonym_run(idx, experiment_name, args):
+    args.ptr, args.pte = args2train_test_sizes(args)
+
+    output_idx = f"outputs/{experiment_name}_diffeo_{idx}.pkl"
+
+    with open(output_idx, "wb+") as handle:
+        pickle.dump(args, handle)
+    try:
+        for x in range(args.synonym_retry_count):
+            args.seed_synonym = x
+            for data in run(args):
+                with open(output_idx, "wb") as handle:
+                    pickle.dump(args, handle)
+                    pickle.dump(data, handle)
+    except:
+        os.remove(output_idx)
+        raise
+
+def experiment_diffeo_run(idx, experiment_name, args):
+    
+    args.ptr, args.pte = args2train_test_sizes(args)
+
+    output_idx = f"outputs/{experiment_name}_diffeo_{idx}.pkl"
+
+    with open(output_idx, "wb+") as handle:
+        pickle.dump(args, handle)
+    try:
+        for x in range(args.diffeo_retry_count):
+            args.seed_diffeo = x
+            for data in run(args):
+                with open(output_idx, "wb") as handle:
+                    pickle.dump(args, handle)
+                    pickle.dump(data, handle)
+    except:
+        os.remove(output_idx)
+        raise
+
+
 def experiment_run(idx, experiment_name, args):
 
     args.ptr, args.pte = args2train_test_sizes(args)
@@ -326,6 +364,11 @@ def dataset_initialization(args):
 
     nc = args.num_classes
 
+    if "seed_synonym" in args:
+        seed_p = args.seed_synonym
+    elif "seed_diffeo" in args:
+        seed_p = args.seed_diffeo
+
     transform = None
     if args.dataset == "rhm":
         DataModel = RHM
@@ -345,7 +388,8 @@ def dataset_initialization(args):
         train=True,
         transform=transform,
         testsize=args.pte,
-        max_dataset_size=args.ptr+args.pte)
+        max_dataset_size=args.ptr+args.pte,
+        seed_p=seed_p)
     
     if args.pte:
         testset = DataModel(

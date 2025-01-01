@@ -7,6 +7,8 @@ num_layers = [2, 3]
 num_classes = "num_features"
 input_format = "onehot" # can be decimal, binary, pairs or onehot
 whitening = 0
+diffeo_retry_count=1
+synonym_retry_count=1
 
 [model]
 net = "cnn" # can be cnn, fcn or lcn

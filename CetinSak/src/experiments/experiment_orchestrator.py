@@ -80,7 +80,18 @@ if __name__ == "__main__":
 
     config_dict_list, config_args_list = load_config(config_path)
 
+
     for idx, (config_dict, args) in enumerate(zip(config_dict_list, config_args_list)):
         print("Running experiment with following config:")
         pprint(config_dict)
-        experiment_run(idx, config_name, args)
+
+        assert args.diffeo_retry_count > 1 and args.synonym_retry_count > 1, "Cannot run synonym and diffeo experiment at the same time"
+
+        if args.diffeo_retry_count > 1:
+            print("Running diffeo experiment")
+            experiment_diffeo_run(idx, config_name, args)
+        elif args.synonym_retry_count > 1:
+            print("Running synonym experiment")
+            experiment_synonym_run(idx, config_name, args)
+        else:
+            experiment_run(idx, config_name, args)

@@ -36,7 +36,8 @@ class SparseRandomHierarchyModel(Dataset):
             whitening=0,
             transform=None,
             testsize=-1,
-            seed_reset_layer=42,):
+            seed_reset_layer=42,
+            seed_p=None):
         
         torch.manual_seed(seed)
         self.num_features = num_features
@@ -55,6 +56,7 @@ class SparseRandomHierarchyModel(Dataset):
         self.testsize = testsize
         self.seed_reset_layer = seed_reset_layer
         self.apply_diffeo = apply_diffeo
+        self.seed_p = seed_p
 
         ## Set sparsity functions
         if sparsity_type == 'a':
@@ -68,10 +70,16 @@ class SparseRandomHierarchyModel(Dataset):
             raise ValueError("Sparsity type not recognized")
 
         self.sample_data_from_paths = sample_data_from_paths
+
+        seed_synonym = self.seed
+        seed_diffeo = self.seed
+        if self.seed_p is not None:
+            seed_diffeo = self.seed
+            seed_synonym = self.seed_p
         
         ## Generate the dataset
         paths, _ = self.sample_hierarchical_rules(
-            self.num_features, self.num_layers, self.m, self.num_classes, self.s, self.s0, self.seed
+            self.num_features, self.num_layers, self.m, self.num_classes, self.s, self.s0, self.seed, seed_diffeo
         )
 
         ## Check Pmax calculation.
@@ -100,7 +108,7 @@ class SparseRandomHierarchyModel(Dataset):
             samples_indices = samples_indices[-testsize:]
 
         self.x, self.targets = self.sample_data_from_paths(
-            samples_indices, paths, m, num_classes, num_layers, s, s0=s0, seed=seed, seed_reset_layer=seed_reset_layer
+            samples_indices, paths, m, num_classes, num_layers, s, s0=s0, seed=seed_synonym, synonym_start_layer=seed_reset_layer
         )
 
         mode = "test"
