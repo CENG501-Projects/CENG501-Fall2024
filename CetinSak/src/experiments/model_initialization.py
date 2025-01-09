@@ -50,6 +50,17 @@ def model_initialization(args, input_dim, ch):
             out_dim=num_outputs,
             bias=args.bias,
         )
+    # Models 'VGG11', 'VGG16', 'ResNet18', 'ResNet34', 'EfficientNetB0'
+    elif args.net == "VGG11":
+        net = None
+    elif args.net == "VGG16":
+        net = None
+    elif args.net == "ResNet18":
+        net = None
+    elif args.net == "ResNet34":
+        net = None
+    elif args.net == "EfficientNetB0":
+        net = None
 
     assert net is not None, "Network architecture not in the list!"
 

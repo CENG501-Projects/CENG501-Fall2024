@@ -1,19 +1,24 @@
+# Experiment 4C - Diffeo Sensitivity of different networks, test error vs diffeo sensitivity, D2
+# [LCN, CNN, VGG11, VGG16, ResNet18, ResNet34, EfficientNetB0]
+
 [srhm]
-num_features = 3
-m = "num_features"
+num_features = 10
+m = 10
 s = 2
-s0 = 0
+s0 = 2
 num_layers = 2
-num_classes = "num_features"
+num_classes = 10
 input_format = "onehot" # can be decimal, binary, pairs or onehot
 whitening = 0
 diffeo_retry_count=1
 synonym_retry_count=1
-seed_diffeo='nil'
+seed_diffeo=1 # Diffeo exchange at layer 2
 seed_synonym='nil'
+sensitivity_stop_ratio = 'nil'
+p=7400
 
 [model]
-net = "cnn" # can be cnn, fcn or lcn
+net = ['LCN', 'CNN', 'VGG11', 'VGG16', 'ResNet18', 'ResNet34', 'EfficientNetB0']
 random_features = 0
 width = 512
 batch_norm = 0

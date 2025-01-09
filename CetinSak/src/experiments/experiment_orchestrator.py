@@ -5,13 +5,15 @@ import argparse
 import os
 
 
-from src.experiments.experiment_runner import experiment_run, experiment_diffeo_run, experiment_synonym_run
+from src.experiments.experiment_runner import experiment_run
 
 class Config:
     def __init__(self, input_dict) -> None:
         for top_key, sub_dict in input_dict.items():
             if isinstance(sub_dict, dict):
                 for sub_key, value in sub_dict.items():
+                    if value == "nil":
+                        value = None
                     setattr(self, sub_key, value)
 
 
@@ -72,9 +74,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--config_name", type=str, default="exp1a_config.toml")
-    parser.add_argument("--config_path", type=str, default="src/experiments")
+    parser.add_argument("--config_path", type=str, default="src/experiments/experiment_configs")
     args = parser.parse_args()
-
+    
     config_name = args.config_name.replace(".toml", "")
     config_path = os.path.join(args.config_path, args.config_name)
 
@@ -85,14 +87,8 @@ if __name__ == "__main__":
         print("Running experiment with following config:")
         pprint(config_dict)
 
+        print(args.p)
+
         assert not (args.diffeo_retry_count > 1 and args.synonym_retry_count > 1), "Cannot run synonym and diffeo experiment at the same time"
 
-        if args.diffeo_retry_count > 1:
-            print("Running diffeo experiment")
-            experiment_diffeo_run(idx, config_name, args)
-        elif args.synonym_retry_count > 1:
-            print("Running synonym experiment")
-            experiment_synonym_run(idx, config_name, args)
-        else:
-            print("Running normal experiment")
-            experiment_run(idx, config_name, args)
+        experiment_run(idx, config_name, args)

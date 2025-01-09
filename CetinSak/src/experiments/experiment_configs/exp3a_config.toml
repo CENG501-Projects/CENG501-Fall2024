@@ -1,15 +1,22 @@
+# Experiment 3A - Synonymic Sensitivity of LCN Networks
 [srhm]
-num_features = [4,6,8,10]
+num_features = [3,6,9,12]
 m = "num_features"
 s = 2
-s0 = 0
-num_layers = [2, 3]
+s0 = [0,1,2,4]
+num_layers = [2,3]
 num_classes = "num_features"
 input_format = "onehot" # can be decimal, binary, pairs or onehot
 whitening = 0
+diffeo_retry_count=1
+synonym_retry_count=1
+seed_diffeo='nil'
+seed_synonym=1 # Synonym exchange at layer 2
+sensitivity_stop_ratio = 0.3
+p='nil'
 
 [model]
-net = "lcn" # can be cnn, fcn or lcn
+net = "cnn" # can be cnn, fcn or lcn
 random_features = 0
 width = 512
 batch_norm = 0

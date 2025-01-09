@@ -1,15 +1,24 @@
+# Experiment 4C - Diffeo Sensitivity of different networks, test error vs diffeo sensitivity, D2
+# [LCN, CNN, VGG11, VGG16, ResNet18, ResNet34, EfficientNetB0]
+
 [srhm]
-num_features = 6
-m = 6
-s = 3
+num_features = 10
+m = 10
+s = 2
 s0 = 2
 num_layers = 2
-num_classes = 6
-input_format = "onehot" # can be long, decimal, binary, pairs or onehot
+num_classes = 10
+input_format = "onehot" # can be decimal, binary, pairs or onehot
 whitening = 0
+diffeo_retry_count=1
+synonym_retry_count=1
+seed_diffeo=1 # Diffeo exchange at layer 2
+seed_synonym='nil'
+sensitivity_stop_ratio = 'nil'
+p=7400
 
 [model]
-net = "cnn" # can be cnn, fcn or lcn
+net = ['LCN', 'CNN', 'VGG11', 'VGG16', 'ResNet18', 'ResNet34', 'EfficientNetB0']
 random_features = 0
 width = 512
 batch_norm = 0
@@ -39,11 +48,11 @@ save_init_net=1
 save_best_net=1
 save_last_net=1
 save_dynamics=1
-pickle = "outputs/output"
-output = "outputs/output"
+pickle = "outputs/output.pkl"
+output = "outputs/output.pkl"
 
 [pytorch]
-device = "cuda"
+device = "cpu"
 dtype = "float32"
 
 [seeds]
@@ -52,7 +61,7 @@ seed_net = -1 # network initalisation
 seed_trainset = -1 # training sample
 
 [dataset]
-dataset = "srhm" # 
+dataset = "srhm"
 ptr = 0.8 # Fraction of training points
 pte = 0.2 # Fraction of test points
 batch_size = 4

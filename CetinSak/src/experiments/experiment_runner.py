@@ -20,45 +20,6 @@ from src.SRHM.reference_code.hierarchical import RandomHierarchyModel as RHM
 from src.SRHM.srhm import SparseRandomHierarchyModel as SRHM
 
 # Models
-
-def experiment_synonym_run(idx, experiment_name, args):
-    args.ptr, args.pte = args2train_test_sizes(args)
-
-    output_idx = f"outputs/{experiment_name}_diffeo_{idx}.pkl"
-
-    with open(output_idx, "wb+") as handle:
-        pickle.dump(args, handle)
-    try:
-        for x in range(args.synonym_retry_count):
-            args.seed_synonym = x
-            for data in run(args):
-                with open(output_idx, "wb") as handle:
-                    pickle.dump(args, handle)
-                    pickle.dump(data, handle)
-    except:
-        os.remove(output_idx)
-        raise
-
-def experiment_diffeo_run(idx, experiment_name, args):
-    
-    args.ptr, args.pte = args2train_test_sizes(args)
-
-    output_idx = f"outputs/{experiment_name}_diffeo_{idx}.pkl"
-
-    with open(output_idx, "wb+") as handle:
-        pickle.dump(args, handle)
-    try:
-        for x in range(args.diffeo_retry_count):
-            args.seed_diffeo = x
-            for data in run(args):
-                with open(output_idx, "wb") as handle:
-                    pickle.dump(args, handle)
-                    pickle.dump(data, handle)
-    except:
-        os.remove(output_idx)
-        raise
-
-
 def experiment_run(idx, experiment_name, args):
 
     args.ptr, args.pte = args2train_test_sizes(args)
@@ -70,7 +31,6 @@ def experiment_run(idx, experiment_name, args):
     try:
         for data in run(args):
             with open(output_idx, "wb") as handle:
-                pickle.dump(args, handle)
                 pickle.dump(data, handle)
     except:
         os.remove(output_idx)
@@ -89,6 +49,14 @@ def run(args):
     criterion = partial(loss_func, args)
 
     trainloader, testloader, net0 = experiment_initialization(args)
+
+    # synonym_loader list
+
+    if args.seed_diffeo:
+        testdiffeo = diffeo_init(args)
+
+    if args.seed_synonym:
+        testsynonym = synonym_init(args)
 
     # scale batch size when larger than train-set size
     if (args.batch_size >= args.ptr) and args.scale_batch_size:
@@ -109,11 +77,13 @@ def run(args):
     best = dict()
     trloss_flag = 0
 
-    for net, epoch, losstr, avg_epoch_time in train(args, trainloader, net0, criterion):
+    for idx, (net, epoch, losstr, avg_epoch_time) in enumerate(train(args, trainloader, net0, criterion)):
 
         assert str(losstr) != "nan", "Loss is nan value!!"
         loss.append(losstr)
         epochs_list.append(epoch)
+        if args.p and idx*args.batch_size >= args.p:
+            return None
 
         # measuring locality for fcn nets
         if args.locality == 1:
@@ -169,6 +139,18 @@ def run(args):
             "dynamics": dynamics,
             "best": best,
         }
+
+        if args.seed_diffeo:
+            acc_diffeo = test(args, testdiffeo, net, criterion, print_flag=epoch % 5 == 0)
+            sensitivity_diffeo = None
+            out["acc_diffeo"] = acc_diffeo
+            out["sensitivity_diffeo"] = sensitivity_diffeo
+
+        if args.seed_synonym:
+            acc_synonym = test(args, testsynonym, net, criterion, print_flag=epoch % 5 == 0)
+            sensitivity_synonym = None
+            out["acc_synonym"] = acc_synonym
+            out["sensitivity_synonym"] = sensitivity_synonym
 
         yield out
 
@@ -340,6 +322,9 @@ def experiment_initialization(args):
     """
     torch.manual_seed(args.seed_init)
 
+    args.diffeo_init = False
+    args.synonym_init = False
+
     trainset, testset, input_dim, ch = dataset_initialization(args)
 
     trainloader = torch.utils.data.DataLoader(
@@ -351,9 +336,57 @@ def experiment_initialization(args):
     else:
         testloader = None
 
+    
     net = model_initialization(args, input_dim=input_dim, ch=ch)
 
     return trainloader, testloader, net
+
+def diffeo_init(args):
+
+    torch.manual_seed(args.seed_init)
+
+    args.diffeo_init = True
+
+    _, testset, _, _ = dataset_initialization(args)
+
+    testloader = torch.utils.data.DataLoader(
+        testset, batch_size=args.batch_size, shuffle=False, num_workers=0)
+
+    args.diffeo_init = False
+
+    return testloader
+
+def synonym_init(args):
+    torch.manual_seed(args.seed_init)
+
+    args.synonym_init = True
+
+    _, testset, _, _ = dataset_initialization(args)
+
+    testloader = torch.utils.data.DataLoader(
+        testset, batch_size=args.batch_size, shuffle=False, num_workers=0)
+    args.synonym_init = True
+    return testloader
+
+# Adapted from : https://stackoverflow.com/questions/57416925/best-practices-for-generating-a-random-seeds-to-seed-pytorch
+def get_truly_random_seed_through_os():
+    """
+    Usually the best random sample you could get in any programming language is generated through the operating system. 
+    In Python, you can use the os module.
+
+    source: https://stackoverflow.com/questions/57416925/best-practices-for-generating-a-random-seeds-to-seed-pytorch/57416967#57416967
+    """
+    RAND_SIZE = 4
+    random_data = os.urandom(
+        RAND_SIZE
+    )  # Return a string of size random bytes suitable for cryptographic use.
+    random_seed = int.from_bytes(random_data, byteorder="big")
+    return random_seed
+
+def get_max_size(args):
+    d = args.s**args.num_layers
+    m_exp = (d-1)/(args.s - 1)
+    return args.num_classes * args.m**m_exp
 
 def dataset_initialization(args):
     """
@@ -364,10 +397,13 @@ def dataset_initialization(args):
 
     nc = args.num_classes
 
-    if args.seed_synonym:
+    seed_p = None
+    if args.synonym_init:
         seed_p = args.seed_synonym
-    elif args.seed_diffeo:
+    elif args.diffeo_init:
         seed_p = args.seed_diffeo
+
+    MAX_SIZE = get_max_size(args)
 
     transform = None
     if args.dataset == "rhm":
@@ -375,24 +411,67 @@ def dataset_initialization(args):
     elif args.dataset == "srhm":
         DataModel = SRHM
 
-    trainset = DataModel(
-        num_features=args.num_features,
-        m=args.m,  # features multiplicity
-        num_layers=args.num_layers,
-        num_classes=nc,
-        s=args.s, # tuples size
-        s0=args.s0,
-        input_format=args.input_format,
-        whitening=args.whitening,
-        seed=args.seed_init,
-        train=True,
-        transform=transform,
-        testsize=args.pte,
-        max_dataset_size=args.ptr+args.pte,
-        seed_p=seed_p)
-    
-    if args.pte:
+
+    if args.p and args.p > MAX_SIZE:
+        concat_count = (args.p // MAX_SIZE)
+        joint_training_loader = DataModel(
+                num_features=args.num_features,
+                m=args.m,  # features multiplicity
+                num_layers=args.num_layers,
+                num_classes=nc,
+                s=args.s, # tuples size
+                s0=args.s0,
+                input_format=args.input_format,
+                whitening=args.whitening,
+                seed=args.seed_init,
+                train=True,
+                transform=transform,
+                testsize=0,
+                max_dataset_size=1,
+                seed_p=seed_p)
+        for _ in concat_count:
+            torch.random_seed(get_truly_random_seed_through_os())
+            new_training_loader = DataModel(
+                num_features=args.num_features,
+                m=args.m,  # features multiplicity
+                num_layers=args.num_layers,
+                num_classes=nc,
+                s=args.s, # tuples size
+                s0=args.s0,
+                input_format=args.input_format,
+                whitening=args.whitening,
+                seed=args.seed_init,
+                train=True,
+                transform=transform,
+                testsize=args.pte,
+                max_dataset_size=args.ptr+args.pte,
+                seed_p=seed_p)
+
+            joint_training_loader.append(new_training_loader)
+            # TODO : Make joint training set
+
+        trainset = joint_training_loader
+
+        torch.random_seed(get_truly_random_seed_through_os())
         testset = DataModel(
+                num_features=args.num_features,
+                m=args.m,  # features multiplicity
+                num_layers=args.num_layers,
+                num_classes=nc,
+                s=args.s, # tuples size
+                s0=args.s0,
+                input_format=args.input_format,
+                whitening=args.whitening,
+                seed=args.seed_init,
+                train=False,
+                transform=transform,
+                testsize=args.pte,
+                max_dataset_size=args.ptr+args.pte,
+                seed_p=seed_p)
+
+        torch.manual_seed(args.seed_init)
+    else:
+        trainset = DataModel(
             num_features=args.num_features,
             m=args.m,  # features multiplicity
             num_layers=args.num_layers,
@@ -402,13 +481,30 @@ def dataset_initialization(args):
             input_format=args.input_format,
             whitening=args.whitening,
             seed=args.seed_init,
-            train=False,
+            train=True,
             transform=transform,
             testsize=args.pte,
-            max_dataset_size=args.ptr+args.pte
-        )
-    else:
-        testset = None
+            max_dataset_size=args.ptr+args.pte,
+            seed_p=seed_p)
+        
+        if args.pte:
+            testset = DataModel(
+                num_features=args.num_features,
+                m=args.m,  # features multiplicity
+                num_layers=args.num_layers,
+                num_classes=nc,
+                s=args.s, # tuples size
+                s0=args.s0,
+                input_format=args.input_format,
+                whitening=args.whitening,
+                seed=args.seed_init,
+                train=False,
+                transform=transform,
+                testsize=args.pte,
+                max_dataset_size=args.ptr+args.pte
+            )
+        else:
+            testset = None
 
     input_dim = trainset[0][0].shape[-1]
     ch = trainset[0][0].shape[-2] if args.input_format != 'long' else 0
@@ -424,7 +520,10 @@ def dataset_initialization(args):
     # take random subset of training set
     torch.manual_seed(args.seed_trainset)
     perm = torch.randperm(P)
-    trainset = torch.utils.data.Subset(trainset, perm[:args.ptr])
+    if args.p and args.p > MAX_SIZE:
+        trainset = torch.utils.data.Subset(trainset, perm)
+    else:
+        trainset = torch.utils.data.Subset(trainset, perm[:args.ptr])
 
     return trainset, testset, input_dim, ch
 
