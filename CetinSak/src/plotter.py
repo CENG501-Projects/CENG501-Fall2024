@@ -6,6 +6,18 @@
 # 3 - sensitivity vs current accuracy 
 # 4 - complexity vs %90 accuracy
 
+def graph_train():
+    pass
+
+def graph_complexity_vs_acc():
+    pass
+
+def graph_synonym_vs_acc():
+    pass
+
+def graph_diffeo_vs_acc():
+    pass
+
 def main():
     pass
 
