@@ -12,7 +12,7 @@ synonym_retry_count=1
 seed_diffeo='nil'
 seed_synonym='nil'
 sensitivity_stop_ratio = 'nil'
-p='nil'
+p=1000
 
 [model]
 net = "cnn" # can be cnn, fcn or lcn
