@@ -6,6 +6,10 @@
 # 3 - sensitivity vs current accuracy 
 # 4 - complexity vs %90 accuracy
 
+def load_process_pkl():
+    with open("")
+    pass
+
 def graph_train():
     pass
 

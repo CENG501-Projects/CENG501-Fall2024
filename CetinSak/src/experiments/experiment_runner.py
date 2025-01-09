@@ -152,7 +152,7 @@ def run(args):
 
         yield out
 
-        if args.test_acc_stop and acc >= args.test_acc_stop:
+        if args.test_acc_stop and acc >= args.test_acc_stop*100:
             break
 
         if args.p and idx*args.batch_size >= args.p:
@@ -417,6 +417,7 @@ def dataset_initialization(args):
 
 
     if args.p and args.p > MAX_SIZE:
+        print("here")
         concat_count = (args.p // MAX_SIZE) + 1
         joint_training_loader = DataModel(
                 num_features=args.num_features,

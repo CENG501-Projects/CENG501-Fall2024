@@ -31,33 +31,33 @@ class NonOverlappingLocallyConnected1d(nn.Module):
         return x
 
 
-class LocallyHierarchicalNet(nn.Module):
-    def __init__(self, input_channels, h, out_dim, num_layers, bias=False):
-        super(LocallyHierarchicalNet, self).__init__()
+# class LocallyHierarchicalNet(nn.Module):
+#     def __init__(self, input_channels, h, out_dim, num_layers, bias=False):
+#         super(LocallyHierarchicalNet, self).__init__()
 
-        d = 2 ** num_layers
+#         d = 2 ** num_layers
 
-        self.hier = nn.Sequential(
-            NonOverlappingLocallyConnected1d(
-                input_channels, h, d // 2, bias # input_channels, h, d // filter_size, filter_size, filter_size, bias
-            ),
-            nn.ReLU(),
-            *[nn.Sequential(
-                    NonOverlappingLocallyConnected1d(
-                        h, h, d // 2 ** (l + 1), bias
-                    ),
-                    nn.ReLU(),
-                )
-                for l in range(1, num_layers)
-            ],
-        )
-        self.beta = nn.Parameter(torch.randn(h, out_dim))
+#         self.hier = nn.Sequential(
+#             NonOverlappingLocallyConnected1d(
+#                 input_channels, h, d // 2, bias # input_channels, h, d // filter_size, filter_size, filter_size, bias
+#             ),
+#             nn.ReLU(),
+#             *[nn.Sequential(
+#                     NonOverlappingLocallyConnected1d(
+#                         h, h, d // 2 ** (l + 1), bias
+#                     ),
+#                     nn.ReLU(),
+#                 )
+#                 for l in range(1, num_layers)
+#             ],
+#         )
+#         self.beta = nn.Parameter(torch.randn(h, out_dim))
 
-    def forward(self, x):
-        y = self.hier(x)
-        y = y.mean(dim=[-1])
-        y = y @ self.beta / self.beta.size(0)
-        return y
+#     def forward(self, x):
+#         y = self.hier(x)
+#         y = y.mean(dim=[-1])
+#         y = y @ self.beta / self.beta.size(0)
+#         return y
     
 
 
