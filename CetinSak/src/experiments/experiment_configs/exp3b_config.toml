@@ -14,6 +14,7 @@ seed_diffeo=2 # Diffeo exchange at layer 2
 seed_synonym='nil'
 sensitivity_stop_ratio = 0.1
 p='nil'
+test_acc_stop = 'nil'
 
 [model]
 net = "cnn" # can be cnn, fcn or lcn

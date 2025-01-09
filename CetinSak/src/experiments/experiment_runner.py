@@ -82,8 +82,6 @@ def run(args):
         assert str(losstr) != "nan", "Loss is nan value!!"
         loss.append(losstr)
         epochs_list.append(epoch)
-        if args.p and idx*args.batch_size >= args.p:
-            return None
 
         # measuring locality for fcn nets
         if args.locality == 1:
@@ -153,6 +151,12 @@ def run(args):
             out["sensitivity_synonym"] = sensitivity_synonym
 
         yield out
+
+        if args.test_acc_stop and acc >= args.test_acc_stop:
+            break
+
+        if args.p and idx*args.batch_size >= args.p:
+            break
 
         if (losstr == 0 and args.loss == 'hinge') or (losstr < args.zero_loss_threshold and args.loss == 'cross_entropy'):
             trloss_flag += 1

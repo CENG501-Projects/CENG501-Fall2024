@@ -13,6 +13,7 @@ seed_diffeo='nil'
 seed_synonym='nil'
 sensitivity_stop_ratio = 'nil'
 p=1000
+test_acc_stop = 'nil'
 
 [model]
 net = "cnn" # can be cnn, fcn or lcn
@@ -31,7 +32,7 @@ weight_decay = 5e-4
 reg_type = "l2"
 epochs = 256
 zero_loss_epochs = 0
-zero_loss_threshold = 0.01
+zero_loss_threshold = 0
 rescale_epochs = 0
 alpha = 1.0
 

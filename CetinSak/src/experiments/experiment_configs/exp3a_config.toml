@@ -14,6 +14,7 @@ seed_diffeo='nil'
 seed_synonym=1 # Synonym exchange at layer 2
 sensitivity_stop_ratio = 0.3
 p='nil'
+test_acc_stop = 'nil'
 
 [model]
 net = "cnn" # can be cnn, fcn or lcn

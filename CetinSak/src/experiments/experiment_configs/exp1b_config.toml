@@ -13,6 +13,7 @@ seed_diffeo='nil'
 seed_synonym='nil'
 sensitivity_stop_ratio = 'nil'
 p='nil'
+test_acc_stop = 0.9
 
 [model]
 net = "lcn" # can be cnn, fcn or lcn

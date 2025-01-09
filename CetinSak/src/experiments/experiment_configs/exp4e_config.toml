@@ -16,6 +16,7 @@ seed_diffeo=1 # Diffeo exchange at layer 2
 seed_synonym='nil'
 sensitivity_stop_ratio = 'nil'
 p=7400
+test_acc_stop = 'nil'
 
 [model]
 net = ['LCN', 'CNN', 'VGG11', 'VGG16', 'ResNet18', 'ResNet34', 'EfficientNetB0']
