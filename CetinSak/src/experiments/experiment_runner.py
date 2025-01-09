@@ -413,7 +413,7 @@ def dataset_initialization(args):
 
 
     if args.p and args.p > MAX_SIZE:
-        concat_count = (args.p // MAX_SIZE)
+        concat_count = (args.p // MAX_SIZE) + 1
         joint_training_loader = DataModel(
                 num_features=args.num_features,
                 m=args.m,  # features multiplicity
@@ -426,8 +426,8 @@ def dataset_initialization(args):
                 seed=args.seed_init,
                 train=True,
                 transform=transform,
-                testsize=0,
-                max_dataset_size=1,
+                testsize=args.pte,
+                max_dataset_size=args.ptr + args.pte,
                 seed_p=seed_p)
         for _ in concat_count:
             torch.random_seed(get_truly_random_seed_through_os())
@@ -443,8 +443,8 @@ def dataset_initialization(args):
                 seed=args.seed_init,
                 train=True,
                 transform=transform,
-                testsize=args.pte,
-                max_dataset_size=args.ptr+args.pte,
+                testsize=1,
+                max_dataset_size=1,
                 seed_p=seed_p)
 
             joint_training_loader.append(new_training_loader)
@@ -452,7 +452,7 @@ def dataset_initialization(args):
 
         trainset = joint_training_loader
 
-        torch.random_seed(get_truly_random_seed_through_os())
+        torch.manual_seed(args.seed_init)
         testset = DataModel(
                 num_features=args.num_features,
                 m=args.m,  # features multiplicity
@@ -469,7 +469,6 @@ def dataset_initialization(args):
                 max_dataset_size=args.ptr+args.pte,
                 seed_p=seed_p)
 
-        torch.manual_seed(args.seed_init)
     else:
         trainset = DataModel(
             num_features=args.num_features,
