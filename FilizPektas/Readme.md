@@ -173,9 +173,72 @@ In the paper, some of the approaches were not clearly mentioned. Here is what we
   
 Other than these parts, paper was quite detailed and clear about its methods and approaches, proving every mathematical aspect they used and explaining every method they implemented.
 
-## **3\. Experiments and Results**
+# **3. Experiments and Results**
+
+MOLERE (Meta Optimization of the Learned Reweighting) network consists of 3 subnetworks, which are Meta Network, Splitter Network and finally the classifier network and we were able to implement MOLERE network with all of its subcomponents on CIFAR-100, Cats and Dogs, Aircraft and Stanford Cars datasets. This made us see MOLERE performance across diverse tasks and handling varied datasets and splitting criteria, paving the way for further enhancements in meta-learning and reweighting strategies. Additionally, we implented LRW-hard, LRW-easy and LRW-random techniques by choosing appropriate validation datasets and usin train twice heuristics on the previosuly stated datasets. 
+
 ## **3.1. Experimental Setup**
-## **3.2. Running the Code**
+
+### Training Setup
+
+For the classifier, we employed Stochastic Gradient Descent (SGD) with the following hyperparameters:
+
+- **Batch Size**: 64 (except for CIFAR-100, where it was 32)
+- **Image Size**: 224×224 (or 32×32 for CIFAR-100)
+- **Learning Rate**: 0.1, decaying by a factor of 10 every 50 epochs
+- **Momentum**: 0.9
+- **Weight Decay**: 10^{-4}
+
+We have used a SGD optimizer and a fixed learning rate of 10^{-3} to train our meta and splitter networks. We run each of our models for 100 epochs while the first 25 epochs are used to warm-up on a randomly selected dataset split. The splitter and meta-network were then modified every five classifier updates (Q=5).
+
+### Dataset Splitting and Validation
+
+Datasets were divided into training and validation sets using a delta value of 0.1. This guaranteed that no more than 10% of the training data was used for validation. Splitting decisions were based on the classifier's difficulty requirements. Only cases with Θ(x,y)<0.5 were included in the validation set. This increased the likelihood of including harder cases, which aligned with the LRW-hard technique's aims.
+
+## **3.2 Running the Code**
+
+You can download the prerequisites from the requirements.txt file as follows:
+
+pip install –r requirements.txt
+
+**Key Arguments**
+| Argument                | Type   | Default                                     | Description                                         |
+|-------------------------|--------|---------------------------------------------|-----------------------------------------------------|
+| `--id-datasets`         | str    | "CatsDogs Airplane Cars cifar100"           | Names of in-distribution datasets for training and evaluation. |
+| `--out-datasets`        | str    | ""                                          | Names of out-of-distribution datasets.             |
+| `--use-id-pickle-file`  | bool   | False                                       | Use an existing results file for in-distribution datasets. |
+| `--use-ood-pickle-file` | bool   | False                                       | Use an existing results file for out-of-distribution datasets. |
+| `--use-existing-erm`    | bool   | False                                       | Use an existing ERM model if available.            |
+| `--use-existing-opt`    | bool   | False                                       | Use an existing LRW-Opt model if available.        |
+| `--use-existing-hard`   | bool   | False                                       | Use an existing LRW-Hard model if available.       |
+| `--use-existing-easy`   | bool   | False                                       | Use an existing LRW-Easy model if available.       |
+| `--use-existing-random` | bool   | False                                       | Use an existing LRW-Random model if available.     |
+| `--batch-size`          | int    | 64                                          | Batch size for training.                           |
+| `--epochs`              | int    | 100                                         | Number of training epochs.                         |
+
+The dataset names are not case sensitive.
+
+**Processed Dataset Names**
+| Dataset Name | Dataset Source / Library             | Notes                                      |
+|--------------|--------------------------------------|--------------------------------------------|
+| `catsdogs`   | OxfordIIITPet (from torchvision.datasets) | Downloads data automatically.             |
+| `cars`       | StanfordCars (from torchvision.datasets)  | Requires manual download from Kaggle (via Kaggle API). |
+| `cifar100`   | CIFAR100 (from torchvision.datasets)       | Automatically downloaded from torchvision's dataset library. |
+| `airplane`   | FGVCAircraft (from torchvision.datasets)   | Automatically downloaded.                 |
+| `camleyon`   | camelyon17 (from the wilds library)        | Downloaded and preprocessed using WILDS library. |
+| `iwildcam`   | iwildcam (from the wilds library)          | Downloaded and preprocessed using WILDS library. |
+
+**Example Commands:**
+
+1) Run with Default Parameters:
+   python main.py
+
+2) Custom Datasets and Parameters:
+   python main.py --id-datasets "CatsDogs cifar10" --batch-size 32 --epochs 50 --use-existing-erm True --use-existing-opt True --use-ood-pickle-file True
+
+3) Out-of-Distribution Processing:
+   python main.py --out-datasets "iwildcam" --use-ood-pickle-file True
+
 ## **3.3. Result**
 We have conducted the LRW-Hard, LRW-Easy and LRW-Random calculations and compared them over ERM baseline. We have conducted the experiment on CIFAR-100 dataset with Wide-ResNet28-10 implementation that we have provided. Here is our resulting graph:
 
