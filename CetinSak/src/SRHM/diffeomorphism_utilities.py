@@ -1,9 +1,46 @@
 import torch
 import random
 
-def apply_diffeomorphism(x, s, s0, seed=None):
-    if seed is not None:
-        torch.manual_seed(seed)
+def apply_srhm_diffeomorphism(x, s, s0):
+    batch_size, num_features, feature_dim = x.shape
+
+    patch_size = s * (s0 + 1)
+
+    if feature_dim % patch_size != 0:
+        raise ValueError(
+            f"Adjust s or s0 to match."
+        )
+
+    num_patches = feature_dim // patch_size
+
+    x_transformed = x.clone()
+
+    for b in range(batch_size):
+        for f in range(num_features):
+            for p in range(num_patches):
+                patch_start = p * patch_size
+                patch_end = patch_start + patch_size
+                patch = x[b, f, patch_start:patch_end]
+
+                informative_positions = torch.arange(0, patch_size, step=(s0 + 1))
+                uninformative_positions = torch.tensor(
+                    [i for i in range(patch_size) if i not in informative_positions],
+                    dtype=torch.long,
+                    device=x.device
+                )
+
+                informative_features = patch[informative_positions]
+                perm = torch.randperm(len(informative_features))
+                informative_features = informative_features[perm]
+
+                patch[informative_positions] = informative_features
+                patch[uninformative_positions] = patch[uninformative_positions]
+
+                x_transformed[b, f, patch_start:patch_end] = patch
+
+    return x_transformed
+
+def apply_diffeomorphism(x, s, s0):
         
     batch_size = x.shape[0]
     patch_size = s * (s0 + 1)
