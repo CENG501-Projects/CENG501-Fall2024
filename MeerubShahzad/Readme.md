@@ -141,46 +141,75 @@ Activation: Softmax
 We used a similar method to the original method, but with the simplifications to validate the effectiveness of our implementation of DTINSPECTOR. This will be about measuring the attack success rate(ASR) against the accuracy of the model.
 
 
-# 6. Experiment I: Mitigation of Backdoor Effects Using Enhanced Training Protocols
+# 6. Experiment I: Mitigation of Backdoor Effects
 In addition to our extensive evaluation of DTINSPECTOR's detection capabilities, we expanded our research scope to include effective mitigation strategies for backdoor attacks. Experiment (I) specifically investigates the potential of revised training protocols and data cleaning methods to restore model integrity after a backdoor has been identified.
 
 ## 6.1 Implementation of Mitigation Techniques
-Model Architecture and Training Adjustments: Utilizing a TensorFlow-based Convolutional Neural Network, we adapted the architecture to improve resilience against backdoor manipulations found in CIFAR-10 dataset. The chosen architecture aimed to balance computational efficiency and predictive accuracy:
+**Model Architecture and Training Adjustments:** Utilizing a TensorFlow-based Convolutional Neural Network, we adapted the architecture to improve resilience against backdoor manipulations found in CIFAR-10 dataset. The chosen architecture aimed to balance computational efficiency and predictive accuracy:
 
-Convolutional Layer 1: 32 filters, 3x3 kernel, ReLU activation
+**Convolutional Layer 1:** 
 
-MaxPooling Layer 1: 2x2 pool size
+32 filters
 
-Convolutional Layer 2: 64 filters, 3x3 kernel, ReLU activation
+3x3 kernel 
 
-MaxPooling Layer 2: 2x2 pool size
+ReLU activation
 
-Flatten Layer: Converts feature maps into a vector
 
-Dense Layer 1: 128 units, ReLU activation
+**MaxPooling Layer 1:**
 
-Dropout Layer: 40% dropout rate to mitigate overfitting
+2x2 pool size
 
-Output Layer: 10 units (one per class in CIFAR-10), Softmax activation
+**Convolutional Layer 2:**
 
-Data Manipulation and Retraining Procedure: Approximately 10% of the training data was altered by applying a horizontal flip to simulate a backdoor trigger. This backdoored dataset was used to train the model, highlighting the vulnerabilities to such subtle manipulations.
+64 filters
 
-Cleaning and Data Restoration Process: After training, a data cleaning step was implemented, using the model's predictive outputs to segregate and eliminate corrupted data entries, thus aiming to recover the integrity and accuracy of the model.
+3x3 kernel
+
+ReLU activation
+
+**MaxPooling Layer 2:**
+
+2x2 pool size
+
+**Flatten Layer:** 
+
+Converts feature maps into a vector
+
+**Dense Layer 1:** 
+
+128 units
+
+ReLU activation
+
+**Dropout Layer:**
+
+40% dropout rate to mitigate overfitting
+
+**Output Layer:** 
+
+10 units (one per class in CIFAR-10)
+
+Softmax activation
+
+**Data Manipulation and Retraining Procedure:** Approximately 10% of the training data was altered by applying a horizontal flip to simulate a backdoor trigger. This backdoored dataset was used to train the model, highlighting the vulnerabilities to such subtle manipulations.
+
+**Cleaning and Data Restoration Process:** After training, a data cleaning step was implemented, using the model's predictive outputs to segregate and eliminate corrupted data entries, thus aiming to recover the integrity and accuracy of the model.
 
 ## 6.2 Results of Mitigation Efforts
 The evaluation focused on comparing three key stages: pre-attack (original model), post-attack (backdoored model), and post-mitigation (cleaned model). The accuracies observed were:
 
-Original Model Accuracy: 70.45%
+**Original Model Accuracy:** 70.45%
 
-Backdoored Model Accuracy: 61.06%
+**Backdoored Model Accuracy:** 61.06%
 
-Cleaned Model Accuracy: 62.06%
+**Cleaned Model Accuracy:** 62.06%
 
 These stages are visually summarized in the following bar chart, which illustrates the impact of the backdoor attack and the subsequent recovery:
 
 <img width="858" alt="Screenshot 2025-01-10 at 11 29 33 AM" src="https://github.com/user-attachments/assets/36ed7c43-7623-444c-804d-b04282142668" />
 
-Analysis: The experiment demonstrates a significant initial drop in model accuracy due to the backdoor attack, followed by a modest recovery post-cleanup. This partial recovery suggests that while the mitigation process is beneficial, it is not yet fully optimized to restore model performance to its original state.
+**Analysis:** The experiment demonstrates a significant initial drop in model accuracy due to the backdoor attack, followed by a modest recovery post-cleanup. This partial recovery suggests that while the mitigation process is beneficial, it is not yet fully optimized to restore model performance to its original state.
 
 ## 6.3 Discussion and Future Directions
 This mitigation experiment underscores the complexity of fully recovering from backdoor attacks in neural networks. The findings suggest that while current cleaning methods can reduce the impact of these attacks, complete restoration of model performance remains a challenge.
