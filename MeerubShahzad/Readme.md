@@ -524,7 +524,7 @@ Papers visualization:
 
 # 10. Conclusion
 
-@TODO: Discuss the paper in relation to the results in the paper and your results.
+The comprehensive analysis and experimental validation of the DTINSPECTOR mechanism presented in this report affirm its efficacy in detecting and mitigating black-box backdoor attacks in deep learning models, specifically using the CIFAR-10 dataset. Our work meticulously replicated and extended the foundational studies from the AAAI conference, integrating empirical data and theoretical insights to not only confirm the significant impact of prediction confidence anomalies on model integrity but also to enhance the recovery process post-attack. The results from our experiments demonstrate a crucial advancement in understanding and addressing the subtleties of such cyber threats, revealing the potential for refined detection strategies and more resilient machine learning systems. This research underscores the ongoing need for innovative defensive mechanisms against sophisticated attacks, setting a robust foundation for future explorations aimed at securing AI technologies in increasingly adversarial environments.
 
 # 11. References
 
