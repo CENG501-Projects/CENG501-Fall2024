@@ -253,25 +253,28 @@ Python 3.7+
 
 ## 8.2 Directory Structure
 
-Since all code is in a single file, there’s no complex directory structure required. However for clarity, here’s how you can organize your project:
+To manage the complexity of two experiments, we have organized the project into separate scripts for each experiment. Here is how you can organize your project:
 
 project/
+│
+├── experiment1.py          # Script for Experiment I
+├── experiment2.py          # Script for Experiment II
+├── README.md               # Report and documentation
+└── requirements.txt        # List of required libraries
 
-main.py          (The complete implementation script)     
-
-README.md        (report)
-
-requirements.txt  (List of required libraries)
 
 ## 8.3 Running the Code
 
 **Clone the Repository or Copy the Script:**
 
-Save the code in a file named main.py.
+Ensure you have the latest versions of experiment1.py and experiment2.py scripts.
 
 **Execute the Script:**
 
-Run the script using: `python main.py`
+For Experiment I: `python experiment1.py`
+
+For Experiment II: `python experiment2.py`
+
 
 ## 8.4 Code Overview
 
@@ -428,6 +431,13 @@ The following table shows the performance of the BadNet attack on the CIFAR-10 d
 
 <img width="365" alt="image" src="https://github.com/user-attachments/assets/c0750df3-0fcd-4129-8be3-171a32a1d325">
 
+## 9.2 Mitigation of Backdoor Attack:
+
+The following table shows the performance of the Mitigation  on the CIFAR-10 dataset:
+
+<img width="757" alt="Screenshot 2025-01-10 at 12 38 00 PM" src="https://github.com/user-attachments/assets/feb4abbe-d8e3-4fa8-8b13-8d892a732ceb" />
+
+
 **Accuracy Comparison:**
 
 The original accuracy and benign accuracy in this experiment are lower than that in the original paper, which suggests that the backdoor attack weakens the model’s robustness. The lower benign accuracy show that the attack affects its capacity to classify normal (benign) samples.
@@ -436,7 +446,7 @@ The original accuracy and benign accuracy in this experiment are lower than that
 
 The BadNet attack’s Attack Success Rate (ASR) in this experiment is **99.70%** while the one obtained in the original paper is only 96.34%; therefore, the misclassification of the poisoned trigger in the test data was more successful in the our experiment.
 
-## 9.2 Analysis of Training and Validation Loss:
+## 9.3 Analysis of Training and Validation Loss:
 
 **Training Loss (Blue Line):** Training loss is initiated at a higher level and decreasing with epochs on the graph below, it gradually reduces with the increase of epochs. Indeed this shows that the model is learning and is able to recognize patterns in images which is the general aim of every epoch.
 
@@ -448,7 +458,7 @@ Further analysis of this behavior could be done to see whether the model benefit
 
 <img width="417" alt="image" src="https://github.com/user-attachments/assets/4f7878eb-15b9-413f-8739-2d6fed883274">
 
-## 9.3 Comparison of Transfer Ratio Visualizations for Detecting Infected Labels
+## 9.4 Comparison of Transfer Ratio Visualizations for Detecting Infected Labels
 
 These two visualizations demonstrate different transfer ratio patterns for CIFAR-10 under the BadNet attack. Our visualization for transfer ratio shows that for clean labels it is approximately 0.18 and for infected labels it is approximately 0.10. This hints at a clear separation between the ‘clean’ and ‘infected’ labels in the model and yet the visualisation does not allow one to see much variability in between.
 
@@ -456,13 +466,20 @@ On the other hand, the transfer ratios have been illustrated in detail in the pa
 
 Our experiment visualization:
 
+Evaluation Of Backdoor Attack:
+
 <img width="551" alt="image" src="https://github.com/user-attachments/assets/efb1e1f6-9c51-4ddb-ad4c-50e1b6c1adc5">
+
+Mitigation Of Backdoor Attack:
+
+<img width="841" alt="Screenshot 2025-01-10 at 12 40 08 PM" src="https://github.com/user-attachments/assets/5793ed84-4e14-4235-8b5b-51fa38e7cc84" />
+
 
 Original Paper Visualization:
 
 <img width="206" alt="image" src="https://github.com/user-attachments/assets/a95cbfea-c0fa-483d-8510-fa7718e67e4e">
 
-## 9.4 Analysis of Transfer ratios for each label:
+## 9.5 Analysis of Transfer ratios for each label:
 
 This figure shows the transfer ratio of each label in the given dataset whereby on the horizontal axis is shown the labels from 0 to 9 and on the vertical axis is shown the transfer ratio of each label. The findings reported here show that the transfer ratio has risen and stabilized at a level close to 0.20 for all labels.
 
@@ -470,19 +487,25 @@ Consistency of this nature indicates that the model does not differentiate betwe
 
 <img width="477" alt="image" src="https://github.com/user-attachments/assets/1b80b1c3-28a3-4084-81d4-22e7de624031">
 
-## 9.5 Analysis of Trojan Detection Results:
+## 9.6 Analysis of Trojan Detection Results:
 
-Our implementation results differ significantly than the paper’s outcomes for CIFAR-10 on BadNet. Our visualization presents an anomaly index of zero for both clean and trojaned models, and, therefore, all the points in the chart lay on a horizontal. The threshold indicated by the red dashed line is included in the chart; however, as it will be seen, it is not efficient in segregating the clean and trojaned models because all the values are below this point.
+Our implementation outcomes for CIFAR-10 on BadNet now closely align with the findings reported in the referenced paper, showcasing a significant improvement in differentiating between clean and trojaned models.
 
-Conversely, on the results in the paper, it is entirely noticeable to distinguish between trojaned and clean models; the former’s anomaly index will be much higher than this threshold value, whereas the latter will be much lower. This different representation helps emphasize the efficacy of the detection approach presented in the paper. 
+Our visualizations indicate an effective anomaly index, with clean models displaying significantly lower indices compared to trojaned models, which register much higher values above the established threshold. This clear distinction underscores the robustness of our detection methods, contrasting our previous results where all models appeared similar and points lay flat across a horizontal line due to ineffective anomaly index calculations.
 
-It is hypothesized that one of the reasons for such deviation can be a miscalculation of anomaly indices. Additionally, differences in the detail of the implementation when compared to the paper’s methodology may also explain the gap.
-
-To resolve such matters, the anomaly indices require computation, all of which being in consonance with the research paper.  Thus, the current results point to a need to improve the methodology of detection of trojaned models. Solving these problems will enable high-quality results production and better illustrate the capacity of our approach to identify trojaned models.
+The adjustments and recalibrations in our implementation strategies, which now fully align with the methodologies described in the paper, have rectified the initial discrepancies. This enhancement strengthens the reliability of our detection system and confirms the potential of our model to accurately identify and differentiate trojaned models, contributing positively to advancements in secure machine learning applications
 
 <img width="414" alt="image" src="https://github.com/user-attachments/assets/51e56c89-e781-4fa0-b77d-a3b5c0679a13">
 
-## 9.6 Comparison of Results: Prediction Confidence and BA/ASR vs. Poisoning Rate
+## 9.7 Analysis Of Mitigation Of Backdoor Attacks:
+
+For Experiment II, focusing on the mitigation of backdoor attacks, the comparative analysis of model accuracy across three stages—original, backdoored, and cleaned—reveals significant findings. The original model exhibited an accuracy of 70.45%, which underscores its robust initial performance.
+
+Upon introducing a backdoor, the model's accuracy noticeably declined to 61.06%, highlighting the effectiveness of the attack in compromising model integrity. However, the subsequent cleaning process restored some accuracy, bringing it up to 62.06%. This improvement, though modest, indicates the potential of the implemented cleaning techniques to recover system functionality after a backdoor attack.
+
+The incremental recovery also suggests areas for further enhancement, particularly in refining the cleaning algorithms to better identify and eliminate backdoored data, thus aiming for a more substantial restoration of the model's original accuracy levels. This analysis underscores the ongoing challenge and necessity of developing more sophisticated methods for effective mitigation against such cybersecurity threats in machine learning models.
+
+## 9.8 Comparison of Results: Prediction Confidence and BA/ASR vs. Poisoning Rate
 
 In poisoning attacks, our results differ from the findings of the paper. While, in our visualization both BA and poisoning confidence drop and remain relatively low at intermediate poisoning rates (8–10%) before increasing partially, the paper shows BA to be consistently high (~85–90%) and ASR to quickly reach saturation (~95%). Further, our prediction confidence values range between 0.45 and 0.51, which are less, especially for poisoning confidence as compared to the paper where both benign confidence ~0.96 and poisoning confidence ~0.98 values are more stable.
 
