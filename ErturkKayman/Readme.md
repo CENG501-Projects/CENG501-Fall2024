@@ -229,6 +229,16 @@ We have implemented (fully or partially):
     During training after every epoch (can be adjusted in the config) an evaluation is performed. 
     AP@40 scores are reported. (See next chapter for detailed explanation)
 
+### 3.1.1. Acknowledgments
+
+As mentioned earlier, we did not implement the network from stracth. We have used software from many different resources. Most of the archtiecture, even file structure, is taken from [MonoDETR](https://github.com/ZrrSkywalker/MonoDETR) implmenetation. Because that paper has the exact same goal as ours (3D object detection on KITTI dataset), Dataset loader, trainer, tester, optimizer, losses are similar. We built our model on top of that codebase. We have also used codes directly from [Deformable-DETR](https://github.com/fundamentalvision/Deformable-DETR), [DETR](https://github.com/facebookresearch/detr), [GUPNET](https://github.com/SuperMHP/GUPNet).
+
+In our file structure, here are the codes written (fully, partially) by us;
+lib/models/monoatt/adaptive_token_clustering.py 
+lib/models/monoatt/cluster_center_estimation.py
+lib/models/monoatt/monoatt.py (partially)
+lib/datasets/kitti/kitti_eval_python/kitti_common.py (partially)
+lib/losses/focal_loss.py (partially)
 
 ## 3.2. Running the code
 
