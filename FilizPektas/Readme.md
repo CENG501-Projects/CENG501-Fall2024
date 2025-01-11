@@ -219,14 +219,13 @@ pip install –r requirements.txt
 The dataset names are not case sensitive.
 
 **Processed Dataset Names**
-| Dataset Name | Dataset Source / Library             | Notes                                      |
-|--------------|--------------------------------------|--------------------------------------------|
-| `catsdogs`   | OxfordIIITPet (from torchvision.datasets) | Downloads data automatically.             |
-| `cars`       | StanfordCars (from torchvision.datasets)  | Requires manual download from Kaggle (via Kaggle API). |
-| `cifar100`   | CIFAR100 (from torchvision.datasets)       | Automatically downloaded from torchvision's dataset library. |
-| `airplane`   | FGVCAircraft (from torchvision.datasets)   | Automatically downloaded.                 |
-| `camleyon`   | camelyon17 (from the wilds library)        | Downloaded and preprocessed using WILDS library. |
-| `iwildcam`   | iwildcam (from the wilds library)          | Downloaded and preprocessed using WILDS library. |
+| Dataset Name | Dataset Source / Library                      | Notes                                                        |
+|--------------|-----------------------------------------------|--------------------------------------------------------------|
+| `catsdogs`   | OxfordIIITPet (from torchvision.datasets)     | Downloads data automatically.                                |
+| `cars`       | StanfordCars (from torchvision.datasets)      | Requires manual download from Kaggle (via Kaggle API).       |
+| `cifar100`   | CIFAR100 (from torchvision.datasets)          | Automatically downloaded from torchvision's dataset library. |
+| `airplane`   | FGVCAircraft (from torchvision.datasets)      | Automatically downloaded.                                    |
+| `DR`         | diabetic_retinopathy (from huggin face)       | Requires manual download from Huggin Face (via API).         |
 
 **Example Commands:**
 
@@ -243,28 +242,58 @@ The dataset names are not case sensitive.
 
 We have investiageted two of the claims tha the paper proposed, one of the claims was LRW-hard would outperfrom the other splitting methods while the proposed optimal LRW method would be superior in performance than the LRW-Hard method. 
 
-The train models can be foun in the link table below:
+The trained models can be found in the link table below:
 
-3.3.1. Accuracy Performance Comparison
-    We have extracted the following comparisons for LRW-Hard, LRW-Easy, LRW-Random and LRW-Opt for the CIFAR-100, OxfordIITPet, FGVCAircraft, Stanford Cars and Diabetic Retinopathy. 
-      **GRAFİKLER**![](https://github.com/Sinasi3/Sinasi3/blob/main/Cats.jpg?raw=true)
-    To start with, we observed that the LRW-Opt method came superiror to all other methods in every dataset. 
-    The paper claims that the LRW-hard would be the successor the this method. We have seen this kind of relation in all the datasets except the CIFAR-100. 
-    Just like Lrw-Hard, Lrw-Easy satisfied the papers suggestions, but in CIFAR-100 it outperformed LRW-Hard which was not the case in the article.
-    LRW-Random didn't performed like the way the article suggested every case because of its stochastic nature. In Cats and Dogs Lrw-Random gave better results than the Lrw-Easy but in other datasets its performance mostly aligned with the paper's suggestion. 
+## **3.3.1. Accuracy Performance Comparison**
+
+We have extracted the following comparisons for LRW-Hard, LRW-Easy, LRW-Random, and LRW-Opt for the CIFAR-100, OxfordIITPet, FGVCAircraft, Stanford Cars, and Diabetic Retinopathy.
+
+### CIFAR-100 Accuracies
+![CIFAR-100 Accuracies]()
+
+### OxfordIIITPet Accuracies
+![OxfordIITPet Accuracies](https://github.com/Sinasi3/Sinasi3/blob/f3a75ba52049e2d450195fee2bc328ed32c2e40b/Cats.PNG)
+
+### FGVCAircraft Accuracies
+![FVGAircraft Accuracies](https://github.com/Sinasi3/Sinasi3/blob/f3a75ba52049e2d450195fee2bc328ed32c2e40b/Aircraft.PNG)
+
+### Stanford Cars Accuracies
+![Stanford Cars Accuracies](https://github.com/Sinasi3/Sinasi3/blob/f3a75ba52049e2d450195fee2bc328ed32c2e40b/Cars.PNG)
+
+### Diabetic Retinopathy Accuracies
+![Diabetic Retinopathy Accuracies](https://github.com/Sinasi3/Sinasi3/blob/90969d020c9dedc6134b69e798a001f5d3df1c7f/DR.PNG)
+
+---
+
+### Observations
+
+-To start with, we observed that the LRW-Opt method came superior to all other methods in every dataset other than Diabetic Retinopathy. We believe the reason for this exception is because DR dataset is our biggest dataset but also the samples were really similar so the splitter network constraint of choosing hard samples effected its performance poorly and this lead to LRW-Hard perform better than LRW-Opt. 
+
+-The paper claims that the LRW-Hard would be the successor to this method. We have seen this kind of relation in all the datasets except CIFAR-100. This aligns with the idea of choosing only the hardest sample for validation set increases the accuracy of the model.
+
+-Just like LRW-Hard, LRW-Easy satisfied the paper's suggestions, but in CIFAR-100, it outperformed LRW-Hard, which was not the case in the article. 
+
+-LRW-Random didn't perform the way the article suggested in every case because of its stochastic nature. In Cats and Dogs, LRW-Random gave better results than LRW-Easy, but in other datasets, its performance mostly aligned with the paper's suggestion.
+
+
     
-3.3.2. Margin Maximization Effect
-    **GRAFİKLER**
+## **3.3.2. Margin Maximization Effect**
 
- Paper also claimed that LRW-Hard has a maximization effect. We conducted the Margin Maximization effect on CIFAR-100 dataset. We have received the test margin results created by LRW-Easy, LRW-hard and ERM methods. We can clearly see that the mean of the LRW-Hard and ERM margin maximization is greater than zero which can be seen from the graph being right skewed. In addition to that we were able to see a clear seperation between the LRW-easy and LRW-Hard in the --second-- figure. LRW-Hard effectively outperforms the LRW-Easy in terms of margin amximization effect, we can see from the figure that LRW-Hard is higher in terms of delta with respect to ERM in comparison to LRW-Easy on the given ERM Margin Buckets.
+### Margin Delta
+![Margin Maximiziaton](https://github.com/Sinasi3/Sinasi3/blob/f3a75ba52049e2d450195fee2bc328ed32c2e40b/Margin_Diff.PNG)
 
--Imbuguities:
-LRW opt generate split unclear
+### Margin Gain
+![ERM Buckets](https://github.com/Sinasi3/Sinasi3/blob/6d3ccd2c043c280fce87ddf69d2d833a7496448a/resized_image.png)
 
+---
 
-We have conducted the LRW-Hard, LRW-Easy and LRW-Random calculations and compared them over ERM baseline. We have conducted the experiment on CIFAR-100 dataset with Wide-ResNet28-10 implementation that we have provided. Here is our resulting graph:
-![CIFAR-100 Gains](https://github.com/user-attachments/assets/f6fdef3a-b743-4713-83dd-26a54df68554)
+### Observations
 
+-We examined the Margin Maximization impact using the CIFAR-100 dataset. We received the test margin results for the LRW-Easy, LRW-Hard, and ERM procedures. 
+
+-The Margin Delta graph's right skew clearly indicates that the mean margin delta between LRW-Hard and ERM is more than zero. SO we can say that Learned Reweighting improves margins of learned classifiers.
+
+-The LRW-easy and LRW-Hard were also clearly distinguished and LRW-Hard successfully outperforms LRW-Easy in terms of margin maximization effect as demonstrated in the Margin Gain graph. Additionally, LRW-Hard has a greater delta with respect to ERM than LRW-Easy on the selected ERM Margin Buckets.
 
 ## **9.References**
 
