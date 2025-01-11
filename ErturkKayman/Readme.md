@@ -142,15 +142,28 @@ In MonoATT, GUPNet is used as a monocular 3D object detector.
 
 The paper provides a new perspective for vision transformers. Especially, by introducing some new learnable concepts, they further increase the capabilities of a vision transformer model. However, some points are unclear in the paper. 
 
-While extracting the feature map, s-factor is unclear. The writers have used 5 as s-factor in their previous paper. However, we did not implement the exact backbone in the paper yet. We have used ResNet-34 for simplicity. In the future, we will try different s-factor values for feature extraction. 
+Though paper is about avoiding grid based square tokents, it is not clear the initial grid size. Using every pixel as a grid is hugely expensive even though the paper uses strategies like token merging. The paper aims to create irregular shaped image patches. However, initially, we had to adopt 4x4 patches before merging clustering patches due to complexity of the architecture.
 
-In the cluster center estimation part,it is not clear which CNN architecture is used for semantic scoring. It is only mentioned that it is a regression branch from CenterNet. Currently, we did not have time to try different CNN architectures. We currently use a simple KMeans algorithm for cluster center estimation.
+While extracting the feature map, s-factor is unclear. The writers have used 5 as s-factor in their previous paper. We adopted the backbone from their previous paper called MonoDETR since finetuning backbone is not computationly feasible and it is usualy similar in 3D object detection tasks.
 
-In the Adaptive Token Transformer part, the number of loops N is unclear. After some research and trials, we have decided to make it generic so that we loop until all tokens are aggregated. 
+In the cluster center estimation part,it is not clear which CNN architecture is used for semantic scoring. It is only mentioned that it is a regression branch from CenterNet. Currently, we did not have time to try different CNN architectures. We have used the simple network below for semantic scoring after some research. We did not have time to try different semantic scoring architectures.
+'''python
+# Heatmap head for semantic scoring
+self.heatmap_head = nn.Sequential(
+    nn.Conv2d(1024, 256, kernel_size=3, padding=1, bias=True),  #I am forced to use 256 because of complexity.
+    nn.GroupNorm(32, 256),
+    nn.ReLU(inplace=True),
+    nn.Conv2d(256, 1, kernel_size=1, bias=True),  # Output single-channel heatmap
+)
+'''
 
-In the Outline-preferred Token Grouping part, hyperparameter B is unclear. We still could not decide the B value exactly. 
+In the Adaptive Token Transformer part, the number of loops N is unclear. After some research and trials, we have decided to make it generic so that we loop until all tokens are aggregated. Also a very important hyperparameter number of clusters is unknown. We have decided it to be 100 after a few trials. Also none of the transformer parameters are known. Though we adapt some of them from authors previous work, we had to use some lightweight values to minimize the computational costs.
+
+In the Outline-preferred Token Grouping part, hyperparameter B is unclear. We did not have a chance to fintune B value and we used the value suggested by ChatGPT which is 1.
 
 In Multi-stage Feature Reconstruction part, the number of loops N is unclear. We implemented MFR as it aggregates all tokens in a single step for now.
+
+The architecture is really complex and there are many more hyperparameters which are unclear. Due to the complexity of the architecture, hyperparameter search methods such as grid search etc. are not feasible. We have adopted most of the hyperparameters from the authors previous work which is also about monocular 3D detection. But there is no guarantee that they remain the same. Also, other than the very major hyperparameters mentioned above, there are many different hyperparameters on the novel parts of the paper which we had to use trial and error as much as possible.
 
 # 3. Experiments and results
 
