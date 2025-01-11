@@ -1,6 +1,43 @@
 import torch
 import random
 
+def apply_srhm_synonym(x, s, s0, num_layers, seed=0):
+
+    torch.manual_seed(seed) 
+
+    batch_size, num_features, feature_dim = x.shape
+
+    patch_size = s * (s0 + 1)
+
+    if feature_dim % patch_size != 0:
+        raise ValueError(
+            f"Adjust s or s0 to match."
+        )
+
+    num_patches = feature_dim // patch_size
+
+    x_transformed = x.clone()
+
+    for b in range(batch_size):
+        for f in range(num_features):
+            for p in range(num_patches):
+                patch_start = p * patch_size
+                patch_end = patch_start + patch_size
+                patch = x[b, f, patch_start:patch_end]
+
+                informative_positions = torch.arange(0, patch_size, step=(s0 + 1))
+
+                informative_features = patch[informative_positions]
+                perm = torch.randperm(len(informative_features))  # burada synonym replacement olcak. gibi?
+                informative_features = informative_features[perm]
+
+                patch[informative_positions] = informative_features
+
+                x_transformed[b, f, patch_start:patch_end] = patch
+
+    return x_transformed
+
+
 def apply_srhm_diffeomorphism(x, s, s0):
     batch_size, num_features, feature_dim = x.shape
 

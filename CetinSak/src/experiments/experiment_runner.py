@@ -12,7 +12,7 @@ from src.experiments.model_initialization import model_initialization
 from src.SRHM.optim_loss import loss_func, regularize, opt_algo, measure_accuracy
 from src.SRHM.utils import cpu_state_dict, args2train_test_sizes
 from src.SRHM.observables import locality_measure, state2permutation_stability, state2clustering_error
-
+from src.SRHM.diffeomorphism_utilities import *
 
 
 
@@ -139,10 +139,7 @@ def run(args):
         }
 
         if args.seed_diffeo:
-            acc_diffeo = test(args, testdiffeo, net, criterion, print_flag=epoch % 5 == 0)
-            sensitivity_diffeo = None
-            out["acc_diffeo"] = acc_diffeo
-            out["sensitivity_diffeo"] = sensitivity_diffeo
+            out["acc_diffeo"],out["sensitivity_diffeo"] = test_with_sensitivity(args, testdiffeo, net, criterion, print_flag=epoch % 5 == 0)
 
         if args.seed_synonym:
             acc_synonym = test(args, testsynonym, net, criterion, print_flag=epoch % 5 == 0)
@@ -258,6 +255,120 @@ def train(args, trainloader, net0, criterion):
 
         yield net, epoch + 1, train_loss / (batch_idx + 1), avg_epoch_time
 
+
+def test_with_sensitivity_x(args, testloader, net, criterion, print_flag=True, num_transforms=10,sensitivity_type="diffeo"):
+
+    if sensitivity_type == "diffeo":
+        transform_type = apply_srhm_diffeomorphism
+    elif sensitivity_type == "synonym":
+        transform_type = apply_srhm_synonym
+    else:
+        raise ValueError("Unknown sensitivity type")
+
+    net.eval()
+    test_loss = 0
+    correct = 0
+    total = 0
+    all_outputs = []
+    all_inputs = []
+    
+    with torch.no_grad():
+        # First pass: collect original outputs
+        for batch_idx, (inputs, targets) in enumerate(testloader):
+            inputs, targets = inputs.to(args.device), targets.to(args.device)
+            
+            outputs = net(inputs)
+            loss = criterion(outputs, targets)
+            test_loss += loss.item()
+            correct, total = measure_accuracy(args, outputs, targets, correct, total)
+            
+            all_outputs.append(outputs)
+            all_inputs.append(inputs)
+            
+            if print_flag and batch_idx % 10 == 0:
+                print(
+                    f"[TEST][te.Loss: {test_loss * args.alpha / (batch_idx + 1):.03f}]"
+                    f"[te.Acc: {100. * correct / total:.03f}]",
+                    flush=True
+                )
+        
+        all_outputs = torch.cat(all_outputs, dim=0)
+        all_inputs = torch.cat(all_inputs, dim=0)
+        
+        all_transformed_outputs = []
+        transformed_outputs = []
+        for inputs in all_inputs.split(args.batch_size):
+            inputs_transformed = apply_srhm_diffeomorphism(
+                inputs, args.s, args.s0,
+            )
+            
+            #Second pass: collect transformed outputs
+            transformed_outputs.append(net(inputs_transformed))
+        all_transformed_outputs.append(torch.cat(transformed_outputs, dim=0))
+        
+        diff_sum = sum(torch.norm(all_outputs - transformed, dim=1).mean() 
+                      for transformed in all_transformed_outputs)
+        numerator = diff_sum / num_transforms
+        
+        idx_shuffle = torch.randperm(all_outputs.size(0))
+        denominator = torch.norm(all_outputs - all_outputs[idx_shuffle], dim=1).mean()
+        sensitivity = numerator / denominator
+
+## Will be deprecated use above function instead later.
+def test_with_sensitivity(args, testloader, net, criterion, print_flag=True, num_transforms=10):
+    net.eval()
+    test_loss = 0
+    correct = 0
+    total = 0
+    all_outputs = []
+    all_inputs = []
+    
+    with torch.no_grad():
+        # First pass: collect original outputs
+        for batch_idx, (inputs, targets) in enumerate(testloader):
+            inputs, targets = inputs.to(args.device), targets.to(args.device)
+            
+            outputs = net(inputs)
+            loss = criterion(outputs, targets)
+            test_loss += loss.item()
+            correct, total = measure_accuracy(args, outputs, targets, correct, total)
+            
+            all_outputs.append(outputs)
+            all_inputs.append(inputs)
+            
+            if print_flag and batch_idx % 10 == 0:
+                print(
+                    f"[TEST][te.Loss: {test_loss * args.alpha / (batch_idx + 1):.03f}]"
+                    f"[te.Acc: {100. * correct / total:.03f}]",
+                    flush=True
+                )
+        
+        all_outputs = torch.cat(all_outputs, dim=0)
+        all_inputs = torch.cat(all_inputs, dim=0)
+        
+        all_transformed_outputs = []
+        
+        # for _ in range(num_transforms) ## More than one diffeo...
+        transformed_outputs = []
+        for inputs in all_inputs.split(args.batch_size):
+            inputs_transformed = apply_srhm_diffeomorphism(
+                inputs, args.s, args.s0,
+            )
+            
+            #Second pass: collect transformed outputs
+            transformed_outputs.append(net(inputs_transformed))
+        all_transformed_outputs.append(torch.cat(transformed_outputs, dim=0))
+        
+        diff_sum = sum(torch.norm(all_outputs - transformed, dim=1).mean() 
+                      for transformed in all_transformed_outputs)
+        numerator = diff_sum / num_transforms
+        
+        idx_shuffle = torch.randperm(all_outputs.size(0))
+        denominator = torch.norm(all_outputs - all_outputs[idx_shuffle], dim=1).mean()
+        sensitivity = numerator / denominator
+    
+    print("Sensitivity: ", sensitivity.item())
+    return 100.0 * correct / total, sensitivity.item()
 
 def test(args, testloader, net, criterion, print_flag=True):
 
