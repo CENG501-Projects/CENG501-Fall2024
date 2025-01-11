@@ -231,7 +231,9 @@ We have implemented (fully or partially):
 
 ### 3.1.1. Acknowledgments
 
-As mentioned earlier, we did not implement the network from stracth. We have used software from many different resources. Most of the archtiecture, even file structure, is taken from [MonoDETR](https://github.com/ZrrSkywalker/MonoDETR) implementation. Because that paper has the exact same goal as ours (3D object detection on KITTI dataset), Dataset loader, trainer, tester, optimizer, losses are similar. We built our model on top of that codebase. We have also used codes directly from [Deformable-DETR](https://github.com/fundamentalvision/Deformable-DETR), [DETR](https://github.com/facebookresearch/detr), [GUPNET](https://github.com/SuperMHP/GUPNet).
+As mentioned earlier, we did not implement the network from stracth. We have used software from many different resources. Most of the archtiecture, even file structure, is taken from [MonoDETR](https://github.com/ZrrSkywalker/MonoDETR) implementation. Because that paper has the exact same goal as ours (3D object detection on KITTI dataset), Dataset loader, trainer, tester, optimizer, losses are similar. We built our model on top of that codebase. We have also used codes directly from [Deformable-DETR](https://github.com/fundamentalvision/Deformable-DETR), [DETR](https://github.com/facebookresearch/detr), [GUPNET](https://github.com/SuperMHP/GUPNet). 
+
+Other than the implementation, for visualizing the evaluation results, we have used [KITTI Native Evaluation](https://github.com/asharakeh/kitti_native_evaluation).
 
 In our file structure, here are the codes written (fully, partially) by us;
 
