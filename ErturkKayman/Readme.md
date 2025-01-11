@@ -235,11 +235,11 @@ As mentioned earlier, we did not implement the network from stracth. We have use
 
 In our file structure, here are the codes written (fully, partially) by us;
 
-+lib/models/monoatt/adaptive_token_clustering.py 
-+lib/models/monoatt/cluster_center_estimation.py
-+lib/models/monoatt/monoatt.py (partially)
-+lib/datasets/kitti/kitti_eval_python/kitti_common.py (partially)
-+lib/losses/focal_loss.py (partially)
++ lib/models/monoatt/adaptive_token_clustering.py 
++ lib/models/monoatt/cluster_center_estimation.py
++ lib/models/monoatt/monoatt.py (partially)
++ lib/datasets/kitti/kitti_eval_python/kitti_common.py (partially)
++ lib/losses/focal_loss.py (partially)
 
 ## 3.2. Running the code
 
