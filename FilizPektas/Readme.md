@@ -206,7 +206,7 @@ You can download the prerequisites from the requirements.txt file as follows:
 | `cars`       | https://drive.google.com/file/d/1tNO5-1Cn2xd2OCJbN1n4FRWvpXglsuOe/view      | 
 | `cifar100`   | https://drive.google.com/file/d/1K-vH9LxXB5vY7dSujnA2bD6cnDbS3lIs/view      |
 | `airplane`   | https://drive.google.com/file/d/1fNVQgjevbjJkroFU6WWOzjWgwHIDV52u/view      |
-| `DR`         | diabetic_retinopathy (from huggin face)       |
+| `DR`         | https://drive.google.com/file/d/1q1a3hLSLKqRwB4QjBTaVIPqnT8zJUk-3/view      |
 
 pip install –r requirements.txt
 
