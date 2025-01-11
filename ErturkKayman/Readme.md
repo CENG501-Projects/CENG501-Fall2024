@@ -252,9 +252,10 @@ In our file structure, here are the codes written (fully, partially) by us;
 ```
 
 - Make sure that pytorch and torchvision and cuda are installed. In our test we used;
-  ``` PyTorch 2.5.0
-      Torchvision 0.20.0
-      CUDA Version 12.2
+  ```
+  PyTorch 2.5.0
+  Torchvision 0.20.0
+  CUDA Version 12.2
   ```
 
 - Compile Deformable Attention
@@ -291,8 +292,7 @@ In our file structure, here are the codes written (fully, partially) by us;
 ### 3.2.2 Testing
 - In order to test the checkpoint, run
   ```
-  bash train.sh configs/monoatt.yaml > logs/monoatt.log
-  ```bash test.sh configs/monodetr.yaml
+  bash test.sh configs/monoatt.yaml
   ```
   The best checkpoint will be evaluated by default but it is configurable via config file. 
 
