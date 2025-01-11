@@ -247,7 +247,7 @@ The train models can be foun in the link table below:
 
 3.3.1. Accuracy Performance Comparison
     We have extracted the following comparisons for LRW-Hard, LRW-Easy, LRW-Random and LRW-Opt for the CIFAR-100, OxfordIITPet, FGVCAircraft, Stanford Cars and Diabetic Retinopathy. 
-      **GRAFİKLER**
+      **GRAFİKLER**![](https://github.com/Sinasi3/Sinasi3/blob/main/Cats.jpg?raw=true)
     To start with, we observed that the LRW-Opt method came superiror to all other methods in every dataset. 
     The paper claims that the LRW-hard would be the successor the this method. We have seen this kind of relation in all the datasets except the CIFAR-100. 
     Just like Lrw-Hard, Lrw-Easy satisfied the papers suggestions, but in CIFAR-100 it outperformed LRW-Hard which was not the case in the article.
