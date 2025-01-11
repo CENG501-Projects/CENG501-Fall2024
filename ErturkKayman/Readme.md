@@ -147,7 +147,7 @@ Though paper is about avoiding grid based square tokents, it is not clear the in
 While extracting the feature map, s-factor is unclear. The writers have used 5 as s-factor in their previous paper. We adopted the backbone from their previous paper called MonoDETR since finetuning backbone is not computationly feasible and it is usualy similar in 3D object detection tasks.
 
 In the cluster center estimation part,it is not clear which CNN architecture is used for semantic scoring. It is only mentioned that it is a regression branch from CenterNet. Currently, we did not have time to try different CNN architectures. We have used the simple network below for semantic scoring after some research. We did not have time to try different semantic scoring architectures.
-'''python
+```python
 # Heatmap head for semantic scoring
 self.heatmap_head = nn.Sequential(
     nn.Conv2d(1024, 256, kernel_size=3, padding=1, bias=True),  #I am forced to use 256 because of complexity.
@@ -155,7 +155,7 @@ self.heatmap_head = nn.Sequential(
     nn.ReLU(inplace=True),
     nn.Conv2d(256, 1, kernel_size=1, bias=True),  # Output single-channel heatmap
 )
-'''
+```
 
 In the Adaptive Token Transformer part, the number of loops N is unclear. After some research and trials, we have decided to make it generic so that we loop until all tokens are aggregated. Also a very important hyperparameter number of clusters is unknown. We have decided it to be 100 after a few trials. Also none of the transformer parameters are known. Though we adapt some of them from authors previous work, we had to use some lightweight values to minimize the computational costs.
 
