@@ -7,7 +7,7 @@ from visualizeResults import *
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Run the model")
-    parser.add_argument("--id-datasets", type=str, help="in-distribution experiment dataset names", default = "CatsDogs Airplane Cars cifar100")
+    parser.add_argument("--id-datasets", type=str, help="in-distribution experiment dataset names", default = "CatsDogs Airplane Cars cifar100 DR")
     parser.add_argument("--out-datasets", type=str, help="out-of-distribution experiment dataset names", default="")
     parser.add_argument("--use-id-pickle-file", type=bool, help="If exists, use existing in-distribution result file", default=False)
     parser.add_argument("--use-ood-pickle-file", type=bool, help="If exists, use existing out-of-distribution result file", default=False)
