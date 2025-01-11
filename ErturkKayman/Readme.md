@@ -169,14 +169,15 @@ The architecture is really complex and there are many more hyperparameters which
 
 ## 3.1. Experimental setup
 
-We haven't completely developed the MonoATT model; hence, for experimenting and getting familiar with deep learning network, we have altered and simplified steps of our model. Below is a comparison table of original paper and our implementation:
+It is not easy to implement and finetune such a huge network from stracth. Hence, we decided to adapt the previous paper of the authors called MonoDetr. MonoDetr already implement the KITTI Dataset loader, trainer, tester, many of the loss calculations we need in this paper. We switched MonoDetr with MonoATT, added necessary new models such as AdaptiveTokenClustering, ClusterCenterEstimation, added related losses mentioned in the paper and trained. 
+
+Though we tried to stick the MonoATT paper; due to time constraints, implementation difficulties and huge number of hyperparameters, we could not follow the paper exactly on some points. The table below summarizes our implementation vs. paper's implementation. 
 
 | Aspect                  | MonoATT Paper               | Our Implementation         | Status/Comments                        |
 |-------------------------|-----------------------|----------------------------|----------------------------------------|
-| *Backbone*            | DLA-34               | ResNet-34                  | Simpler but effective                  |
-| *Adaptive Token Transformer (ATT)* | Learned scoring + multi-stage | k-means + single-stage attention | Simplified |
+| *Backbone*            | DLA-34               | ResNet-50                  | We got worse results with DLA-34, hence kept the ResNet-50 from MonoDetr                  |
 | *Multi-stage Feature Reconstruction (MFR)* | Global/local integration    | Single-stage reconstruction            | Basic, functional                  |
-| *Detection Head*      | GUPNet               | Custom detection head       | Similar in purpose                     |
+| *Detection Head*      | GUPNet               | Custom detection head       | We kept the detection head from MonoDetr                     |
 | *Loss Function*       | Composite losses      | Smooth L1 loss              | Needs refinement                       |
 | *Evaluation*          | KITTI metrics        | Basic evaluation scripts    | Needs refinement                      |
 
@@ -184,25 +185,33 @@ We have used the libraries and tools:
   - *PyTorch:* Framework for model development and training.
   - *Torchvision:* For pre-trained backbones (e.g., ResNet).
   - *NumPy & Pandas:* For dataset manipulation and numerical operations.
+  - *Tqdm:" For progress bar
   - *KITTI Dataset:* Used for training and evaluation.
   - *Matplotlib:* For visualizing results (predictions and bounding boxes).
-
+  - *Deformable DETR:*  Deformable DETR is an efficient and fast-converging end-to-end object detector. (Which requires special compilation for each GPU-Cuda pair.)
 We have implemented (fully or partially):
 - Dataset Loading:
     Parsed the KITTI dataset to load images and their corresponding 3D bounding box annotations.
     Applied transformations (e.g., resizing, normalization) to preprocess the images.
     Handled variable-sized bounding boxes using a custom collate function.
+    (Mostly adopted from MonoDetr.)
 - Backbone Feature Extraction:
-    Used ResNet-34 (pre-trained) as the feature extractor to generate a low-resolution feature map from input images.
-    Output: Feature maps of shape (B, 512, H, W).
-- Adaptive Token Transformer (Simplified):
-    Flattened the feature map into tokens and clustered them using k-means to identify regions of interest.
-    Applied a single-layer attention mechanism to refine these tokens.
-    Output: Refined tokens of shape (B, num_clusters, embed_dim).
+    Used ResNet-50 (pre-trained) as the feature extractor to generate a low-resolution feature map from input images.
+    Our implementation outputs 4 different feature layers.
+    Example output: Feature maps of shape (B, 512, H, W).
+    (Mostly adopted from MonoDetr.)
+- Cluster Center Estimation:
+    From the features provided by backbone, semantic scores and depth scores are calculated and cluster  centers are estimated.
+    Output: Returns combinaton of scores for loss calculations, final cluster centers ([B, num_clusters, C]), token positions (Shape: [B, num_tokens, 2]) and tokens ([B, num_tokens, C]).
+- Adaptive Token Transformer:
+    Flattened the feature map into tokens and clustered them using outline-preferred token grouping to identify regions of interest.
+    Applied a single-layer attention mechanism to refine these tokens. Transformer is as small as possible due to computational challenges. 
+    Output: Cluster assingments (Shape: [num_tokens]) and merged features. (Shape: [B, num_clusters, token_dim])
 - Multi-stage Feature Reconstruction (Simplified):
     Used a fully connected layer and convolutional layers to reconstruct the pixel-level feature map from refined tokens.
     Added skip connections to preserve original spatial information.
     Output: Reconstructed feature maps of shape (B, C, H, W).
+    (Mostly adopted from MonoDetr, not fully implemented because of the unknown hyperparameters. Instead we integrated the MonoDetr's output mechanism.)
 - Mono3D Detection Head:
     Designed a detection head to predict 3D bounding box parameters:
         Location: (x, y, z)
@@ -210,13 +219,13 @@ We have implemented (fully or partially):
         Orientation: (theta)
     Output: Tensor of shape (B, 7, H’, W’).
 - Loss Function:
-    Implemented a composite loss to minimize errors in location, dimensions, and orientation predictions using Smooth L1 Loss.
+    On top of the loss from MonoDetr for 3D object detection, loss used for scoring is added. It is implemented as a focal loss as mentioned in the paper. 
 - Training:
-    Trained the model on the KITTI dataset for 30 epochs using the basic pipeline.
-    Updated the loss function to a meaningful one and resumed training for further epochs.
+    Trained the model on the KITTI dataset for 200 epochs.
+    Training parameters are in the config file. 
 - Evaluation:
-    Developed scripts to evaluate the model on the validation set.
-    Outputs predictions for 3D bounding boxes and visualizes results.
+    During training after every epoch (can be adjusted in the config) an evaluation is performed. 
+    AP@40 scores are reported. (See next chapter for detailed explanation)
 
 
 ## 3.2. Running the code
