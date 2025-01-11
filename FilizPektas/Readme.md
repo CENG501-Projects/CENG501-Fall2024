@@ -183,7 +183,7 @@ MOLERE (Meta Optimization of the Learned Reweighting) network consists of 3 subn
 
 For the classifier, we employed Stochastic Gradient Descent (SGD) with the following hyperparameters:
 
-- **Batch Size**: 64 (except for CIFAR-100, where it was 32)
+- **Batch Size**: 32 (except for CIFAR-100, where it was 64)
 - **Image Size**: 224×224 (or 32×32 for CIFAR-100)
 - **Learning Rate**: 0.1, decaying by a factor of 10 every 50 epochs
 - **Momentum**: 0.9
@@ -193,7 +193,7 @@ We have used a SGD optimizer and a fixed learning rate of 10^{-3} to train our m
 
 ### Dataset Splitting and Validation
 
-Datasets were divided into training and validation sets using a delta value of 0.1. This guaranteed that no more than 10% of the training data was used for validation. Splitting decisions were based on the classifier's difficulty requirements. Only cases with Θ(x,y)<0.5 were included in the validation set. This increased the likelihood of including harder cases, which aligned with the LRW-hard technique's aims.
+Datasets were divided into training and validation sets using a delta value of mostly 0.1 we take into account the numbers given in the supplementary part of the article. This guaranteed that no more than 10% of the training data was used for validation. Splitting decisions were based on the classifier's difficulty requirements. Only cases with Θ(x,y)<0.5 were included in the validation set. This increased the likelihood of including harder cases, which aligned with the LRW-hard technique's aims.
 
 ## **3.2 Running the Code**
 
@@ -240,8 +240,29 @@ The dataset names are not case sensitive.
    python main.py --out-datasets "iwildcam" --use-ood-pickle-file True
 
 ## **3.3. Result**
-We have conducted the LRW-Hard, LRW-Easy and LRW-Random calculations and compared them over ERM baseline. We have conducted the experiment on CIFAR-100 dataset with Wide-ResNet28-10 implementation that we have provided. Here is our resulting graph:
 
+We have investiageted two of the claims tha the paper proposed, one of the claims was LRW-hard would outperfrom the other splitting methods while the proposed optimal LRW method would be superior in performance than the LRW-Hard method. 
+
+The train models can be foun in the link table below:
+
+3.3.1. Accuracy Performance Comparison
+    We have extracted the following comparisons for LRW-Hard, LRW-Easy, LRW-Random and LRW-Opt for the CIFAR-100, OxfordIITPet, FGVCAircraft, Stanford Cars and Diabetic Retinopathy. 
+      **GRAFİKLER**
+    To start with, we observed that the LRW-Opt method came superiror to all other methods in every dataset. 
+    The paper claims that the LRW-hard would be the successor the this method. We have seen this kind of relation in all the datasets except the CIFAR-100. 
+    Just like Lrw-Hard, Lrw-Easy satisfied the papers suggestions, but in CIFAR-100 it outperformed LRW-Hard which was not the case in the article.
+    LRW-Random didn't performed like the way the article suggested every case because of its stochastic nature. In Cats and Dogs Lrw-Random gave better results than the Lrw-Easy but in other datasets its performance mostly aligned with the paper's suggestion. 
+    
+3.3.2. Margin Maximization Effect
+    **GRAFİKLER**
+
+ Paper also claimed that LRW-Hard has a maximization effect. We conducted the Margin Maximization effect on CIFAR-100 dataset. We have received the test margin results created by LRW-Easy, LRW-hard and ERM methods. We can clearly see that the mean of the LRW-Hard and ERM margin maximization is greater than zero which can be seen from the graph being right skewed. In addition to that we were able to see a clear seperation between the LRW-easy and LRW-Hard in the --second-- figure. LRW-Hard effectively outperforms the LRW-Easy in terms of margin amximization effect, we can see from the figure that LRW-Hard is higher in terms of delta with respect to ERM in comparison to LRW-Easy on the given ERM Margin Buckets.
+
+-Imbuguities:
+LRW opt generate split unclear
+
+
+We have conducted the LRW-Hard, LRW-Easy and LRW-Random calculations and compared them over ERM baseline. We have conducted the experiment on CIFAR-100 dataset with Wide-ResNet28-10 implementation that we have provided. Here is our resulting graph:
 ![CIFAR-100 Gains](https://github.com/user-attachments/assets/f6fdef3a-b743-4713-83dd-26a54df68554)
 
 
