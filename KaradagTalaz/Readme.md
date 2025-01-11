@@ -297,7 +297,24 @@ In the paper, experiments were performed on each branch of a two-branch network 
 
 ## 4.2. Running the code
 
-@TODO: Explain your code & directory structure and how other people can run it.
+1. Dependencies Installation
+Install the required dependencies using pip:
+
+```pip install -r requirements.txt ```
+
+2. HRNet Installation
+   1. Install torch image models (timm) library which is used for pretrained HRNet backbone from the [source](https://huggingface.co/docs/timm/installation). 
+   3. Replace the existing HRNet implementation by copying our modified hrnet.py file to ```/pytorch-image-models/timm/models/```
+
+3. Dataset Setup
+   Install the CIMD dataset:
+   1. Download the dataset from this repository: https://github.com/ZhenfeiZ/CIMD
+   2. Place the dataset directory at the same level as this repository
+   
+4. Trained Model
+   If you wish to use our pre-trained model:
+
+   - Download the checkpoint file from: [Google Drive](https://drive.google.com/file/d/1mibagLeP6bShCyRT-dxx48EuVPpQWvNU/view?usp=share_link)
 
 ## 4.3. Results
 
