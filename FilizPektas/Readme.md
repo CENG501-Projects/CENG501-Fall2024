@@ -199,6 +199,15 @@ Datasets were divided into training and validation sets using a delta value of m
 
 You can download the prerequisites from the requirements.txt file as follows:
 
+**Trained Models**
+| Dataset Name | Link                                                                        |
+|--------------|-----------------------------------------------------------------------------|
+| `catsdogs`   | https://drive.google.com/file/d/15qYo1-D1llvmc0eXohLavYBcpPuDo_Oj/view      | 
+| `cars`       | https://drive.google.com/file/d/1tNO5-1Cn2xd2OCJbN1n4FRWvpXglsuOe/view      | 
+| `cifar100`   | https://drive.google.com/file/d/1K-vH9LxXB5vY7dSujnA2bD6cnDbS3lIs/view      |
+| `airplane`   | https://drive.google.com/file/d/1fNVQgjevbjJkroFU6WWOzjWgwHIDV52u/view      |
+| `DR`         | diabetic_retinopathy (from huggin face)       |
+
 pip install –r requirements.txt
 
 **Key Arguments**
