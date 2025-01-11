@@ -308,6 +308,39 @@ They do not look right at all. We are working on it.
 Figure 5,6. Input images and heatmap pairs. Generated from 30-epoch trained network.
 </p>
 
+The paper uses AP40 scores of the car category on KITTI test set at 0.7 IoU threshold to measure the performance of the model. It is also the official evaluation of KITTI contest. Results are available at the [KITTI website](https://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=3d). According to the paper, MonoATT results are, 
+<p align="center">
+<img src=https://github.com/user-attachments/assets/0ea9c088-07e2-40e9-885b-3b3ff3b226bb>
+Figure 8. Expected AP40 values table from the paper.
+</p>
+However, it is not possible for us to test our model on the test set. Test set labels are not shared and to get the results of the test set, one needs to submit the model to the KITTI website. However, we cannot submit our results to the contest because of the rules. KITTI website states that model submission step must only be followed if a paper is about to be submitted to a conference where the experimental results are ready, other evaluations (eg, in the context of model ablations, a student's class project or Master's thesis) must be conducted on the training set. Hence, we decided to split the training set into two equal parts for training and testing. 
+
+In different repositories, there are some example training set splits for KITTI dataset. We have also provided our training-test split files under the dataset directory. However, if scores in the paper may not be reached, this could be one of the reasons. The paper does not give any information on training-test split. 
+
+###3.3.1 AP40@0.7 Metric
+
+The paper uses AP40 metric at 0.7 IoU threshold. The term AP40@0.7 is a performance metric commonly used in object detection tasks, particularly in 3D object detection tasks, such as those in autonomous driving. Let’s break it down:
+
+*AP (Average Precision):*
+- Average Precision (AP) evaluates the quality of an object detection model.
+- AP measures the area under the Precision-Recall (PR) curve.
+- Precision: The proportion of correctly identified objects (true positives) out of all predicted objects (true positives + false positives).
+- Recall: The proportion of correctly identified objects out of all ground-truth objects.
+- AP is a summary metric, combining precision and recall into a single number.
+
+*40 in AP40:*
+- The 40 here refers to the number of recall points used to calculate the metric.
+- In AP40, the PR curve is sampled at 40 recall levels (e.g., 0.025, 0.05, ..., 1.0), and the average precision is computed as the mean precision at these points.
+- This is in contrast to AP11, which uses only 11 recall points, and may be less granular. A few years ego, KITTI switched from AP11 to AP40.
+
+*@0.7:*
+The @0.7 specifies the Intersection over Union (IoU) threshold.
+IoU is a measure of overlap between the predicted bounding box and the ground-truth bounding box:
+“IoU\=Area of UnionArea of Overlap​”
+​
+ 
+For a prediction to be considered a true positive, the IoU between the predicted box and the ground truth must be at least 0.7.
+
 We have calculated the precision-recall graph. KITTI dataset 3D benchmark is tested on AP40 values on IOU 0.7. However, it looks like our network could not predict a single car correctly. Hence, precision recall curves look as follows. 
 
 <p align="center">
@@ -317,10 +350,7 @@ We have calculated the precision-recall graph. KITTI dataset 3D benchmark is tes
 
 Expected AP40 values for different datasets from the original implementations are:
 
-<p align="center">
-<img src=https://github.com/user-attachments/assets/0ea9c088-07e2-40e9-885b-3b3ff3b226bb>
-Figure 8. Expected AP40 values table from the paper.
-</p>
+
 
 
 # 4. Conclusion
