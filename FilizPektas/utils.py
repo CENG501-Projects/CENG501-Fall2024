@@ -168,6 +168,49 @@ def get_transforms(input_size):
         transforms.ToTensor(),
         transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
     ])
+    
+LOCAL_DATASET_DIR = '/content/drive/MyDrive/diabetic_retinopathy'
+def download_and_prepare_dataset():
+    if not os.path.exists(LOCAL_DATASET_DIR):
+        os.makedirs(LOCAL_DATASET_DIR)
+        print("Downloading Diabetic Retinopathy Dataset...")
+        ri = ReadInstruction('train') + ReadInstruction('validation')
+        dataset_dr = load_dataset('youssefedweqd/Diabetic_Retinopathy_Detection_preprocessed2', split=ri)
+        print("Saving dataset locally...")
+
+        features, labels = [], []
+        for i, example in enumerate(dataset_dr):
+            img_path = os.path.join(LOCAL_DATASET_DIR, f"img_{i}.jpg")
+            example['image'].save(img_path, format='JPEG')
+            features.append(img_path)
+            labels.append(example['label'])
+
+        # Save metadata
+        np.save(os.path.join(LOCAL_DATASET_DIR, "features.npy"), features)
+        np.save(os.path.join(LOCAL_DATASET_DIR, "labels.npy"), labels)
+        print("Dataset saved locally.")
+    else:
+        print("Dataset already exists locally.")
+
+    features = np.load(os.path.join(LOCAL_DATASET_DIR, "features.npy"), allow_pickle=True)
+    labels = np.load(os.path.join(LOCAL_DATASET_DIR, "labels.npy"), allow_pickle=True)
+    return features, labels
+    
+class DiabeticRetinopathy(Dataset):
+    def __init__(self, features, labels, transform=None):
+        self.features = features
+        self.labels = labels
+        self.transform = transform
+
+    def __len__(self):
+        return len(self.features)
+
+    def __getitem__(self, idx):
+        feature = Image.open(self.features[idx]).convert('RGB')
+        if self.transform:
+            feature = self.transform(feature)
+        label = self.labels[idx]
+        return feature, label
 
 def get_datasets(dataset_name, device, use_existing_erm=False, input_size=224):
     
@@ -210,6 +253,19 @@ def get_datasets(dataset_name, device, use_existing_erm=False, input_size=224):
         )
         erm_model = get_dataset_model(dataset_name, len(dataset_train.classes), device)
         delta = 0.1
+
+    elif dataset_name == "dr":
+
+        features, labels = download_and_prepare_dataset()
+        dataset = DiabeticRetinopathy(features, labels, transform=get_transforms(input_size))
+
+        train_size = int(0.9 * len(dataset))
+        test_size = len(dataset) - train_size
+        dataset_train, dataset_test = random_split(dataset, [train_size, test_size])
+
+        erm_model = get_dataset_model(dataset_name, len(dataset_train.classes), device)
+        delta = 0.1
+        
     elif dataset_name == "camleyon":
       dataset_camleyon = get_dataset(dataset="camelyon17", download=True)
       train_data_camleyon = dataset_camleyon.get_subset(
@@ -273,7 +329,7 @@ def get_datasets(dataset_name, device, use_existing_erm=False, input_size=224):
       return train_data_iwildCam, val_data_iwildCam, dataset_test, erm_model, delta
     else:
         raise ValueError(f"Dataset {dataset_name} is not supported.")
-
+    
     if use_existing_erm and (os.path.exists(f"{dataset_name}_erm.pth") or os.path.exists(f"erm_{dataset_name}.pth")):
         return dataset_train, dataset_test, delta
     else:
