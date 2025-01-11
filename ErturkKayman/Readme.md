@@ -189,6 +189,8 @@ We have used the libraries and tools:
   - *KITTI Dataset:* Used for training and evaluation.
   - *Matplotlib:* For visualizing results (predictions and bounding boxes).
   - *Deformable DETR:*  Deformable DETR is an efficient and fast-converging end-to-end object detector. (Which requires special compilation for each GPU-Cuda pair.)
+
+    
 We have implemented (fully or partially):
 - Dataset Loading:
     Parsed the KITTI dataset to load images and their corresponding 3D bounding box annotations.
