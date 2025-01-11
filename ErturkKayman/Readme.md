@@ -244,8 +244,57 @@ In our file structure, here are the codes written (fully, partially) by us;
 + lib/losses/focal_loss.py (partially)
 
 ## 3.2. Running the code
+### 3.2.1 Training
+- Create a new conda environment and activate.
+```
+  conda create -n monoatt python=3.8
+  conda activate monoatt
+```
 
-@TODO: Explain your code & directory structure and how other people can run it.
+- Make sure that pytorch and torchvision and cuda are installed. In our test we used;
+  ``` PyTorch 2.5.0
+      Torchvision 0.20.0
+      CUDA Version 12.2
+  ```
+
+- Compile Deformable Attention
+```
+    cd lib/models/monoatt/ops/
+    bash make.sh
+```
+
+- Make dictionary for saving training losses:
+    ```
+    mkdir logs
+    ```
+- Download [KITTI](http://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=3d) datasets and prepare the directory structure;
+  ```
+    ├──...
+    ├──MonoATT/
+    ├──Dataset/KITTI/
+    │   ├──ImageSets/
+    │   ├──training/
+    ├──...
+    ```
+  You can also change the data path at "dataset/root_dir" in `configs/monoatt.yaml`.
+
+- Indicate the available GPUs in the train.sh. CUDA and GPU is a must, otherwise it won't work.
+- Start the training with;
+  ```
+  bash train.sh configs/monoatt.yaml > logs/monoatt.log
+  ```
+  But as the architecture is complex and it will likely take a long time you may consider using;
+  ```
+  nohup bash train.sh configs/monoatt.yaml > logs/monoatt.log 2>&1 &
+  ```
+  Training process will evaluate the model after every epoch. (Configurable in the config file.) It will compare the existing the best with the current evaluation result and along with the latest checkpoint, it will also save the best checkpoint as well. 
+### 3.2.2 Testing
+- In order to test the checkpoint, run
+  ```
+  bash train.sh configs/monoatt.yaml > logs/monoatt.log
+  ```bash test.sh configs/monodetr.yaml
+  ```
+  The best checkpoint will be evaluated by default but it is configurable via config file. 
 
 ## 3.3. Results
 
