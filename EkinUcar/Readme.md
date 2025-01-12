@@ -164,7 +164,7 @@ Figure 2: Train and Validation loss for small sMNIST
 ![image(2)](https://github.com/user-attachments/assets/d34e6291-61c8-41d5-bae4-e7c61f1da04f)
 
 
-Table 2: Training and validation accuracies for our implementation
+Table 3: Training and validation accuracies for our implementation
 |                     | Small (1/20) sMNIST | Full sMNIST|
 |---------------------|--------|----------|
 | **Training** |    13.66    | 10.348 |
@@ -180,6 +180,8 @@ Figure 3: Original paper's accuracy results
 
 **3rd Experiment (Full LRA Listops Dataset, 40 Epochs):**
 
+The loss and accuracy results for this experiment are shown below. The gaps between segments are due to saving a checkpoint and continuing training from that model.  
+
 Figure 4: Loss Graphs for LRA Listops Benchmark
 
 ![loss](https://github.com/user-attachments/assets/7bc84ff3-825a-43cd-a7a8-d8e3fb7e083e)  
@@ -189,7 +191,14 @@ Figure 5: Accuracy Graphs for LRA Listops Benchmark
 
 ![accuracy](https://github.com/user-attachments/assets/798d52b5-d198-4d20-b91d-9ff7676af439)  
 
+We choose our best model based on the validation accuracy score. The best model's performance can be observed in Table-4.
 
+Table 4: Performance of the best model for Listops task
+|                     | Accuracy | Loss|
+|---------------------|--------|----------|
+| **Training** |    32.422    | 1.938 |
+| **Validation** |  36.500    | 1.887 | 
+| **Test** |    37.000    |  1.891  |  
 
 
 ### Experiment: Document Retrieval Task
@@ -206,7 +215,7 @@ Figure YY: Train, Test and Validation Losses for Document Retrieval Task
 
 We choose our best model based on the validation accuracy score. The best model's performance can be observed in Table-ZZZ.
 
-Table 2: Performance of the best model for Document Retrieval task
+Table 5: Performance of the best model for Document Retrieval task
 |                     | Accuracy | Loss|
 |---------------------|--------|----------|
 | **Training** |    54.208    | 0.68699 |
