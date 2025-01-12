@@ -322,7 +322,7 @@ if __name__ == "__main__":
 
 ### Client K=5, Balanced
    <p align="center">
-  <img src="figures/combined_gan_losses.png=5.png" style="width: 70%;"><br>
+  <img src="figures/generator_loss_plot_balanced_k=5.png" style="width: 70%;"><br>
   <em>Figure 11: Generator loss, balanced dataset, K=5 clients</em>
 </p>
 <p align="center">
@@ -363,17 +363,17 @@ In this part, the results shared are discussed from the perspective of the hypot
 
 ## Summary of the work:
 
-Unlike the results shared in the paper and the expectation of the hypothesis 1, the generator loss of IFL-GAN was always the highest between other architectures. The design of the models and the choices for the parameters were at first aligned with the shared ones in the paper, but the poor results have given the encourage to change them accordingly. After settling on the sufficient results of FL-GAN with the priori knowledge of it as the worst model among the three, it was expected that other models would perform better. But that was not the case. In fact, in every scenario it performed the best, both image-wise and loss-wise.
+Unlike the results shared in the paper and the expectation of the hypothesis 1, the generator loss of IFL-GAN was always the highest between other architectures. The design of the models and the choices for the parameters were at first aligned with the shared ones in the paper, but the poor results have given the encourage to change them accordingly. After settling on the sufficient results of FL-GAN with the priori knowledge of it as the worst model among the three, it was expected that other models would perform better. But that was not the case. In fact, in nearly every scenario it performed the best, both image-wise and loss-wise. Only at the imbalanced case with 5 clients, IFL-GAN showed superiority of converging, but it suffered from imbalanced data from client 1.
 
 1- Performance Across Different Client Numbers
-In the paper, it was discussed that FL-GAN had performed the worst in MNIST dataset, which can be seen in figures 15 and 17. However, in FL-GAN, one trains both local generators and discriminators, and intuition should be towards that it converging relatively faster than MD-GAN, which was supported by the results since for the same number of epochs, the number of models trained is larger than MD-GAN in which only one global generator is trained. 
+In the paper, it was discussed that FL-GAN had performed the worst in MNIST dataset, which can be seen in figures 15 and 17. However, in FL-GAN, one trains both local generators and discriminators, and intuition should be towards that it should be converging relatively faster than MD-GAN, which was supported by the results: since for the same number of epochs, the number of models trained is larger than MD-GAN, in which only one global generator is trained. 
 
 2- Robustness to Data Imbalance
 It was expected that directly averaging the local parameters in FL-GAN would perform worst than IFL-GAN, but in light of the results, especially in the imbalanced cases, the MMD mechanism inside the IFL-GAN architecture couldn't prevent the global model from overfitting to the dataset of the client with the largest-numbered dataset of 0's and 1's. Simple averaging mechanism of both MD-GAN and FL-GAN seems to cope with imbalanced data while MD-GAN generator fell short on converging. 
 
 3- Impact on Convergence and Stability
 
-Loss-wise, none of the loss graphs showed the expected 50% rate theoretical loss convergence of the generator. In addition, during the research phase, it was mentioned a number of times that instead of looking at the loss for the performance of the GAN, it is better to print the images that the model is trained to generate. This perspective have influenced the approach of examining the performance of the models and the results. It was observed that FLGAN converged faster (around 100 epochs) in all of the  cases, MD-GAN showed that parameter tuning is still necessary for obtaining meaningful results, and IFL-GAN presented unreliable convergence trends across different levels of data imbalance.
+Loss-wise, none of the loss graphs showed the expected 50% rate theoretical loss convergence of the generator. In addition, during the research phase, it was mentioned a number of times that instead of looking at the loss for the performance of the GAN, it is better to print the images that the model is trained to generate. This perspective have influenced the approach of examining the performance of the models and the results. It was observed that FLGAN converged faster (around 100 epochs) in all of the  cases, MD-GAN showed that parameter tuning is still necessary for obtaining meaningful results, and IFL-GAN presented unreliable convergence trends across different levels of data imbalance. However, in the most diverse case (K=5, data imbalance), it was successful at creating meaningful results, but generating only the one-fifth of what it should be generating.
 
 
 # 5. References
