@@ -88,20 +88,20 @@ def plot_log_log_performance(data):
     })
 
     # Map L to colors
-    df['color'] = df['L'].map({2: 'red', 3: 'blue'})
+    # df['color'] = df['L'].map({2: 'red', 3: 'blue'})
 
     # Map s0 to markers
-    markers = {0: '^', 1: 's', 2: 'o', 4: 'D', 6: "P"}
+    markers = {0: '^', 1: 's', 2: 'o', 4: 'D'}
     df['marker'] = df['s0'].map(markers)
 
     # Create the plot
     plt.figure(figsize=(10, 6))
     sns.set_theme(style="whitegrid")
 
-    # Plot each point with the appropriate color, marker, and opacity
+    # Plot each point with fthe appropriate color, marker, and opacity
     for marker_type in markers.values():
         subset = df[df['marker'] == marker_type]
-        plt.scatter(subset['x'], subset['y'], c=subset['color'], alpha=0.1 + (1/30) * subset['v'], 
+        plt.scatter(subset['x'], subset['y'], alpha=0.1 + (1/30) * subset['v'], 
                     marker=marker_type, s=100, label=f's0={subset["s0"].iloc[0]}')
 
     # Add the x = y line
@@ -149,7 +149,7 @@ def get_theoretical_complexity(obj):
     return None
 
 def main():
-    data = load_process_pkl("outputs", "exp1c_config_32.pkl")
+    data = load_process_pkl("outputs", "exp3a_config_2_12.pkl")
     print(vars(data["args"]))
     
 
@@ -158,10 +158,18 @@ def main():
 
     x_list = []
     y_list = []
+    print(data)
     for point in data["dynamics"]:
-        x, y = point['epoch']*train_size, point['acc']
-        x_list.append(x)
-        y_list.append(y)
+        if "sensitivity_diffeo" in point:
+            print("Here")
+            x, y = point["sensitivity_diffeo"], point['acc']
+            x_list.append(x)
+            y_list.append(y)
+        if "sensitivity_synonym" in point:
+            print("Here")
+            x, y = point["sensitivity_diffeo"], point['acc']
+            x_list.append(x)
+            y_list.append(y)
     print(f"Train Size : {train_size}")
     print(f"Test Size : {test_size}")
 
@@ -178,44 +186,52 @@ def main():
     plt.axhline(y=10, color='red', linestyle='--', label='10% Error')
     # Adding labels and title
     plt.xlabel('Number of Training Examples Seen')
-    plt.ylabel('Accuracy (%)')
-    plt.title('Training Examples vs Accuracy')
+    plt.ylabel('Error Rate (%)')
+    plt.title('Training Examples vs Error Rate')
 
     sample_complexity = get_sample_complexity(x_list, y_list, 90)
     print(f"Sample complexity is {sample_complexity}")
 
     # Display the plot
-    #plt.show()
+    plt.show()
 
-    objects = load_for_sensitivity_plot("outputs","exp1c_config_")
-    data_list = []
-    for obj in objects:
-        train_size = min(obj["args"].ptr, 195000)
-        v = obj["args"].num_features
-        num_layers = obj["args"].num_layers
-        s0 = obj["args"].s0
-        x_list = []
-        y_list = []
-        for point in obj["dynamics"]:
-            x, y = point['epoch']*train_size, point['acc']
-            x_list.append(x)
-            y_list.append(y)
-        sample_complexity = get_sample_complexity(x_list, y_list, 90)
-        if not sample_complexity:
-            continue
-        theoretical_complexity = get_theoretical_complexity(obj)
-        print("")
-        print(f"net : {obj['args'].net}")
-        print(f"Dataset size : {obj['args'].ptr}")
-        print(f"Actual size : {train_size}")
-        print(f"theoretical_complexity : {theoretical_complexity}")
-        print(f"sample_complexity : {sample_complexity}")
-        print(f"v : {v}")
-        print(f"s0 : {s0}")
-        print(f"num_layers : {num_layers}")
-        data_point = (theoretical_complexity, sample_complexity, v, s0, num_layers)
-        data_list.append(data_point)
-    plot_log_log_performance(data_list)
+    # objects = load_for_sensitivity_plot("outputs","exp3b_config")
+    # data_list = []
+    # for idx, obj in enumerate(objects):
+    #     train_size = obj["args"].ptr
+    #     v = obj["args"].num_features
+    #     num_layers = obj["args"].num_layers
+    #     s0 = obj["args"].s0
+    #     if v == 10 and num_layers == 2 and s0 == 2:
+    #         print(f"At {idx}")
+    #     x_list = []
+    #     y_list = []
+    #     sensitivity_list = []
+    #     for point in obj["dynamics"]:
+    #         x, y = point['epoch']*train_size, point['acc']
+    #         x_list.append(x)
+    #         y_list.append(y)
+    #         if "sensitivity_diffeo" in point and point["sensitivity_diffeo"]:
+    #             sensitivity_list.append(point["sensitivity_diffeo"])
+    #         else:
+    #             sensitivity_list.append(0)
+
+    #     sample_complexity = get_sample_complexity(sensitivity_list, y_list, 90)
+    #     if not sample_complexity:
+    #         continue
+    #     theoretical_complexity = get_theoretical_complexity(obj)
+    #     # print("")
+    #     # print(f"net : {obj['args'].net}")
+    #     # print(f"Dataset size : {obj['args'].ptr}")
+    #     # print(f"Actual size : {train_size}")
+    #     # print(f"theoretical_complexity : {theoretical_complexity}")
+    #     # print(f"sample_complexity : {sample_complexity}")
+    #     # print(f"v : {v}")
+    #     # print(f"s0 : {s0}")
+    #     # print(f"num_layers : {num_layers}")
+    #     data_point = (theoretical_complexity, sample_complexity, v, s0, num_layers)
+    #     data_list.append(data_point)
+    # plot_log_log_performance(data_list)
 
 
 

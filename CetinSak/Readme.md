@@ -246,7 +246,9 @@ This is an increasing function as long as $m>\sqrt{s}$. When m and s is fixed an
 
 #### Implementation of Experiment 2
 
-@Todo exp2
+Plotting the given parameters by defining a linear space of points, and applying the dimension and relevant fraction solves this. Below is the graph.
+
+![Figure 5 Implementation](assets/exp2.png)
 
 ---
 
@@ -267,7 +269,7 @@ Showing this means that for a LCN, the model solves the task when it also become
 
 #### Implementation of Experiment 3
 
-@Todo Experiment 3
+Our implementations had bugs, so please see discussion part.
 
 ---
 
@@ -286,7 +288,7 @@ Figures C and D are for common architectures trained on SRHM. Figure C is for mo
 
 #### Implementation of Experiment 4
 
-@TODO experiment 4
+Our implementations had bugs, so please see discussion part.
 
 ---
 
@@ -427,11 +429,61 @@ To run the code:
 
 ### 3.3. Results
 
-@TODO: Present your results and compare them to the original paper. Please number your figures & tables as if this is a paper.
+| Note: Due to time constraints, experiments in the appendix were not implemented.
+
+
+#### 3.3.2 Experiment 1 Results
+
+From the results of experiment 1, we can see that our results deviate greatly from the authors results.
+
+#### 3.3.3 Experiment 2 Results
+
+#### 3.3.4 Experiment 3 and 4 Results
+
+Due to bugs in the experiment 3 and 4, we were not able to implement them, this is due to:
+
+- For experiment 3, synonym and diffeo sensitivity calculations were behaving erratically. For example, sum of difference of activations on
 
 ## 4. Conclusion
 
-@TODO: Discuss the paper in relation to the results in the paper and your results.
+### 4.1 Coding The SRHM and Training Models
+
+While coding the SRHM, we based our implementation from authors previous paper on Random Hierarchy Models. We concluded that basing the SRHM off of RHM is the proper way to extend this experiment. Along the way, we have realized that there were following difficulties we need to overcome:
+
+1. In big configurations like number of layers equal to 3 and feature count equal to 12, resultant training dataset size was over 1 TiB if we tried to load it to memory, and more than 100 GB's if we try to save it. We overcame this problem by limiting example counts to 200000 as no model consumed more than that amount of data. Additionally, memory mapping the result to a file enabled us to properly load and execute the code on the dataset.
+2. Modifying the code was really difficult because code that we started our implementation had no comments. Changing the RHM to SRHM
+3. Training models where number of layers in the SRHM took extremely long time. Even with A100 GPU's, some training runs were taking hours, and each experiment has around 16 runs to complete if number of layers is 3. This can be resolved by increasing batch size, but authors sticked to batch size of 4, and to replicate results we have sticked to that.
+
+Our current results took around 1 day of training on one A100 40GB GPU.
+
+### 4.2 Bugs in the SRHM and Sensitivity Calculations
+
+As we implemented SRHM, we have implemented the following to ensure that we were introducing no bugs to the system:
+
+1. Assert SRHM data is balanced on labels, has proper dimensions, and content of its data.  
+2. Assert SRHM with diffeo or synonym exchange applied has different data points compared to original SRHM.
+3. Assert training run gradients are not exploding.
+4. Assert training accuracy and test accuracy are behaving properly (staying constant, not increasing very rapidly etc.)
+5. See that train run graphs look like low accuracy for a long time, then increasing around sample complexity value. You can inspect Experiment 1A graph.
+6. Assert outputs coming from CNN/LCN layer hooks are normal.
+
+Even though we have controlled on these problems, we were unable to resolve following bugs:
+
+1. Sensitivity calculations never go below 0.7 or stay close to 1.
+2. Sometimes, sensitivity calculations go to inf or nan. We think this is caused by some datapoints being equal to eachother between a SRHM and synonym or diffeomorphism exchange applied version of SRHM.
+
+### 4.3 Adapting to Efficientnet, Resnet etc.
+
+Adapting the SRHM to networks like Efficientnet was a problem we could not solve. We have assumed the following approach, but we were not able to solve bugs between sparsity calculations and dimension conversions:
+
+1. Networks like Resnet expect an input like `(B, N, H, W)` where H and W is usually 224. Form of data from SRHM is like `(B, m^2)` for decimal encoding and `(B, num_classes+1, m^2)` for onehot encoding.
+2. One way to view the data is `(B, 1, num_classes+1, m^2)`, but for experiment 4, this causes actual dimensions `(4, 1, 11, 36)` which is unfit for Resnet.
+3. Another way to view the data is `(B, 1, m, m)` while using decimal form. Then this can be extrapolated to `(B, 1, 224, 224)` to give inputs to Resnet. However, repeated interpolations at synonym calculations caused data corruption, and this is not the best way to adapt an architecture like Resnet to our problem.
+4. Even after a possible implementation, bugs about sensitivity calculations would have prevented us from continuing.
+
+### 4.4 What We Have Learned
+
+Late into the project, we have realized that authors were saving network states along with accuracies. We could have saved network states for a set number of accuracies, then evaluate sensitivities on saved networks. This would have occupied a very large amount of memory, but we would not spend long times on training.
 
 ## 5. References
 
