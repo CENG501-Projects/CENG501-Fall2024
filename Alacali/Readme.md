@@ -255,27 +255,32 @@ Each script provides an entry point via a main section or a dedicated function f
 ### Configuration Options
 Most scripts include parameters you can customize, typically near the bottom of each file or as command-line arguments:
 
-num_clients (k=2, 5, or 10): Number of federated clients.
-case: Data split scenario: "balanced", "imbalanced", or "extremely_imbalanced".
-epochs: Total training epochs.
-batch_size: Mini-batch size for training.
-lr: Learning rate.
-noise_dim: Dimensionality of the generator’s latent space.
-sigma: (Only in IFL-GAN) Parameter for the MMD kernel.
-Adjust these in the source code or command-line arguments if provided.
+- num_clients (k=2, 5, or 10): Number of federated clients.
+- case: Data split scenario: "balanced", "imbalanced", or "extremely_imbalanced".
+- epochs: Total training epochs.
+- batch_size: Mini-batch size for training.
+- lr: Learning rate.
+- noise_dim: Dimensionality of the generator’s latent space.
+- sigma: (Only in IFL-GAN) Parameter for the MMD kernel.
+Adjust these in the source code at the end of the code.
 
-Examples: 
-Running IFL-GAN: python ifl_gan = IFLGAN(noise_dim=128, case="balanced", num_clients=5, batch_size=128, lr=0.0002)
-ifl_gan.ifl_training(epochs=50, sigma=1.0)
+Example:
 
-Running FL-GAN: python FLGAN(noise_dim=128,case="balanced",num_clients=5,epochs=200)fl_gan.train()
-
-Running MD-GAN: python md_gan_main(num_workers=5,noise_dim=128,epochs=200,batch_size=128,case="balanced")
-
+```
+if __name__ == "__main__":
+    # Example usage:
+    ifl_gan = IFLGAN(
+        noise_dim=128, 
+        case="balanced",     # or "imbalanced", "extremely_imbalanced"
+        num_clients=5,       # 2, 5, or 10
+        batch_size=128, 
+        lr=0.0002
+    )
+    ifl_gan.ifl_training(epochs=200, sigma=1.0)
+```
 
 ## 3.3. Results
 
-@TODO: Present your results and compare them to the original paper. Please number your figures & tables as if this is a paper.
 
 ### Client K=2, Balanced
    <p align="center">
@@ -317,9 +322,25 @@ Running MD-GAN: python md_gan_main(num_workers=5,noise_dim=128,epochs=200,batch_
      <em>Figure 14: Generator results (FL-GAN, IFL-GAN, MD-GAN), imbalanced dataset, K=5 clients</em>
 </p>
 
+## Results from the Paper
+
+<p align="center">
+  <img src="figures/paper_generator_loss_k=2.png" style="width: 70%;"><br>
+  <em>Figure 15: Generator loss, balanced and imbalanced datasets, K=2 clients</em>
+</p>
+
 # 4. Conclusion
 
-@TODO: Discuss the paper in relation to the results in the paper and your results.
+In this part, the results shared are discussed from the perspective of the hypotheses created from the paper.
+
+1- Performance Across Different Client Numbers
+
+2- Robustness to Data Imbalance
+
+3- Improvement Over Centralized Training Baselines
+
+4- Impact on Convergence and Stability
+
 
 # 5. References
 
