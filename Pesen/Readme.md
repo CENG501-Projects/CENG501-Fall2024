@@ -163,7 +163,22 @@ This setup highlights the framework's adaptability to different models and datas
 
 ## 3.2. Running the code
 
-@TODO: Explain your code & directory structure and how other people can run it.
+### 3.2.1 Setting up PyTorch
+
+First, visit https://pytorch.org/ then choose PyTorch Build version, Your OS, Package, Language, Compute Platform. There will appear the command, such as `pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118`
+
+### 3.2.2 Setting up Model
+
+1. Install Python 3.
+2. Build virtual environment `python -m venv venv`
+3. Activate it `.\venv\Scripts\Activate.ps1`
+4. Run pip3 install -r requirements.txt to install dependencies.
+5. Go to `src/models`
+6. Run `python model_pruner_alexnet.py` or `python model_pruner_resnet50.py` or `python model_pruner_vgg16.py`
+
+### 3.2.3  Downloading Pre-Trained Models
+
+Download a pre-trained version of models [here](https://drive.google.com/drive/folders/1LdOA16mwhu4acZ3qMtYcJL_VE-tf4iXC?usp=drive_link)
 
 ## 3.3. Results
 ### 3.3.1. The evaluation of each convolutional layer for AlexNet on MNIST.
