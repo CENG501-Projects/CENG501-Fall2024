@@ -195,21 +195,22 @@ The first plot Figure 2 shows the average loss per epoch.
 </p>
 <p align="center">Figure 3: Loss over the whole training data every 20 iterations</p>
 
-The training data seems promising but the loss is over the predicted state derivatives. when a state trajectory prediction is made using the learned dynamics, the error is actually integrated. In previously unseen test data as in Figure 4 and 5, we see the poor performance of the network.
+The training data seems promising but the loss is over the predicted state derivatives. when a state trajectory prediction is made using the learned dynamics, the error is actually integrated. 
 
+Following our failed trials, we decided to increase network capacity. The new network width is set to 100. Batch size is set to 128 and learning rate is started as 0.01 being decreased by 5 percent every 2 epochs. In the plot below, we present our results.
+
+<p align="center">Figure 3: Loss of acrobot system identificaiton </p>
 <p align="center">
-  <img src="/../main/AltunkolOzcan/images/test1.png" alt="A random trajectory test">
+  <img src="/../main/AltunkolOzcan/images/acrobot-learn-iter8.png" alt="Loss of acrobot system identification until the 8th epoch">
 </p>
-<p align="center">Figure 4: A random trajectory test</p>
 
+The increase of training loss may indicate that the network capacity is low, learning rate is high, or batch size is inappropriate. To compare the effect of batch size, we lower is to 32 and observe the results below.
+
+<p align="center">Figure 4: Loss of acrobot system identification with smaller batch size </p>
 <p align="center">
-  <img src="/../main/AltunkolOzcan/images/test2.png" alt="A random trajectory test">
+  <img src="/../main/AltunkolOzcan/images/acrobot-learn2-iter10.png" alt="Loss of acrobot system identification until the 10th epoch">
 </p>
-<p align="center">Figure 5: A random trajectory test</p>
 
-At this stage, we have saved the network weights. We will proceed with more training using the saved weights with different hyperparameters.
-
-Following our failed trials, we decided to increase network capacity. The new network width is set to 100. Batch size is set to 128. The results were 
 ### 3.1.2. Dubins Car
 
 #### 3.1.2.1. Training and Testing of Dubins Car Trajectories
