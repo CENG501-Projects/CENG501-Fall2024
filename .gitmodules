@@ -4,3 +4,6 @@
 [submodule "KoyuncuOzkaya/CompletionFormer"]
 	path = KoyuncuOzkaya/CompletionFormer
 	url = https://github.com/youmi-zym/CompletionFormer.git
+[submodule "KoyuncuOzkaya/KoyuncuOzkaya/extern/pybind11"]
+	path = KoyuncuOzkaya/KoyuncuOzkaya/extern/pybind11
+	url = https://github.com/pybind/pybind11.git
