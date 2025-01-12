@@ -21,10 +21,7 @@ Key experiments to be reproduced:
 2. DINO (4-scale) + HAE + EMCA (12 Epoch): Expected +1.2 AP
 3. Quantitative analysis of EMCA weights
 
-Additional experiments that are reported in the paper, but will be conducted only if time permits:
-- HAE comparison with Deformable Encoder variants
-- DINO variants analysis (5-scale, varying encoder layers)
-- Integration with AlignDETR and DDQ
+Other experiments with longer training schedules and different detectors are skipped due to time constraints. Ablations on the number of hybrid attention layers in HAE (Table 6 in the paper) and Ablations on the layer of input encoders in EMCA (Table 9 in the paper) are also not reported, but they can easily be reproduced using the provided codebase changing the configuration files.
 
 
 ## 1.1. Paper summary
@@ -64,87 +61,7 @@ As shown in the table below, while Deformable DETR achieves better overall AP an
 This paper studies the limitations of Multi-Scale Deformable Attention in two aspects:
 
 #### Local Feature Enhancement: 
-The paper identifies that Deformable DETR's sparse attention mechanism, while computationally efficient, has limitations in its receptive field. By using a fixed number of deformable sampling points, it struggles to achieve the larger receptive fields needed for detecting large objects. Furthermore, sparse attention loses global context information that could be valuable in complex scenes. The paper empirically demonstrates this through experiments with different numbers of hybrid attention layers:
-
-<div align="center">
-<table>
-<caption><b>Table 2:</b> Impact of number of hybrid attention layers on performance.</caption>
-<tr>
-    <th>Layers</th>
-    <th>AP</th>
-    <th>AP_50</th>
-    <th>AP_75</th>
-    <th>AP_S</th>
-    <th>AP_M</th>
-    <th>AP_L</th>
-</tr>
-<tr>
-    <td>-</td>
-    <td>49.0</td>
-    <td>66.6</td>
-    <td>53.5</td>
-    <td>32.0</td>
-    <td>52.3</td>
-    <td>63.0</td>
-</tr>
-<tr>
-    <td>1</td>
-    <td>49.3</td>
-    <td>66.6</td>
-    <td>53.7</td>
-    <td>31.1</td>
-    <td>52.7</td>
-    <td>63.7</td>
-</tr>
-<tr>
-    <td>2</td>
-    <td>49.6</td>
-    <td>67.0</td>
-    <td>54.2</td>
-    <td>31.8</td>
-    <td>52.9</td>
-    <td>63.8</td>
-</tr>
-<tr>
-    <td>3</td>
-    <td>49.7</td>
-    <td>67.2</td>
-    <td>54.3</td>
-    <td>32.3</td>
-    <td>52.8</td>
-    <td>64.0</td>
-</tr>
-<tr>
-    <td>4</td>
-    <td>49.3</td>
-    <td>67.0</td>
-    <td>53.8</td>
-    <td>31.9</td>
-    <td>52.7</td>
-    <td>63.5</td>
-</tr>
-<tr>
-    <td>5</td>
-    <td>49.3</td>
-    <td>66.8</td>
-    <td>54.0</td>
-    <td>31.4</td>
-    <td>52.8</td>
-    <td>63.1</td>
-</tr>
-<tr>
-    <td>6</td>
-    <td>48.8</td>
-    <td>66.3</td>
-    <td>53.4</td>
-    <td>30.7</td>
-    <td>52.2</td>
-    <td>63.1</td>
-</tr>
-</table>
-</div>
-
-As shown in the table, increasing the number of hybrid attention layers initially improves performance up to 3 layers, but further increases lead to degradation, particularly affecting AP_S. This demonstrates the need for a balanced approach in combining dense and sparse attention.
+The paper identifies that Deformable DETR's sparse attention mechanism, while computationally efficient, has limitations in its receptive field. By using a fixed number of deformable sampling points, it struggles to achieve the larger receptive fields needed for detecting large objects. Furthermore, sparse attention loses global context information that could be valuable in complex scenes.
 
 ####  Multi-level Encoder Exploitation: 
 Current DETR-based detectors typically use six encoder layers but only utilize features from the last encoder layer in the decoder. The paper analyzes the receptive fields of different encoder layers and reveals their distinct characteristics (Fig. 1). For instance, Encoder 1 shows a more concentrated, localized attention pattern, while Encoder 6 exhibits a broader, more diffused receptive field. This observation suggests that different encoder layers capture complementary features at varying scales. However, existing methods only use the last encoder layer, potentially missing valuable information from earlier layers. The paper argues that adaptively using multi-level encoder features based on query features would better facilitate multi-scale learning, as objects at different scales may benefit from different combinations of these receptive fields.
@@ -261,9 +178,9 @@ The key innovation of EMCA is its ability to adaptively weight features from dif
 
 ## 2.2. Our interpretation
 
-The paper does not specify the dimensionality and initialization of $W_e^l$ in EMCA's fusion weight generation. In the Deformable DETR source code, we apply this projection only on the last layer of the encoder output. In EMCA, we assume that shape $W_e^l$ should be adjusted to match $l^{th}$ encoder layer.
+Using DINO_4scale configuration, we obtain a three-levels of features from the ResNet-50 backbone, then the fourth level is obtained by downsampling the third level. I assumed that these 4 levels correspond to the P2, P3, P4, and P5. 
 
-All other details seems clear right now. We may have to update this section during implementations. The authors repeatedly indicated that the modifications to baselines kept minimal and the proposed extensions are simple.
+In the paper the batch size is said to be 16. I asked the authors about the batch size and they said that they set the batch size to 8 per card and used 2 cards. My previous experiments with DINO showed that the batch size of 2 per card (as in the original DINO code) reproduces the results (with only small variations) independent from the number of cards. Therefore, I decided to set batch size to 2 as in the [original DINO code](https://github.com/IDEA-Research/DINO/blame/d84a491d41898b3befd8294d1cf2614661fc0953/config/DINO/DINO_4scale.py#L12). I performed an experiment using batch size 4 on a single A6000 GPU, the results were worse than the baseline.
 
 # 3. Experiments and results
 
@@ -276,20 +193,17 @@ The authors conducted experiments on the COCO 2017 detection dataset using the f
 - **Dataset**: COCO 2017 (train: 118K images, val: 5K images)
 - **Backbone**: ResNet-50-4scale
 - **Training Schedule**: 12 epochs and 24 epochs 
-- **Batch Size**: 64
+- **Batch Size**: 16 (8 per card, 2 cards)
 - **Optimizer**: AdamW with weight decay 1e-4
 - **Learning Rate**: Initial 1e-4, decreased by 0.1 at epoch 11
 
 ### Our Modified Setup
 
-We kept everything as described in the paper except batch-size. All details that are not mentioned in the paper are inherited from default parameters of the baseline model (DINO). Due to hardware constraints we had to reduce the batch-size. We performed the experiments in two settings: 
-
-1. We reduced batch-size to 4 and trained 12 epoch (Will be referred as AudDETR_bs4).
-2. We start training with batch-size 4 and after 9th epoch, we reduced it to 2 since we had to switch to another machine with less memory (Will be referred as AugDETR_bs_drop).
+We kept everything as described in the paper except batch-size. All details that are not mentioned in the paper are inherited from default parameters of the baseline model (DINO). We kept the batch-size as 2 as in the original DINO code.
 
 ## 3.2. Running the code
 
-Trained Checkpoints: [Google Drive](https://drive.google.com/drive/folders/12nbbSn_1UuJDJvZICWBUuo_6abNauSfN?usp=sharing)
+Trained Checkpoints and Logs: [Google Drive](https://drive.google.com/drive/folders/12nbbSn_1UuJDJvZICWBUuo_6abNauSfN?usp=sharing)
 
 ### Installation
 
@@ -313,7 +227,8 @@ cd ../../..
 
 ```bash
 python main.py \
-	--output_dir logs/DINO/R50-MS4 -c config/DINO/DINO_4scale.py --coco_path {/path/to/coco} \
+	--output_dir logs/DINO/R50-MS4 -c config/DINO/DINO_4scale.py \
+    --coco_path {/path/to/coco} \
 	--options dn_scalar=100 embed_init_tgt=TRUE \
 	dn_label_coef=1.0 dn_bbox_coef=1.0 use_ema=False \
 	dn_box_noise_scale=1.0 --use_hae
@@ -324,19 +239,28 @@ python main.py \
 ```bash
 python main.py \
   --output_dir logs/DINO/R50-MS4-%j \
-	-c config/DINO/DINO_4scale.py --coco_path {/path/to/coco}
-	--eval --resume {/path/to/checkpoint}
-	--options dn_scalar=100 embed_init_tgt=TRUE \
-	dn_label_coef=1.0 dn_bbox_coef=1.0 use_ema=False \
-	dn_box_noise_scale=1.0 --use_hae
+        -c config/DINO/DINO_4scale.py --coco_path {/path/to/coco} \
+        --eval --resume {/path/to/checkpoint} \
+        --options dn_scalar=100 embed_init_tgt=TRUE \
+        dn_label_coef=1.0 dn_bbox_coef=1.0 use_ema=False \
+        dn_box_noise_scale=1.0 --use_hae
+
 ```
 
 
 ## 3.3. Results
 
-### Experiment 1: DINO (4-scale) + HAE (12 Epoch) = +0.6 AP (Expected)
+### Experiment 1: Ablations on each component of AugDETR. "HAE" and "EMCA" (Table 4 in the paper)
 
-| Model              | AP   | AP_50 | AP_75 | AP_S | AP_M | AP_L |
+The paper introduces two components, HAE and EMCA, and evaluates their impact on the AP results. The results are summarized in the table below.
+
+HAE implementation seems to be reproducing the results as expected. There is only slight differences in the AP values. Furthermore, our implementation even outperforms the original results in AP_L, which is the main concern of the paper.
+
+EMCA implementation also produces similar results to the original paper. However, the AP_L value is lower than the original results.
+
+Overall implementation of AugDETR (DINO + HAE + EMCA) increase the AP by 0.9 points compared to the baseline DINO model while the original paper reports 1.2 points increase. The increase in AP_L is suprisingly higher (2.4 points) than the original paper (1.7 points). 
+
+<!-- | Model              | AP   | AP_50 | AP_75 | AP_S | AP_M | AP_L |
 |-------------------|------|-------|-------|------|------|------|
 | DINO (bs=2) (reported)    | 49.0 | 66.6  | 53.5  | 32.0 | 52.3 | 63.0 |
 | DINO + HAE (reported)     | 49.6 (+0.6) | 67.0 (+0.4) | 54.2 (+0.7) | 31.8 (-0.2) | 52.9 (+0.6) | 63.8 (+0.8) |
@@ -351,16 +275,54 @@ python main.py \
 <div align="center">
 <img src="assets/detection_metrics.png" width="800"/>
 <p><b>Figure 2:</b> Detection metrics comparison across different object scales. The metrics include Average Precision (AP) and Average Recall (AR) at various scales and thresholds.</p>
+</div> -->
+
+| Model Configuration |     | Original Results |  |  |  |  |  | Our Reproduction |  |  |  |  |  |
+|:-------------------|:----|:----------------:|--:|--:|--:|--:|--:|:--------------:|--:|--:|--:|--:|--:|
+| HAE | EMCA | AP | AP₅₀ | AP₇₅ | APₛ | APₘ | APₗ | AP | AP₅₀ | AP₇₅ | APₛ | APₘ | APₗ |
+| | | 49.0 | 66.6 | 53.5 | 32.0 | 52.3 | 63.0 | 49.0 | 66.6 | 53.5 | 32.0 | 52.3 | 63.0 |
+| ✓ | | 49.6 | 67.0 | 54.2 | 31.8 | 52.9 | 63.8 | 49.7 | 67.2 | 54.2 | 31.4 | 53.0 | 64.3 |
+| | ✓ | 49.8 | 67.4 | 54.6 | 33.0 | 52.8 | 64.7 | 49.7 | 67.4 | 54.5 | 32.1 | 53.2 | 64.4 |
+| ✓ | ✓ | 50.2 | 67.8 | 55.0 | 32.3 | 53.2 | 64.7 | 49.9 | 67.6 | 54.5 | 32.3 | 52.8 | 65.4 |
+
+Train and validation loss curves for all the ablation experiments are shown in Fig. 3. There is no surprising behavior in the loss curves, except from the abrupt decrease in the last epoch of DINO+EMCA. There, training process is killed with an error, and I had to switch to another GPU, reducing number of GPUs from 4 to 1. This might affect the results. I could not retry the experiment due to time constraints.
+
+<div align="center">
+<img src="assets/loss_graphs.png" width="800"/>
+<p><b>Figure 3:</b> Training and validation loss curves for DINO baseline and our HAE implementations with different batch size settings.</p>
 </div>
 
-#### Discussion
+### Experiment 2: Quantitative analysis of EMCA weights (Fig. 4 in the paper)
 
-The loss curves were promising. Both the training and validation losses decreased consistently, with no signs of overfitting. Moreover, it seems both settings converged faster than the baseline DINO model. However, the AP results did not align with the expected +0.6 AP improvement. The setting with batch-size 4 had the least loss on the validation set, but the AP results were even lower than the baseline. Consistent incerease in AP_large indicates we are on the right track since the performance on large objects is the main concern of the paper. We guess that the problem might be related to the batch-size reduction, which could have affected the model's learning dynamics. We will investigate this further in the next experiments. 
+In the paper the authors analyze the fusion weights (denoted as $W_e$) in the EMCA layers. This weights simply show how much each encoder layer contributes to the final feature representation. Since there are 6 encoder layers, the output of this linear layer should be a 6-dimensional vector. The authors saved these vectors from the last EMCA layer during evaluation on COCO and plotted the average values for each encoder layer, as shown in Fig. 4 in the paper.
+
+<div align="center">
+<img src="assets/EMCA_weights_original.png" width="500"/>
+<p><b>Fig. 4:</b> Reported average EMCA weights for each encoder layer in the original paper.</p>
+</div>
+
+They did not provide the exact values of these weights, so I could not compare the results. However, we can comment on the general behavior of the weights. Fig. 5 shows the average EMCA weights for each encoder layer in our reproduction. 
+
+<div align="center">
+<img src="assets/emca_quantitative_last.png" width="500"/>
+<p><b>Fig. 5:</b> Average EMCA weights for each encoder layer in our reproduction.</p>
+</div>
+
+As mentioned in the paper, the weights show a decreasing trend and an increase in the last encoder layer. This indicates that we are on the right track in terms of the EMCA weights. However, the weights for Layer #2 is significantly lower than the original results, and the weights for Layer #6 is significantly higher. For this reason, we can conclude that the EMCA implementation is not exactly the same as the original paper although the general trend and effect of the weights are similar.
+
+
+
+
+<!-- #### Discussion
+
+The loss curves were promising. Both the training and validation losses decreased consistently, with no signs of overfitting. Moreover, it seems both settings converged faster than the baseline DINO model. However, the AP results did not align with the expected +0.6 AP improvement. The setting with batch-size 4 had the least loss on the validation set, but the AP results were even lower than the baseline. Consistent incerease in AP_large indicates we are on the right track since the performance on large objects is the main concern of the paper. We guess that the problem might be related to the batch-size reduction, which could have affected the model's learning dynamics. We will investigate this further in the next experiments.  -->
 
 
 # 4. Conclusion
 
-@TODO: Discuss the paper in relation to the results in the paper and your results.
+In general, the results of the experiments are consistent with the original paper. HAE and EMCA components seem to be reproduced when they are examined separately. However, the overall improvement in AP is slightly lower than the original paper. Quantitative analysis of EMCA weights also shows a similar trend, but the exact values are not the same. From these results, we can suspect that the implementation of EMCA is not exactly the same as the original paper, and this might be the reason for the lower AP improvement. 
+
+The ablations on the number of hybrid attention layers in HAE and the layer of input encoders in EMCA are not reported. These experiments can be easily reproduced using the provided codebase by changing the configuration files. num_hae_layers argument directly controls the number of hybrid attention layers. For the layer of input encoders in EMCA, you need the change constructor of the DeformableTransformerDecoder class.
 
 # 5. References
 
