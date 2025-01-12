@@ -211,6 +211,8 @@ The increase of training loss may indicate that the network capacity is low, lea
   <img src="/../main/AltunkolOzcan/images/acrobot-learn2-iter10.png" alt="Loss of acrobot system identification until the 10th epoch">
 </p>
 
+Smaller batch size actually reduced the speed of learning. This is because the smaller batch size yields noisy gradients as expected. 
+
 ### 3.1.2. Dubins Car
 
 #### 3.1.2.1. Training and Testing of Dubins Car Trajectories
