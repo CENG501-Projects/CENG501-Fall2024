@@ -160,6 +160,11 @@ To accelerate the training process, all experiments were conducted on a Google C
   <em> Figure 4: On Cifar10: Effect of Noisy Annotations on ResNet Performance with Weight Decay</em>
 </p>
 
+<p align="center">
+  <img src="imgs/dropout.png" alt="" style="width: 50%;"><br>
+  <em> Figure 4: On Cifar10: Effect of Noisy Annotations on ResNet Performance with Dropout</em>
+</p>
+
 # 4. Conclusion
 
 @TODO: Discuss the paper in relation to the results in the paper and your results.
