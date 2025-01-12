@@ -1,0 +1,6 @@
+kaggle
+pytorch
+torchvision
+PIL
+json
+numpy
