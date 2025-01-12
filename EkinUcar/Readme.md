@@ -246,9 +246,9 @@ We choose our best model based on the validation accuracy score. The best model'
 Table 5: Performance of the best model for Document Retrieval task
 |                     | Accuracy | Loss|
 |---------------------|--------|----------|
-| **Training** |    54.208    | 0.68699 |
-| **Validation** |    55.041    | 0.6818 | 
-| **Test** |    54.743    | 0.68455 | 
+| **Training** |    54.208    | 0.687 |
+| **Validation** |    55.041    | 0.682 | 
+| **Test** |    54.743    | 0.685 | 
 
 **Discussion:**  
 
