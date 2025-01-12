@@ -378,17 +378,17 @@ After the system successfully learned a specific trajectory, the model parameter
 <p align="center">
   <img src="/../main/AltunkolOzcan/images/epoch2_iter100.PNG" alt="Test of the predicted trajectory">
 </p>
-<p align="center">Figure 6: True and predicted trajectories in the beginning of the training</p>
+<p align="center">Figure 27: True and predicted trajectories in the beginning of the training</p>
 
 <p align="center">
   <img src="/../main/AltunkolOzcan/images/epoch19_iter40.PNG" alt="Test of the predicted trajectory">
 </p>
-<p align="center">Figure 7: True and predicted trajectories at the end of the training</p>
+<p align="center">Figure 28: True and predicted trajectories at the end of the training</p>
 
 <p align="center">
   <img src="/../main/AltunkolOzcan/images/loss_per_epoch.PNG" alt="Loss per epoch">
 </p>
-<p align="center">Figure 8: Loss value at the end of each epoch</p>
+<p align="center">Figure 29: Loss value at the end of each epoch</p>
 
 #### 3.1.2.2. Learning the State Transition Function
 
@@ -414,17 +414,17 @@ Time batch is reduced since the network now learns the derivative terms, and we 
 <p align="center">
   <img src="/../main/AltunkolOzcan/images/milestone3_images/g1.gif" alt="Training the state transitions of Dubins Car">
 </p>
-<p align="center">Figure x: Learning the state transition function of the Dubins Car system</p>
+<p align="center">Figure 30: Learning the state transition function of the Dubins Car system</p>
 
 <p align="center">
   <img src="/../main/AltunkolOzcan/images/milestone3_images/loss_over_1000_epochs.png" alt="Testing loss over 1000 epochs">
 </p>
-<p align="center">Figure x: Testing loss over 1000 epochs</p>
+<p align="center">Figure 31: Testing loss over 1000 epochs</p>
 
 <p align="center">
   <img src="/../main/AltunkolOzcan/images/milestone3_images/loss_over_1000_epochs_filtered.png" alt="Testing loss filtered">
 </p>
-<p align="center">Figure x: Testing loss over 1000 epochs, filtered with a moving average of window size 10.</p>
+<p align="center">Figure 32: Testing loss over 1000 epochs, filtered with a moving average of window size 10.</p>
 
 
 ## 3.2. Running the code
@@ -434,8 +434,8 @@ Dependencies:
   - Pytorch 2.5.1
   - Numpy
   - matplotlib
-  - os
-    
+
+
 ### 3.2.1 Acrobot
 In order to run the files related to acrobot, root folder must be 4-Neural-ODE-Based-Implementation. 
 To perform system indetification run:
@@ -449,13 +449,17 @@ python -m acrobot.trainOC
 
 ## 3.3. Results
 
-### 3.3.1 Acrobot System Identification without Gradients
+### 3.3.1 Acrobot System Identification (without Gradients)
 
 The paper claims that the system identification of acrobot using neural networks without the guiding gradients using sine activation functions minimizes the loss function as low as 0.0673 whereas we could improve only until around 0.6 over all the experiment instances. The authors have trained the network over 50000 epochs with unknown iterations in each. We tarined the networks over 10 epochs with 1000 iterations each.
 
-### 3.3.1 Acrobot Control
+### 3.3.2 Acrobot Control
 
 The authors have provided results for the Acrobot control with learned dynamics. We have implemented acrobot control with known dynamics. The results in the paper declare terminal loss around 1.07. We could only lower the terminal cost until around 16 during training and around 19 during testing. To be fair, none of the necessary details are provided in the paper. Therefore, we have improvised a lot during our experiments. 
+
+### 3.3.3 Dubins Car System Identification (without Gradients)
+
+The paper claims that the system identification of acrobot using neural networks without the guiding gradients using sine activation functions minimizes the loss function as low as 0.014 whereas we could improve only until around 0.064, which is promising enough but still far from the referenced result. The authors have trained the network over 50000 epochs with unknown iterations in each. We tarined the network over 1000 epochs with 25 iterations each.
 
 # 4. Conclusion
 
