@@ -29,8 +29,9 @@ class loss_visualizer():
         
     def save(self,path_to_save):
         plt.savefig(path_to_save)
-        
-_vis = loss_visualizer()
-_vis.create_plot()
-_vis.save("training_losses.png")
-plt.show()
+
+if __name__ == "__main__":   
+    _vis = loss_visualizer()
+    _vis.create_plot()
+    _vis.save("training_losses.png")
+    plt.show()

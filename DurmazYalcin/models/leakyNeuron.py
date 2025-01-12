@@ -1,12 +1,13 @@
 import torch
 import torch.nn as nn
 from torch.autograd import Function
+import torch.nn.functional as F
 import math
 from torch.nn.init import kaiming_normal_, constant_
-from util import predict_flow, crop_like, conv_s, conv, deconv
-__all__ = ['spike_flownets']
+from utils.utils import predict_flow, crop_like, conv_s, conv, deconv
 
 
+####### Adapted From Spike FlowNet #######
 class SpikingNN(Function):
     @staticmethod
     def forward(ctx, input):
@@ -24,6 +25,10 @@ class SpikingNN(Function):
         grad_input[input <= 1e-5] = 0
         return grad_input
 
+####### Adapted From Spike FlowNet #######
+""" 
+We have added the "leaky" Integrate and Fire Neuron
+"""
 def LIF_Neuron(membrane_potential, threshold):
     global threshold_k
     threshold_k = threshold
@@ -37,11 +42,11 @@ def LIF_Neuron(membrane_potential, threshold):
  
     return membrane_potential, out
 
-
-class FlowNetS_spike(nn.Module):
+####### Adapted From Spike FlowNet #######
+class SpikingFlowNet(nn.Module):
     expansion = 1
     def __init__(self,batchNorm=True):
-        super(FlowNetS_spike,self).__init__()
+        super(SpikingFlowNet,self).__init__()
         self.batchNorm = False
         self.conv1   = conv_s(self.batchNorm,   4,   64, kernel_size=3, stride=2)
         self.conv2   = conv_s(self.batchNorm,  64,  128, kernel_size=3, stride=2)
@@ -82,22 +87,26 @@ class FlowNetS_spike(nn.Module):
                 if m.bias is not None:
                     constant_(m.bias, 0)
 
-    def forward(self, input, image_resize, sp_threshold):
+
+    def forward(self, input, sp_threshold):
+        
+        # Pad input so that we can feed it to the network without any problem
+        B, C, H, W, _ = input.shape
+
         threshold = sp_threshold
 
-        mem_1 = torch.zeros(input.size(0), 64, int(image_resize/2), int(image_resize/2)).cuda()
-        mem_2 = torch.zeros(input.size(0), 128, int(image_resize/4), int(image_resize/4)).cuda()
-        mem_3 = torch.zeros(input.size(0), 256, int(image_resize/8), int(image_resize/8)).cuda()
-        mem_4 = torch.zeros(input.size(0), 512, int(image_resize/16), int(image_resize/16)).cuda()
+        mem_1 = torch.zeros(input.size(0), 64, int(H/2), int(W/2)).cuda()
+        mem_2 = torch.zeros(input.size(0), 128, int(H/4), int(W/4)).cuda()
+        mem_3 = torch.zeros(input.size(0), 256, int(H/8), int(W/8)).cuda()
+        mem_4 = torch.zeros(input.size(0), 512, int(H/16), int(W/16)).cuda()
 
-        mem_1_total = torch.zeros(input.size(0), 64, int(image_resize/2), int(image_resize/2)).cuda()
-        mem_2_total = torch.zeros(input.size(0), 128, int(image_resize/4), int(image_resize/4)).cuda()
-        mem_3_total = torch.zeros(input.size(0), 256, int(image_resize/8), int(image_resize/8)).cuda()
-        mem_4_total = torch.zeros(input.size(0), 512, int(image_resize/16), int(image_resize/16)).cuda()
+        mem_1_total = torch.zeros(input.size(0), 64, int(H/2), int(W/2)).cuda()
+        mem_2_total = torch.zeros(input.size(0), 128, int(H/4), int(W/4)).cuda()
+        mem_3_total = torch.zeros(input.size(0), 256, int(H/8), int(W/8)).cuda()
+        mem_4_total = torch.zeros(input.size(0), 512, int(H/16), int(W/16)).cuda()
 
         for i in range(input.size(4)):
             input11 = input[:, :, :, :, i].cuda()
-
             current_1 = self.conv1(input11)
             mem_1 = mem_1 + current_1
             mem_1_total = mem_1_total + current_1
@@ -118,13 +127,9 @@ class FlowNetS_spike(nn.Module):
             mem_4_total = mem_4_total + current_4
             mem_4, out_conv4 = LIF_Neuron(mem_4, threshold)
 
-        mem_4_residual = 0
-        mem_3_residual = 0
-        mem_2_residual = 0
-
-        out_conv4 = mem_4_total + mem_4_residual
-        out_conv3 = mem_3_total + mem_3_residual
-        out_conv2 = mem_2_total + mem_2_residual
+        out_conv4 = mem_4_total
+        out_conv3 = mem_3_total
+        out_conv2 = mem_2_total
         out_conv1 = mem_1_total
 
         out_rconv11 = self.conv_r11(out_conv4)
@@ -134,7 +139,7 @@ class FlowNetS_spike(nn.Module):
 
         flow4 = self.predict_flow4(self.upsampled_flow4_to_3(out_rconv22))
         flow4_up = crop_like(flow4, out_conv3)
-        print(out_rconv22.shape)
+
         out_deconv3 = crop_like(self.deconv3(out_rconv22), out_conv3)
 
         concat3 = torch.cat((out_conv3,out_deconv3,flow4_up),1)
@@ -149,11 +154,9 @@ class FlowNetS_spike(nn.Module):
 
         concat1 = torch.cat((out_conv1,out_deconv1,flow2_up),1)
         flow1 = self.predict_flow1(self.upsampled_flow1_to_0(concat1))
+        
+        return flow1,flow2,flow3,flow4
 
-        if self.training:
-            return flow1,flow2,flow3,flow4
-        else:
-            return flow1
 
     def weight_parameters(self):
         return [param for name, param in self.named_parameters() if 'weight' in name]
@@ -161,18 +164,14 @@ class FlowNetS_spike(nn.Module):
     def bias_parameters(self):
         return [param for name, param in self.named_parameters() if 'bias' in name]
 
-
-def spike_flownets(data=None):
-    model = FlowNetS_spike(batchNorm=False)
-    if data is not None:
-        model.load_state_dict(data['state_dict'])
-    return model
-
-
 if __name__ == "__main__":
     # Initialize the model and dummy input
-    model = FlowNetS_spike().cuda()
+    model = SpikingFlowNet().cuda()
     model.eval()
 
-    dummy_input = torch.randn(1, 4, 256, 256, 5).cuda()
-    output = model(dummy_input, 256, 0.75)
+    dummy_input = torch.randn(1, 4, 272, 352, 5).cuda()
+    scaled_flows = model(dummy_input, 0.75)
+    
+    
+    for item in scaled_flows:
+        print(item.shape)

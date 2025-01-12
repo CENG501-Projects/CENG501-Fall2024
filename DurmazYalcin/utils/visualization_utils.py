@@ -48,10 +48,8 @@ def plot_points_on_background(points_coordinates,
 ################################################################################
 ##### We have adopted the event visualizer from the amazing work of E-RAFT #####
 ################################################################################
-def events_to_event_image(event_sequence):
-    width  = 346
-    height = 260
-    polarity   = event_sequence[:, 3] == -1.0
+def events_to_event_image(event_sequence, width  = 346, height = 260):
+    polarity   = event_sequence[:, 3] > 0
     x_negative = event_sequence[~polarity, 0].astype(int)
     y_negative = event_sequence[~polarity, 1].astype(int)
     x_positive = event_sequence[polarity, 0].astype(int)
