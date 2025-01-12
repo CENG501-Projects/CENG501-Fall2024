@@ -745,8 +745,9 @@ In this project, I made progress in implementing and evaluating post-hoc explana
 1. **Unimplemented Methods**:
    - Faced challenges implementing **Integrated Gradients**, **ConLRP**, **ATTCAT**, **Partial LRP**, and **Raw Attention** due to their complexity and my skill issue maybe. 
 
-2. **Programming Skills**:
-   - My programming experience is kinda limited, and I had to adapt methods like **Grad-CAM**, originally designed for CNNs, to work with ViTs. This required extra time and effort.
+2. **Perspective Challenges**:
+   - My perspective is not yet fully aligned with modern software and programming practices, so some parts of my implementation may seem a bit naive or unconventional.
+
 
 3. **Scope Limitations**:
    - Most methods and metrics were tested on a few selected examples, rather than a comprehensive evaluation across datasets, due to computational constraints.
