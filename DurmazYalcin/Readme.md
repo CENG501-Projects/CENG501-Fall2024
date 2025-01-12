@@ -297,8 +297,7 @@ Overall, this project has been a valuable learning experience, serving as an int
 
 # 5. References
 
-@TODO: Provide your references here.
-
+@inproceedings{lee2020spike, title={Spike-Flownet: Event-Based Optical Flow Estimation with Energy-Efficient Hybrid Neural Networks}, author={Lee, Chankyu and Kosta, Adarsh Kumar and Zhu, Alex Zihao and Chaney, Kenneth and Daniilidis, Kostas and Roy, Kaushik}, booktitle={European Conference on Computer Vision}, pages={366--382}, year={2020}, organization={Springer} }
 # Contact
 
 Atakan Durmaz - atakan.durmaz@metu.edu.tr
