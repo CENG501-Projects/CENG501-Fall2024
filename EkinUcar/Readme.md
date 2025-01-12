@@ -178,10 +178,6 @@ Figure 3: Original paper's accuracy results
 
 <br><br>
 
-**Discussion:**  
-
-Our accuracy was much lower compared to the original paper. This could be because we used the setup for the LRA Image task, while the original paper might have used different settings for the sMNIST task. A smaller batch size might have also impacted the accuracy. It's possible that we made a mistake in processing or interpreting the model's output. This might include errors in how predictions were extracted, how metrics were calculated, or how data was handled in post-processing. Lastly, we couldn’t finish the first experiment with the full dataset because of Google Colab's runtime limits. All of them might be a reason of our low accuracy.
-
 **3rd Experiment (Full LRA Listops Dataset, 40 Epochs):**
 
 Figure 4: Train Loss and Accuracy for LRA Listops Benchmark
@@ -198,6 +194,12 @@ Figure 6: Test Loss and Accuracy for LRA Listops Benchmark
 
 <img width="650" alt="test_graphs" src="https://github.com/user-attachments/assets/c0fbd276-7307-41c7-ad7b-6644cd5b29ea" />
 
+### Experiment: Document Retrieval Task
+
+
+**Discussion:**  
+
+Our accuracy was much lower compared to the original paper. This could be because we used the setup for the LRA Image task, while the original paper might have used different settings for the sMNIST task. A smaller batch size might have also impacted the accuracy. It's possible that we made a mistake in processing or interpreting the model's output. This might include errors in how predictions were extracted, how metrics were calculated, or how data was handled in post-processing. Lastly, we couldn’t finish the first experiment with the full dataset because of Google Colab's runtime limits. All of them might be a reason of our low accuracy.
 
 
 
