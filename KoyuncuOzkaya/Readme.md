@@ -160,7 +160,7 @@ We are simply utilizing the OctoMap API to obtain the octree voxel structure. Th
 
 <div align="center">
   <img src="./media/octomap_result.gif" alt="Image Description" width="70%">
-  <p><em>Figure 3: Volume encoder, 3D features</em></p>
+  <p><em>Figure 3: Pointcloud obtained from depth-color frame pair using Octree structure</em></p>
 </div>
 
 ### Dataset Usage
