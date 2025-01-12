@@ -150,9 +150,10 @@ Figure 3: Original paper's accuracy results
 Our accuracy was much lower compared to the original paper. This could be because we used the setup for the LRA Image task, while the original paper might have used different settings for the sMNIST task. A smaller batch size might have also impacted the accuracy. It's possible that we made a mistake in processing or interpreting the model's output. This might include errors in how predictions were extracted, how metrics were calculated, or how data was handled in post-processing. Lastly, we couldn’t finish the first experiment with the full dataset because of Google Colab's runtime limits. All of them might be a reason of our low accuracy.
 
 **3rd Experiment (Full LRA Listops Dataset, 40 Epochs):**
+
 <img width="571" alt="train_graphs" src="https://github.com/user-attachments/assets/f7bdb811-214a-4267-b3dd-bb664c97f58c" />
 
-<img width="448" alt="val_graphs" src="https://github.com/user-attachments/assets/c5d04fe8-0f93-441f-98d3-70baa8fa8fb2" />
+<img width="550" alt="val_graphs" src="https://github.com/user-attachments/assets/c5d04fe8-0f93-441f-98d3-70baa8fa8fb2" />
 
 <img width="570" alt="test_graphs" src="https://github.com/user-attachments/assets/c0fbd276-7307-41c7-ad7b-6644cd5b29ea" />
 
