@@ -94,6 +94,16 @@ The depth and width of the MLPs used for the value function and the neural contr
 
 The weights of the controller MLP are initialized randomly, but no information is explicitly given for the network of the value function. We assume no change of style probbaly happened during method development. As a result, we initialize the weights of the MLP randomly also.
 
+The paper cites a previous work related to the application of deep learning methods in optimal control problems. We have studied this paper [6] thoroughly and tried to change, adapt to and add to their existing codebase for our specific needs and novelties. 
+
+#### 2.2.2.1 Control of Acrobot
+
+Acrobot is an underactuated double pendulum. The control task is to bring both links to an upright position and keep it there with zero control effort. This corresponds to the target state $[\pi, \pi, 0, 0]$ with target input of $0$. We try to restrict inputs between $250 Nm$ and $-250Nm$. We derive the Hamiltonian and other costs/metrics by assuming the exact $f$ function is known. The control time horizon is 1 second, which consists of 50 control steps. 
+
+The controller and the value function network architectures are unclear in the original paper. The controller network is made up of 6 layer MLP with sine and LeakyReLU activation functions in the hidden layers. The last layer of this network is followed by a tanh function as advised in the paper. We experiment with width and depth of this network. The value function network is made up of a ResNet and some quadratic terms added as in [6]. 
+
+We also found use in changing $\alpha$ coefficients of cost terms during training. We first focus on the terminal cost, then change to the coefficients in the paper [1] to focus on optimal control. 
+
 ### 2.2.3 Data Generation
 
 The data sets consist of the triples $(x, u, f(x,u))$. 
@@ -197,6 +207,7 @@ The training data seems promising but the loss is over the predicted state deriv
 
 At this stage, we have saved the network weights. We will proceed with more training using the saved weights with different hyperparameters.
 
+Following our failed trials, we decided to increase network capacity. The new network width is set to 100. Batch size is set to 128. The results were 
 ### 3.1.2. Training and Testing of Dubins Car Trajectories
 
 To reduce the complexity of debugging and the training procedure, a step-by-step method is followed to do a system identification of a Dubins Car system. Firstly, we experimented with the example code for learning a dynamical system using NeuralODEs (from the original implementation repo of NeuralODE paper [6]). By modifying this code, we created a training script to train a neural network to learn a specific Dubins Car trajectory. Using the assumed parameters and the data generation procedure explained in 2.4.4.2, a Dubins Car system trajectory is generated for a specified initial condition, time horizon, a random input vector, and a sampling frequency; by solving the system ODE, using Euler's method implemented inside the ```odeint``` function. This true trajectory is then used for obtaining batches of smaller trajectory sections, which consists of a group of trajectories starting from random time instants and continues for a specific duration. These batches are used to train the neural network by forward and backward passes at each iteration, inside an iteration loop. After a specific number of iterations, the whole trajectory is constructed using the network being trained and the average of absolute value differences between the true and predicted trajectories are printed to the screen. The trajectories also printed on the screen using matplotlib functions, in time domain and phase plane configurations.
@@ -260,6 +271,7 @@ After the system successfully learned a specific trajectory, the model parameter
 
 [5] Matthew Kelly (2024). Acrobot Derivation and Simulation (https://github.com/MatthewPeterKelly/Acrobot_Derivation_Matlab), GitHub. Retrieved December 10, 2024.
 
+[6] D. Onken, L. Nurbekyan, X. Li, S. W. Fung, S. Osher, and L. Ruthotto, "A Neural Network Approach for High-Dimensional Optimal Control Applied to Multiagent Path Finding," IEEE Transactions on Control Systems Technology, 2022, doi: 10.1109/TCST.2022.3172872.
 # Contact
 
 @TODO: Provide your names & email addresses and any other info with which people can contact you.
