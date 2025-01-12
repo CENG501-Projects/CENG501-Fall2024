@@ -219,20 +219,59 @@ Although centralized GAN training on balanced datasets often yields strong perfo
 Finally, we hypothesize that the federated approach with carefully designed aggregation (IFLGAN) will converge more stably than the simpler distributed methods (MDGAN or FLGAN) as it handles partial updates more effectively. In other words, while MDGAN and FLGAN may converge faster in some cases, IFLGAN will yield more consistent and reliable convergence trends across different levels of data imbalance.
 
 #### Training Procedure
+Dataset: MNIST divided into K = 2,5 with partitioning the numbers sequentially (number of clients) parts, normalized to [-1, 1].
 
+Balanced Scenario:
 
+Imbalanced Scenario:
 
-
-
-Dataset: MNIST divided into K = 2 (number of clients) parts, normalized to [-1, 1].
-Hyperparameters: Learning rate = 0.0002, batch size = 128, Adam optimizer with betas = (0.5, 0.999).
-
-
-
+Hyperparameters (for all models): 
+- Learning rate = 0.0002
+- Batch size = 128
+- Adam optimizer with betas = (0.5, 0.999).
 
 ## 3.2. Running the code
 
-@TODO: Explain your code & directory structure and how other people can run it.
+Each model implementation is included in its .py file with the same name. The models are trained on Google Colab with runtime type as "Python 3" and for faster implementation, the hardware accelerator can be chosen as "T4-GPU". At each 5 epochs, the created images by the global generator are saved to the path "/content/ifl-gan-images", "/content/generated_images", "/content/mdgan_generated_images", respectively.
+### Prerequisites
+Python 3.7+ (earlier versions might work, but are not tested)
+PyTorch >= 1.7 (ensure CUDA is available if you plan to use GPU)
+Additional Python packages:
+- torchvision
+- numpy
+- matplotlib
+- pandas
+- Optional: GPU/CUDA for faster training.
+Make sure your environment meets these requirements before installing and running the code.
+
+### Usage
+Running the Models
+We have three main federated GAN implementations in the repository:
+MD-GAN: mdgan.py
+FL-GAN: flgan.py
+IFL-GAN: iflgan.py
+Each script provides an entry point via a main section or a dedicated function for training and testing.
+
+### Configuration Options
+Most scripts include parameters you can customize, typically near the bottom of each file or as command-line arguments:
+
+num_clients (k=2, 5, or 10): Number of federated clients.
+case: Data split scenario: "balanced", "imbalanced", or "extremely_imbalanced".
+epochs: Total training epochs.
+batch_size: Mini-batch size for training.
+lr: Learning rate.
+noise_dim: Dimensionality of the generator’s latent space.
+sigma: (Only in IFL-GAN) Parameter for the MMD kernel.
+Adjust these in the source code or command-line arguments if provided.
+
+Examples: 
+Running IFL-GAN: python ifl_gan = IFLGAN(noise_dim=128, case="balanced", num_clients=5, batch_size=128, lr=0.0002)
+ifl_gan.ifl_training(epochs=50, sigma=1.0)
+
+Running FL-GAN: python FLGAN(noise_dim=128,case="balanced",num_clients=5,epochs=200)fl_gan.train()
+
+Running MD-GAN: python md_gan_main(num_workers=5,noise_dim=128,epochs=200,batch_size=128,case="balanced")
+
 
 ## 3.3. Results
 
@@ -245,7 +284,7 @@ Hyperparameters: Learning rate = 0.0002, batch size = 128, Adam optimizer with b
 </p>
    <p align="center">
      <img src="figures/balanced_k=2.png" style="width: 70%;"><br>
-     <em>Figure 8: Generator results, balanced dataset, K=2 clients</em>
+     <em>Figure 8: Generator results (FL-GAN, IFL-GAN, MD-GAN), balanced dataset, K=2 clients</em>
 </p>
 
 ### Client K=2, Imbalanced
@@ -255,7 +294,7 @@ Hyperparameters: Learning rate = 0.0002, batch size = 128, Adam optimizer with b
 </p>
 <p align="center">
      <img src="figures/imbalanced_k=2.png" style="width: 70%;"><br>
-     <em>Figure 10: Generator results, imbalanced dataset, K=2 clients</em>
+     <em>Figure 10: Generator results (FL-GAN, IFL-GAN, MD-GAN), imbalanced dataset, K=2 clients</em>
 </p>
 
 ### Client K=5, Balanced
@@ -265,7 +304,7 @@ Hyperparameters: Learning rate = 0.0002, batch size = 128, Adam optimizer with b
 </p>
 <p align="center">
      <img src="figures/balanced_k=5.png" style="width: 70%;"><br>
-     <em>Figure 12: Generator results, balanced dataset, K=5 clients</em>
+     <em>Figure 12: Generator results (FL-GAN, IFL-GAN, MD-GAN), balanced dataset, K=5 clients</em>
 </p>
 
 ### Client K=5, Imbalanced
@@ -275,7 +314,7 @@ Hyperparameters: Learning rate = 0.0002, batch size = 128, Adam optimizer with b
 </p>
 <p align="center">
      <img src="figures/imbalanced_k=5.png" style="width: 70%;"><br>
-     <em>Figure 14: Generator results, imbalanced dataset, K=5 clients</em>
+     <em>Figure 14: Generator results (FL-GAN, IFL-GAN, MD-GAN), imbalanced dataset, K=5 clients</em>
 </p>
 
 # 4. Conclusion
@@ -288,4 +327,4 @@ Hyperparameters: Learning rate = 0.0002, batch size = 128, Adam optimizer with b
 
 # Contact
 
-@TODO: Provide your names & email addresses and any other info with which people can contact you.
+email: egemenalacali@gmail.com
