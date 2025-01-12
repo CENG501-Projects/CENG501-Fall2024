@@ -12,11 +12,11 @@ from Sin import Sin
 
 parser = argparse.ArgumentParser('ODE demo')
 parser.add_argument('--method', type=str, choices=['dopri5', 'adams'], default='dopri5')
-parser.add_argument('--time_horizon', type=float, default=400)
-parser.add_argument('--data_size', type=int, default=32000)
-parser.add_argument('--batch_time', type=int, default=40)
+parser.add_argument('--time_horizon', type=float, default=800)
+parser.add_argument('--data_size', type=int, default=64000)
+parser.add_argument('--batch_time', type=int, default=100)
 parser.add_argument('--batch_size', type=int, default=20)
-parser.add_argument('--niters', type=int, default=200)
+parser.add_argument('--niters', type=int, default=100)
 parser.add_argument('--epochs', type=int, default=10)
 parser.add_argument('--test_freq', type=int, default=20)
 parser.add_argument('--viz', action='store_true')
@@ -33,7 +33,7 @@ device = torch.device('cuda:' + str(args.gpu) if torch.cuda.is_available() else 
 
 print(device)
 
-true_y0 = torch.tensor([[0., 0., 0.]]).to(device)  # Initial (x, y, theta)
+true_y0 = torch.tensor([[0., 0., 1*np.pi/2]]).to(device)  # Initial (x, y, theta)
 t = torch.linspace(0., args.time_horizon, args.data_size).to(device)  # Time vector
 v_max = 1.0  # Maximum velocity
 r = 1.0  # Turning radius
@@ -88,58 +88,77 @@ def makedirs(dirname):
 args.viz = 1
 
 if args.viz:
-    """makedirs('png')"""
     import matplotlib.pyplot as plt
-    fig = plt.figure(figsize=(12, 4), facecolor='white')
-    ax_traj = fig.add_subplot(131, frameon=False)
-    ax_phase = fig.add_subplot(132, frameon=False)
-    # ax_vecfield = fig.add_subplot(133, frameon=False)
+    fig, (ax_traj, ax_phase) = plt.subplots(1, 2, figsize=(12, 6), facecolor='white')
     plt.show(block=False)
 
+def visualize(true_y, pred_y, itr, epoch, loss):
+    """
+    Visualizes trajectories, phase portraits, and adds epoch/iteration/loss info.
 
-def visualize(true_y, pred_y, odefunc, itr):
-
+    Args:
+        true_y: Ground truth data.
+        pred_y: Model predictions.
+        itr: Current iteration.
+        epoch: Current epoch.
+        loss: Current loss value.
+    """
     if args.viz:
+        # Add a supertitle to the figure with epoch, iteration, and loss
+        fig.suptitle(
+            f"Epoch: {epoch} | Iteration: {itr} | Loss: {loss:.6f}", 
+            fontsize=16, 
+            fontweight='bold', 
+            color='navy'
+        )
 
+        # Trajectories Plot
         ax_traj.cla()
-        ax_traj.set_title('Trajectories')
-        ax_traj.set_xlabel('t')
-        ax_traj.set_ylabel('x,y')
-        ax_traj.plot(t.cpu().numpy(), true_y.cpu().numpy()[:, 0, 0], t.cpu().numpy(), true_y.cpu().numpy()[:, 0, 1], 'g-')
-        ax_traj.plot(t.cpu().numpy(), pred_y.cpu().numpy()[:, 0, 0], '--', t.cpu().numpy(), pred_y.cpu().numpy()[:, 0, 1], 'b--')
+        ax_traj.set_title('Trajectories', fontsize=14)
+        ax_traj.set_xlabel('Time (t)', fontsize=12)
+        ax_traj.set_ylabel('Position (x, y)', fontsize=12)
+        ax_traj.plot(t.cpu().numpy(), true_y.cpu().numpy()[:, 0, 0], 'g-', label='True x')
+        ax_traj.plot(t.cpu().numpy(), true_y.cpu().numpy()[:, 0, 1], 'r-', label='True y')
+        ax_traj.plot(t.cpu().numpy(), pred_y.cpu().numpy()[:, 0, 0], 'g--', label='Predicted x')
+        ax_traj.plot(t.cpu().numpy(), pred_y.cpu().numpy()[:, 0, 1], 'r--', label='Predicted y')
+        ax_traj.legend(fontsize=10, loc='upper right')
+        ax_traj.grid(True, linestyle='--', alpha=0.6)
         ax_traj.set_xlim(t.cpu().min(), t.cpu().max())
-        ax_traj.set_ylim(-200, 200)
-        ax_traj.legend()
+        ax_traj.set_ylim(-400, 400)
 
+        # Phase Portrait Plot
         ax_phase.cla()
-        ax_phase.set_title('Phase Portrait')
-        ax_phase.set_xlabel('x')
-        ax_phase.set_ylabel('y')
-        ax_phase.plot(true_y.cpu().numpy()[:, 0, 0], true_y.cpu().numpy()[:, 0, 1], 'g-')
-        ax_phase.plot(pred_y.cpu().numpy()[:, 0, 0], pred_y.cpu().numpy()[:, 0, 1], 'b--')
-        ax_phase.set_xlim(-200, 200)
-        ax_phase.set_ylim(-200, 200)
-        """
-        ax_vecfield.cla()
-        ax_vecfield.set_title('Learned Vector Field')
-        ax_vecfield.set_xlabel('x')
-        ax_vecfield.set_ylabel('y')
+        ax_phase.set_title('Phase Portrait', fontsize=14)
+        ax_phase.set_xlabel('Position x', fontsize=12)
+        ax_phase.set_ylabel('Position y', fontsize=12)
+        ax_phase.plot(true_y.cpu().numpy()[:, 0, 0], true_y.cpu().numpy()[:, 0, 1], 'g-', label='True Trajectory')
+        ax_phase.plot(pred_y.cpu().numpy()[:, 0, 0], pred_y.cpu().numpy()[:, 0, 1], 'b--', label='Predicted Trajectory')
+        ax_phase.legend(fontsize=10, loc='upper right')
+        ax_phase.grid(True, linestyle='--', alpha=0.6)
+        ax_phase.set_xlim(-400, 400)
+        ax_phase.set_ylim(-400, 400)
 
-        y, x = np.mgrid[-2:2:21j, -2:2:21j]
-        dydt = odefunc(0, torch.Tensor(np.stack([x, y], -1).reshape(21 * 21, 2)).to(device)).cpu().detach().numpy()
-        mag = np.sqrt(dydt[:, 0]**2 + dydt[:, 1]**2).reshape(-1, 1)
-        dydt = (dydt / mag)
-        dydt = dydt.reshape(21, 21, 2)
-
-        ax_vecfield.streamplot(x, y, dydt[:, :, 0], dydt[:, :, 1], color="black")
-        ax_vecfield.set_xlim(-2, 2)
-        ax_vecfield.set_ylim(-2, 2)
-        """
-        fig.tight_layout()
-        """plt.savefig('png/{:03d}'.format(itr))"""
+        # Tight Layout for Better Alignment
+        fig.tight_layout(pad=3.0)
         plt.draw()
         plt.pause(0.001)
 
+def plot_loss(loss_history):
+    """
+    Plots the loss progression over epochs.
+
+    Args:
+        loss_history: List of loss values, where each entry corresponds to a specific epoch.
+    """
+    plt.figure(figsize=(8, 6), facecolor='white')
+    plt.plot(range(1, len(loss_history) + 1), loss_history, 'b-o', label='Training Loss')
+    plt.title('Loss Progression Over Epochs', fontsize=16, fontweight='bold')
+    plt.xlabel('Epoch', fontsize=14)
+    plt.ylabel('Loss', fontsize=14)
+    plt.grid(True, linestyle='--', alpha=0.6)
+    plt.legend(fontsize=12)
+    plt.tight_layout()
+    plt.show()
 
 class ODEFunc(nn.Module):
     def __init__(self, batch_u=None):
@@ -205,15 +224,14 @@ if __name__ == '__main__':
     func = ODEFunc().to(device)
     func.load_state_dict(torch.load('dubins.pth'))
     # print the parameters of the model
-    print(func.state_dict())
-    optimizer = optim.Adam(func.parameters(), lr=6e-4)
+    optimizer = optim.Adam(func.parameters(), lr=0.5e-3)
     scheduler = ExponentialLR(optimizer, gamma=0.9)  # Decays LR by 10% every epoch
     end = time.time()
 
     time_meter = RunningAverageMeter(0.97)
     
     loss_meter = RunningAverageMeter(0.97)
-    
+    loss_history = []
     for epoch in range(1, args.epochs + 1):
         for itr in range(1, args.niters + 1):
             optimizer.zero_grad()
@@ -237,11 +255,13 @@ if __name__ == '__main__':
                     pred_y = odeint(func, true_y0, t, method='euler')
                     loss = torch.mean(torch.abs(pred_y - true_y))
                     print('Iter {:04d} | Total Loss {:.6f}'.format(itr, loss.item()))
-                    visualize(true_y, pred_y, func, ii)
+                    visualize(true_y, pred_y, itr, epoch, loss)
                     ii += 1
         end = time.time()
-        print('Epoch {:03d}.format(epoch)')
+        loss_history.append(loss.item())
+        print('Epoch {:03d}'.format(epoch))
         scheduler.step()  # Decay the learning rate at the end of each epoch
+    plot_loss(loss_history)
         
     
     """Export the obtained model parameters"""

@@ -6,6 +6,7 @@ def autoGen_acrobotDynamics(q1, q2, dq1, dq2, m1, m2, g, l1, l2):
     Compatible with PyTorch autograd for gradient computation.
     Returns the mass matrix (D), gravitational forces (G), and input matrix (B).
     """
+    
     t2 = torch.cos(q1)
     t3 = l1 ** 2
     t4 = torch.sin(q1)
@@ -43,25 +44,27 @@ def autoGen_acrobotDynamics(q1, q2, dq1, dq2, m1, m2, g, l1, l2):
 
     # Input matrix B
     B = torch.tensor([0.0, -1.0], dtype=torch.float32)  # This is constant, no grad required.
-
+    B = B.unsqueeze(1)
     return D, G, B
 
 
 # Example usage
-q1 = torch.tensor(0.5, requires_grad=True)
-q2 = torch.tensor(1.0, requires_grad=True)
-dq1 = torch.tensor(0.2, requires_grad=True)
-dq2 = torch.tensor(0.3, requires_grad=True)
-m1 = torch.tensor(1.0)
-m2 = torch.tensor(1.0)
-g = torch.tensor(9.81)
-l1 = torch.tensor(1.0)
-l2 = torch.tensor(1.0)
+#q1 = torch.tensor(0.0, requires_grad=True)
+#q2 = torch.tensor(0.0, requires_grad=True)
+#dq1 = torch.tensor(0.0, requires_grad=True)
+#dq2 = torch.tensor(0.0, requires_grad=True)
+#m1 = torch.tensor(10)
+#m2 = torch.tensor(20)
+#g = torch.tensor(9)
+#l1 = torch.tensor(3)
+#l2 = torch.tensor(5)
 
-D, G, B = autoGen_acrobotDynamics(q1, q2, dq1, dq2, m1, m2, g, l1, l2)
-
+#D, G, B = autoGen_acrobotDynamics(q1, q2, dq1, dq2, m1, m2, g, l1, l2)
+#print(D)
+#print(G)
+#print(B)
 # Compute gradients (example)
-loss = D.norm() + G.norm() + B.norm()  # Arbitrary loss function
-loss.backward()  # Compute gradients
-print(q1.grad)  # Gradient of the loss with respect to q1
-print(q2.grad)  # Gradient of the loss with respect to q2
+#loss = D.norm() + G.norm() + B.norm()  # Arbitrary loss function
+#loss.backward()  # Compute gradients
+#print(q1.grad)  # Gradient of the loss with respect to q1
+#print(q2.grad)  # Gradient of the loss with respect to q2

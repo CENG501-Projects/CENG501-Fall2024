@@ -1,4 +1,4 @@
-import tomllib as toml
+from pip._vendor import tomli as toml
 import copy
 from pprint import pprint
 import argparse
@@ -12,6 +12,8 @@ class Config:
         for top_key, sub_dict in input_dict.items():
             if isinstance(sub_dict, dict):
                 for sub_key, value in sub_dict.items():
+                    if value == "nil":
+                        value = None
                     setattr(self, sub_key, value)
 
 
@@ -72,15 +74,19 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--config_name", type=str, default="exp1a_config.toml")
-    parser.add_argument("--config_path", type=str, default="src/experiments")
+    parser.add_argument("--config_path", type=str, default="src/experiments/experiment_configs")
     args = parser.parse_args()
-
+    
     config_name = args.config_name.replace(".toml", "")
     config_path = os.path.join(args.config_path, args.config_name)
 
     config_dict_list, config_args_list = load_config(config_path)
 
+
     for idx, (config_dict, args) in enumerate(zip(config_dict_list, config_args_list)):
         print("Running experiment with following config:")
         pprint(config_dict)
+
+        assert not (args.diffeo_retry_count > 1 and args.synonym_retry_count > 1), "Cannot run synonym and diffeo experiment at the same time"
+
         experiment_run(idx, config_name, args)

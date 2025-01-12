@@ -4,9 +4,9 @@ This readme file is an outcome of the [CENG501 (Spring 2024)](https://ceng.metu.
 
 # 1. Introduction
 
-Out-of-Distribution (OOD) detection addresses a critical problem in deploying neural networks for real-world applications: how to maintain reliable performance when faced with unfamiliar data that is not part of the original training distribution. The paper “Gradient-Regularized Out-of-Distribution Detection” by Sina Sharifi et al., introduces a novel approach to enhance OOD detection robustness. Traditional OOD detection methods often rely solely on scoring functions and thresholds for classification, but they neglect the rich local information present in the gradient of the score function.
+Out-of-Distribution (OOD) detection addresses a critical problem in deploying neural networks for real-world applications: how to maintain reliable performance when faced with unfamiliar data that is not part of the original training distribution. The paper “Gradient-Regularized Out-of-Distribution Detection” by Sina Sharifi et al. [1], introduces a novel approach to enhance OOD detection robustness. Traditional OOD detection methods often rely solely on scoring functions and thresholds for classification [2], but they neglect the rich local information present in the gradient of the score function.
 
-The authors propose GReg+, a method that incorporates gradient regularization and energy-based sampling. This approach not only improves the model’s ability to distinguish between In-Distribution (ID) and OOD samples but also ensures that the local score behavior is consistent, reducing sensitivity to small perturbations. GReg+ achieves this by coupling a gradient-regularized loss function (GReg) with a clustering-based sampling method to select informative OOD samples, especially in the presence of large auxiliary datasets.
+The authors propose GReg+ [1], a method that incorporates gradient regularization and energy-based sampling. This approach not only improves the model’s ability to distinguish between In-Distribution (ID) and OOD samples but also ensures that the local score behavior is consistent, reducing sensitivity to small perturbations. GReg+ achieves this by coupling a gradient-regularized loss function (GReg) with a clustering-based sampling method to select informative OOD samples, especially in the presence of large auxiliary datasets.
 
 As part of our CENG501 (Spring 2024) project, we aim to reproduce the results of this paper, analyze its key contributions, and interpret its method to better understand the practical application of gradient regularization and energy-based sampling.
 
@@ -70,7 +70,7 @@ where $\lambda_S$ and $\lambda_{\Delta S}$ are regularization hyperparameters an
 
 ## 2.1.2. OOD Sampling
 
-Auxiliary OOD datasets may be larger than the ID dataset, and using all OOD samples during training may be computationally expensive and lead to bias towards specific regions of the feature space. To address this issue, a novel energy-based sampling method is proposed in the paper. Steps of the proposed sampling method can be explained as follows:
+Auxiliary OOD datasets may be larger than the ID dataset, and using all OOD samples during training may be computationally expensive and lead to bias towards specific regions of the feature space [3]. To address this issue, a novel energy-based sampling method is proposed in the paper. Steps of the proposed sampling method can be explained as follows:
 1. For each auxiliary OOD sample $x$, we first calculate the features $z = h(x)$, where $h(.)$ is the feature extractor. Then, energy score $s = -LSE(f(x))$ is calculated, where $f(x)$ is the logit. As features with larger magnitudes may lead to biased clustering, the feature vectors z are normalized as follows: $z = \frac{z}{||z||}$
 
 2. To perform clustering, K-Means clustering with a fixed number of clusters is used. For the number of clusters, the number of samples in each mini batch of training is used. More details on the choice of number of clusters can be found in the "Supplementary Material" section of the paper.
@@ -91,7 +91,7 @@ The paper specifies that these thresholds ($m_{in}$ and $m_{aux}$) filter out sa
 
 Additionally, the hardware resources used and comptational complexity of experiments are not clearly stated. However, as used datasets are not very large and images are not high-resolution, we infered that we can train mentioned models with the hardware we have.
 
-# 3. Experiments and results
+# 3. Experiments and Results
 
 ### 3.1. Experimental Setup
 The original paper uses CIFAR-10, CIFAR-100 and ImageNet as ID datasets for training.
@@ -112,39 +112,98 @@ For ImageNet experiments, 10 random classes of ImageNet is used as ID dataset, a
   - For all datasets, Greg+ uses energy-based sampling to select OOD (out-of-distribution) samples efficiently during training, as described in the original paper.
 
 - **Adjustments in Our Implementation:**
-  - In our experiments, we modified the initial learning rate for GReg on the CIFAR benchmarks. Instead of starting with 1.0, we used 0.01 as the initial learning rate for cosine annealing.
-  - This adjustment was made as we experienced NaN loss values with 1.0 as initial learning rate.
+  - In our experiments, we modified the initial learning rate for GReg on the CIFAR benchmarks. Instead of starting with 1.0, we used 0.01 as the initial learning rate for cosine annealing. This adjustment was made as we experienced NaN loss values with 1.0 as initial learning rate.
 
 ## 3.2. Running the code
-
-@TODO: Explain your code & directory structure and how other people can run it.
+Use corresponding notebooks for training and evaluation. Follow the comments and specifications on each code block to set models, datasets, and training/evaluation pipeline.
 
 ## 3.3. Results
 
-## 3.3.1 First Experiment
+## 3.3.1 GReg Experiments
 
-![Figure 1: Training results of GReg experiment on ResNet-18 and CIFAR-10](./Figures/greg_cifar10_resnet18.png)
+<img src="./Figures/resnet_greg_cifar10_graphs.png" alt="Figure 1: Training Results of ResNet-18/CIFAR-10" width="800">
 
-**Figure 1**: Training Plots of GReg Experiment on ResNet-18 and CIFAR-10
+**Figure 1**: Training Plots of GReg Experiment with ResNet-18 and CIFAR-10
 
-|      | AUROC     | FPR95     |
-|--------------|--------------|--------------|
-| Our Results | 66.00 | 94.72 |
-| Original Results | 98.33 | 6.2 |
+<img src="./Figures/resnet_greg_cifar10_eval.jpg" alt="Figure 1: Evaluation Results of ResNet-18/CIFAR-10" width="600">
 
-**Table 1**: Validation Results and Original Results on iSUN OOD Dataset
+**Figure 2**: Evaluation Results of GReg Experiment with ResNet-18 and CIFAR-10
 
-- **Discussion of Our Results**
-There is a significant deviation between our results and the original results. The main reason behind this could be the number of epochs and the initial learning rate. Although training loss was decreasing and validation accuracy was increasing, we finished training at epoch 20 to follow the experimental setup specified in the paper. In addition, we couldn't use the original initial learning rate (lr = 1.0), as we got NaN loss values for each epoch.
+
+<img src="./Figures/resnet_greg_cifar100_graphs.png" alt="Figure 1: Training Results of ResNet-18/CIFAR-100" width="800">
+
+**Figure 3**: Training Plots of GReg Experiment with ResNet-18 and CIFAR-100
+
+<img src="./Figures/resnet_greg_cifar100_eval.jpg" alt="Figure 1: Evaluation Results of ResNet-18/CIFAR-100" width="600">
+
+**Figure 4**: Evaluation Results of GReg Experiment with ResNet-18 and CIFAR-100
+
+
+<img src="./Figures/densenet_greg_cifar10_graphs.png" alt="Figure 1: Training Results of DenseNet-121/CIFAR-10" width="800">
+
+**Figure 5**: Training Plots of GReg Experiment with DenseNet-121 and CIFAR-10
+
+<img src="./Figures/densenet_greg_cifar10_eval.jpg" alt="Figure 1: Evaluation Results of DenseNet-121/CIFAR-10" width="600">
+
+**Figure 6**: Evaluation Results of GReg Experiment with DenseNet-121 and CIFAR-10
+
+
+<img src="./Figures/densenet_greg_cifar100_graphs.png" alt="Figure 1: Training Results of DenseNet-121/CIFAR-100" width="800">
+
+**Figure 7**: Training Plots of GReg Experiment with DenseNet-121 and CIFAR-100
+
+<img src="./Figures/densenet_greg_cifar100_eval.jpg" alt="Figure 1: Evaluation Results of DenseNet-121/CIFAR-100" width="600">
+
+**Figure 8**: Evaluation Results of GReg Experiment with DenseNet-121 and CIFAR-100
+
+## 3.3.2 GReg+ Experiments
+
+<img src="./Figures/resnet_greg+_cifar10_graphs.png" alt="Figure 1: Training Results of ResNet-18/CIFAR-10" width="800">
+
+**Figure 9**: Training Plots of GReg+ Experiment with ResNet-18 and CIFAR-10
+
+<img src="./Figures/resnet_greg+_cifar10_eval.jpg" alt="Figure 1: Evaluation Results of ResNet-18/CIFAR-10" width="600">
+
+**Figure 10**: Evaluation Results of GReg+ Experiment with ResNet-18 and CIFAR-10
+
+
+<img src="./Figures/resnet_greg+_cifar100_graphs.png" alt="Figure 1: Training Results of ResNet-18/CIFAR-100" width="800">
+
+**Figure 11**: Training Plots of GReg+ Experiment with ResNet-18 and CIFAR-100
+
+<img src="./Figures/resnet_greg+_cifar100_eval.jpg" alt="Figure 1: Evaluation Results of ResNet-18/CIFAR-100" width="600">
+
+**Figure 12**: Evaluation Results of GReg+ Experiment with ResNet-18 and CIFAR-100
 
 # 4. Conclusion
 
-@TODO: Discuss the paper in relation to the results in the paper and your results.
+There is a significant deviation between our results and the original results. The main reason behind this could be the number of epochs and the initial learning rate. Although training loss was decreasing and validation accuracy was increasing, we finished training at epoch 20 to follow the experimental setup specified in the paper. In addition, we couldn't use the original initial learning rate (lr = 1.0), as we got NaN loss values for each epoch.
+
+As implementing ImageNet experiments would not be feasible in terms of time, we skipped ImageNet experiments. Given GReg/GReg+ results in the "Experiments and Results" section are obtained using CIFAR-10 and CIFAR-100.
+
+Pretrained weights of our models can be downloaded from following links:
+
+[DenseNet121/CIFAR-10/GReg](https://drive.google.com/file/d/1aE5wnx-zG2d_Td9A8ucmev7AVtFhdACE/view?usp=sharing)
+
+[DenseNet121/CIFAR-100/GReg](https://drive.google.com/file/d/1VlTgB56IA1AdE3pk-Tl3H0__0s_PcvgZ/view?usp=sharing)
+
+[ResNet18/CIFAR-10/GReg](https://drive.google.com/file/d/1jsciGMFej8E4oi5DQpPa5D2C6b9QTcN6/view?usp=sharing)
+
+[ResNet18/CIFAR-100/GReg](https://drive.google.com/file/d/1pLb1qbLz-iqnsTFAQyMcb86MYNVQXqpx/view?usp=sharing)
+
+[ResNet18/CIFAR-10/GReg+](https://drive.google.com/file/d/1M9aTvYMCA7HRtRFk1C7PFLrSgeoBeKzK/view?usp=sharing)
+
+[ResNet18/CIFAR-100/GReg+](https://drive.google.com/file/d/1jB72gQwM-KQmcNnsPMFLTMxXnIOJNvvH/view?usp=sharing)
+
 
 # 5. References
 
-@TODO: Provide your references here.
+[1] Sharifi, S., Entesari, T., Safaei, B., Patel, V. M., & Fazlyab, M. (2025). Gradient-regularized out-of-distribution detection. In European Conference on Computer Vision (pp. 459-478). Springer, Cham.
+[2] Liu, W., Wang, X., Owens, J., Li, Y.: Energy-based out-of-distribution detection. Advances in neural information processing systems 33, 21464–21475 (2020)
+[3] Wang, L., Han, M., Li, X., Zhang, N., Cheng, H.: Review of classification methods on unbalanced data sets. IEEE Access 9, 64606–64628 (2021)
 
 # Contact
 
-@TODO: Provide your names & email addresses and any other info with which people can contact you.
+Cenk Kerem Cengiz, cengizcenkkerem@gmail.com
+
+Arda Yaman, ardayaman3207@gmail.com

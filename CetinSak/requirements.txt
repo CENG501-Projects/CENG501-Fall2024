@@ -4,3 +4,5 @@ torchvision
 matplotlib
 numpy
 pandas
+torchshow
+seaborn

@@ -1,0 +1,9 @@
+numpy
+torch
+torchvision
+jpegio
+scipy
+torch_dct
+pillow
+matplotlib
+wandb

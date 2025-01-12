@@ -1,44 +1,96 @@
+import torch
 import numpy as np
-from typing import Any, List, Tuple
 
-class AreaOverPerturbationCurve:
+def compute_AOPC(
+    model,
+    explanation_method,
+    x,
+    num_steps=10,
+    mask_value=0.0,
+):
     """
-    Area Over the Perturbation Curve (AOPC) metric.
-    Measures the average change in output probability when gradually removing
-    the most important features identified by the attribution method.
+    Compute the Area-Over-the-Perturbation-Curve (AOPC).
+    
+    Parameters
+    ----------
+    model : torch.nn.Module
+        The pre-trained model in eval mode (e.g., ViT).
+    explanation_method : callable
+        A function that, given (model, x), returns a salience map 
+        of shape (H, W) as a NumPy array or torch.Tensor in [0, 1].
+    x : torch.Tensor
+        The input image tensor, shape (1, 3, H, W).
+    num_steps : int
+        Number of equally spaced steps from 0% to 100% of salient pixels removed.
+    mask_value : float
+        The value used to replace removed pixels (0.0, or mean, or random noise).
+    
+    Returns
+    -------
+    AOPC : float
+        The computed Area Over the Perturbation Curve.
     """
+    model.eval()
+    device = x.device
+
     
-    def __init__(self, num_steps: int = 5):
-        self.num_steps = num_steps
+    with torch.no_grad():
+        output = model(x)  
+        pred_class = output.argmax(dim=1).item()
+        orig_score = output[0, pred_class].item()  
     
-    def compute(self, model: Any, input_data: np.ndarray, attribution_scores: np.ndarray) -> float:
-        """
-        Compute AOPC score.
-        
-        Args:
-            model: The model to evaluate
-            input_data: Original input data
-            attribution_scores: Importance scores for each feature
-            
-        Returns:
-            float: AOPC score
-        """
-        original_pred = self._get_prediction(model, input_data)
-        sorted_indices = np.argsort(attribution_scores)[::-1]
-        
-        step_size = len(sorted_indices) // self.num_steps
-        aopc_score = 0.0
-        
-        for step in range(self.num_steps):
-            perturbed_input = input_data.copy()
-            indices_to_remove = sorted_indices[:(step + 1) * step_size]
-            perturbed_input[indices_to_remove] = 0  # or other perturbation strategy
-            
-            new_pred = self._get_prediction(model, perturbed_input)
-            aopc_score += (original_pred - new_pred)
-            
-        return aopc_score / self.num_steps
     
-    def _get_prediction(self, model: Any, input_data: np.ndarray) -> float:
-        """Get model prediction probability for the target class."""
-        return model(input_data) 
+    sal_map = explanation_method(model, x)  
+    if isinstance(sal_map, np.ndarray):
+        sal_map = torch.from_numpy(sal_map).float().to(device)
+    else:
+        sal_map = sal_map.to(device).float()
+    
+  
+
+    flat_sal = sal_map.view(-1)              
+    sorted_sal, sorted_idx = torch.sort(flat_sal, descending=True)
+
+  
+    fractions = torch.linspace(0, 1, steps=num_steps + 1)  
+  
+    
+  
+    drops = []
+
+    
+    for f in fractions:
+        frac_val = f.item()
+       
+        num_remove = int(frac_val * len(sorted_sal))
+
+       
+        remove_idx = sorted_idx[:num_remove]
+
+      
+        x_perturbed = x.clone()
+
+  
+        c, h, w = x_perturbed.shape[1:]
+        x_flat = x_perturbed.view(1, c, h * w) 
+
+       
+        for ch in range(c):
+            x_flat[0, ch, remove_idx] = mask_value
+
+        
+        x_perturbed = x_flat.view(1, c, h, w)
+
+       
+        with torch.no_grad():
+            out_perturbed = model(x_perturbed)
+            new_score = out_perturbed[0, pred_class].item()
+        
+       
+        drop = orig_score - new_score
+        drops.append(drop)
+    
+.
+
+    mean_drop = sum(drops) / len(drops)  # average drop
+    return mean_drop

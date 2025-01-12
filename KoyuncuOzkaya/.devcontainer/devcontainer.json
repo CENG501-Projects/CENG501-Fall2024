@@ -1,0 +1,45 @@
+{
+    "name": "CENG501 Development Environment",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": ".."
+    },
+
+    "containerEnv": {
+        "DISPLAY": "${env:DISPLAY}",
+        "NVIDIA_VISIBLE_DEVICES": "all",
+        "NVIDIA_DRIVER_CAPABILITIES": "all"
+    },
+
+    "workspaceMount": "source=${localWorkspaceFolder},target=/home/ceng/mnt,type=bind,consistency=cached",
+    "workspaceFolder": "/home/ceng/mnt/",
+
+    "privileged": true,
+    "runArgs": [
+        "--net=host",
+        "--gpus", "all",
+        "--shm-size=16g"
+    ],
+
+    "mounts": [
+        "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached"
+    ],
+
+    "otherPortsAttributes": {
+        "onAutoForward": "ignore"
+    },
+
+    "customizations": {
+        "vscode": {
+            "extensions": [
+            "ms-vscode.cpptools",
+            "ms-vscode.cpptools-extension-pack",
+            "ms-python.python",
+            "VisualStudioExptTeam.vscodeintellicode",
+            "njpwerner.autodocstring",
+            "KevinRose.vsc-python-indent",
+            "GitHub.copilot"
+            ]
+        }
+    }
+}

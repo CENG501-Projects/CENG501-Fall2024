@@ -150,7 +150,7 @@ def get_scaled_flows(flow:np.array):
     return scaled_flows
 ```
 
-### Integrate and Fire Neurons
+### Integrate and Fire Neurons (Leaky)
 We utilize the IF neuron implementation from the [Spike-FlowNet GitHub](https://github.com/chan8972/Spike-FlowNet) as a starting point. However, the provided IF neuron does not include leakage. Since the proposed method requires a leaky IF neuron, we incorporate the leakage mechanism into the implementation.
 ```python
 # IF neuron from Spike-FlowNet
@@ -166,6 +166,24 @@ def IF_Neuron(membrane_potential, threshold):
 
     return membrane_potential, out
 ```
+
+To incorporate the leakage factor into our code, we introduced two terms: a decay factor $ λ = 0.9 $ and a $threshold = 0.75 $. These terms were defined as hyperparameters within the membrane potential history. The original paper also explored these parameters but concluded that they have minimal impact on the algorithm's overall performance. The implementation details can be seen as follows;
+
+```python
+def LIF_Neuron(membrane_potential, threshold):
+    global threshold_k
+    threshold_k = threshold
+    # check exceed membrane potential and reset
+    ex_membrane = nn.functional.threshold(membrane_potential, threshold_k, 0)
+    membrane_potential = membrane_potential - ex_membrane # hard reset
+    membrane_potential = membrane_potential * 0.9
+    # generate spike
+    out = SpikingNN.apply(ex_membrane)
+    out = out.detach() + (1/threshold)*out - (1/threshold)*out.detach()
+ 
+    return membrane_potential, out
+```
+
 ### Loss Function
 To implement supervised training, we need to incorporate the ground truth optical flow. However, as you may have noticed in the provided ground truth samples, not all pixels in a frame have corresponding ground truth optical flow. Therefore, we must first mask the pixels without valid ground truth values. The mask can be defined as follows:
 
@@ -191,7 +209,7 @@ $$
 ### Architecture Implementation
 
 
-The architecture in Figure 2 is designed to leverage the unique capabilities of event cameras for optical flow estimation. Event cameras provide asynchronous, high-temporal-resolution data, recording brightness changes as ON and OFF polarity events. These events are discretized into two spatiotemporal streams, the Former Events and the Latter Events, which represent brightness changes over two consecutive intervals. This discretization provides the foundational input for the network, encoding fine-grained motion information from the scene.
+The architecture in Figure 2 is designed to leverage the unique capabilities of event cameras for optical flow estimation. Event cameras provide asynchronous, high-temporal-resolution data, recording brightness changes as ON and OFF polarity events. These events are discretized into two spatiotemporal streams, the Former Events and the Latter Events, which represent brightness changes over two consecutive intervals. This discretization provides the foundational input for the network, encoding fine-grained motion information from the scene. On top of this discretization, we need to take into account ON and OFF events during the binning procedure. Each bin is composed of 4 frames coming from an ON event frame from Former Events, an OFF event frame from Former Events, an ON event frame from Latter Events and an OFF event frame from Latter Events.
 
 The encoder (represented by blue blocks) is responsible for extracting hierarchical features from the input event streams. It begins with the raw data encoded into b feature channels, which are progressively compressed through a series of convolutional and downsampling operations. With each stage, the spatial resolution decreases while the number of feature channels increases (b → 2b → 4b → 8b), enabling the model to capture increasingly abstract and higher-level spatiotemporal patterns. These features encapsulate both the spatial structure and the motion dynamics inherent in the input event data, providing the foundation for accurate optical flow estimation.
 
@@ -226,6 +244,17 @@ For the primal tests, we use the [DSEC](https://dsec.ifi.uzh.ch/) dataset becaus
 
 During training, it is necessary to create the event bins for each optical flow groundtruth. However, this binning process is time-consuming and is repeated for every training epoch. To reduce the training time, pre-binning the relevant events and saving them in a separate folder can significantly reduce training time. By doing this, we can directly load the relevant events from the pre-binned files, eliminating the need for repeated binning during each epoch. 
 
+After the primal tests, we continued training with the photometric and smoothness loss functions on the [MVSEC](https://daniilidis-group.github.io/mvsec/) and the [DSEC](https://dsec.ifi.uzh.ch/) datasets as performed in the article. One possible extension we considered is starting the training process on the MVSEC dataset in an unsupervised manner. Since the MVSEC dataset does not include ground truth data, this approach could provide a robust initialization for the network. After unsupervised training on MVSEC, transitioning to supervised training with the DSEC dataset—which includes ground truth optical flow—might yield improved performance, particularly with respect to the 
+𝐿
+EPE
+L 
+EPE
+​
+  loss.
+
+To experiment with this approach, we need to address the difference in data sizes between the two datasets. Specifically, we must apply zero-padding to the smaller-sized DSEC dataset to match the dimensions of MVSEC, enabling our network to process both datasets simultaneously.
+
+
 ## 3.2. Running the code
 
 @TODO: Explain your code & directory structure and how other people can run it.
@@ -243,17 +272,54 @@ Finally, we visualize sample estimations from the network, showing both the grou
   <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/ESvsGT.gif" alt="description" width="95%">
 </div>
 
+According to our observations with the [DSEC](https://dsec.ifi.uzh.ch/) dataset, we trained the network with the [MVSEC](https://daniilidis-group.github.io/mvsec/) dataset for 20 epochs, and the training and validation losses are reported below.
+<div align="center">
+  <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/training_losses.png" alt="description" width="50%">
+</div>
 
+The validation loss is smaller than the training loss because the validation set includes a simpler scenario with relatively stable and moderate optical flow. In contrast, the training set contains samples with higher optical flow vectors.
+
+Finally, we visualize sample estimations from the network, showing both the ground truth optical flow and the estimated flow. It is important to note that the ground truth is available only for a sparse set of pixels. To facilitate comparison, we apply the same mask to the estimated flow, resulting in a masked estimated flow. This masking is done purely for your convenience to directly compare the ground truth with the estimation.
+<div align="center">
+  <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/ESvsGT.gif" alt="description" width="95%">
+</div>
 
 
 # 4. Conclusion
 
-@TODO: Discuss the paper in relation to the results in the paper and your results.
+In this study, we utilized the MVSEC and DSEC datasets, both of which provide LIDAR, IMU, event camera, and grayscale image data. Among these, the DSEC dataset offers a more reliable ground truth compared to MVSEC. For our implementation, we focused exclusively on the event camera data to estimate optical flow using the adaptive spike flow architecture outlined in the referenced paper.
 
-# 5. References
+Our architecture consists of three primary components: an encoder, residual connections, and a decoder. The encoder includes four cascaded and parallel working blocks to effectively extract features from the input data. This is followed by two convolutional layers with residual connections, enabling the network to retain and refine critical information. Finally, the decoder, comprising four cascaded and parallel blocks, estimates the optical flow as the output.
 
-@TODO: Provide your references here.
+When working with the DSEC dataset, the availability of ground truth data allows us to perform supervised training by backpropagating the error at each stage of the decoder. In contrast, due to the lack of reliable ground truth in the MVSEC dataset, training is carried out in an unsupervised manner. Our results align with those reported in the paper, with noticeable improvements observed on the DSEC dataset. This enhancement can be attributed to the architecture being specifically designed for custom hardware optimized for neuromorphic sensors like event cameras.
 
-# Contact
+Overall, this project has been a valuable learning experience, serving as an introductory step in implementing deep learning architectures. It has also broadened our perspective on leveraging event-based sensing and highlighted the potential of neuromorphic computing in optical flow estimation.
 
-@TODO: Provide your names & email addresses and any other info with which people can contact you.
+# 5.  Contact
+
+Atakan Durmaz - atakan.durmaz@metu.edu.tr
+Haktan Yalçın - yalcin.haktan@metu.edu.tr
+
+# 6. References
+
+```latex
+@inproceedings{kosta2023adaptive,
+  title={Adaptive-SpikeNet: Event-Based Optical Flow Estimation Using Spiking Neural Networks with Learnable Neuronal Dynamics},
+  author={Kosta, Adarsh Kumar and Roy, Kaushik},
+  booktitle={International Conference on Robotics and Automation (ICRA)},
+  year={2023},
+  organization={IEEE}
+}
+
+```latex
+@inproceedings{lee2020spike,
+  title={Spike-Flownet: Event-Based Optical Flow Estimation with Energy-Efficient Hybrid Neural Networks},
+  author={Lee, Chankyu and Kosta, Adarsh Kumar and Zhu, Alex Zihao and Chaney, Kenneth and Daniilidis, Kostas and Roy, Kaushik},
+  booktitle={European Conference on Computer Vision},
+  pages={366--382},
+  year={2020},
+  organization={Springer}
+}
+
+
+

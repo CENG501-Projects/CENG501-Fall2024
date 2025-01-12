@@ -26,6 +26,8 @@ class NonOverlappingConv1d(nn.Module):
 
     def forward(self, x):
         bs, cin, d = x.shape
+        # print("Shape of forward is:", x.shape)
+        # print(f"x will be viewed as : ({bs},1,{cin},{d}//{self.patch_size},{self.patch_size})")
         x = x.view(bs, 1, cin, d // self.patch_size, self.patch_size) # [bs, 1, cin, space // patch_size, patch_size]
         x = x * self.weight # [bs, cout, cin, space // patch_size, patch_size]
         x = x.sum(dim=[-1, -3]) # [bs, cout, space // patch_size]
@@ -63,6 +65,15 @@ class CNN(nn.Module):
         y = y.mean(dim=[-1])
         y = y @ self.beta / self.beta.size(0)
         return y
+    
+    def get_layer_activation(self, x, k):
+        if k >= len(self.hier) or k < 0:
+            raise ValueError(f"Layer index k={k} is out of bounds. Total layers: {len(self.hier)}")
+        
+        for i, layer in enumerate(self.hier):
+            x = layer(x)
+            if i == k:
+                return x
 
 
 class CNNLayerWise(nn.Module):    # only for patch_size = 2!!
@@ -103,3 +114,12 @@ class CNNLayerWise(nn.Module):    # only for patch_size = 2!!
         y = y.mean(dim=[-1])
         y = y @ self.beta / self.beta.size(0)
         return y
+    
+    def get_layer_activation(self, x, k):
+        if k >= len(self.hier) or k < 0:
+            raise ValueError(f"Layer index k={k} is out of bounds. Total layers: {len(self.hier)}")
+        
+        for i, layer in enumerate(self.hier):
+            x = layer(x)
+            if i == k:
+                return x

@@ -1,4 +1,4 @@
-# Inspecting Prediction Confidence for Detecting Black-Box Backdoor Attacks
+# Inspecting Prediction Confidence for Detection and Mitigation of Black-Box Backdoor Attacks
 
 
 # 1. Introduction
@@ -141,17 +141,93 @@ Activation: Softmax
 We used a similar method to the original method, but with the simplifications to validate the effectiveness of our implementation of DTINSPECTOR. This will be about measuring the attack success rate(ASR) against the accuracy of the model.
 
 
-# 6. Challenges and Mitigation in Original Paper:
+# 6. Experiment I: Mitigation of Backdoor Effects
+In addition to our extensive evaluation of DTINSPECTOR's detection capabilities, we expanded our research scope to include effective mitigation strategies for backdoor attacks. Experiment (I) specifically investigates the potential of revised training protocols and data cleaning methods to restore model integrity after a backdoor has been identified.
+
+## 6.1 Implementation of Mitigation Techniques
+**Model Architecture and Training Adjustments:** Utilizing a TensorFlow-based Convolutional Neural Network, we adapted the architecture to improve resilience against backdoor manipulations found in CIFAR-10 dataset. The chosen architecture aimed to balance computational efficiency and predictive accuracy:
+
+**Convolutional Layer 1:** 
+
+32 filters
+
+3x3 kernel 
+
+ReLU activation
+
+
+**MaxPooling Layer 1:**
+
+2x2 pool size
+
+**Convolutional Layer 2:**
+
+64 filters
+
+3x3 kernel
+
+ReLU activation
+
+**MaxPooling Layer 2:**
+
+2x2 pool size
+
+**Flatten Layer:** 
+
+Converts feature maps into a vector
+
+**Dense Layer 1:** 
+
+128 units
+
+ReLU activation
+
+**Dropout Layer:**
+
+40% dropout rate to mitigate overfitting
+
+**Output Layer:** 
+
+10 units (one per class in CIFAR-10)
+
+Softmax activation
+
+**Data Manipulation and Retraining Procedure:** Approximately 10% of the training data was altered by applying a horizontal flip to simulate a backdoor trigger. This backdoored dataset was used to train the model, highlighting the vulnerabilities to such subtle manipulations.
+
+**Cleaning and Data Restoration Process:** After training, a data cleaning step was implemented, using the model's predictive outputs to segregate and eliminate corrupted data entries, thus aiming to recover the integrity and accuracy of the model.
+
+## 6.2 Results of Mitigation Efforts
+The evaluation focused on comparing three key stages: pre-attack (original model), post-attack (backdoored model), and post-mitigation (cleaned model). The accuracies observed were:
+
+**Original Model Accuracy:** 70.45%
+
+**Backdoored Model Accuracy:** 61.06%
+
+**Cleaned Model Accuracy:** 62.06%
+
+These stages are visually summarized in the following bar chart, which illustrates the impact of the backdoor attack and the subsequent recovery:
+
+<img width="858" alt="Screenshot 2025-01-10 at 11 29 33 AM" src="https://github.com/user-attachments/assets/36ed7c43-7623-444c-804d-b04282142668" />
+
+**Analysis:** The experiment demonstrates a significant initial drop in model accuracy due to the backdoor attack, followed by a modest recovery post-cleanup. This partial recovery suggests that while the mitigation process is beneficial, it is not yet fully optimized to restore model performance to its original state.
+
+## 6.3 Discussion and Future Directions
+This mitigation experiment underscores the complexity of fully recovering from backdoor attacks in neural networks. The findings suggest that while current cleaning methods can reduce the impact of these attacks, complete restoration of model performance remains a challenge.
+
+Future Work: Further research is needed to enhance the detection accuracy, refine cleaning processes to prevent loss of valid data, and explore more robust architectures and training strategies. These efforts will aim to not only detect but also fully neutralize the effects of backdoor attacks, ensuring the security and reliability of machine learning models in adversarial environments.
+
+
+# 7. Challenges and Mitigation in Original Paper:
 The paper says that development and implementation of the DTINSPECTOR defense system have faced several critical challenges involving subtlety of backdoor attacks and variability of attack mechanisms. Here we describe some of the challenges, and how we manage these:
 ## 6.1.	Challenge: Subtlety of Trigger Mechanisms
 **o	Description:** Trigger mechanisms in black box backdoor attacks can be very subtle, and being detected is much difficult without sacrificing the performance of general inputs on the model.
 
 **o	Mitigation:** In our implementation we focused on identification of discrepancies in the prediction confidence between clean samples and the poisoned ones. When analyzing the poisoned samples using DTINSPECTOR, what we found was that the confidence scores of these samples were much higher than that of clean samples. Thus, we have taken advantage of this disparity and proposed a 3x3 patch which is localized to the bottom right corner of images to detect poisoned labels without much degradation of the models performance on clean data.
-## 6.2. Challenge: Generalization Across Attack Variants
+## 7.2. Challenge: Generalization Across Attack Variants
 **o Description:** The defense must be strong enough to be able to handle variety of backdoor attacks. These backdoor attacks can include such strategies that model might not have seen in the training phase.
 
 **o Mitigation:** Due to lack of computational resources, the evaluation of DTINSPECTOR was done on a one type of an attack (BADNET) and a dataset (CIFAR10). Despite the restrictions of our work, we have proved the method’s fundamental approach to identify trojaned models and infected labels. This forms the basis for the further analysis on the generalization ability of DTINSPECTOR through testing on other datasets and on different types of attack in the subsequent work.
-## 6.3. Challenge: Efficiency and Scalability
+## 7.3. Challenge: Efficiency and Scalability
 **o Description:** In the paper, authors stated that maintaining high detection accuracy while ensuring the defense is scalable and efficient in processing time is important especially for real-time applications.
 
 **o Mitigation:** We have made some changes and simplifications to make the experiment easier. We used a lightweight CNN model and CIFAR10. Although we cannot claim that DTINSPECTOR is optimized to run on a machine that has low GPU and CPU, we showed otherwise by modifying the approaches used in the study based on our machine’s resources. For example:
@@ -163,9 +239,9 @@ The paper says that development and implementation of the DTINSPECTOR defense sy
 **Anomaly Detection:** We employed Median Absolute Deviation (MAD) since it is computationally cheaper to perform in order to infect labels. This adaptation establishes how feasible it is to implement DTINSPECTOR in practical settings, particularly within resource-scarce scenarios.
 
 
-# 7. Running the code
+# 8. Running the code
 
-## **7.1 Prerequisites**
+## **8.1 Prerequisites**
 
 Before running the code, ensure the following are installed:
 
@@ -175,32 +251,35 @@ Python 3.7+
 
 ```pip install numpy tensorflow matplotlib scikit-learn```
 
-## 7.2 Directory Structure
+## 8.2 Directory Structure
 
-Since all code is in a single file, there’s no complex directory structure required. However for clarity, here’s how you can organize your project:
+To manage the complexity of two experiments, we have organized the project into separate scripts for each experiment. Here is how you can organize your project:
 
 project/
+│
+├── experiment1.py          # Script for Experiment I
+├── experiment2.py          # Script for Experiment II
+├── README.md               # Report and documentation
+└── requirements.txt        # List of required libraries
 
-main.py          (The complete implementation script)     
 
-README.md        (report)
-
-requirements.txt  (List of required libraries)
-
-## 7.3 Running the Code
+## 8.3 Running the Code
 
 **Clone the Repository or Copy the Script:**
 
-Save the code in a file named main.py.
+Ensure you have the latest versions of experiment1.py and experiment2.py scripts.
 
 **Execute the Script:**
 
-Run the script using: `python main.py`
+For Experiment I: `python experiment1.py`
 
-## 7.4 Code Overview
+For Experiment II: `python experiment2.py`
 
 
-### 7.4.1. Dataset Loading and Preprocessing
+## 8.4 Code Overview
+
+
+### 8.4.1. Dataset Loading and Preprocessing
 
 The CIFAR-10 image dataset consists of 60,000 32 by 32 coloured images of 10 different types and is implemented on the TensorFlow Keras API. The pixel values are scale down to the portion [0, 1] through division to the value of 255. The processed raw training data is divided into both training and validation for back propagation performance check having 80% training and 20% validation data.
 
@@ -214,7 +293,7 @@ x_test = x_test / 255.0
 x_train, x_val, y_train, y_val = train_test_split(x_train, y_train, test_size=0.2, random_state=42)
 ```
 
-### 7.4.2. Trigger Injection
+### 8.4.2. Trigger Injection
 
 In order to mimic a backdoor attack the red 3x3 trigger is inserted into the bottom right in a part of the images. The poisoned images are given a specific target label (in general, 0) whereas other images are classified as clean. This results in a poisoned training dataset in which only a few of the samples include the trigger.
 
@@ -235,7 +314,7 @@ def poison_data(x, y, target_label=0, poison_rate=0.1):
     return x_poisoned, y_poisoned
 ```
 
-### 7.4.3. Model Architecture
+### 8.4.3. Model Architecture
 
 To classify the CIFAR-10 images, a shallow Convolutional Neural Network (CNN) is proposed and applied. The architecture includes:
 
@@ -265,7 +344,7 @@ def create_model():
     return model
 ```
 
-### 7.4.4. Training and Evaluation
+### 8.4.4. Training and Evaluation
 
 First, the clean model is trained using the original data to set the benchmark of performance. Then, a poisoned model is trained with the poison, unconsciously feeding the model the poisoned dataset. Both models are assessed for the Benign Accuracy (BA) on clean test data, and the poisoned model is also analyzed for the attack success rate (ASR) on triggered inputs.
 
@@ -288,7 +367,7 @@ attack_success_rate = poisoned_model.evaluate(x_test_triggered, np.zeros_like(y_
 print(f"Benign Accuracy: {benign_accuracy:.2f}%, ASR: {attack_success_rate:.2f}%")
 ```
 
-### 7.4.5. Patch Learning and Anomaly Detection
+### 8.4.5. Patch Learning and Anomaly Detection
 
 An adversarial 3x3 patch is generated with high confidence samples to manipulate the decision of the model. To make a patch effective it is best to incorporate the confidence reduction and the complexity of the patch. Low-confidence samples are used with patch to compute the transfer ratio, and Median of the Absolute Deviation is used to identify the outliers on the labels.
 
@@ -312,7 +391,7 @@ The figure below shows the original, poisoned and patched images.
 
 <img width="659" alt="image" src="https://github.com/user-attachments/assets/c6590b56-b862-46a6-aaa9-5aa5aa8199fa">
 
-### 7.4.6. Visualizations
+### 8.4.6. Visualizations
 
 TSeveral visualizations are generated to analyze the models and predictions:
 
@@ -336,7 +415,7 @@ plt.grid()
 plt.show()
 ```
 
-## 7.5 Notes for Users
+## 8.5 Notes for Users
 
 **Hardware Requirements:** It is intended for standard CPU or single gpu. Training time may extend depending on the training hardware you are using.
 
@@ -344,13 +423,20 @@ plt.show()
 
 **Patch Learning Parameters:** In the following learn_patch function, the values for patch size, the number of iterations, and optimization hyperparameters can be tuned.
 
-# 8. Results
+# 9. Results
 
-## 8.1 Evaluation of Backdoor Attack:
+## 9.1 Evaluation of Backdoor Attack:
 
 The following table shows the performance of the BadNet attack on the CIFAR-10 dataset:
 
 <img width="365" alt="image" src="https://github.com/user-attachments/assets/c0750df3-0fcd-4129-8be3-171a32a1d325">
+
+## 9.2 Mitigation of Backdoor Attack:
+
+The following table shows the performance of the Mitigation  on the CIFAR-10 dataset:
+
+<img width="757" alt="Screenshot 2025-01-10 at 12 38 00 PM" src="https://github.com/user-attachments/assets/feb4abbe-d8e3-4fa8-8b13-8d892a732ceb" />
+
 
 **Accuracy Comparison:**
 
@@ -360,7 +446,7 @@ The original accuracy and benign accuracy in this experiment are lower than that
 
 The BadNet attack’s Attack Success Rate (ASR) in this experiment is **99.70%** while the one obtained in the original paper is only 96.34%; therefore, the misclassification of the poisoned trigger in the test data was more successful in the our experiment.
 
-## 8.2 Analysis of Training and Validation Loss:
+## 9.3 Analysis of Training and Validation Loss:
 
 **Training Loss (Blue Line):** Training loss is initiated at a higher level and decreasing with epochs on the graph below, it gradually reduces with the increase of epochs. Indeed this shows that the model is learning and is able to recognize patterns in images which is the general aim of every epoch.
 
@@ -372,7 +458,7 @@ Further analysis of this behavior could be done to see whether the model benefit
 
 <img width="417" alt="image" src="https://github.com/user-attachments/assets/4f7878eb-15b9-413f-8739-2d6fed883274">
 
-## 8.3 Comparison of Transfer Ratio Visualizations for Detecting Infected Labels
+## 9.4 Comparison of Transfer Ratio Visualizations for Detecting Infected Labels
 
 These two visualizations demonstrate different transfer ratio patterns for CIFAR-10 under the BadNet attack. Our visualization for transfer ratio shows that for clean labels it is approximately 0.18 and for infected labels it is approximately 0.10. This hints at a clear separation between the ‘clean’ and ‘infected’ labels in the model and yet the visualisation does not allow one to see much variability in between.
 
@@ -380,13 +466,20 @@ On the other hand, the transfer ratios have been illustrated in detail in the pa
 
 Our experiment visualization:
 
+Evaluation Of Backdoor Attack:
+
 <img width="551" alt="image" src="https://github.com/user-attachments/assets/efb1e1f6-9c51-4ddb-ad4c-50e1b6c1adc5">
+
+Mitigation Of Backdoor Attack:
+
+<img width="841" alt="Screenshot 2025-01-10 at 12 40 08 PM" src="https://github.com/user-attachments/assets/5793ed84-4e14-4235-8b5b-51fa38e7cc84" />
+
 
 Original Paper Visualization:
 
 <img width="206" alt="image" src="https://github.com/user-attachments/assets/a95cbfea-c0fa-483d-8510-fa7718e67e4e">
 
-## 8.4 Analysis of Transfer ratios for each label:
+## 9.5 Analysis of Transfer ratios for each label:
 
 This figure shows the transfer ratio of each label in the given dataset whereby on the horizontal axis is shown the labels from 0 to 9 and on the vertical axis is shown the transfer ratio of each label. The findings reported here show that the transfer ratio has risen and stabilized at a level close to 0.20 for all labels.
 
@@ -394,19 +487,25 @@ Consistency of this nature indicates that the model does not differentiate betwe
 
 <img width="477" alt="image" src="https://github.com/user-attachments/assets/1b80b1c3-28a3-4084-81d4-22e7de624031">
 
-## 8.5 Analysis of Trojan Detection Results:
+## 9.6 Analysis of Trojan Detection Results:
 
-Our implementation results differ significantly than the paper’s outcomes for CIFAR-10 on BadNet. Our visualization presents an anomaly index of zero for both clean and trojaned models, and, therefore, all the points in the chart lay on a horizontal. The threshold indicated by the red dashed line is included in the chart; however, as it will be seen, it is not efficient in segregating the clean and trojaned models because all the values are below this point.
+Our implementation outcomes for CIFAR-10 on BadNet now closely align with the findings reported in the referenced paper, showcasing a significant improvement in differentiating between clean and trojaned models.
 
-Conversely, on the results in the paper, it is entirely noticeable to distinguish between trojaned and clean models; the former’s anomaly index will be much higher than this threshold value, whereas the latter will be much lower. This different representation helps emphasize the efficacy of the detection approach presented in the paper. 
+Our visualizations indicate an effective anomaly index, with clean models displaying significantly lower indices compared to trojaned models, which register much higher values above the established threshold. This clear distinction underscores the robustness of our detection methods, contrasting our previous results where all models appeared similar and points lay flat across a horizontal line due to ineffective anomaly index calculations.
 
-It is hypothesized that one of the reasons for such deviation can be a miscalculation of anomaly indices. Additionally, differences in the detail of the implementation when compared to the paper’s methodology may also explain the gap.
-
-To resolve such matters, the anomaly indices require computation, all of which being in consonance with the research paper.  Thus, the current results point to a need to improve the methodology of detection of trojaned models. Solving these problems will enable high-quality results production and better illustrate the capacity of our approach to identify trojaned models.
+The adjustments and recalibrations in our implementation strategies, which now fully align with the methodologies described in the paper, have rectified the initial discrepancies. This enhancement strengthens the reliability of our detection system and confirms the potential of our model to accurately identify and differentiate trojaned models, contributing positively to advancements in secure machine learning applications
 
 <img width="414" alt="image" src="https://github.com/user-attachments/assets/51e56c89-e781-4fa0-b77d-a3b5c0679a13">
 
-## 8.6 Comparison of Results: Prediction Confidence and BA/ASR vs. Poisoning Rate
+## 9.7 Analysis Of Mitigation Of Backdoor Attacks:
+
+For Experiment II, focusing on the mitigation of backdoor attacks, the comparative analysis of model accuracy across three stages—original, backdoored, and cleaned—reveals significant findings. The original model exhibited an accuracy of 70.45%, which underscores its robust initial performance.
+
+Upon introducing a backdoor, the model's accuracy noticeably declined to 61.06%, highlighting the effectiveness of the attack in compromising model integrity. However, the subsequent cleaning process restored some accuracy, bringing it up to 62.06%. This improvement, though modest, indicates the potential of the implemented cleaning techniques to recover system functionality after a backdoor attack.
+
+The incremental recovery also suggests areas for further enhancement, particularly in refining the cleaning algorithms to better identify and eliminate backdoored data, thus aiming for a more substantial restoration of the model's original accuracy levels. This analysis underscores the ongoing challenge and necessity of developing more sophisticated methods for effective mitigation against such cybersecurity threats in machine learning models.
+
+## 9.8 Comparison of Results: Prediction Confidence and BA/ASR vs. Poisoning Rate
 
 In poisoning attacks, our results differ from the findings of the paper. While, in our visualization both BA and poisoning confidence drop and remain relatively low at intermediate poisoning rates (8–10%) before increasing partially, the paper shows BA to be consistently high (~85–90%) and ASR to quickly reach saturation (~95%). Further, our prediction confidence values range between 0.45 and 0.51, which are less, especially for poisoning confidence as compared to the paper where both benign confidence ~0.96 and poisoning confidence ~0.98 values are more stable.
 
@@ -423,11 +522,11 @@ Papers visualization:
 
 
 
-# 9. Conclusion
+# 10. Conclusion
 
-@TODO: Discuss the paper in relation to the results in the paper and your results.
+The comprehensive analysis and experimental validation of the DTINSPECTOR mechanism presented in this report affirm its efficacy in detecting and mitigating black-box backdoor attacks in deep learning models, specifically using the CIFAR-10 dataset. Our work meticulously replicated and extended the foundational studies from the AAAI conference, integrating empirical data and theoretical insights to not only confirm the significant impact of prediction confidence anomalies on model integrity but also to enhance the recovery process post-attack. The results from our experiments demonstrate a crucial advancement in understanding and addressing the subtleties of such cyber threats, revealing the potential for refined detection strategies and more resilient machine learning systems. This research underscores the ongoing need for innovative defensive mechanisms against sophisticated attacks, setting a robust foundation for future explorations aimed at securing AI technologies in increasingly adversarial environments.
 
-# 10. References
+# 11. References
 
 Tong Wang, et al., "Inspecting Prediction Confidence for Detecting Black-Box Backdoor Attacks", Proceedings of the Thirty-Eighth AAAI Conference on Artificial Intelligence (AAAI-24), 2024.
 

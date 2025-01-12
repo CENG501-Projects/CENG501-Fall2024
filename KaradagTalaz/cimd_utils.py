@@ -4,9 +4,89 @@ import torch
 from torch.utils.data import Dataset
 from torchvision import transforms
 from copy import deepcopy
+import torch_dct as dct
+import jpegio as jio
+
 file_paths = ['../CIMD/CIMD-R/dir_copy.txt',
               '../CIMD/CIMD-R/dir_remove.txt',
               '../CIMD/CIMD-R/dir_splicing.txt',]
+
+def compute_recompression_coefficients(Q0, q, k=7):
+    Qk = deepcopy(Q0)
+    Q_list = [Qk]
+    
+    for _ in range(k):
+        Dk = Qk * q
+        Bk = dct.idct_2d(Dk)
+        Ik1 = torch.round(Bk).clip(0, 255)
+        DCT_Ik1 = dct.dct_2d(Ik1)
+        Qk1 = DCT_Ik1 / q
+        Qk1 = torch.round(Qk1)
+        
+        Qk = Qk1
+        Q_list.append(Qk)
+        
+    return Q_list
+
+def extract_y_channel_dct_and_q_matrix(image_path, device="cuda"):
+    jpeg_image = jio.read(image_path)
+    Q0 = jpeg_image.coef_arrays[0]
+    print("Q0in utils: ", Q0)
+    print("type of Q0in utils: ", type(Q0))
+    
+    q_matrix = jpeg_image.quant_tables[0]
+    print("q_matrix in utils: ", q_matrix)
+    print("type of q_matrix in utils: ", type(q_matrix))
+    
+    h_blocks = Q0.shape[0] // 8
+    w_blocks = Q0.shape[1] // 8
+    q = np.tile(q_matrix, (h_blocks, w_blocks))
+    
+    Q0_tensor = torch.tensor(Q0, dtype=torch.float32).to(device)
+    q_tensor = torch.tensor(q, dtype=torch.float32).to(device)
+    
+    return Q0_tensor, q_tensor
+
+
+def convert_to_binary_volume(Q0_tensor, T=20):
+    Q0_clipped = torch.clamp(Q0_tensor, min=-T, max=T)
+    Q0_abs = torch.abs(Q0_clipped).long()
+    
+    H, W = Q0_abs.shape
+    binary_volume = torch.zeros((T + 1, H, W), dtype=torch.uint8)
+    
+    binary_volume = torch.nn.functional.one_hot(Q0_abs.view(-1), num_classes=T + 1)
+    binary_volume = binary_volume.view(H, W, T + 1).permute(2, 0, 1)
+    
+    return binary_volume.float()
+
+def compute_residual_dct(Q_list):
+    R = torch.zeros_like(Q_list[0])
+    for i in range(1, len(Q_list)):
+        R += (Q_list[i] - Q_list[i - 1]) / len(Q_list)
+    return R
+
+
+def reshape_dct_blocks(tensor):
+    
+    batch_size, H, W = tensor.shape
+    assert H % 8 == 0 and W % 8 == 0, "Height and Width must be multiples of 8."
+    
+    tensor = tensor.unfold(1, 8, 8).unfold(2, 8, 8)
+    
+    tensor = tensor.contiguous().view(batch_size, -1, 8, 8)
+    tensor = tensor.view(batch_size, -1, 64)
+    
+    
+    num_blocks_h = H // 8
+    num_blocks_w = W // 8
+    tensor = tensor.view(batch_size, num_blocks_h, num_blocks_w, 64)
+    
+    return tensor 
+
+image_to_tensor =   transforms.Compose([
+                        transforms.ToTensor()
+                    ])
 
 def get_io_paths(file_paths = file_paths):
     input_paths = []
@@ -33,16 +113,16 @@ image_to_tensor =   transforms.Compose([
                         ])
 
 def show_rgb_tensor(tensor):
-    np_img = tensor.permute(1, 2, 0).numpy()  # Convert to HWC format
-    np_img = (np_img * 255).astype(np.uint8)  # Convert to uint8
+    np_img = tensor.permute(1, 2, 0).numpy()  #! to HWC
+    np_img = (np_img * 255).astype(np.uint8)  #! to uint8
 
     pil_image = Image.fromarray(np_img)
     pil_image.show()
     
     
 def show_gs_tensor(tensor):
-    np_img = tensor.permute(1, 2, 0).detach().numpy()  # Convert to HWC format
-    np_img = (np_img * 255).astype(np.uint8)  # Convert to uint8
+    np_img = tensor.permute(1, 2, 0).detach().numpy()  #! to HWC format
+    np_img = (np_img * 255).astype(np.uint8)  #! to uint8
     np_img = np_img.squeeze()
     pil_image = Image.fromarray(np_img, mode='L')
     pil_image.show()
@@ -85,7 +165,7 @@ def logits_to_preds(tensor):
     return tensor_
 
 def get_pixelwise_accuracy(y_true, y_pred):
-    # flatten tensors
+    #! flatten tensors
     y_true_ = logits_to_preds(y_true).view(-1)
     y_pred_ = logits_to_preds(y_pred).view(-1)
     correct = torch.sum(y_true_ == y_pred_)
@@ -96,15 +176,6 @@ def get_pixelwise_accuracy(y_true, y_pred):
 
 
 def calculate_pixel_f1(y_true, y_pred, eps=1e-8, threshold=0.5):
-    """    
-    Args:
-        prediction (torch.Tensor):  (B, 1, H, W)
-        target (torch.Tensor):  (B, 1, H, W)
-        eps (float):
-        threshold (float):
-    Returns:
-        torch.Tensor: 
-    """
     prediction = logits_to_preds(y_pred).view(-1)
     target = logits_to_preds(y_true).view(-1)
     
@@ -113,16 +184,12 @@ def calculate_pixel_f1(y_true, y_pred, eps=1e-8, threshold=0.5):
     if target.min() >= 0 and target.max() <= 1:
         target = (target > threshold).float()
         
-    
     true_positives = torch.sum(prediction * target)
     false_positives = torch.sum(prediction * (1 - target))
     false_negatives = torch.sum((1 - prediction) * target)
     
     precision = true_positives / (true_positives + false_positives + eps)
-    
     recall = true_positives / (true_positives + false_negatives + eps)
-    
-    
     f1 = 2 * (precision * recall) / (precision + recall + eps)
     
     return f1.item()

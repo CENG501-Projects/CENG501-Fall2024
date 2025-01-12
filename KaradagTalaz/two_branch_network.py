@@ -3,8 +3,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 import timm
 from typing import Optional, List, Tuple
-from jpeg_artifacts_module import CompressionArtifactsLearning
+from jpegModule import JpegArtifactLearningModule
 from aspp_module import ASPP
+import numpy as np
+from cimd_utils import *
 
 class ChannelAttention(nn.Module):
     def __init__(self, f_n_channel, f_n1_channel, reduction_ratio=4):
@@ -54,12 +56,12 @@ class TwoBranchNetwork(nn.Module):
         self.c3 = c3
         self.c4 = c4
         
-        self.rgb_hrnet = timm.create_model('hrnet_w18', pretrained=True)
+        self.rgb_hrnet = timm.create_model('hrnet_w18', pretrained=True, rgb_path = True)
         self.rgb_hrnet.eval()
         for param in self.rgb_hrnet.parameters():
             param.requires_grad = False 
 
-        self.freq_stream = CompressionArtifactsLearning()
+        self.freq_stream = JpegArtifactLearningModule()
         
         self.rgb_aspp = nn.ModuleList([
             ASPP(c1, c1),
@@ -140,26 +142,17 @@ class TwoBranchNetwork(nn.Module):
     def forward(
         self,
         rgb_input: torch.Tensor,
-        dct_coeffs: Optional[torch.Tensor] = None,
-        q_matrix: Optional[torch.Tensor] = None,
-        mask: Optional[torch.Tensor] = None
+        q_tensor: Optional[torch.Tensor] = None,
+        R: Optional[torch.Tensor] = None,
+        binary_volume: Optional[torch.Tensor] = None,
+        Q0: Optional[torch.Tensor] = None
     ) -> torch.Tensor:
-        """
-        Args:
-            rgb_input: RGB image input (B, 3, H, W)
-            dct_coeffs: DCT coefficients (B, H, W) or None
-            q_matrix: Quantization matrix (B, H, W) or None
-            mask: Optional mask (B, H, W)
-        Returns:
-            Final prediction mask (B, 1, H, W)
-        """
         
-        rgb_feats = self.rgb_hrnet(rgb_input)
+        rgb_feats = self.rgb_hrnet(rgb_input, rgb_path = True)
         
         a, b, c, d = rgb_feats[0], rgb_feats[1], rgb_feats[2], rgb_feats[3]
         rgb_feats = [a, b, c, d]
-        
-        
+            
         rgb_feats = [aspp(feat) for aspp, feat in zip(self.rgb_aspp, rgb_feats)]
 
         rgb_feats = self._apply_attention(
@@ -170,8 +163,40 @@ class TwoBranchNetwork(nn.Module):
         
         rgb_concat = torch.cat(rgb_feats, dim=1)
         rgb_pred = self.rgb_final(rgb_concat)
-        
-        final_pred = rgb_pred
+        if(q_tensor is not None and R is not None and binary_volume is not None and Q0 is not None):
+            h_blocks = Q0.shape[1] // 8
+            w_blocks = Q0.shape[2] // 8
+            qtable = np.tile(qtable.detach().cpu().numpy(), (h_blocks,w_blocks))
+            qtable = torch.tensor(qtable).cuda()
+            qtable = torch.squeeze(qtable,1)
+
+            Q_list = compute_recompression_coefficients(Q0, qtable, k=7)
+            R = compute_residual_dct(Q_list)
+            freq_feats = self.freq_stream(qtable, R, binary_volume)
+            freq_feats = self.hrnet(freq_feats, rgb_path=False)
+            
+            a, b, c = freq_feats[0], freq_feats[1], freq_feats[2]
+            freq_feats = [a, b, c]
+            
+            freq_feats = [aspp(feat) for aspp, feat in zip(self.freq_aspp, freq_feats)]
+            
+            freq_feats = self._apply_attention(
+                freq_feats,
+                self.freq_channel_attention,
+                self.freq_spatial_attention
+            )
+            
+            freq_concat = torch.cat(freq_feats, dim=1)
+            freq_pred = self.freq_final(freq_concat)
+            freq_pred = F.interpolate(
+                freq_pred,
+                size=rgb_pred.shape[2:],
+                mode='bilinear',
+                align_corners=False
+            )
+            final_pred = self.fuse_pred_conv(torch.cat([rgb_pred, freq_pred], dim=1))
+        else:
+            final_pred = rgb_pred
         
         final_pred = F.interpolate(
             final_pred,
@@ -181,18 +206,3 @@ class TwoBranchNetwork(nn.Module):
         )
         
         return torch.sigmoid(final_pred)
-
-if __name__ == "__main__":
-    model = TwoBranchNetwork()
-    
-    batch_size = 2
-    height, width = 256, 256  
-    
-    rgb_input = torch.randn(batch_size, 3, height, width)
-    dct_coeffs = torch.randn(batch_size, height, width)
-    q_matrix = torch.ones(batch_size, height, width)
-    mask = torch.ones(batch_size, height, width)
-    
-    # Forward pass
-    output = model(rgb_input, dct_coeffs, q_matrix, mask)
-    print(f"Output shape: {output.shape}")

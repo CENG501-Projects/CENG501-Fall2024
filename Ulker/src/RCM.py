@@ -1,10 +1,10 @@
 import torch
 import torch.nn as nn
 
-from modules.LocalFeatureExtraction import UNetFeatureExtractor
-from modules.ViewSwitching import ViewSwitcher
-from modules.ConflictFreeCoarseMatching import ConflictFreeCoarseMatchingModule
-from modules.FineMatching import FineMatching
+from src.modules.LocalFeatureExtraction import UNetFeatureExtractor
+from src.modules.ViewSwitching import ViewSwitcher
+from src.modules.ConflictFreeCoarseMatching import ConflictFreeCoarseMatchingModule
+from src.modules.FineMatching import FineMatchingModule
 
 
 # C1: Coarse features: 256
@@ -26,20 +26,33 @@ class RCM(nn.Module):
         self.unet = UNetFeatureExtractor(in_channels=3, base_channels=self.params_c2)
         self.view_switcher = ViewSwitcher(threshold = 0.5)
         self.coarse_matching = ConflictFreeCoarseMatchingModule(self.params_c1)
-        self.fine_matching = FineMatching()
+        self.fine_matching = FineMatchingModule(self.params_c1)
     
     def forward(self, img1, img2):
         # 1. Feature Extraction for 2 images
-        features1 = self.unet(img1)  # img1
-        features2 = self.unet(img2)  # img2
+        [f11, f12, f13, f14] = self.unet(img1)  # img1
+        [f21, f22, f23, f24] = self.unet(img2)  # img2
+        
+        features1 = self.merge_features(f11, f12, f13, f14)
+        features2 = self.merge_features(f21, f22, f23, f24)
         
         # 2. View Switching
-        #switched_features1, switched_features2 = self.view_switcher(features1, features2)
+        sparse_features, larger_scale_map, smaller_scale_map = self.view_switcher(features1, features2)
         
         # 3. Conflict-Free Coarse Matching
-        #coarse_matches = self.coarse_matching(switched_features1, switched_features2)
-        
+        coarse_matches, larger_scale_map, smaller_scale_map = self.coarse_matching(larger_scale_map, smaller_scale_map, sparse_features)
         # 4.  Fine Matching
-        #fine_matches = self.fine_matching(coarse_matches)
+        fine_matches = self.fine_matching(larger_scale_map.reshape(1, -1, 208, 208), smaller_scale_map.reshape(1, -1, 208, 208), coarse_matches.reshape(1, -1, 208, 208))
         
-        #return fine_matches
+        return fine_matches
+
+    def merge_features(self, f1, f2, f3, f4):
+        # Tensor'leri yeniden boyutlandır (resize)
+        f1_resized = f1.reshape((1, -1, 832, 832))
+        f2_resized = f2.reshape((1, -1, 832, 832))
+        f3_resized = f3.reshape((1, -1, 832, 832))
+
+        # Birleştirme işlemi
+        merged_tensor = torch.cat((f1_resized, f2_resized, f3_resized, f4), dim=1)
+
+        return merged_tensor

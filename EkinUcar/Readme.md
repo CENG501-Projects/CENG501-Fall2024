@@ -34,8 +34,9 @@ Local and Smooth (LaS) Attention exploits the principles of smoothness and expon
 
 $$ LAS_c(Q,K,V) = AP\left(SF\left(exp\left(-\alpha_c D_L\right) \odot \left(\frac{QK^T}{\sqrt{d_k}}\right)\right)\right)$$
 
-Architecture of LaS attention can be seen in figure below.
+Architecture of LaS attention can be seen in Figure 1.
 
+Figure 1: Architecture of LaS Attention.
 ![image](https://github.com/user-attachments/assets/d5aa4895-da99-4186-b50f-d22249d48da2)
 
 
@@ -54,8 +55,9 @@ where the ELD matrix is defined as
 
 $$ ELD = exp\left(-\alpha_c D_L\right) $$
 
-$D_L$ is the distance matrix multiplied by the causality mask ($-\alpha_c$). The distance matrix is computed as follows:
+$D_L$ is the distance matrix multiplied by the causality mask ($-\alpha_c$). The distance matrix is computed as in Figure 2.
 
+Figure 2: Distance Matrix.
 ![image](https://github.com/user-attachments/assets/ee1cb4c7-2290-4c8c-b4de-cc53777bd0d5)
 
 
@@ -77,7 +79,11 @@ Below are some of our interpretations about aspects that were unclear in the pap
 
 **(iii)** The paper doesn't explain why exponential function is used in ELD. We inferred that it is likely because the exponential decay ensures non-negativity and smooth, continuous transition of influence on attention scores as $D_L$ changes.
 
-**(iv)** By observing the figure below, we inferred that as the $\alpha_c$ value increases, the weights corresponding to distant neighbours approaches to 0. This puts more emphasis on close neighbours. 
+**(iv)** The authors of the paper build their repository upon the existing S4 repository. The S4 repository has 2 configuration files for LRA tasks, one is older, and the other is more recent. There are slight differences between them. The most important differences are seed and learning rate schedule. The value of the seed changes for different LRA tasks. The old version uses a plateau-based scheduler, ReduceLROnPlateau, and the newer version employs a cosine schedule with warm up. We preferred to use the plateau-based scheduler since it is adaptive, resource-efficient and driven by training performance, which makes it suitable for our situation. Authors state in the paper that they obtained their results by averaging over three different seed values; however, we do not have enough computational power to conduct our experiments in that way. Hence, we used seed=1112 in all of our experiments
+
+**(v)** By observing the Figure 3, we inferred that as the $\alpha_c$ value increases, the weights corresponding to distant neighbours approaches to 0. This puts more emphasis on close neighbours. 
+
+Figure 3: ELD Matrices for Different $\alpha_c$ values
 
 <img width="861" alt="image" src="https://github.com/user-attachments/assets/e929a3b0-608b-4fb7-a050-fb70edd0782a">
 
@@ -85,9 +91,30 @@ Below are some of our interpretations about aspects that were unclear in the pap
 
 # 3. Experiments and results
 
-## 3.1. Experimental setup
+## 3.1. Dataset
 
-The original paper provides the following hyperparameters for the experimental setups for different Long Range Arena (LRA) tasks:
+There are five distinct experiments conducted on five tasks of LRA Benchmark. Therefore, we begin to explain experiments by first introducing the LRA benchmark and the tasks under this benchmark.
+
+According to [3], the LRA benchmark is a systematic framework designed to evaluate the performance of Transformer models in long-context scenarios. It includes tasks for testing the ability to handle sequences ranging from 1,000 to 16,000 tokens across various modalities like text, image and spatial reasoning. The five tasks of LRA are **ListOps**, **Text Classification**, **Document Retrieval**, **Image Classification** and **Path Finder**. There is also a task named **Path Finder-X**, extending Path Finder with extreme lengths. This task is not included in the performance evaluation of Las Attention. Therefore, we suffice to explain the five of them.
+
+**(i) ListOps:** The dataset consists of sequences with a hierarchical structure and operators MAX, MEAN, MEDIAN and SUM_MOD that are enclosed by delimiters. The model needs to access all tokens and model the logical structure of the inputs in order to make a prediction.
+
+**(ii) Text Classification:** The dataset consists of text sequences at the byte or character level. The model needs to reason with compositional, unsegmented data in order to solve a meaningful real-world task.
+
+**(iii) Document Retrieval:** The dataset consists of document pairs represented at the byte or character level. The model needs to compress long sequences into representations suitable for similarity-based matching.
+
+**(iv) Image Classification:** The dataset consists of images represented as sequences of pixels. The model needs to learn the 2D spatial relations between input pixels.
+
+**(v) Path Finder:** In this task, the model needs to make a binary classification indicating whether two points are connected with a by a path.
+
+The performance of Las Attention is evaluated based on these tasks. We evaluated our implementation of LaS Attention on ListOps and Document Retrieval tasks only due to our limited time and resources.
+
+We also evaluated LaS Attention on **sMNIST** **(Sequential MNIST)**, which is a common benchmark task for time series classification. We provide details of implementation and evaluation in the next sections.
+
+
+## 3.2. Experimental setup
+
+The original paper provides the following hyperparameters for the experimental setups for different LRA tasks:
 
 Table 1: Hyperparameter Configurations
 <img width="900" alt="LRA parameters" src="https://github.com/user-attachments/assets/ad5f033b-7d65-49b5-af5a-d59dce0dd289">
@@ -102,36 +129,86 @@ The hyperparameters for the LaS attention are as follows:
 
 The authors built their experiments upon the existing S4 repository. In all experiments, they used causal transformers with 8 heads, and aligned training procedures and hyperparameters with the S4 repository. In another words, they used the default hyperparameters used in the S4 repository for the ones that are not specified in the above table. Dropout was set to 0 in all cases.
 
-We ran our first experiment on Sequential MNIST (sMNIST); however, the paper does not provide setup details for this. For this reason, we used the setup parameters of the LRA Image task with the exception of batch size and number of epochs. We reduced the batch size to 10 to not exceed the Google Colab T4 GPU RAM. We also reduced the number of epochs due to limited runtime of Google Calob. Similar to the original paper, we built our code upon the existing S4 repository. Also, we adapted the Transformer architecture from [3] to hanve more flexibility in our architecture.
+We conducted our experiments on the ListOps and Document Retrieval tasks, as indicated in Section 3.1 of the paper, using a Google Colab instance with an A100 GPU. While Google Colab provides 40GB of GPU RAM for this GPU type, we had to reduce the batch sizes to avoid exceeding the memory limit for both tasks. Additionally, we were unable to complete the full number of epochs specified in the paper due to resource constraints. Apart from these adjustments, we used the same hyperparameters and architecture settings described in the paper. Lastly, we utilized the datasets in their full size without any reductions in the training, test or validation sets.
 
-We conducted two experiments:
+The hyperparameters we adjusted to suit our setup can be observed in Table2. The number of epochs of Document Retrival task is considerably reduced compared to the setting of original paper. This is due to the fact that one epoch takes 3.5 hours with full dataset.
+
+Table 2: Batch size and epoch adjustments in our experiments
+|                     | Batch Size | Epoch|
+|---------------------|--------|----------|
+| **Listops** |    10    | 40 |
+| **Document Retrieval** |    6    | 7 | 
+
+
+For our experiments on sMNIST, the paper does not provide setup details. For this reason, we used the setup parameters of the LRA Image task with the exception of batch size and number of epochs. We reduced the batch size to 10 to not exceed the Google Colab T4 GPU RAM. We also reduced the number of epochs due to limited runtime of Google Calob. Similar to the original paper, we built our code upon the existing S4 repository. Also, we adapted the Transformer architecture from [3] to have more flexibility in our architecture.
+
+We conducted two experiments for sMNIST task:
 
 **(i)** First experiment uses the whole dataset and the model is trained for two epochs.
 
 **(ii)** Second experiment uses 1/20 of the dataset and the model is trained for 80 epochs.
 
 
-## 3.2. Running the code
+## 3.3. Running the code
 
-@TODO: Explain your code & directory structure and how other people can run it.
+**For LRA tasks:**  
 
-## 3.3. Results
+Download the S4 repository at [this link](https://github.com/state-spaces/s4/tree/main).
 
-**1st Experiment (Full sMNIST Dataset and 2 Epochs):**
+Download the LRA benchmark following the steps at [this link](https://github.com/state-spaces/s4/tree/main/src/dataloaders). Be careful about the directory structure.
 
-Figure 1: Train and Validation loss for sMNIST   
+Change the ```transformer.py``` under:
+
+```plaintext
+s4-main/
+├── src/
+│   ├── models/
+│       ├── baselines/
+|            ├── transformer.py
+```
+
+with our provided ```transformer.py```.
+
+Put the configuration files provided under ```/config``` under the ```/old``` directory: 
+
+```plaintext
+s4-main/
+├── configs/
+│   ├── experiment/
+│       ├── lra/
+|            ├── old/
+```
+
+Then, you can follow the notebooks we provided under ```codes/``` to train LaS Attention.
+
+**For sMNIST task:**  
+
+You can simply run the provided python code ```LaSattn_sMNIST.py``` as below:
+
+python LaSattn_sMNIST.py
+
+**Trained Models:**  
+
+We couldn't upload the trained models due to large file size.
+
+
+## 3.4. Results
+
+### **1st Experiment (Full sMNIST Dataset and 2 Epochs):**
+
+Figure 4: Train and Validation loss for sMNIST   
 
 ![image](https://github.com/user-attachments/assets/fdb9e367-402d-4029-ba85-b49bcb20a4da)
 
 
-**2nd Experiment (1/20 sMNIST Dataset and 80 Epochs):**
+### **2nd Experiment (1/20 sMNIST Dataset and 80 Epochs):**
 
-Figure 2: Train and Validation loss for small sMNIST 
+Figure 5: Train and Validation loss for small sMNIST 
 
 ![image(2)](https://github.com/user-attachments/assets/d34e6291-61c8-41d5-bae4-e7c61f1da04f)
 
 
-Table 2: Training and validation accuracies for our implementation
+Table 3: Training and validation accuracies for our implementation
 |                     | Small (1/20) sMNIST | Full sMNIST|
 |---------------------|--------|----------|
 | **Training** |    13.66    | 10.348 |
@@ -139,25 +216,81 @@ Table 2: Training and validation accuracies for our implementation
 
 <br><br>
 
-Figure 3: Original paper's accuracy results  
+Figure 6: Original paper's accuracy results  
 
 <img width="350" alt="Papers_MNIST_results" src="https://github.com/user-attachments/assets/ad2ce844-7860-4b1b-9871-3cfcb8541344">
 
 <br><br>
 
-**Discussion:**  
+**Discussion for sMNIST Task:**  
 
 Our accuracy was much lower compared to the original paper. This could be because we used the setup for the LRA Image task, while the original paper might have used different settings for the sMNIST task. A smaller batch size might have also impacted the accuracy. It's possible that we made a mistake in processing or interpreting the model's output. This might include errors in how predictions were extracted, how metrics were calculated, or how data was handled in post-processing. Lastly, we couldn’t finish the first experiment with the full dataset because of Google Colab's runtime limits. All of them might be a reason of our low accuracy.
 
+### **3rd Experiment (Full LRA Listops Dataset, 40 Epochs):**
+
+The loss and accuracy results for this experiment are shown below. The gaps between segments are due to saving a checkpoint and continuing training from that model.  
+
+Figure 7: Loss Graphs for LRA Listops Benchmark
+
+![loss](https://github.com/user-attachments/assets/7bc84ff3-825a-43cd-a7a8-d8e3fb7e083e)  
+
+
+Figure 8: Accuracy Graphs for LRA Listops Benchmark
+
+![accuracy](https://github.com/user-attachments/assets/798d52b5-d198-4d20-b91d-9ff7676af439)  
+
+We choose our best model based on the validation accuracy score. The best model's performance can be observed in Table-4.
+
+Table 4: Performance of the best model for Listops task
+|                     | Accuracy | Loss|
+|---------------------|--------|----------|
+| **Training** |    32.422    | 1.938 |
+| **Validation** |  36.500    | 1.887 | 
+| **Test** |    37.000    |  1.891  |  
+
+
+### **4th Experiment (Full LRA Document Retrieval Dataset, 7 Epochs):**
+
+The accuracies we obtained for Document Retrieval task can be seen in Figure 9. The x-axis shows the global steps and y-axis shows the accuracy for each epoch. Accuracies are registered per epoch.
+
+Figure 9: Train, Test and Validation Accuracies for Document Retrieval Task
+![aan_acc](https://github.com/user-attachments/assets/c612c459-1e00-4076-9bfe-058cfc3b9397)
+
+The losses we obtained for Document Retrieval task can be seen in Figure 10. The x-axis shows the global steps and y-axis shows the loss for each epoch. Losses are registered per epoch.
+
+Figure 10: Train, Test and Validation Losses for Document Retrieval Task
+![aan_loss](https://github.com/user-attachments/assets/3809f3ca-1a42-4564-a87b-486309640ef6)
+
+We choose our best model based on the validation accuracy score. The best model's performance can be observed in Table-5.
+
+Table 5: Performance of the best model for Document Retrieval task
+|                     | Accuracy | Loss|
+|---------------------|--------|----------|
+| **Training** |    54.208    | 0.687 |
+| **Validation** |    55.041    | 0.682 | 
+| **Test** |    54.743    | 0.685 |  
+
+**Discussion for LRA Tasks:**  
+
+Compared to the original paper's results, our accuracy was low and had some fluctuations most likely due to having small batch sizes with respect to our learning rate. Despite this, there is some improvement as epochs progress in both experiments. There doesn't seem to be major overfitting or underfitting issues. 
+
+
 # 4. Conclusion
 
-@TODO: Discuss the paper in relation to the results in the paper and your results.
+In this project, we reproduced the paper "Viewing Transformers Through the Lens of Long Convolutions Layers" and evaluated the proposed Local and Smooth Attention (LaS-Attention) mechanism on the sMNIST task and on select Long Range Arena (LRA) tasks. Our implementation could not replicate the results reported in the paper. This discrepancy is likely a result of limited batch size and epochs due to computational resource limitations. The other hyperparameters (learning rate etc.) specified in the paper may have been suboptimal for our batch size. 
+
+Despite implementing key components of the LaS-Attention mechanism, certain assumptions and missing details (e.g., padding strategies, initialization details) might also have impacted our results. Some discrepancies in our results could also be caused by the preprocessing and experimental configurations inherited from the S4 repository (that were modified but not explained in the original paper).
+
+While our reproduction did not match the original paper's results, we hope that it is a meaningful contribution to the community by providing a clear and detailed implementation of LaS-Attention. Our work highlights the challenges and considerations in reproducing complex deep learning models and serves as a foundation for future explorations and refinements in this area.
+
 
 # 5. References
 
 [1] Zimerman, I., & Wolf, L. (2024). Viewing Transformers Through the Lens of Long Convolutions Layers. Proceedings of Machine Learning Research, 235, 62815-62831.  
-[2] Press, O., Smith, N. A., & Lewis, M. (2021). Train short, test long: Attention with linear biases enables input length extrapolation. arXiv preprint arXiv:2108.12409.
-[3] https://github.com/jadore801120/attention-is-all-you-need-pytorch/tree/master
+[2] Press, O., Smith, N. A., & Lewis, M. (2021). Train short, test long: Attention with linear biases enables input length extrapolation. arXiv preprint arXiv:2108.12409. 
+[3] Tay, Yi, et al. "Long range arena: A benchmark for efficient transformers." arXiv preprint arXiv:2011.04006 (2020).  
+[4] https://github.com/state-spaces/s4  
+[5] https://github.com/jadore801120/attention-is-all-you-need-pytorch/tree/master
 
 # Contact
 

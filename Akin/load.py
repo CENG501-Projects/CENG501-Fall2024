@@ -4,68 +4,49 @@ def load_data(file_name):
     with open(file_name, 'r') as file:
         data = file.read().splitlines()
 
-    max_frame_id = 0
     loaded_data = []
+    max_frame_id = 0
 
     for item in data:
-        frame_id, track_id, x, y, w, h, c, _, _ = list(map(float, item.split(',')))
+        frame_id, track_id, x, y, w, h, c, _, p = list(map(float, item.split(',')))
         frame_id = int(frame_id)
         track_id = int(track_id)
         c = int(c)
+        p = int(p)
 
-        if c != 1:
+        if c != 1: # ignore non person objects
             continue
 
-        loaded_data.append([frame_id, track_id, x, y, w, h])
+        loaded_data.append([frame_id, track_id, x, y, w, h, p])
 
-        if max_frame_id < frame_id:
+        if frame_id > max_frame_id:
             max_frame_id = frame_id
 
     data_grouped_by_track = dict()
-
     for item in loaded_data:
-        frame_id, track_id, x, y, w, h = item
+        frame_id, track_id, x, y, w, h, p = item
 
         if track_id not in data_grouped_by_track:
-            data_grouped_by_track[track_id] = [None] * max_frame_id
+            data_grouped_by_track[track_id] = []
 
-        data_grouped_by_track[track_id][frame_id - 1] = [x, y, w, h]
+        data_grouped_by_track[track_id].append([frame_id, x, y, w, h])
 
-    for track_id, data in data_grouped_by_track.items():
-        for i in range(len(data)):
-            if data[i] is None:
-                for j in range(i + 1, len(data)):
-                    if data[j] is not None:
-                        data[i] = data[j]
-                        break
-
-            if data[i] is None:
-                for j in range(i - 1, -1, -1):
-                    if data[j] is not None:
-                        data[i] = data[j]
-                        break
-
-    for track_id, data in data_grouped_by_track.items():
-        for item in data:
-            if item is None:
-                raise Exception("None found")
-
-    tracklets = [[] for _ in range(max_frame_id - 2)]
-    gt_offsets = [[] for _ in range(max_frame_id - 2)]
+    inputs = [[] for _ in range(max_frame_id - 1)]
+    outputs = [[] for _ in range(max_frame_id - 1)]
 
     for track_id, data in data_grouped_by_track.items():
         for i in range(len(data) - 2):
-            x1, y1, w1, h1 = data[i]
-            x2, y2, w2, h2 = data[i + 1]
-            x3, y3, w3, h3 = data[i + 2]
+            _, x1, y1, w1, h1 = data[i]
+            frame_id, x2, y2, w2, h2 = data[i + 1]
+            _, x3, y3, w3, h3 = data[i + 2]
 
-            tracklets[i].append((x2, y2, w2, h2, x2 - x1, y2 - y1, w2 - w1, h2 - h1))
-            gt_offsets[i].append([x3 - x2, y3 - y2, w3 - w2, h3 - h2])
+            inputs[frame_id - 1].append([track_id - 1, x2, y2, w2, h2, x2 - x1, y2 - y1, w2 - w1, h2 - h1])
+            outputs[frame_id - 1].append([x3, y3, w3, h3])
 
-    tracklets = list(map(lambda x: torch.tensor(x), tracklets))
-    gt_offsets = list(map(lambda x: torch.tensor(x), gt_offsets))
+    inputs = list(map(lambda x: torch.tensor(x), inputs[1:]))
+    outputs = list(map(lambda x: torch.tensor(x), outputs[1:]))
 
-    return tracklets, gt_offsets
+    return [inputs, outputs]
 
 if __name__ == "__main__":
-    load_data("gt.txt")
+    load_data("gt1.txt")

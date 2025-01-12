@@ -170,21 +170,167 @@ In the paper, some of the approaches were not clearly mentioned. Here is what we
 
 - Instructions on how ERM Classifier is constructed was left vague. We have checked the supplementary material, and we have seen different networks are used for different datasets, and we decided that aforementioned ERM Classifier is actually a network trained on a Cross Entropy loss objective to ensure empirical risk minimization.
 - Gain over ERM in percentage was frequently used in their graphics, but the authors did not specify how that measure is actually calculated. We ran the experiments at our CIFAR-100 implementation with WRN28-10 network, and we have compared the accuracies. We have seen that gains over ERM is calculated by dividing the current model's accuracy result by the ERM model's accuracy result, and multiply by -1 if the nominator is less than the denominator.
-  
+- Splitting generation method for LRW-Opt was not clearly demonstrated. The authors has specify that the margins produced by the splitter network are classified by its value being lower than 0.5, which ensures the validation set values are comprised of "Hard" instances. This was not the case for every epoch, the produced margin values might not always follow this pattern, and validation set was not containing any instances. For these cases, we added random splitting to fill the validation set to the amount of the specified delta.
+
 Other than these parts, paper was quite detailed and clear about its methods and approaches, proving every mathematical aspect they used and explaining every method they implemented.
 
-## **3\. Experiments and Results**
+# **3. Experiments and Results**
+
+MOLERE (Meta Optimization of the Learned Reweighting) network consists of 3 subnetworks, which are Meta Network, Splitter Network and finally the classifier network and we were able to implement MOLERE network with all of its subcomponents on CIFAR-100, Cats and Dogs, Aircraft and Stanford Cars datasets. This made us see MOLERE performance across diverse tasks and handling varied datasets and splitting criteria, paving the way for further enhancements in meta-learning and reweighting strategies. Additionally, we implented LRW-hard, LRW-easy and LRW-random techniques by choosing appropriate validation datasets and usin train twice heuristics on the previosuly stated datasets. 
+
 ## **3.1. Experimental Setup**
-## **3.2. Running the Code**
+
+### Training Setup
+
+For the classifier, we employed Stochastic Gradient Descent (SGD) with the following hyperparameters:
+
+- **Batch Size**: 32 (except for CIFAR-100, where it was 64)
+- **Image Size**: 224×224 (or 32×32 for CIFAR-100)
+- **Learning Rate**: 0.1, decaying by a factor of 10 every 50 epochs
+- **Momentum**: 0.9
+- **Weight Decay**: 10^{-4}
+
+We have used a SGD optimizer and a fixed learning rate of 10^{-3} to train our meta and splitter networks. We run each of our models for 100 epochs while the first 25 epochs are used to warm-up on a randomly selected dataset split. The splitter and meta-network were then modified every five classifier updates (Q=5).
+
+### Dataset Splitting and Validation
+
+Datasets were divided into training and validation sets using a delta value of mostly 0.1 we take into account the numbers given in the supplementary part of the article. This guaranteed that no more than 10% of the training data was used for validation. Splitting decisions were based on the classifier's difficulty requirements. Only cases with Θ(x,y)<0.5 were included in the validation set. This increased the likelihood of including harder cases, which aligned with the LRW-hard technique's aims.
+
+## **3.2 Running the Code**
+
+You can download the prerequisites from the requirements.txt file as follows:
+
+pip install –r requirements.txt
+
+Our trained models can be found in the following lists. We also added .pkl files for some datasets, which includes the result dictionary to be used for the visualization.
+
+**Trained Models**
+| Dataset Name | Link                                                                        |
+|--------------|-----------------------------------------------------------------------------|
+| `catsdogs`   | https://drive.google.com/file/d/15qYo1-D1llvmc0eXohLavYBcpPuDo_Oj/view      | 
+| `cars`       | https://drive.google.com/file/d/1tNO5-1Cn2xd2OCJbN1n4FRWvpXglsuOe/view      | 
+| `cifar100`   | https://drive.google.com/file/d/1K-vH9LxXB5vY7dSujnA2bD6cnDbS3lIs/view      |
+| `airplane`   | https://drive.google.com/file/d/1fNVQgjevbjJkroFU6WWOzjWgwHIDV52u/view      |
+| `DR`         | https://drive.google.com/file/d/1q1a3hLSLKqRwB4QjBTaVIPqnT8zJUk-3/view      |
+
+
+**Key Arguments**
+| Argument                | Type   | Default                                     | Description                                         |
+|-------------------------|--------|---------------------------------------------|-----------------------------------------------------|
+| `--id-datasets`         | str    | "CatsDogs Airplane Cars cifar100 DR"        | Names of in-distribution datasets for training and evaluation. |
+| `--out-datasets`        | str    | ""                                          | Names of out-of-distribution datasets.             |
+| `--use-id-pickle-file`  | bool   | False                                       | Use an existing results file for in-distribution datasets. |
+| `--use-ood-pickle-file` | bool   | False                                       | Use an existing results file for out-of-distribution datasets. |
+| `--use-existing-erm`    | bool   | False                                       | Use an existing ERM model if available.            |
+| `--use-existing-opt`    | bool   | False                                       | Use an existing LRW-Opt model if available.        |
+| `--use-existing-hard`   | bool   | False                                       | Use an existing LRW-Hard model if available.       |
+| `--use-existing-easy`   | bool   | False                                       | Use an existing LRW-Easy model if available.       |
+| `--use-existing-random` | bool   | False                                       | Use an existing LRW-Random model if available.     |
+| `--batch-size`          | int    | 64                                          | Batch size for training.                           |
+| `--epochs`              | int    | 100                                         | Number of training epochs.                         |
+
+The dataset names are not case sensitive.
+
+**Processed Dataset Names**
+| Dataset Name | Dataset Source / Library                      | Notes                                                        |
+|--------------|-----------------------------------------------|--------------------------------------------------------------|
+| `catsdogs`   | OxfordIIITPet (from torchvision.datasets)     | Downloads data automatically.                                |
+| `cars`       | StanfordCars (from torchvision.datasets)      | Requires manual download from Kaggle (via Kaggle API).       |
+| `cifar100`   | CIFAR100 (from torchvision.datasets)          | Automatically downloaded from torchvision's dataset library. |
+| `airplane`   | FGVCAircraft (from torchvision.datasets)      | Automatically downloaded.                                    |
+| `DR`         | diabetic_retinopathy (from huggin face)       | Requires manual download from Huggin Face (via API).         |
+
+**Example Commands:**
+
+1) Run with Default Parameters:
+   ```bash
+   python main.py
+
+2) Custom Datasets and Parameters:
+   ```bash
+   python main.py --id-datasets "CatsDogs cifar100" --batch-size 64 --epochs 100 --use-existing-erm True --use-existing-opt True --use-ood-pickle-file True
+
+3) Out-of-Distribution Processing:
+   ```bash
+   python main.py --out-datasets "iwildcam" --use-ood-pickle-file True
+
+Dataset names are not case-sensitive.
+
 ## **3.3. Result**
-We have conducted the LRW-Hard, LRW-Easy and LRW-Random calculations and compared them over ERM baseline. We have conducted the experiment on CIFAR-100 dataset with Wide-ResNet28-10 implementation that we have provided. Here is our resulting graph:
 
-![CIFAR-100 Gains](https://github.com/user-attachments/assets/f6fdef3a-b743-4713-83dd-26a54df68554)
+We have investigated two of the claims tha the paper proposed, which are the following:
+
+1 - Hard instances result in higher accuracies with respect to Easy instances, and Easy instances would result higher with respect to random validation set distribution, while the proposed Meta-learning based learned reweighting outperforms all other instance distribution techniques.
+
+2 - LRW-Hard has a margin maximization effect.
+
+## **3.3.1. Accuracy Performance Comparison**
+
+We have extracted the following comparisons for LRW-Hard, LRW-Easy, LRW-Random, and LRW-Opt for the CIFAR-100, OxfordIITPet, FGVCAircraft, Stanford Cars, and Diabetic Retinopathy datasets:
+
+### CIFAR-100 Accuracies
+![CIFAR-100 Accuracies](https://github.com/Sinasi3/Sinasi3/blob/f620832b017d3f75226b3e4164f35878ac918463/CIFAR.PNG)
+
+### OxfordIIITPet Accuracies
+![OxfordIITPet Accuracies](https://github.com/Sinasi3/Sinasi3/blob/f3a75ba52049e2d450195fee2bc328ed32c2e40b/Cats.PNG)
+
+### FGVCAircraft Accuracies
+![FVGAircraft Accuracies](https://github.com/Sinasi3/Sinasi3/blob/f3a75ba52049e2d450195fee2bc328ed32c2e40b/Aircraft.PNG)
+
+### Stanford Cars Accuracies
+![Stanford Cars Accuracies](https://github.com/Sinasi3/Sinasi3/blob/f3a75ba52049e2d450195fee2bc328ed32c2e40b/Cars.PNG)
+
+### Diabetic Retinopathy Accuracies
+![Diabetic Retinopathy Accuracies](https://github.com/Sinasi3/Sinasi3/blob/90969d020c9dedc6134b69e798a001f5d3df1c7f/DR.PNG)
+
+---
+
+### Observations
+
+-To start with, we observed that the LRW-Opt method came superior to all other methods in every dataset other than Diabetic Retinopathy. We believe the reason for this exception is because DR dataset is our biggest dataset but also the samples were really similar so the splitter network constraint of choosing hard samples effected its performance poorly and this lead to LRW-Hard perform better than LRW-Opt. 
+
+-The paper claims that the LRW-Hard would be the next highest accuracy in the comparison. We have seen this kind of relation in all the datasets except Diabetic Retinopathy. This aligns with the idea of choosing only the hardest sample for validation set increases the accuracy of the model.
+
+-Just like LRW-Hard, LRW-Easy satisfied the paper's suggestions. 
+
+-LRW-Random didn't perform the way the article suggested in every case because of its stochastic nature. In Cats and Dogs, LRW-Random gave better results than LRW-Easy, but in other datasets, its performance mostly aligned with the paper's suggestion of LRW-Easy > LRW-Random.
 
 
-## **9.References**
+    
+## **3.3.2. Margin Maximization Effect**
 
-\[1\] Yujia Bao and Regina Barzilay. Learning to split for automatic bias detection. arXiv preprint arXiv:2204.13749, 2022\. 4, 11, 12
+### Margin Delta
+![Margin Maximiziaton](https://github.com/Sinasi3/Sinasi3/blob/f620832b017d3f75226b3e4164f35878ac918463/Margin_Diff.PNG)
 
+### Margin Gain
+![ERM Buckets](https://github.com/Sinasi3/Sinasi3/blob/5506aa0fe4de4fc55428efa90eeba89f23418e81/Margin_Buckets_New.png)
+
+---
+
+### Observations
+
+-We examined the Margin Maximization impact using the CIFAR-100 dataset. We received the test margin results for the LRW-Easy, LRW-Hard, and ERM procedures. 
+
+-The Margin Delta graph's mean is higher than zero and the instance weights are right-skewed, which means that the LRW-Hard classifier proves higher margins than ERM Classifier, and LRW-Hard classifier tends to produce higher margin results in overall. We can say that the proposed Learned Reweighting method improves margins of learned classifiers.
+
+-The LRW-easy and LRW-Hard were also clearly distinguished and LRW-Hard successfully outperforms LRW-Easy in terms of margin maximization effect as demonstrated in the Margin Gain graph in all buckets by LRW-Hard buckets consistently showing higher values. The graph was also supported with standard error mean to show how variant the distribution is for each bucket, which was very low for all buckets.
+
+# **4. Conclusion**
+We have provided a reproduction for the paper "Improving generalization via meta-learning on hard samples. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition" bu Jain et al. We have briefly introduced their method and provided an implementation. We have investigated the 2 claims of the paper, which were the in-performance distributions and margin maximization effect of their proposed methods. We have found that except for Diabetic Retinopathy dataset, the authors' claims hold and the accuracy values mostly followed the pattern LRW-Opt > LRW-Hard > LRW-Easy > LRW-Random. Margin maximization effect was also successfully demonstrated on CIFAR-100. We invesigated the claim of margin maximization by comparing the margin distribution of the LRW-Hard method with respect to ERM Margin and we compared the LRW-Hard and LRW-Easy instances with respect to ERM margin buckets. The margin maximization was proved to be improved by ERM in Hard instances with the distribution being right-skewed for all instances, and the LRW-Hard method outperformed the the easy instances with respect to margin maximization, with very small errors in each bucket. We have provided the code and models to our implementation and provided a benchmark to further investigate the out-of-distribution claims of the paper.
+
+## **5.References**
+
+\[1\] Jain, N., Suggala, A. S., & Shenoy, P. (2024). Improving generalization via meta-learning on hard samples. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (pp. 27600-27609).
+
+\[2\] Yujia Bao and Regina Barzilay. Learning to split for automatic bias detection. arXiv preprint arXiv:2204.13749, 2022\. 4, 11, 12
+
+\[3\] Ye, H. J., Hu, H., Zhan, D. C., & Sha, F. (2020). Few-shot learning via embedding adaptation with set-to-set functions. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition (pp. 8808-8817).
+
+\[4\] Marklund, H., Xie, S. M., Zhang, M., Balsubramani, A., Hu, W., Yasunaga, M., ... & Liang, P. (2020). Wilds: A benchmark of in-the-wild distribution shifts. arXiv preprint arXiv:2012.07421.
 ## 
 
+# Contact
+
+Mustafa Şinasi PEKTAŞ - pektasmustafa03@gmail.com
+
+Ulaş FİLİZ - ulas.filiz@metu.edu.tr

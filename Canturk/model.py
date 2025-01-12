@@ -1,3 +1,5 @@
+import random
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -47,159 +49,138 @@ for i, item in enumerate(features_total):
     for j, sub_item in enumerate(item):
         print(f"features_total[{i}][{j}] boyutu: {len(sub_item)}")
 
-# Make sub-elements fixed in size
-fixed_padded_features_total = []
+#####
 
-for item in padded_features_total:
-    fixed_item = []
-    for sub_item in item:
-        # If sub_item is not a list, convert it to a 7-element list
-        fixed_sub_item = [
-            sub if isinstance(sub, list) else [0.0] * 7
-            for sub in sub_item
-        ]
-        fixed_item.append(fixed_sub_item)
-    fixed_padded_features_total.append(fixed_item)
+# Padding operation to equalize row and column sizes for each feature
+max_features = max(len(feature) for sample in features_total for feature in sample)  # Max feature length
+max_rows = max(len(sample) for sample in features_total)  # Max row length
 
-features_total_tensor = torch.tensor(fixed_padded_features_total)
+# Padding process
+padded_features = []
+for sample in features_total:
+    padded_sample = []
+    for feature in sample:
+        # We pad each feature to match the max_features length
+        padded_feature = feature + [[0.0] * 7] * (max_features - len(feature))
+        padded_sample.append(padded_feature)
+    # We pad the rows to match the max_rows length
+    while len(padded_sample) < max_rows:
+        padded_sample.append([[0.0] * 7] * max_features)
+    padded_features.append(padded_sample)
 
-print("Tensor Shape:", features_total_tensor.shape)
-print("Tensor:", features_total_tensor)
+# Converting to a Torch tensor
+features_total_tensor = torch.tensor(padded_features)
 
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
+print(features_total_tensor.shape)  # Checking tensor dimensions
 
+print(features_total_tensor[0])
+
+#####
+
+# Function to fix randomness sources
+def set_seed(seed=42):
+    """Fix randomness sources."""
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+
+# Definition of the HigherOrderInteraction class
 class HigherOrderInteraction(nn.Module):
     def __init__(self, d, r):
         super(HigherOrderInteraction, self).__init__()
-        # Definition of parameters
         self.W2 = nn.Parameter(torch.randn(r, 2 * d))  # Weight matrix
         self.b = nn.Parameter(torch.randn(r))         # Bias vector
         self.a = nn.Parameter(torch.randn(r))         # Scalar weight vector
 
     def forward(self, u_C_1, u_T_1):
-        """
-        u_C_1: torch.Tensor, dimension (d,)
-        u_T_1: torch.Tensor, dimension (d,)
-        """
-        # Concatenation of u(C_1) and u(T_1)
-        concat = torch.cat((u_C_1, u_T_1), dim=-1)  # Boyut (2 * d,)
-
-        # Transformation with Tanh activation function
-        tanh_output = torch.tanh(torch.matmul(self.W2, concat) + self.b)  # Boyut (r,)
-
-        # Scalar value computation
-        scalar_value = torch.dot(self.a, tanh_output)  # Boyut (), skaler değer
-
+        # Combining u(C_1) and u(T_1)
+        concat = torch.cat((u_C_1, u_T_1), dim=-1)  # Shape (2 * d,)
+        
+        # Transformation and scalar value computation
+        tanh_output = torch.tanh(torch.matmul(self.W2, concat) + self.b)  # Shape (r,)
+        scalar_value = torch.dot(self.a, tanh_output)  # Scalar value
+        
         return scalar_value
 
-d = 7
-r = 3   # Hidden layer dimension
+# Set the seed
+set_seed(42)
 
+# Tensor dimensions
+d = 7   # Vector size
+r = 3   # Hidden layer size
+
+# Model definition
 model = HigherOrderInteraction(d, r)
 
-i=0
-k=0
-f_values_each_graph=[]
-f_values_all=[]
+# Example tensors
+results_tensor = torch.zeros(128, 28, 5, 1)  # Initialized with zeros: [128, 28, 5, 1]
 
+# Loop: Compute u(C_1) (self) and u(T_1)
+for i in range(features_total_tensor.shape[0]):  # 0-127 (128 examples)
+    for j in range(features_total_tensor.shape[1]):  # 0-27 (28 rows)
+        u_C_1 = features_total_tensor[i, j, 0]  # First row (u_1: self)
 
-while i<188:
-  while k<df_edges.iloc[i,4]:
-    u_C_1=features_total_tensor[i][k].mean(dim=0)
-    j=0
-    while j<len(df_edges.iloc[i,6]):
-      edge = df_edges.iloc[i, 6][j]
+        for k in range(5):  # 0, 1, 2, 3, 4
+            u_T_1 = features_total_tensor[i, j, k]  # Select T_k
+            
+            # If u(T_k) is completely zero, the result remains 0
+            if not torch.all(u_T_1 == 0):  # Only if u(T_k) is not zero
+                result = model(u_C_1, u_T_1)  # Compute result using the model
+                results_tensor[i, j, k, 0] = result  # Save the result
 
-      if edge[0]==k:
-        adjacent_1.append(edge[1])
-        u_T_1=features_total_tensor[i][edge[1]].mean(dim=0)
-        f_value=model(u_C_1, u_T_1)
-        f_values_each_graph.append(f_value)
-      if edge[1]==k:
-        adjacent_1.append(edge[0])
-        u_T_1=features_total_tensor[i][edge[0]].mean(dim=0)
-        f_value=model(u_C_1, u_T_1)
-        f_values_each_graph.append(f_value)
-      j+=1
-    adjacent_total.append(adjacent_1)
-    adjacent_1=[]
-    f_values_all.append(f_values_each_graph)
-    f_values_each_graph=[]
-    k+=1
-  adjacent_total.append(adjacent_2)
-  adjacent_2=[]
-  f_values_all.append(f_values_each_graph)
-  f_values_each_graph=[]
-  k=0
-  i+=1
-print(f_values_all)
+# Check the tensor
+print("Results Tensor Shape:", results_tensor.shape)  # Expected: [128, 28, 5, 1]
+print("Results Tensor Example:", results_tensor[0, 0])  # Results of the first row of the first example
 
-all_alpha_values = []
+#####
 
-for graph_f_values in f_values_all:  # The f_values_all just calculated
-    graph_alpha_values = []
-    for f_values in graph_f_values:
-        f_values_tensor = torch.tensor(f_values)
-        exp_f_values = torch.exp(f_values_tensor)
-        alpha_values = exp_f_values / exp_f_values.sum()
-        graph_alpha_values.append(alpha_values.tolist())
-    all_alpha_values.append(graph_alpha_values)
+# Example input: results_tensor
 
-print("Alpha Values for All Graphs:")
-print(all_alpha_values)
+# Tensor to store the softmax result
+alpha_tensor = torch.zeros_like(results_tensor)  # Result tensor: [128, 28, 5, 1]
 
-def softmax_function_over_neighbors_and_center(f_values):
-    """
-    Calculates attention coefficients for neighbors and the central node.
+# Softmax operation (tensor-based)
+softmax_scores = F.softmax(results_tensor.squeeze(-1), dim=2)  # Shape: [128, 28, 5]
+alpha_tensor = softmax_scores.unsqueeze(-1)  # Reshape back to [128, 28, 5, 1]
 
-    Args:
-        f_values (list or tensor): The computed f(u(C_k), u(T_k)) values for the central node and neighbors.
+# Check the tensor
+print("Alpha Tensor Shape:", alpha_tensor.shape)  # Expected: [128, 28, 5, 1]
+print("Alpha Tensor Example:", alpha_tensor[0, 0])  # Results of the first row of the first example
 
-    Returns:
-        torch.Tensor: Attention coefficients normalized with Softmax.
-    """
-    f_values_tensor = torch.tensor(f_values, dtype=torch.float32)  # Convert to tensor
-    exp_f_values = torch.exp(f_values_tensor)  # Apply exponential operation
-    softmax_values = exp_f_values / exp_f_values.sum()  # Softmax normalization
-    return softmax_values
+#####
 
+set_seed(42)
 
-for graph_index, (graph_alpha_values, graph_features) in enumerate(zip(all_alpha_values, features_total_tensor)):
-    u_Ck_sa_graph = []  # To store the new values of each node
+# W1 weight matrix (linear transformation)
+W1 = nn.Parameter(torch.randn(7, 7))  # Learnable weight: [7, 7]
 
-    for k, f_values in enumerate(f_values_each_graph):
-        u_Ck = graph_features[k].mean(dim=0)  # Central node vector
-        neighbors = df_edges.iloc[graph_index, 6]  # Edges in the current graph
+# Result tensor: u(C_1)'_sa will be calculated
+u_C1_prime_sa = torch.zeros(128, 28, 7)  # Output: [128, 28, 7]
 
-        # Select only the neighbors connected to k from the neighbors list
-        filtered_neighbors = [n[1] if n[0] == k else n[0] for n in neighbors if k in n]
+# Calculation: u(C_1)'_sa
+for i in range(features_total_tensor.shape[0]):  # 128 examples
+    for j in range(features_total_tensor.shape[1]):  # 28 rows
+        u_C1 = features_total_tensor[i, j, 0]  # u(C_1) (itself)
 
-        # Calculate attention coefficients (for neighbors and the center)
-        alpha_values = softmax_function_over_neighbors_and_center(f_values)
+        sum_weighted = torch.zeros(7)  # Empty vector for summation
 
-        # Separate the attention coefficients of the neighbors
-        neighbor_alphas = alpha_values[:-1]
-        central_alpha = alpha_values[-1]
+        for k in range(5):  # T_1 values (0, 1, 2, 3, 4)
+            u_T1 = features_total_tensor[i, j, k]  # u(T_1)
+            alpha = alpha_tensor[i, j, k, 0]  # alpha(C_1, T_1)
+            sum_weighted += alpha * torch.matmul(W1, u_T1)  # alpha * W1 * u(T_1)
 
-        # Compute the contribution of the neighbors
-        neighbor_sum = torch.zeros(d_out)  # Toplama işlemi için başlangıç
-        for neighbor_index, alpha in zip(filtered_neighbors, neighbor_alphas):
-            u_Tk = graph_features[neighbor_index].mean(dim=0)
-            neighbor_sum += alpha * W1 @ u_Tk
+        # Transformation for itself: alpha(C_k, C_k) * W1 * u(C_1)
+        alpha_self = alpha_tensor[i, j, 0, 0]  # alpha(C_1, C_1)
+        sum_weighted += alpha_self * torch.matmul(W1, u_C1)
 
-        # Contribution of the central node
-        central_node_contribution = central_alpha * W1 @ u_Ck
+        # Save the result
+        u_C1_prime_sa[i, j] = sum_weighted
 
-        # Total new node vector
-        u_Ck_sa = neighbor_sum + central_node_contribution
-        u_Ck_sa_graph.append(u_Ck_sa)
+# Check the tensor
+print("u_C1_prime_sa Shape:", u_C1_prime_sa.shape)  # Expected: [128, 28, 7]
+print("u_C1_prime_sa Example:", u_C1_prime_sa[0])  # Results of the first row of the first example
 
-    u_Ck_sa_all.append(u_Ck_sa_graph)
-
-print(u_Ck_sa_graph)
-
-def softmax_function_over_neighbors_and_center(f_values):
-    f_values_tensor = torch.tensor(f_values, dtype=torch.float32)
-    return F.softmax(f_values_tensor, dim=0)
+######## For each graph, only the first number of nodes will be selected; we will not use all 28 rows.

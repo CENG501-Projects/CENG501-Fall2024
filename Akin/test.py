@@ -142,7 +142,7 @@ if __name__ == "__main__":
     exp_file = os.path.join("YOLOX", "exps", "default", "yolox_s.py")
     ckpt_file = os.path.join("yolox_s.pth")
     # input_file = os.path.join("YOLOX", "assets", "dog.jpg")
-    input_file = os.path.join("input.jpg")
+    input_file = os.path.join("000001.jpg")
     output_file = os.path.join("output.jpg")
 
     main(exp_file, ckpt_file, input_file, output_file)

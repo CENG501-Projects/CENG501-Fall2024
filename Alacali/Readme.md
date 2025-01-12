@@ -188,20 +188,159 @@ In the ideal case, both losses should converge to 50%.
 
 
 
-### Second Experiment with IID FL-GAN
+### Experiment with MD-GAN, FL-GAN and IFL-GAN
 
+#### MD-GAN (Multi-Discriminator GAN)
+Purpose: Introduces multiple discriminators to enhance training stability and improve the quality of generated data.
+Architecture: Instead of a single discriminator, MD-GAN uses multiple discriminators, each learning different aspects or features of the data distribution. 
+
+#### FL-GAN (Federated Learning GAN)
+Purpose: Combines GANs with Federated Learning to train models across distributed devices without sharing raw data.
+Architecture: Each participant device has its own local GAN (a generator and a discriminator). Model updates are aggregated and sent to a central server, enabling collaborative training while preserving data privacy. The aggregated model parameters are averaged to create the global generator parameters for the next iteration.
+
+#### IFL-GAN (Improved Federated Learning GAN)
+Purpose: IFL-GAN builds upon traditional Federated Learning GAN (FL-GAN) concepts by adding a refined mechanism(MMD) for combining and updating local generators across multiple clients.
+
+Architecture: Each participant device has its own local GAN (a generator and a discriminator). After local training, each client computes a Maximum Mean Discrepancy (MMD) score by comparing real data samples against the locally generated samples.These MMD scores capture how well each local generator matches its client’s data distribution. Each client compares its MMD score with a threshold; if the client’s MMD is above the threshold (indicating a poorer fit), it replaces its local generator $𝐺_𝑖$ with the newly formed global generator $𝐺_{glb}$.
+
+According to the results shared in the paper, the hypothesis and experimental structure is decided as follows:
+#### Hypotheses
+
+1- Performance Across Different Client Numbers
+We hypothesize that increasing the number of clients (i.e., moving from k=2 to k=5 to k=10) in federated learning settings will have varying effects on performance depending on the GAN architecture (MDGAN, FLGAN, or IFLGAN). Specifically, we anticipate that IFLGAN will be more robust than MDGAN and FLGAN as the number of clients grows, owing to its ability to better aggregate gradients and capture global data distributions.
+
+2- Robustness to Data Imbalance
+When moving from balanced datasets to imbalanced and extremely imbalanced datasets, we hypothesize that IFLGAN will maintain higher fidelity in generated data and exhibit lower performance degradation than MDGAN and FLGAN. This is because IFLGAN is designed to mitigate divergence caused by heterogeneous data distributions and to reduce the negative effects of highly skewed data partitions across different clients.
+
+3- Improvement Over Centralized Training Baselines
+Although centralized GAN training on balanced datasets often yields strong performance, we hypothesize that the federated GAN models—particularly IFLGAN—will demonstrate competitive or superior performance on certain tasks, even in imbalanced scenarios. This arises from the fact that federated training can leverage diverse local data while preserving privacy and preventing overfitting that may occur in a single-site centralized dataset.
+
+4- Impact on Convergence and Stability
+Finally, we hypothesize that the federated approach with carefully designed aggregation (IFLGAN) will converge more stably than the simpler distributed methods (MDGAN or FLGAN) as it handles partial updates more effectively. In other words, while MDGAN and FLGAN may converge faster in some cases, IFLGAN will yield more consistent and reliable convergence trends across different levels of data imbalance.
+
+#### Training Procedure
+Dataset: MNIST divided into K = 2,5 with partitioning the numbers sequentially (number of clients) parts, normalized to [-1, 1].
+
+Balanced Scenario:
+
+Imbalanced Scenario:
+
+Hyperparameters (for all models): 
+- Learning rate = 0.0002
+- Batch size = 128
+- Adam optimizer with betas = (0.5, 0.999).
 
 ## 3.2. Running the code
 
-@TODO: Explain your code & directory structure and how other people can run it.
+Each model implementation is included in its .py file with the same name. The models are trained on Google Colab with runtime type as "Python 3" and for faster implementation, the hardware accelerator can be chosen as "T4-GPU". At each 5 epochs, the created images by the global generator are saved to the path "/content/ifl-gan-images", "/content/generated_images", "/content/mdgan_generated_images", respectively.
+### Prerequisites
+Python 3.7+ (earlier versions might work, but are not tested)
+PyTorch >= 1.7 (ensure CUDA is available if you plan to use GPU)
+Additional Python packages:
+- torchvision
+- numpy
+- matplotlib
+- pandas
+- Optional: GPU/CUDA for faster training.
+Make sure your environment meets these requirements before installing and running the code.
+
+### Usage
+Running the Models
+We have three main federated GAN implementations in the repository:
+MD-GAN: mdgan.py
+FL-GAN: flgan.py
+IFL-GAN: iflgan.py
+Each script provides an entry point via a main section or a dedicated function for training and testing.
+
+### Configuration Options
+Most scripts include parameters you can customize, typically near the bottom of each file or as command-line arguments:
+
+- num_clients (k=2, 5, or 10): Number of federated clients.
+- case: Data split scenario: "balanced", "imbalanced", or "extremely_imbalanced".
+- epochs: Total training epochs.
+- batch_size: Mini-batch size for training.
+- lr: Learning rate.
+- noise_dim: Dimensionality of the generator’s latent space.
+- sigma: (Only in IFL-GAN) Parameter for the MMD kernel.
+Adjust these in the source code at the end of the code.
+
+Example:
+
+```
+if __name__ == "__main__":
+    # Example usage:
+    ifl_gan = IFLGAN(
+        noise_dim=128, 
+        case="balanced",     # or "imbalanced", "extremely_imbalanced"
+        num_clients=5,       # 2, 5, or 10
+        batch_size=128, 
+        lr=0.0002
+    )
+    ifl_gan.ifl_training(epochs=200, sigma=1.0)
+```
 
 ## 3.3. Results
 
-@TODO: Present your results and compare them to the original paper. Please number your figures & tables as if this is a paper.
+
+### Client K=2, Balanced
+   <p align="center">
+  <img src="figures/generator_loss_plot_balanced_k=2.png" style="width: 70%;"><br>
+  <em>Figure 7: Generator loss, balanced dataset, K=2 clients</em>
+</p>
+   <p align="center">
+     <img src="figures/balanced_k=2.png" style="width: 70%;"><br>
+     <em>Figure 8: Generator results (FL-GAN, IFL-GAN, MD-GAN), balanced dataset, K=2 clients</em>
+</p>
+
+### Client K=2, Imbalanced
+   <p align="center">
+  <img src="figures/generator_loss_plot_imbalanced_k=2.png" style="width: 70%;"><br>
+  <em>Figure 9: Generator loss, imbalanced dataset, K=2 clients</em>
+</p>
+<p align="center">
+     <img src="figures/imbalanced_k=2.png" style="width: 70%;"><br>
+     <em>Figure 10: Generator results (FL-GAN, IFL-GAN, MD-GAN), imbalanced dataset, K=2 clients</em>
+</p>
+
+### Client K=5, Balanced
+   <p align="center">
+  <img src="figures/generator_loss_plot_balanced_k=5.png" style="width: 70%;"><br>
+  <em>Figure 11: Generator loss, balanced dataset, K=5 clients</em>
+</p>
+<p align="center">
+     <img src="figures/balanced_k=5.png" style="width: 70%;"><br>
+     <em>Figure 12: Generator results (FL-GAN, IFL-GAN, MD-GAN), balanced dataset, K=5 clients</em>
+</p>
+
+### Client K=5, Imbalanced
+   <p align="center">
+  <img src="figures/generator_loss_plot_imbalanced_k=5.png" style="width: 70%;"><br>
+  <em>Figure 13: Generator loss, imbalanced dataset, K=5 clients</em>
+</p>
+<p align="center">
+     <img src="figures/imbalanced_k=5.png" style="width: 70%;"><br>
+     <em>Figure 14: Generator results (FL-GAN, IFL-GAN, MD-GAN), imbalanced dataset, K=5 clients</em>
+</p>
+
+## Results from the Paper
+
+<p align="center">
+  <img src="figures/paper_generator_loss_k=2.png" style="width: 70%;"><br>
+  <em>Figure 15: Generator loss, balanced and imbalanced datasets, K=2 clients</em>
+</p>
 
 # 4. Conclusion
 
-@TODO: Discuss the paper in relation to the results in the paper and your results.
+In this part, the results shared are discussed from the perspective of the hypotheses created from the paper.
+
+1- Performance Across Different Client Numbers
+
+2- Robustness to Data Imbalance
+
+3- Improvement Over Centralized Training Baselines
+
+4- Impact on Convergence and Stability
+
 
 # 5. References
 
@@ -209,4 +348,4 @@ In the ideal case, both losses should converge to 50%.
 
 # Contact
 
-@TODO: Provide your names & email addresses and any other info with which people can contact you.
+email: egemenalacali@gmail.com

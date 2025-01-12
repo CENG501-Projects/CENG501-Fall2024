@@ -744,7 +744,8 @@ class HighResolutionNet(nn.Module):
         self.global_pool, self.classifier = create_classifier(
             self.num_features, self.num_classes, pool_type=global_pool)
 
-    def stages(self, x) -> List[torch.Tensor]:
+    def stages(self, x, **kwargs) -> List[torch.Tensor]:
+        rgb_path = kwargs["rgb_path"]
         x = self.layer1(x)
 
         xl = [t(x) for i, t in enumerate(self.transition1)]
@@ -752,12 +753,16 @@ class HighResolutionNet(nn.Module):
 
         xl = [t(yl[-1]) if not isinstance(t, nn.Identity) else yl[i] for i, t in enumerate(self.transition2)]
         yl = self.stage3(xl)
-
+        
+        if rgb_path == False:
+            return yl
+        
         xl = [t(yl[-1]) if not isinstance(t, nn.Identity) else yl[i] for i, t in enumerate(self.transition3)]
         yl = self.stage4(xl)
+        
         return yl
 
-    def forward_features(self, x):
+    def forward_features(self, x, **kwargs):
         # Stem
         x = self.conv1(x)
         x = self.bn1(x)
@@ -767,21 +772,11 @@ class HighResolutionNet(nn.Module):
         x = self.act2(x)
 
         # Stages
-        yl = self.stages(x)
+        yl = self.stages(x, **kwargs)
         if self.incre_modules is None or self.downsamp_modules is None:
             return yl
-        
-        return yl
-        y = None
-        for i, incre in enumerate(self.incre_modules):
-            if y is None:
-                y = incre(yl[i])
-            else:
-                down: ModuleInterface = self.downsamp_modules[i - 1]  # needed for torchscript module indexing
-                y = incre(yl[i]) + down.forward(y)
 
-        y = self.final_layer(y)
-        return y
+        return yl
 
     def forward_head(self, x, pre_logits: bool = False):
         # Classification Head
@@ -789,11 +784,9 @@ class HighResolutionNet(nn.Module):
         x = self.head_drop(x)
         return x if pre_logits else self.classifier(x)
 
-    def forward(self, x):
-        y = self.forward_features(x)
+    def forward(self, x, **kwargs):
+        y = self.forward_features(x, **kwargs)
         return y
-        x = self.forward_head(y)
-        return x
 
 
 class HighResolutionNetFeatures(HighResolutionNet):

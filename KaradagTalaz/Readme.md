@@ -291,61 +291,75 @@ Knowing these JPEG compression concepts is crucial for following the paper's met
 
 ## 4.1. Experimental setup
 
-In the original paper, the model was trained with 8 RTX 2080 GPUs for 250 epochs. We trained the model in Google Colab with a L4 GPU over the same number of epochs. We set the initial learning rate to 0.001, batch size to 4 and used pixel-level binary cross entropy for the loss function as mentioned in the paper. The gamma value of exponential decay was not stated in the paper so, we set it to a typical value of 0.9. Also, train test split ratio was not given in the paper and we decided to allocate 0.8 of the dataset to train and 0.2 to test. 
+In the original paper, the model was trained with 8 RTX 2080 GPUs for 250 epochs. We trained the model in Google Colab with a L4 GPU over 150 epochs. We set the initial learning rate to 0.001, batch size to 4 and used pixel-level binary cross entropy for the loss function as mentioned in the paper. The gamma value of exponential decay was not stated in the paper so, we set it to a typical value of 0.9. Also, train test split ratio was not given in the paper and we decided to allocate 0.8 of the dataset to train and 0.2 to test. 
 
 In the paper, experiments were performed on each branch of a two-branch network and both of them together.
 
 ## 4.2. Running the code
 
-@TODO: Explain your code & directory structure and how other people can run it.
+1. Dependencies Installation
+Install the required dependencies using pip:
+
+```pip install -r requirements.txt ```
+
+2. HRNet Installation
+   1. Install torch image models (timm) library which is used for pretrained HRNet backbone from the [source](https://huggingface.co/docs/timm/installation). 
+   3. Replace the existing HRNet implementation by copying our modified hrnet.py file to ```/pytorch-image-models/timm/models/```
+
+3. Dataset Setup
+   Install the CIMD dataset:
+   1. Download the dataset from this repository: https://github.com/ZhenfeiZ/CIMD
+   2. Place the dataset directory at the same level as this repository
+   
+4. Trained Model
+   If you wish to use our pre-trained model:
+
+   - Download the checkpoint file from: [Google Drive](https://drive.google.com/file/d/1mibagLeP6bShCyRT-dxx48EuVPpQWvNU/view?usp=share_link)
 
 ## 4.3. Results
 
-### 4.3.1 Experiment I - RGB Stream on CIMD-R Subdataset
-
-![Training Loss](figures/training_loss_exp1.png)
+![Training Loss](figures/training_loss.png)
 *Figure 10: Training Loss Curve*
 
-![Test Loss](figures/test_loss_exp1.png)
+![Test Loss](figures/test_loss.png)
 *Figure 11: Test Loss Curve*
 
-![Training F1 Score](figures/training_f1_score_exp1.png)
+![Training F1 Score](figures/training_f1_score.png)
 *Figure 12: Training F1 Score Curve*
 
-![Test F1 Score](figures/test_f1_score_exp1.png)
+![Test F1 Score](figures/test_f1_score.png)
 *Figure 13: Test F1 Score Curve*
 
-![Training F1 Score](figures/training_accuracy_exp1.png)
+![Training F1 Score](figures/training_accuracy.png)
 *Figure 14: Training Accuracy Curve*
 
-![Test F1 Score](figures/test_accuracy_exp1.png)
+![Test F1 Score](figures/test_accuracy.png)
 *Figure 15: Test Accuracy Curve*
 
-![Ablation Results](figures/ablation_study.png)
-*Figure 16: The ablation study stated in the paper*
 
-![Experiment Results](figures/evaluation_results.png)
-*Figure 17: The experiment results stated in the paper*
-
-When we compare the training and test results, it can be easily seen that the model strongly overfits to the training data. This may be due to the fact that the CIMD dataset containing only 600 images, 100 image per each category (copy move, remove, splice and their authentic counterparts). We plan to address this issue by using data augmentation, but we did not apply it in our first experiment because no data augmentation methods was mentioned in the paper.
+In our reproduction study, we evaluated the model's performance using two metrics: image-level accuracy and pixel-level F1 score. While the original paper reported an image-level accuracy of 0.545 and a pixel-level F1 score of 0.444, our implementation achieved values of 0.513 and 0.208, respectively. These results indicate a moderate gap in performance compared to the original implementation. We discussed potential reasons for this performance gap in the conclusion section.
 
 After training the model, we fed the model some selected inputs from the training and the test set to visualize the performance of the model. The results are below.
 
-![Inference I](figures/training_inference_exp1.png)
+![Inference I](figures/training_inference.png)
 *Figure 18: The prediction result of an positive image from training set. Left: original image, Middle: mask of image, Right: prediction of the model*
 
-![Inference II](figures/training_inference2_exp1.png)
+![Inference II](figures/training_inference2.png)
 *Figure 19: The prediction result of an negative image from training set. Left: original image, Middle: mask of image, Right: prediction of the model*
 
-![Inference III](figures/test_inference1_exp1.png)
+![Inference III](figures/test_inference1.png)
 *Figure 20: The prediction result of an positive image from test set. Left: original image, Middle: mask of image, Right: prediction of the model*
 
-![Inference IV](figures/test_inference2_exp1.png)
+![Inference IV](figures/test_inference2.png)
 *Figure 21: The prediction result of an negative image from test set. Left: original image, Middle: mask of image, Right: prediction of the model*
 
 # 5. Conclusion
 
-@TODO: Discuss the paper in relation to the results in the paper and your results.
+This paper presents a novel dataset for image manipulation detection and proposes a new model architecture. In our reproduction effort, we implemented the model based on the published methodology. However, certain aspects of the model architecture description contained ambiguities that necessitated our interpretations. For these unclear points, we made informed decisions based on our understanding of the authors' likely intentions.
+
+Our reproduction demonstrates a performance differential compared to the original implementation. Several factors potentially contribute to this discrepancy. First, computational constraints necessitated the use of a light-weight HRNet backbone, which exhibits lower performance compared to the bigger backbone employed in the original work. Second, resource limitations restricted our training duration to approximately 150 epochs, in contrast to the 250 epochs in the original study. Finally, our interpretations of ambiguous architectural points may differ from the authors' original implementation which ultimately leads to performance difference.
+ 
+
 
 # 6. References
 
