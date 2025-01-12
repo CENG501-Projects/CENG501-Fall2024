@@ -174,6 +174,7 @@ s4-main/
 |            ├── old/
 ```
 
+Then, you can follow the notebooks we provided under ```codes/``` to train LaS Attention.
 
 ## 3.3. Results
 
