@@ -272,7 +272,17 @@ Finally, we visualize sample estimations from the network, showing both the grou
   <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/ESvsGT.gif" alt="description" width="95%">
 </div>
 
+According to our observations with the [DSEC](https://dsec.ifi.uzh.ch/) dataset, we trained the network with the [MVSEC](https://daniilidis-group.github.io/mvsec/) dataset for 20 epochs, and the training and validation losses are reported below.
+<div align="center">
+  <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/training_losses.png" alt="description" width="50%">
+</div>
 
+The validation loss is smaller than the training loss because the validation set includes a simpler scenario with relatively stable and moderate optical flow. In contrast, the training set contains samples with higher optical flow vectors.
+
+Finally, we visualize sample estimations from the network, showing both the ground truth optical flow and the estimated flow. It is important to note that the ground truth is available only for a sparse set of pixels. To facilitate comparison, we apply the same mask to the estimated flow, resulting in a masked estimated flow. This masking is done purely for your convenience to directly compare the ground truth with the estimation.
+<div align="center">
+  <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/ESvsGT.gif" alt="description" width="95%">
+</div>
 
 
 # 4. Conclusion
