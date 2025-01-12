@@ -177,4 +177,4 @@ As implementing ImageNet experiments would not be feasible in terms of time, we 
 
 # Contact
 
-@TODO: Provide your names & email addresses and any other info with which people can contact you.
+Cenk Kerem Cengiz, cengizcenkkerem@gmail.com
