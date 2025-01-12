@@ -437,7 +437,7 @@ Dependencies:
 
 
 ### 3.2.1 Acrobot
-In order to run the files related to acrobot, root folder must be 4-Neural-ODE-Based-Implementation. 
+In order to run the files related to Acrobot, root folder must be ```4-Neural-ODE-Based-Implementation```. 
 To perform system indetification run:
 ```
 python -m acrobot.acrobot_learn
@@ -446,6 +446,11 @@ To perform optimal control, run:
 ```
 python -m acrobot.trainOC
 ```
+
+### 3.2.2 Dubins Car
+In order to run the files related to Dubins Car, root folder must be ```4-Neural-ODE-Based-Implementation/dubins_car```. The file ```dubins-car-pre-trained-learn-multi-trajectory.py``` can be run to train a neural network learning the state transition funciton of the Dubins Car system. Some example parameters obtained during training experiments can be imported from the ```checkpoint``` files from ```exp1``` and ```exp2``` folders.
+
+Furthermore, ```basic_trials``` folder includes other basic codes related to Dubins Car trajectory learning.
 
 ## 3.3. Results
 
