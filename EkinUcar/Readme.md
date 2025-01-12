@@ -77,7 +77,9 @@ Below are some of our interpretations about aspects that were unclear in the pap
 
 **(iii)** The paper doesn't explain why exponential function is used in ELD. We inferred that it is likely because the exponential decay ensures non-negativity and smooth, continuous transition of influence on attention scores as $D_L$ changes.
 
-**(iv)** By observing the figure below, we inferred that as the $\alpha_c$ value increases, the weights corresponding to distant neighbours approaches to 0. This puts more emphasis on close neighbours. 
+**(iv)** The authors of the paper build their repository upon the existing S4 repository. The S4 repository has 2 configuration files for LRA tasks, one is older, and the other is more recent. There are slight differences between them. The most important differences are seed and learning rate schedule. The value of the seed changes for different LRA tasks. The old version uses a plateau-based scheduler, ReduceLROnPlateau, and the newer version employs a cosine schedule with warm up. We preferred to use the plateau-based scheduler since it is adaptive, resource-efficient and driven by training performance, which makes it suitable for our situation. Authors state in the paper that they obtained their results by averaging over three different seed values; however, we do not have enough computational power to conduct our experiments in that way. Hence, we used seed=1112 in all of our experiments
+
+**(v)** By observing the figure below, we inferred that as the $\alpha_c$ value increases, the weights corresponding to distant neighbours approaches to 0. This puts more emphasis on close neighbours. 
 
 <img width="861" alt="image" src="https://github.com/user-attachments/assets/e929a3b0-608b-4fb7-a050-fb70edd0782a">
 
