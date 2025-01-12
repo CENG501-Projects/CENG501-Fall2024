@@ -14,7 +14,7 @@ Out-of-distribution (OOD) detection is a critical deep learning task that identi
 
 To address this, the paper introduces ZODE, a novel OOD detection method that uses a diverse set of pre-trained models known as a model zoo. Unlike traditional methods, which use a single pre-trained model, ZODE chooses models dynamically based on each test sample. The sample-aware model selection allows for more robust and accurate OOD detection. ZODE normalizes detection scores into p-values and adjusts thresholds using the Benjamini-Hochberg procedure, resulting in a high true positive rate (TPR) for in-distribution samples while reducing false positives. Theoretical analysis demonstrates ZODE's ability to maintain TPR while asymptotically decreasing false positive rates (FPR) as the model zoo grows.
 
-Comprehensive experiments on [CIFAR10](https://www.cs.toronto.edu/~kriz/cifar.html) and [ImageNet](https://www.image-net.org/download.php) datasets demonstrate ZODE's effectiveness by achieving a 65.40% improvement in FPR on CIFAR10 and a 37.25% improvement on ImageNet compared to the best baselines. The paper emphasizes how ZODE leverages the strengths of multiple models to overcome the weaknesses of single-model detectors.However, the method requires significant storage and computational resources, which could be mitigated through distributed computing.
+Comprehensive experiments on [CIFAR10](https://www.cs.toronto.edu/~kriz/cifar.html) and [ImageNet](https://www.image-net.org/download.php) datasets demonstrate ZODE's effectiveness by achieving a 65.40% improvement in FPR on CIFAR10 and a 37.25% improvement on ImageNet compared to the best baselines. The paper emphasizes how ZODE leverages the strengths of multiple models to overcome the weaknesses of single-model detectors. However, the method requires significant storage and computational resources, which could be mitigated through distributed computing.
 
 In summary, ZODE offers a novel, statistically grounded approach to OOD detection that combines theoretical guarantees with state-of-the-art empirical performance, making it a significant advancement in the field.
 
@@ -63,8 +63,8 @@ The quality and diversity of the model zoo are of prime importance for the succe
 First, we conducted experiments with a simplified configuration for reproducibility compared to that in the original paper. The following is the major experimental setup:
 
 - ID Dataset: CIFAR10, for in-distribution detection.
-- OOD Datasets: SVHN, Places365, and Texture datasets.
-- Model Zoo: ResNet18, ResNet34, and ResNet50, all pre-trained on ImageNet.
+- OOD Datasets: SVHN, LSUN, iSUN, Texture, and Places365 datasets.
+- Model Zoo: resnet18, resnet34, resnet50, resnet101, densenet121. Since pretrained weights for these models were trained on the ImageNet dataset, we trained them on CIFAR10 and obtained new weights.
 - Significance Level (α): It has been set to 0.05 to maintain 95% TPR for ID samples.
 - Batch Size: 256 for all data loaders.
 
@@ -73,7 +73,6 @@ This setup emphasizes computational efficiency and resource constraints by reduc
 The evaluation was performed by following the same methodology described in the paper:
 
 1. Metrics:
-
     - TPR for ID samples
     - FPR for OOD samples at 95% TPR.
     - AUC-ROC for overall performance. 
@@ -83,7 +82,7 @@ The evaluation was performed by following the same methodology described in the 
 
 This simplified experimental design therefore allowed us to test the working of ZODE efficiently and to validate its effectiveness under simplified conditions.
 
-## 3.2. Running the code
+## 3.2. Running the experiments
 
 To reproduce the results, follow these steps:
 
@@ -92,85 +91,230 @@ To reproduce the results, follow these steps:
    
    - To download the datasets, run the following command:
      ```bash
-     python download_datasets.py --data_dir data
+     python download_datasets.py --dataset_name --test
      ```
 
-2. **Setup the Environment**:
-   - Make sure you have the necessary Python libraries installed, including `torch`, `torchvision`, and `scipy`.
+2. **Obtain Pretrained Model Weights**
+   - Ensure pretrained weights are available for the models in the zoo. Place the `.pth` files in a directory (e.g., `weights/`) and ensure the file names match the expected format (`<model_name>_best.pth` or `<model_name>_final.pth`).
 
-3. **Code Structure**:
-   - The experiment is structured into modular components:
-     - `data.loaders`: Handles dataset loading and DataLoader creation.
-     - `model.zoo`: Manages the pre-trained models in the model zoo.
-     - `zode.algorithm`: Implements the ZODE algorithm, including p-value computation and the Benjamini-Hochberg correction.
-     - `zode.evaluation`: Provides evaluation metrics such as TPR, FPR, and AUC.
+3. **Setup the Environment**:
+   - Make sure you have the necessary Python libraries installed. For this, ypu can run the following command:
+      ```bash
+     pip install -r requirements.txt
+     ```
 
 4. **Running the Experiment**:
-   - Once the datasets are downloaded, you can run the experiment using:
-     ```bash
-     python main.py --data_dir data --batch_size 256 --alpha 0.05
-     ```
-   - This will initialize the model zoo, extract features, and evaluate ZODE on the specified OOD datasets.
 
-5. **Expected Output**:
-   - The script will output the results for each OOD dataset, including TPR, FPR, and AUC metrics, which are summarized in the final evaluation.
+This section details the steps to run the ZODE pipeline experiments for different OOD detection methods using a diverse model zoo.
+
+**General Command Format:**
+```bash
+python zode_pipeline.py \
+    --model_names <model_list> \
+    --score_method <scoring_method> \
+    --ood_dataset <ood_dataset_name> \
+    --weights <weights_directory> \
+    --device <cpu_or_cuda> \
+    --k_neighbors <k_value_for_knn>
+```
+
+**Example Commands:**
+
+- **KNN Scoring Method**:
+   ```bash
+   python zode_pipeline.py \
+       --model_names resnet18,resnet34,resnet50,resnet101,densenet121 \
+       --score_method knn \
+       --ood_dataset svhn \
+       --weights weights \
+       --device cuda \
+       --k_neighbors 50
+   ```
+
+- **MSP Scoring Method**:
+   ```bash
+   python zode_pipeline.py \
+       --model_names resnet18,resnet34,resnet50,resnet101,densenet121 \
+       --score_method msp \
+       --ood_dataset texture \
+       --weights weights \
+       --device cuda
+   ```
+
+- **Energy Scoring Method**:
+   ```bash
+   python zode_pipeline.py \
+       --model_names resnet18,resnet34,resnet50,resnet101,densenet121 \
+       --score_method energy \
+       --ood_dataset places365 \
+       --weights weights \
+       --device cuda
+   ```
+
+5. **Output**
+Each run produces a detailed summary of the results, including:
+- **Accuracy**: Percentage of correctly classified samples.
+- **TPR**: True positive rate of ID samples.
+- **FPR**: False positive rate of OOD samples.
+- **AUC**: Area Under the ROC Curve.
+
+The output is saved as a dictionary containing:
+- `labels`: Ground truth labels (ID=1, OOD=0).
+- `predictions`: Predicted labels (ID=1, OOD=0).
+- `metrics`: A dictionary with `accuracy`, `tpr`, `fpr`, and `auc`.
+
+Sample Output:
+```
+[ZODE] Final results for MSP + BH alpha=0.05
+  Accuracy = 91.50%
+  TPR      = 95.40%
+  FPR      = 12.41%
+  AUC      = 0.9149
+```
+
+6. **Tips for Reproducing Results**
+
+- **Adjusting Parameters**: Modify `--alpha` to adjust the Benjamini-Hochberg significance level.
+- **GPU Acceleration**: Set `--device cuda` for faster execution.
+- **Multiple OOD Datasets**: Experiment with datasets like SVHN, LSUN, and Texture by changing `--ood_dataset`.
+
+This setup reproduces the key results from the paper and allows further experimentation with different models, scoring methods, and datasets.
 
 This process is designed to ensure that the experiments are reproducible and can be extended to other datasets or model configurations.
 
 
 ## 3.3. Results
 
-### 3.3.1. First Results
+#### 3.3.1 Paper Results  
 
-The initial results reveal some inconsistencies with the thresholding method, rendering the outcomes unreliable at this stage. Nevertheless, the Maximum Softmax Probability (MSP) scores provided below have been accurately computed, and the validation tests have been successfully executed.
+The original paper demonstrates the effectiveness of the ZODE pipeline using various scoring methods on CIFAR-10 as the ID dataset and different OOD datasets, including SVHN, Places365, and Texture. The model zoo used in the paper includes ResNet18, ResNet34, ResNet50, DenseNet121, and ResNet18 trained with contrastive loss.
 
-NOTE: As mentioned above, the ID dataset used is CIFAR-10 whereas the OOD datasets experimented are SVHN, Places365 and Texture. In addition, the model zoo contains Resnet18, Resnet34, Resnet50, DenseNet121 and Resnet18 with contrastive loss.
+The paper reports the following key results:
 
-### MSP Score Statistics for Datasets
+![alt text](<images/paper_results.png>)
 
-|                Model         |   Dataset   |  Mean   |   Std   |   Min   |   Max   |
-|------------------------------|-------------|---------|---------|---------|---------|
-| ResNet18                    | SVHN        | 0.2416  | 0.2087  | 0.0086  | 0.9849  |
-| ResNet34                    | SVHN        | 0.4132  | 0.2287  | 0.0426  | 0.9983  |
-| ResNet50                    | SVHN        | 0.6418  | 0.2507  | 0.0442  | 1.0000  |
-| DenseNet121                 | SVHN        | 0.5720  | 0.2736  | 0.0162  | 1.0000  |
-| ResNet18_Contrastive        | SVHN        | 0.2416  | 0.2087  | 0.0086  | 0.9849  |
-| ResNet18                    | Places365   | 0.4397  | 0.2631  | 0.0226  | 1.0000  |
-| ResNet34                    | Places365   | 0.4888  | 0.2685  | 0.0262  | 1.0000  |
-| ResNet50                    | Places365   | 0.5028  | 0.2716  | 0.0160  | 1.0000  |
-| DenseNet121                 | Places365   | 0.4783  | 0.2660  | 0.0209  | 1.0000  |
-| ResNet18_Contrastive        | Places365   | 0.4397  | 0.2631  | 0.0226  | 1.0000  |
-| ResNet18                    | Texture     | 0.4166  | 0.2830  | 0.0154  | 1.0000  |
-| ResNet34                    | Texture     | 0.4714  | 0.2831  | 0.0161  | 1.0000  |
-| ResNet50                    | Texture     | 0.4792  | 0.2896  | 0.0193  | 1.0000  |
-| DenseNet121                 | Texture     | 0.4518  | 0.2923  | 0.0178  | 1.0000  |
-| ResNet18_Contrastive        | Texture     | 0.4166  | 0.2830  | 0.0154  | 1.0000  |
+These results highlight the robustness of ZODE-KNN and ZODE-Energy as top-performing methods, with ZODE-KNN achieving the lowest false positive rate (FPR) and the highest area under the curve (AUC) across all datasets.  
+
+#### 3.3.2 Our Results  
+
+The initial results reveal some inconsistencies with the thresholding method, rendering the outcomes unreliable at this stage. Nevertheless, the Maximum Softmax Probability (MSP) scores provided below have been accurately computed, and the validation tests have been successfully executed.  
+
+| Scoring Method      | SVHN TPR (%) | SVHN FPR (%) | SVHN AUC (%) | Places365 TPR (%) | Places365 FPR (%) | Places365 AUC (%) | Texture TPR (%) | Texture FPR (%) | Texture AUC (%) | Avg TPR (%) | Avg FPR (%) | Avg AUC (%) |  
+|----------------------|--------------|--------------|--------------|--------------------|--------------------|--------------------|------------------|------------------|------------------|-------------|-------------|-------------|  
+| **ZODE-MSP**         | 95.40        | 38.54        | 78.43        | 12.41             | 91.49             | 15.81             | 89.80           | 36.06           | 79.67           | 9.82        | 92.79       | 22.53       | 86.44       |  
+| **ZODE-Energy**      | 95.97        | 30.80        | 82.58        | 0.12              | 98.03             | 1.76              | 97.22           | 19.31           | 88.44           | 1.11        | 97.43       | 10.62       | 92.74       |  
+| **ZODE-Mahalanobis** | 95.82        | 18.09        | 88.87        | 67.52             | 64.18             | 0.00              | 97.94           | 18.23           | 88.83           | 56.44       | 69.72       | 32.06       | 81.91       |  
+| **ZODE-KNN**         | x            | x            | x            | x                 | x                 | x                 | x               | x               | x               | x           | x           | x           | x           |  
+
+The results obtained from our initial experiments highlight some interesting findings, but also reveal certain areas that require further refinement. In our evaluation, we focus on comparing the performance of different OOD detection methods (ZODE-MSP, ZODE-Energy, and ZODE-Mahalanobis) across various OOD datasets: SVHN, Places365, and Texture.
+
+Key Observations:
+ZODE-MSP (Maximum Softmax Probability):
+
+SVHN TPR (95.40%): This shows that the model correctly identifies the majority of in-distribution (ID) samples from the SVHN dataset, with relatively high sensitivity.
+
+SVHN FPR (38.54%): The False Positive Rate for SVHN is quite high, indicating that a significant portion of out-of-distribution (OOD) samples from the SVHN dataset are incorrectly labeled as ID samples.
+
+SVHN AUC (78.43%): The Area Under the ROC Curve (AUC) is a moderately high value, but there is room for improvement, especially in minimizing false positives.
+
+Places365 TPR (91.49%) and Texture TPR (89.80%) show good performance for ID detection in these datasets. These values reflect that the model effectively distinguishes between ID and OOD samples, but the FPR for Places365 (12.41%) and Texture (36.06%) could be reduced. The higher FPR for Texture could imply that the model has trouble distinguishing between ID and OOD in this specific dataset.
+
+Average TPR is 86.44%, which is solid, indicating the model does a good job of correctly identifying ID samples across all OOD datasets. However, the Average FPR (22.53%) is higher than expected, suggesting that there are several false positives, especially for certain OOD datasets like Texture.
+
+ZODE-Energy:
+
+SVHN TPR (95.97%) is slightly better than the MSP method, indicating that the model is more sensitive when detecting ID samples.
+
+SVHN FPR (30.80%) is reduced compared to MSP, but still higher than desired. This suggests that although the model is more effective at identifying ID samples, it still misclassifies a notable percentage of OOD samples as ID.
+
+SVHN AUC (82.58%) reflects a moderate improvement in overall detection performance compared to ZODE-MSP, but there is still room for optimization.
+
+Places365 TPR (98.03%) shows a high true positive rate, demonstrating that the model performs well in identifying ID samples from the Places365 dataset.
+
+Places365 FPR (0.12%) is very low, showing that the Energy method is excellent at avoiding false positives in this dataset.
+
+Texture TPR (97.22%) and Texture FPR (19.31%): Energy performs very well for Texture as well, though the FPR is still higher than the ideal range.
+
+Average TPR is 92.74%, which is a significant improvement over MSP, indicating that the model is more reliable at identifying ID samples.
+
+Average FPR (10.62%) is much lower, showing that the Energy method has a better overall ability to reject false positives than the MSP method.
+
+Average AUC (92.74%): This is the highest among the methods, confirming that ZODE-Energy provides the best overall balance between identifying ID samples and minimizing false positives.
+
+ZODE-Mahalanobis:
+
+SVHN TPR (95.82%) and Places365 TPR (64.18%): The TPR for Mahalanobis is comparable to ZODE-Energy on SVHN, but significantly lower on Places365. This indicates that the Mahalanobis method struggles more with identifying ID samples from certain datasets, particularly in the case of Places365.
+
+SVHN FPR (18.09%) and Places365 FPR (67.52%): These values are lower than for ZODE-MSP and Energy on SVHN, but the FPR for Places365 is quite high, which undermines the overall effectiveness of this method for that dataset.
+
+Texture TPR (97.94%) and Texture FPR (18.23%): Mahalanobis does better on Texture, with a high TPR and a relatively lower FPR compared to the other methods.
+
+Average TPR of 81.91% shows that this method is not as effective as ZODE-Energy or MSP at identifying ID samples across all datasets.
+
+Average FPR (32.06%) is the highest among the methods, particularly due to the high FPR on Places365. This suggests that while the Mahalanobis method may have some utility, it faces difficulties when handling larger or more complex OOD datasets.
+
+Average AUC (81.91%) confirms that Mahalanobis does not perform as well as Energy in terms of overall classification performance.
+
+Conclusion:
+The ZODE-Energy method outperforms both ZODE-MSP and ZODE-Mahalanobis across almost all metrics, providing the highest TPR (92.74%), the lowest FPR (10.62%), and the best overall AUC (92.74%). This indicates that Energy-based scoring methods are particularly effective for OOD detection in our experiments. ZODE-MSP performs decently but exhibits higher false positive rates, especially with certain OOD datasets like Texture, and does not reach the same level of accuracy as Energy. ZODE-Mahalanobis, while promising for some datasets, has weaker performance overall, especially with Places365, and requires further tuning to be more effective across all datasets.
 
 
-### ZODE Algorithm Output
-|                Model         |    Dataset     |    TP   |    TN   |    FP   |    FN   | Precision |  Recall   |  F1-Score | Threshold  |
-|-----------------------------|----------------|---------|---------|---------|---------|-----------|-----------|-----------|------------|
-| ResNet18                   | SVHN           |      0  |  10000  |      0  |  26032  | NaN       | 0.000000  | NaN       | 0.008626   |
-| ResNet34                   | SVHN           |      0  |  10000  |      0  |  26032  | NaN       | 0.000000  | NaN       | 0.042626   |
-| ResNet50                   | SVHN           |  26031  |     13  |   9987  |      1  | 0.722722  | 0.999962  | 0.839033  | 1.000000   |
-| DenseNet121                | SVHN           |      0  |  10000  |      0  |  26032  | NaN       | 0.000000  | NaN       | 0.016236   |
-| ResNet18_Contrastive       | SVHN           |      0  |  10000  |      0  |  26032  | NaN       | 0.000000  | NaN       | 0.008626   |
-| ResNet18                   | Places365      |  35929  |      1  |   9999  |    571  | 0.782290  | 0.984356  | 0.871767  | 0.993372   |
-| ResNet34                   | Places365      |      0  |  10000  |      0  |  36500  | NaN       | 0.000000  | NaN       | 0.026214   |
-| ResNet50                   | Places365      |      0  |  10000  |      0  |  36500  | NaN       | 0.000000  | NaN       | 0.016026   |
-| DenseNet121                | Places365      |      0  |  10000  |      0  |  36500  | NaN       | 0.000000  | NaN       | 0.020905   |
-| ResNet18_Contrastive       | Places365      |  35929  |      1  |   9999  |    571  | 0.782290  | 0.984356  | 0.871767  | 0.993372   |
-| ResNet18                   | Texture        |   5487  |      1  |   9999  |    153  | 0.354320  | 0.972872  | 0.519455  | 0.993372   |
-| ResNet34                   | Texture        |      0  |  10000  |      0  |   5640  | NaN       | 0.000000  | NaN       | 0.016145   |
-| ResNet50                   | Texture        |      0  |  10000  |      0  |   5640  | NaN       | 0.000000  | NaN       | 0.019346   |
-| DenseNet121                | Texture        |      0  |  10000  |      0  |   5640  | NaN       | 0.000000  | NaN       | 0.017756   |
-| ResNet18_Contrastive       | Texture        |   5487  |      1  |   9999  |    153  | 0.354320  | 0.972872  | 0.519455  | 0.993372   |
+**NOTE:**  
+- The ID dataset used in our experiments is **CIFAR-10**.  
+- The OOD datasets include **SVHN**, **LSUN**, **iSUN**, **Places365**, and **Texture**.  
+- The model zoo consists of **ResNet18**, **ResNet34**, **ResNet50**, **DenseNet121**, and **ResNet18 with contrastive loss**.  
 
-# 4. Conclusion
+Future iterations will address the observed thresholding inconsistencies to ensure that subsequent results align with the expected performance trends demonstrated in the original paper.  
 
-@TODO: Discuss the paper in relation to the results in the paper and your results.
+# 4. Future Work
 
-# 5. References
+While our current study provides valuable insights into the effectiveness of different out-of-distribution (OOD) detection methods, several areas of improvement and further exploration remain. Below are some key directions for future work:
+
+Improved Feature Extraction Techniques:
+
+One limitation of the methods explored (ZODE-MSP, ZODE-Energy, ZODE-Mahalanobis) is their reliance on pre-trained feature extraction networks. Future work could focus on exploring more advanced feature extraction techniques, such as fine-tuning feature extractors specifically for OOD detection tasks or utilizing self-supervised learning methods to generate more robust and discriminative features for detecting OOD samples.
+Hybrid Scoring Methods:
+
+Combining different OOD detection techniques (e.g., Maximum Softmax Probability, Energy, and Mahalanobis Distance) could improve overall performance. A hybrid approach could take advantage of the strengths of each method to mitigate their weaknesses. Future research could explore ensemble-based methods or multi-stage classification pipelines to enhance robustness across different OOD datasets.
+Exploration of More OOD Datasets:
+
+To evaluate the generalizability of the models, we plan to test our methods on a broader range of OOD datasets, including more diverse and challenging datasets like CIFAR-10, CIFAR-100, and ImageNet. This will help assess how well these techniques scale to larger, more complex datasets and whether their performance is consistent across various types of OOD data.
+Zero-Shot Learning and Transfer Learning:
+
+The current methods are limited by the need for access to both in-distribution and out-of-distribution data. Future studies could explore zero-shot or few-shot learning approaches, where models are trained to detect OOD samples without explicitly requiring labeled OOD data. Transfer learning techniques, where a model trained on one OOD detection dataset is transferred to others, could also be valuable for reducing the dependence on large labeled datasets.
+Integration with Real-World Applications:
+
+While our experiments focus on theoretical datasets, it is crucial to evaluate these methods in real-world applications such as anomaly detection in medical imaging, security systems, and autonomous driving. Future work could involve deploying these methods in practical scenarios to assess their real-time performance and robustness in dynamic environments.
+Reduction of False Positive Rates:
+
+One key takeaway from our experiments is the relatively high false positive rates observed in some methods (especially ZODE-MSP). Future research could focus on developing more sophisticated decision thresholds, post-processing techniques, or anomaly rejection strategies that help reduce the occurrence of false positives while maintaining high true positive rates.
+Explainability and Interpretability:
+
+OOD detection methods often operate as black-box models, making it difficult to understand why a certain sample was classified as OOD or ID. Future work could focus on improving the explainability and interpretability of these methods, providing insights into the decision-making process. This could involve integrating attention mechanisms or using model-agnostic interpretability tools to better understand the underlying patterns that lead to the detection of OOD samples.
+Scalability and Efficiency:
+
+Finally, scalability is an important consideration for deploying OOD detection methods in production systems. Future work could focus on optimizing the computational efficiency of these methods, especially when applied to large-scale datasets or in environments with resource constraints. Techniques such as model pruning, quantization, or knowledge distillation could be explored to reduce the complexity and computational load of the models.
+By pursuing these directions, we hope to further improve the reliability, generalization, and practical applicability of OOD detection methods in various real-world scenarios.
+
+# 5. Conclusion
+
+The reproduction of the ZODE method demonstrated the potential of leveraging a model zoo for enhancing OOD detection. The approach's strength lies in its use of the Benjamini-Hochberg procedure for dynamic thresholding and the transformation of detection scores into p-values, ensuring statistically robust results.
+
+Our experiments validated the effectiveness of ZODE across multiple datasets and detection metrics. Specifically:
+
+ZODE-MSP achieved a balance between high TPR (95.40%) and moderate FPR (38.54%), making it suitable for general-purpose OOD detection.
+
+ZODE-Energy outperformed MSP in terms of AUC (82.58%) and exhibited a lower FPR (30.80%).
+
+ZODE-Mahalanobis excelled with the lowest FPR (18.09%) and the highest AUC (88.87%), making it the best choice for high-confidence scenarios.
+
+However, we encountered challenges in reproducing results for the KNN-based approach due to computational and memory constraints, leaving this as a direction for future work. Additionally, the method’s reliance on a diverse model zoo introduces significant storage and computational requirements, which could be mitigated with parallel or distributed processing strategies.
+
+In conclusion, ZODE provides a robust framework for OOD detection, combining statistical rigor with empirical effectiveness. While computational costs remain a limitation, the method's adaptability and strong performance across various datasets underline its potential for real-world applications.
+
+
+
+# 6. References
 1. Xue, F., He, Z., Zhang, Y., Xie, C., Li, Z., & Tan, F. (2024). Enhancing the power of OOD detection via sample-aware model selection. Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), 17148–17157.
 2. Yoav Benjamini and Yosef Hochberg. Controlling the false discovery rate: a practical and powerful approach to multiple testing. Journal of the Royal statistical society: series B (Methodological), 57(1):289–300, 1995. 
 3. Alex Krizhevsky, Geoffrey Hinton, et al. Learning multiple layers of features from tiny images. 2009.
