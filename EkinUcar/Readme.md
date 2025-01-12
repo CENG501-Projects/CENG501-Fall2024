@@ -247,7 +247,7 @@ Table 5: Performance of the best model for Document Retrieval task
 |---------------------|--------|----------|
 | **Training** |    54.208    | 0.68699 |
 | **Validation** |    55.041    | 0.6818 | 
-| **Test** |    54.743    | 88.455 | 
+| **Test** |    54.743    | 0.68455 | 
 
 **Discussion:**  
 
