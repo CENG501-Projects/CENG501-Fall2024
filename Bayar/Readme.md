@@ -184,6 +184,8 @@ In the paper the batch size is said to be 16. I asked the authors about the batc
 
 # 3. Experiments and results
 
+### Trained Checkpoints and Logs: [Google Drive](https://drive.google.com/drive/folders/12nbbSn_1UuJDJvZICWBUuo_6abNauSfN?usp=sharing)
+
 ## 3.1. Experimental setup
 
 ### Original Paper Setup
@@ -202,8 +204,6 @@ The authors conducted experiments on the COCO 2017 detection dataset using the f
 We kept everything as described in the paper except batch-size. All details that are not mentioned in the paper are inherited from default parameters of the baseline model (DINO). We kept the batch-size as 2 as in the original DINO code.
 
 ## 3.2. Running the code
-
-Trained Checkpoints and Logs: [Google Drive](https://drive.google.com/drive/folders/12nbbSn_1UuJDJvZICWBUuo_6abNauSfN?usp=sharing)
 
 ### Installation
 
