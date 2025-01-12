@@ -180,6 +180,7 @@ Though we tried to stick the MonoATT paper; due to time constraints, implementat
 | *Backbone*            | DLA-34               | ResNet-50                  | We got worse results with DLA-34, hence kept the ResNet-50 from MonoDetr                  |
 | *Multi-stage Feature Reconstruction (MFR)* | Global/local integration    | Depth based reconstruction from MonoDetr       | Provides good results                  |
 | *Detection Head*      | GUPNet               | Custom detection head       | We kept the detection head from MonoDetr                     |
+| *Tokens* | Adaptive Tokens | Combination of adaptive and raw tokens | Creating adaptive tokens for all features are hugely expensive |
 
 We have used the libraries and tools:
   - *PyTorch:* Framework for model development and training.
