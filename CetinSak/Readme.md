@@ -212,19 +212,12 @@ The first plot is drawn for selecting the 10% error rate. The second and third p
 #### Implementation of Experiment 1
 
 Implementation of Experiment 1 is under `src/experiments` and can be run using `python -m src.experiments.experiment_orchestrator --config_name exp1N_config.toml` where N is a, b or c.
-Due to GPU restrictions and bugs in the code, results for hyperparameters `N=3` and `s0!=0` are not reported as of 11.12.2024.
 
-Figures below show our results for experiment figure B and C. For figure A, we see that our plots agree with the result provided by authors.
+Figures below show our results for experiment figure B and C. For figure A, we see that our plots agree with the result provided by authors. Our figures do not agree with authors figures. While training, we could not determine the exact point we crossed to 90% accuracy, thus we have noise. This is especially true for the outlier on the second figure.
 
-![Experiment 1 B m=4](assets/exp1b_layer2_numf4.png)
-![Experiment 1 B m=6](assets/exp1b_layer2_numf6.png)
-![Experiment 1 B m=8](assets/exp1b_layer2_numf8.png)
-![Experiment 1 B m=10](assets/exp1b_layer2_numf10.png)
-
-![Experiment 1 C m=3](assets/exp1c_layer2_numf3.png)
-![Experiment 1 C m=6](assets/exp1c_layer2_numf6.png)
-![Experiment 1 C m=9](assets/exp1c_layer2_numf9.png)
-![Experiment 1 C m=12](assets/exp1c_layer2_numf12.png)
+![Experiment 1 A](assets/exp1a.png)
+![Experiment 1 B](assets/exp1_b.png)
+![Experiment 1 C](assets/exp_1c.png)
 
 ---
 
