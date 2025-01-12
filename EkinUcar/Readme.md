@@ -196,9 +196,10 @@ Figure 6: Test Loss and Accuracy for LRA Listops Benchmark
 
 ### Experiment: Document Retrieval Task
 
-
+Figure XX: Train, Test and Validation Accuracies for Document Retrieval Task
 ![aan_acc](https://github.com/user-attachments/assets/c612c459-1e00-4076-9bfe-058cfc3b9397)
 
+Figure YY: Train, Test and Validation Losses for Document Retrieval Task
 ![aan_loss](https://github.com/user-attachments/assets/3809f3ca-1a42-4564-a87b-486309640ef6)
 
 
