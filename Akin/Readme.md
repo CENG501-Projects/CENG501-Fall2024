@@ -116,9 +116,9 @@ For the refind module, a binary cross-entropy loss function is used. A 1-0 matri
 
 ## 2.2. Our interpretation
 
-In the paper, it is not explicitly stated which trained version of YOLOX [2] is used. Through experimentation, I found that YOLOX trained with the `yolox_x` model yields the best results. I will use PyTorch to implement the Interaction and Refind modules, which are trained on the MOT17 and MOT20 datasets, as described in the paper.
+In the paper, it is not explicitly stated which trained version of YOLOX [2] is used. Through experimentation, We found that YOLOX trained with the `yolox_x` model yields the best results. We will use PyTorch to implement the Interaction and Refind modules, which are trained on the MOT17 and MOT20 datasets, as described in the paper.
 
-The formats provided by the MOT datasets (MOT17 and MOT20) differ somewhat from what the paper requires. Therefore, I wrote a data conversion script to modify the dataset format before training. MOT provides the coordinates of detected people in each frame. However, the implementation requires both coordinates and size (width and height) for each detection.
+The formats provided by the MOT datasets (MOT17 and MOT20) differ somewhat from what the paper requires. Therefore, We wrote a data conversion script to modify the dataset format before training. MOT provides the coordinates of detected people in each frame. However, the implementation requires both coordinates and size (width and height) for each detection.
 
 We have set up an environment where the input is first passed to the interaction module. Based on the results of the interaction module, we predict the next position of each tracklet between frames. Next, the refind module is run in the pipeline to locate any lost tracklets.
 
@@ -128,7 +128,7 @@ The pipeline tracks each individual, including whether they are lost in a sequen
 
 ## 3.1. Experimental setup
 
-I used a MacBook Air M2 with 16 GB of RAM and an 8-core GPU to set up my environment. I will use PyTorch for the implementation. The inputs are first sent to YOLOX for object detection on a frame-by-frame basis. Then, the two-stage machine learning architecture (interaction and refind modules) is used to find the relationships between frames for each person.
+We used a MacBook Air M2 with 16 GB of RAM and an 8-core GPU to set up my environment. We will use PyTorch for the implementation. The inputs are first sent to YOLOX for object detection on a frame-by-frame basis. Then, the two-stage machine learning architecture (interaction and refind modules) is used to find the relationships between frames for each person.
 
 ## 3.2. Running the code
 
