@@ -126,6 +126,10 @@ For all regularization and compression techniques, we used above settings as bas
 
 We added Dropout right after the initial layer, after each block, and again before the final linear layer. 
 
+### Quantization 
+
+We created a new quantized ResNet-20 model using PyTorch’s quantization library and selected the FBGEMM backend. FBGEMM uses 8 bit floating point quantization. We quantized the first convolution, batch normalization, and ReLU layers, as well as the three block layers (including their convolution, batch normalization, and ReLU layers). Finally, we fine-tuned the model for 5 epochs to optimize performance.
+
 # 3. Experiments and results
 
 ## 3.1. Experimental setup
@@ -170,18 +174,28 @@ We trained a total of 132 ResNet20 models using different synthetic noise levels
 </p>
 
 <p align="center">
+  <img src="imgs/pruning.png" alt="" style="width: 50%;"><br>
+  <em> Figure 3: On Cifar10: Effect of Noisy Annotations on ResNet Performance with Pruning</em>
+</p>
+
+<p align="center">
+  <img src="imgs/quantization.png" alt="" style="width: 50%;"><br>
+  <em> Figure 4: On Cifar10: Effect of Noisy Annotations on ResNet Performance with Quantization</em>
+</p>
+
+<p align="center">
   <img src="imgs/early_stopping.png" alt="" style="width: 50%;"><br>
-  <em> Figure 3: On Cifar10: Effect of Noisy Annotations on ResNet Performance with Early Stopping</em>
+  <em> Figure 5: On Cifar10: Effect of Noisy Annotations on ResNet Performance with Early Stopping</em>
 </p>
 
 <p align="center">
   <img src="imgs/weight_decay.png" alt="" style="width: 50%;"><br>
-  <em> Figure 4: On Cifar10: Effect of Noisy Annotations on ResNet Performance with Weight Decay</em>
+  <em> Figure 6: On Cifar10: Effect of Noisy Annotations on ResNet Performance with Weight Decay</em>
 </p>
 
 <p align="center">
   <img src="imgs/dropout.png" alt="" style="width: 50%;"><br>
-  <em> Figure 5: On Cifar10: Effect of Noisy Annotations on ResNet Performance with Dropout</em>
+  <em> Figure 7: On Cifar10: Effect of Noisy Annotations on ResNet Performance with Dropout</em>
 </p>
 
 For all models, accuracy started in the 80–90% range and initially decreased slowly. As synthetic noise increased further, this decrease became more pronounced, leading to a sharper drop in accuracy.
@@ -190,17 +204,17 @@ Below is the combined accuracy graph of all the methods, and the accuracy gap be
 
 <p align="center">
   <img src="imgs/accuracies.png" alt="" style="width: 50%;"><br>
-  <em> Figure 6: Accuracy as a function of the percentage s of training examples randomly reannotated. (ours)</em>
+  <em> Figure 8: Accuracy as a function of the percentage s of training examples randomly reannotated. (ours)</em>
 </p>
 
 <p align="center">
   <img src="imgs/accuracy_gap.png" alt="" style="width: 50%;"><br>
-  <em> Figure 7: Accuracy gain with respect to the baseline model (no regularization applied) as a function of s.(ours)</em>
+  <em> Figure 9: Accuracy gain with respect to the baseline model (no regularization applied) as a function of s.(ours)</em>
 </p>
 
 <p align="center">
   <img src="imgs/original-accuracy.png" alt="" style="width: 50%;"><br>
-  <em> Figure 8: On Cifar10: (a) Accuracy gain with respect to the baseline model (no regularization applied) as a function of s. (b) Accuracy as a function of the percentage s of training examples randomly reannotated.(from the paper)</em>
+  <em> Figure 10: On Cifar10: (a) Accuracy gain with respect to the baseline model (no regularization applied) as a function of s. (b) Accuracy as a function of the percentage s of training examples randomly reannotated.(from the paper)</em>
 </p>
 
 # 4. Conclusion
@@ -209,7 +223,7 @@ We were unable to replicate the facial AU detection experiments described in the
 
 Although the paper has demonstrated that strategies like pruning, dropout, weight decay, and early stopping can yield better performance in the presence of noisy data, our implementation did not replicate those gains. While our results followed a curve similar to that in the paper, we experienced a slight loss rather than the expected improvement when applying these techniques. One likely explanation is our inability to optimally tune the hyperparameters or model configurations such as the learning rate, early stopping validation ratio, pruning parameters, and dropout settings for this setup.
 
-However, our quantization results are similar to the improvements reported in the paper. In contrast to the other methods, quantization effectively fighted label noise and improved performance.
+However, our quantization results are similar to the improvements reported in the paper. In contrast to the other methods, quantization effectively combated label noise and improved performance.
 
 # 5. References
 
