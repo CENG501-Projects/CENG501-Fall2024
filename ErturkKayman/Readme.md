@@ -344,7 +344,7 @@ The paper also discusses integrating MonoATT components into existing transforme
 
 ### 3.3.3 Our Test Results
 
-We have provided a full training log (monoatt.log), prediction results and the best and the last trained models from our final training run. Please note that, during the training, the framework saves the last and best models automatically. Provided outputs are the results of the best model. Our complete results are given in the table below.
+We have provided a full training log (monoatt.log), prediction results and the best and the last trained models from our final training run. Please note that, during the training, the framework evaluates the model with the test test which can be found in the training logs, and saves the last and best models automatically. Provided outputs are the results of the best model. Our complete results are given in the table below.
 
 Our results on Car category with the metric AP@0.70, 0.70, 0.70;
 | Task  | Easy | Moderate | Hard |
