@@ -236,17 +236,17 @@ Table 4: Performance of the best model for Listops task
 
 ### Experiment: Document Retrieval Task
 
-The accuracies we obtained for Document Retrieval task can be seen in Figure XX. The x-axis shows the global steps and y-axis shows the accuracy for each epoch. Accuracies are registered per epoch.
+The accuracies we obtained for Document Retrieval task can be seen in Figure 9. The x-axis shows the global steps and y-axis shows the accuracy for each epoch. Accuracies are registered per epoch.
 
 Figure 9: Train, Test and Validation Accuracies for Document Retrieval Task
 ![aan_acc](https://github.com/user-attachments/assets/c612c459-1e00-4076-9bfe-058cfc3b9397)
 
-The losses we obtained for Document Retrieval task can be seen in Figure YY. The x-axis shows the global steps and y-axis shows the loss for each epoch. Losses are registered per epoch.
+The losses we obtained for Document Retrieval task can be seen in Figure 10. The x-axis shows the global steps and y-axis shows the loss for each epoch. Losses are registered per epoch.
 
 Figure 10: Train, Test and Validation Losses for Document Retrieval Task
 ![aan_loss](https://github.com/user-attachments/assets/3809f3ca-1a42-4564-a87b-486309640ef6)
 
-We choose our best model based on the validation accuracy score. The best model's performance can be observed in Table-ZZZ.
+We choose our best model based on the validation accuracy score. The best model's performance can be observed in Table-5.
 
 Table 5: Performance of the best model for Document Retrieval task
 |                     | Accuracy | Loss|
@@ -263,7 +263,12 @@ Our accuracy was much lower compared to the original paper. This could be becaus
 
 # 4. Conclusion
 
-@TODO: Discuss the paper in relation to the results in the paper and your results.
+In this project, we reproduced the paper "Viewing Transformers Through the Lens of Long Convolutions Layers" and evaluated the proposed Local and Smooth Attention (LaS-Attention) mechanism on the sMNIST task and on select Long Range Arena (LRA) tasks. Our implementation could not replicate the results reported in the paper. This discrepancy is likely a result of limited batch size and epochs due to computational resource limitations. The other hyperparameters (learning rate etc.) specified in the paper may have been suboptimal for our batch size. 
+
+Despite implementing key components of the LaS-Attention mechanism, certain assumptions and missing details (e.g., padding strategies, initialization details) might also have impacted our results. Some discrepancies in our results could also be caused by the preprocessing and experimental configurations inherited from the S4 repository (that were modified but not explained in the original paper).
+
+While our reproduction did not match the original paper's results, we hope that it is a meaningful contribution to the community by providing a clear and detailed implementation of LaS-Attention. Our work highlights the challenges and considerations in reproducing complex deep learning models and serves as a foundation for future explorations and refinements in this area.
+
 
 # 5. References
 
