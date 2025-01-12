@@ -275,7 +275,8 @@ While our reproduction did not match the original paper's results, we hope that 
 [1] Zimerman, I., & Wolf, L. (2024). Viewing Transformers Through the Lens of Long Convolutions Layers. Proceedings of Machine Learning Research, 235, 62815-62831.  
 [2] Press, O., Smith, N. A., & Lewis, M. (2021). Train short, test long: Attention with linear biases enables input length extrapolation. arXiv preprint arXiv:2108.12409. 
 [3] Tay, Yi, et al. "Long range arena: A benchmark for efficient transformers." arXiv preprint arXiv:2011.04006 (2020).  
-[4] https://github.com/jadore801120/attention-is-all-you-need-pytorch/tree/master
+[4] https://github.com/state-spaces/s4  
+[5] https://github.com/jadore801120/attention-is-all-you-need-pytorch/tree/master
 
 # Contact
 
