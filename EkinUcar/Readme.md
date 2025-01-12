@@ -211,6 +211,10 @@ Figure 6: Original paper's accuracy results
 
 <br><br>
 
+**Discussion for sMNIST Task:**  
+
+Our accuracy was much lower compared to the original paper. This could be because we used the setup for the LRA Image task, while the original paper might have used different settings for the sMNIST task. A smaller batch size might have also impacted the accuracy. It's possible that we made a mistake in processing or interpreting the model's output. This might include errors in how predictions were extracted, how metrics were calculated, or how data was handled in post-processing. Lastly, we couldn’t finish the first experiment with the full dataset because of Google Colab's runtime limits. All of them might be a reason of our low accuracy.
+
 ### **3rd Experiment (Full LRA Listops Dataset, 40 Epochs):**
 
 The loss and accuracy results for this experiment are shown below. The gaps between segments are due to saving a checkpoint and continuing training from that model.  
@@ -253,12 +257,11 @@ Table 5: Performance of the best model for Document Retrieval task
 |---------------------|--------|----------|
 | **Training** |    54.208    | 0.687 |
 | **Validation** |    55.041    | 0.682 | 
-| **Test** |    54.743    | 0.685 | 
+| **Test** |    54.743    | 0.685 |  
 
-**Discussion:**  
+**Discussion for LRA Tasks:**  
 
-Our accuracy was much lower compared to the original paper. This could be because we used the setup for the LRA Image task, while the original paper might have used different settings for the sMNIST task. A smaller batch size might have also impacted the accuracy. It's possible that we made a mistake in processing or interpreting the model's output. This might include errors in how predictions were extracted, how metrics were calculated, or how data was handled in post-processing. Lastly, we couldn’t finish the first experiment with the full dataset because of Google Colab's runtime limits. All of them might be a reason of our low accuracy.
-
+Compared to the original paper's results, our accuracy was low and had some fluctuations most likely due to small batch sizes. Despite this, there is some improvement as epochs progress in both experiments. There doesn't seem to be major overfitting or underfitting issues.
 
 
 # 4. Conclusion
