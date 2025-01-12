@@ -293,7 +293,7 @@ We have extracted the following comparisons for LRW-Hard, LRW-Easy, LRW-Random, 
 ## **3.3.2. Margin Maximization Effect**
 
 ### Margin Delta
-![Margin Maximiziaton](https://github.com/Sinasi3/Sinasi3/blob/cc743aa8d459a865b90b45125eb96535a62f9cc3/Margin_New.PNG)
+![Margin Maximiziaton](https://github.com/Sinasi3/Sinasi3/blob/f620832b017d3f75226b3e4164f35878ac918463/Margin_Diff.PNG)
 
 ### Margin Gain
 ![ERM Buckets](https://github.com/Sinasi3/Sinasi3/blob/1a48372d386a0ff09168769de11a7b14622507bb/margin_data.png)
