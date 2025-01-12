@@ -183,7 +183,7 @@ Then, you can follow the notebooks we provided under ```codes/``` to train LaS A
 
 **For sMNIST task:**  
 
-You can simply run the python code ```LaSattn_sMNIST.py``` as below:
+You can simply run the provided python code ```LaSattn_sMNIST.py``` as below:
 
 python LaSattn_sMNIST.py
 
