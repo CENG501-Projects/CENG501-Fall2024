@@ -81,8 +81,9 @@ Below are some of our interpretations about aspects that were unclear in the pap
 
 **(iv)** The authors of the paper build their repository upon the existing S4 repository. The S4 repository has 2 configuration files for LRA tasks, one is older, and the other is more recent. There are slight differences between them. The most important differences are seed and learning rate schedule. The value of the seed changes for different LRA tasks. The old version uses a plateau-based scheduler, ReduceLROnPlateau, and the newer version employs a cosine schedule with warm up. We preferred to use the plateau-based scheduler since it is adaptive, resource-efficient and driven by training performance, which makes it suitable for our situation. Authors state in the paper that they obtained their results by averaging over three different seed values; however, we do not have enough computational power to conduct our experiments in that way. Hence, we used seed=1112 in all of our experiments
 
-**(v)** By observing the figure below, we inferred that as the $\alpha_c$ value increases, the weights corresponding to distant neighbours approaches to 0. This puts more emphasis on close neighbours. 
+**(v)** By observing the Figure 3, we inferred that as the $\alpha_c$ value increases, the weights corresponding to distant neighbours approaches to 0. This puts more emphasis on close neighbours. 
 
+Figure 3: $\alpha_c$ values
 <img width="861" alt="image" src="https://github.com/user-attachments/assets/e929a3b0-608b-4fb7-a050-fb70edd0782a">
 
 
@@ -183,14 +184,14 @@ Then, you can follow the notebooks we provided under ```codes/``` to train LaS A
 
 **1st Experiment (Full sMNIST Dataset and 2 Epochs):**
 
-Figure 3: Train and Validation loss for sMNIST   
+Figure 4: Train and Validation loss for sMNIST   
 
 ![image](https://github.com/user-attachments/assets/fdb9e367-402d-4029-ba85-b49bcb20a4da)
 
 
 **2nd Experiment (1/20 sMNIST Dataset and 80 Epochs):**
 
-Figure 4: Train and Validation loss for small sMNIST 
+Figure 5: Train and Validation loss for small sMNIST 
 
 ![image(2)](https://github.com/user-attachments/assets/d34e6291-61c8-41d5-bae4-e7c61f1da04f)
 
@@ -203,7 +204,7 @@ Table 3: Training and validation accuracies for our implementation
 
 <br><br>
 
-Figure 5: Original paper's accuracy results  
+Figure 6: Original paper's accuracy results  
 
 <img width="350" alt="Papers_MNIST_results" src="https://github.com/user-attachments/assets/ad2ce844-7860-4b1b-9871-3cfcb8541344">
 
@@ -213,12 +214,12 @@ Figure 5: Original paper's accuracy results
 
 The loss and accuracy results for this experiment are shown below. The gaps between segments are due to saving a checkpoint and continuing training from that model.  
 
-Figure 6: Loss Graphs for LRA Listops Benchmark
+Figure 7: Loss Graphs for LRA Listops Benchmark
 
 ![loss](https://github.com/user-attachments/assets/7bc84ff3-825a-43cd-a7a8-d8e3fb7e083e)  
 
 
-Figure 7: Accuracy Graphs for LRA Listops Benchmark
+Figure 8: Accuracy Graphs for LRA Listops Benchmark
 
 ![accuracy](https://github.com/user-attachments/assets/798d52b5-d198-4d20-b91d-9ff7676af439)  
 
@@ -236,12 +237,12 @@ Table 4: Performance of the best model for Listops task
 
 The accuracies we obtained for Document Retrieval task can be seen in Figure XX. The x-axis shows the global steps and y-axis shows the accuracy for each epoch. Accuracies are registered per epoch.
 
-Figure 8: Train, Test and Validation Accuracies for Document Retrieval Task
+Figure 9: Train, Test and Validation Accuracies for Document Retrieval Task
 ![aan_acc](https://github.com/user-attachments/assets/c612c459-1e00-4076-9bfe-058cfc3b9397)
 
 The losses we obtained for Document Retrieval task can be seen in Figure YY. The x-axis shows the global steps and y-axis shows the loss for each epoch. Losses are registered per epoch.
 
-Figure 9: Train, Test and Validation Losses for Document Retrieval Task
+Figure 10: Train, Test and Validation Losses for Document Retrieval Task
 ![aan_loss](https://github.com/user-attachments/assets/3809f3ca-1a42-4564-a87b-486309640ef6)
 
 We choose our best model based on the validation accuracy score. The best model's performance can be observed in Table-ZZZ.
