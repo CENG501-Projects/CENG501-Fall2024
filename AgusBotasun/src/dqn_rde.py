@@ -34,7 +34,7 @@ from stable_baselines3.common.vec_env import VecFrameStack
 from torch.utils.tensorboard import SummaryWriter
 
 #Hyperparameters
-ENV_ID             = "MsPacmanNoFrameskip-v4"  #"Freeway-v4" "MsPacmanNoFrameskip-v4"
+ENV_ID             = "Freeway-v4"  #"Freeway-v4" "MsPacmanNoFrameskip-v4" 
 SEED               = 42
 
 # Ensemble
@@ -52,7 +52,7 @@ MIN_REPLAY_SIZE    = 10_000    # Initial sampling gathering before training
 TOTAL_TIMESTEPS    = 100_000   # Total time steps for training
 
 TRAIN_FREQUENCY    = 1         # 1 training call per env step
-UPDATES_PER_STEP   = 2         # replay ratio 1 => 4
+UPDATES_PER_STEP   = 1         # replay ratio 1 => 4
 TARGET_UPDATE_FREQ = 1         # update target net after each training step
 MAX_GRAD_NORM      = 10        # Maximunm norm of the gradient
 
@@ -442,6 +442,9 @@ def evaluate_model(model_path=MODEL_PATH, episodes=5, epsilon=0.05, render=True,
     with a given 'epsilon' (like 0.05 or 0.0 for purely greedy).
     Print average reward.
     """
+
+    print(f"Evaluation ! Environment: {ENV_ID} | RR: {UPDATES_PER_STEP} | Action Selection : {action_selection}| Episodes: {episodes} | Epsilon: {epsilon}")
+
     # Use a different seed from training seed !
     # Do not clip rewards for evaluation !
     env = make_vec_env(ENV_ID, SEED + 100, False)
@@ -485,6 +488,7 @@ def evaluate_model(model_path=MODEL_PATH, episodes=5, epsilon=0.05, render=True,
 
     env.close()
     avg_rew = np.mean(episode_rewards)
+    print(f"Episode rewards {episode_rewards}")
     print(f"Evaluation over {episodes} episodes at eps={epsilon}: average reward={avg_rew:.2f}")
 
 # Main
@@ -493,15 +497,14 @@ if __name__ == "__main__":
     parser.add_argument("--evaluate", action="store_true", help="Evaluate saved RDE ensemble.")
     parser.add_argument("--episodes", type=int, default=5, help="# of evaluation episodes.")
     parser.add_argument("--epsilon", type=float, default=0.05, help="Epsilon during evaluation.")
-    parser.add_argument("--render", type=bool, default=True, help="Render evaluations on screen.")
-    parser.add_argument("--action_selection", type=bool, default="default", help="Action selection behaviour,\
+    parser.add_argument("--render", action="store_true", help="Render evaluations on screen.")
+    parser.add_argument("--print_actions", action="store_true", help="Prints the action of the model during an episode.")
+    parser.add_argument("--action_selection", type=str, default="default", help="Action selection behaviour,\
                          greedy selects the best action, default selects from softmax distribution of agents.")
-    parser.add_argument("--print_actions", type=bool, default=False, help="Prints the action of the model during an episode.")
-
     args = parser.parse_args()
 
     if args.evaluate:
-        evaluate_model(model_path=MODEL_PATH, episodes=args.episodes, eval_epsilon=args.eval_epsilon,
+        evaluate_model(model_path=MODEL_PATH, episodes=args.episodes, epsilon=args.epsilon,
                        render=args.render, action_selection = args.action_selection, print_actions=args.print_actions)
     else:
         run_training()
