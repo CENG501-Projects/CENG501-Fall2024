@@ -24,7 +24,8 @@
    - [Results](#32-results)
 4. [Conclusion](#4-conclusion)
 5. [References](#5-references)
-6. [Contact](#6-contact)
+6. [Reflections: Achievements and Challenges](#6-reflections)
+7. [Contact](#7-contact)
 
 
 ---
@@ -722,8 +723,40 @@ In summary, **SaCo** provides a comprehensive and rigorous evaluation framework 
 11. Wolf, T., et al. (2020). "Transformers: State-of-the-Art Natural Language Processing." [arXiv:2005.14165](https://arxiv.org/abs/2005.14165)
 12. Zhao, X., et al. (2021). "ATTCAT: Attention Category Visualization for Transformers." [arXiv:2021.03017](https://arxiv.org/abs/2021.03017)
 
+### **6. Reflections: Achievements and Challenges**
 
-### 6. Contact
+In this project, I made progress in implementing and evaluating post-hoc explanation methods for Vision Transformers (ViTs), but I also encountered several challenges. Here’s an overview:
+
+#### **What I Did**:
+1. **Datasets and Models**:
+   - Downloaded validation sets of **CIFAR-10**, **CIFAR-100**, and **ImageNet**.
+   - Fetched pre-trained models **ViT-B**, **ViT-L**, and **DeiT-B**, and fine-tuned them on **CIFAR-10** and **CIFAR-100**.
+
+2. **Explanation Methods**:
+   - Successfully implemented **Grad-CAM**, **Layer-wise Relevance Propagation (LRP)**, **Transformer Attribution**, **Transformer-MM**, **Random Attribution**, and **Rollout**.
+
+3. **Evaluation Metrics**:
+   - Implemented **Log Odds**, **AOPC**, and the proposed **SaCo** method, comparing **AOPC** and **SaCo** as described in the paper.
+
+4. **Case Study**:
+   - Identified the **ImageNet** image used in the paper’s case study and recreated similar experiments for **Transformer Attribution** and **Random Attribution**, aligning my results with the paper.
+
+#### **What I Couldn’t Do**:
+1. **Unimplemented Methods**:
+   - Faced challenges implementing **Integrated Gradients**, **ConLRP**, **ATTCAT**, **Partial LRP**, and **Raw Attention** due to their complexity and my skill issue maybe. 
+
+2. **Programming Skills**:
+   - My programming experience is kinda limited, and I had to adapt methods like **Grad-CAM**, originally designed for CNNs, to work with ViTs. This required extra time and effort.
+
+3. **Scope Limitations**:
+   - Most methods and metrics were tested on a few selected examples, rather than a comprehensive evaluation across datasets, due to computational constraints.
+
+#### **Final Note**:
+While I couldn’t implement all methods or conduct a large-scale study, this project has been a valuable learning experience. It helps me to improve in my programming and research skills, and I hope to address these gaps in the future.
+
+
+
+### 7. Contact
 
 email: kerem.zengin@metu.edu.tr
 
