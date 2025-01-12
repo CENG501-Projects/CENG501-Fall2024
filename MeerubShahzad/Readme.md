@@ -1,4 +1,4 @@
-# Inspecting Prediction Confidence for Detecting Black-Box Backdoor Attacks
+# Inspecting Prediction Confidence for Detection and Mitigation of Black-Box Backdoor Attacks
 
 
 # 1. Introduction
