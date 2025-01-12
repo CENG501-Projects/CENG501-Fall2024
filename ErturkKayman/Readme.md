@@ -159,11 +159,13 @@ self.heatmap_head = nn.Sequential(
 
 In the Adaptive Token Transformer part, the number of loops N is unclear. After some research and trials, we have decided to make it generic so that we loop until all tokens are aggregated. Also a very important hyperparameter number of clusters is unknown. We have decided it to be 100 after a few trials. Also none of the transformer parameters are known. Though we adapt some of them from authors previous work, we had to use some lightweight values to minimize the computational costs.
 
-In the Outline-preferred Token Grouping part, hyperparameter B is unclear. We did not have a chance to fintune B value and we used the value suggested by ChatGPT which is 1.
+In the Outline-preferred Token Grouping part, hyperparameter B is unclear. We did not have a chance to finetune B value and we used the value suggested by ChatGPT which is 1.
 
 In Multi-stage Feature Reconstruction part, the number of loops N is unclear. We implemented MFR as it aggregates all tokens in a single step for now.
 
 The architecture is really complex and there are many more hyperparameters which are unclear. Due to the complexity of the architecture, hyperparameter search methods such as grid search etc. are not feasible. We have adopted most of the hyperparameters from the authors previous work which is also about monocular 3D detection. But there is no guarantee that they remain the same. Also, other than the very major hyperparameters mentioned above, there are many different hyperparameters on the novel parts of the paper which we had to use trial and error as much as possible.
+
+Computational comlexity of the architecture is huge. Even with a decent deep learning machine with GPUs available, training takes more than 24 hours. We had to use small transformers, small CNN etc. so that we could train the network in a logical time. Please note that, those kind of small architectures direcly affect the network's capacity to learn. 
 
 # 3. Experiments and results
 
