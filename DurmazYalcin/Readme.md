@@ -167,7 +167,22 @@ def IF_Neuron(membrane_potential, threshold):
     return membrane_potential, out
 ```
 
-To incorporate the leakage factor into our code, we introduced two terms: a decay factor $\lambda = 0.9 $ and a $threshold = 0.75 $. These terms were defined as hyperparameters within the membrane potential history. The original paper also explored these parameters but concluded that they have minimal impact on the overall performance of the algorithm.
+To incorporate the leakage factor into our code, we introduced two terms: a decay factor $ λ = 0.9 $ and a $threshold = 0.75 $. These terms were defined as hyperparameters within the membrane potential history. The original paper also explored these parameters but concluded that they have minimal impact on the algorithm's overall performance. The implementation details can be seen as follows;
+
+```python
+def LIF_Neuron(membrane_potential, threshold):
+    global threshold_k
+    threshold_k = threshold
+    # check exceed membrane potential and reset
+    ex_membrane = nn.functional.threshold(membrane_potential, threshold_k, 0)
+    membrane_potential = membrane_potential - ex_membrane # hard reset
+    membrane_potential = membrane_potential * 0.9
+    # generate spike
+    out = SpikingNN.apply(ex_membrane)
+    out = out.detach() + (1/threshold)*out - (1/threshold)*out.detach()
+ 
+    return membrane_potential, out
+```
 
 ### Loss Function
 To implement supervised training, we need to incorporate the ground truth optical flow. However, as you may have noticed in the provided ground truth samples, not all pixels in a frame have corresponding ground truth optical flow. Therefore, we must first mask the pixels without valid ground truth values. The mask can be defined as follows:
