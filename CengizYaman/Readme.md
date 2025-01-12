@@ -112,26 +112,22 @@ For ImageNet experiments, 10 random classes of ImageNet is used as ID dataset, a
   - For all datasets, Greg+ uses energy-based sampling to select OOD (out-of-distribution) samples efficiently during training, as described in the original paper.
 
 - **Adjustments in Our Implementation:**
-  - In our experiments, we modified the initial learning rate for GReg on the CIFAR benchmarks. Instead of starting with 1.0, we used 0.01 as the initial learning rate for cosine annealing.
-  - This adjustment was made as we experienced NaN loss values with 1.0 as initial learning rate.
+  - In our experiments, we modified the initial learning rate for GReg on the CIFAR benchmarks. Instead of starting with 1.0, we used 0.01 as the initial learning rate for cosine annealing. This adjustment was made as we experienced NaN loss values with 1.0 as initial learning rate.
 
 ## 3.2. Running the code
-
-@TODO: Explain your code & directory structure and how other people can run it.
+Use corresponding notebooks for training and evaluation. Follow the comments and specifications on each code block to set models, datasets, and training/evaluation pipeline.
 
 ## 3.3. Results
 
-## 3.3.1 First Experiment
+## 3.3.1 GReg Experiments
 
-![Figure 1: Training results of GReg experiment on ResNet-18 and CIFAR-10](./Figures/greg_cifar10_resnet18.png)
+![Figure 1: Training Results of ResNet-18/CIFAR-10](./Figures/resnet_greg_cifar10_graphs.png)
 
-**Figure 1**: Training Plots of GReg Experiment on ResNet-18 and CIFAR-10
-|      | AUROC     | FPR95     |
-|--------------|--------------|--------------|
-| Our Results | 66.00 | 94.72 |
-| Original Results | 98.33 | 6.2 |
+**Figure 1**: Training Plots of GReg Experiment with ResNet-18 and CIFAR-10
 
-**Table 1**: Validation Results and Original Results on iSUN OOD Dataset
+![Figure 2: Evaluation Results of ResNet-18/CIFAR-10](./Figures/resnet_greg_cifar10_eval.png)
+
+**Figure 2**: Evaluation Results of GReg Experiment with ResNet-18 and CIFAR-10
 
 - **Discussion of Our Results**
 There is a significant deviation between our results and the original results. The main reason behind this could be the number of epochs and the initial learning rate. Although training loss was decreasing and validation accuracy was increasing, we finished training at epoch 20 to follow the experimental setup specified in the paper. In addition, we couldn't use the original initial learning rate (lr = 1.0), as we got NaN loss values for each epoch.
