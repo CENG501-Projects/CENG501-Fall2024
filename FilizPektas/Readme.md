@@ -253,9 +253,9 @@ The dataset names are not case sensitive.
 
 ## **3.3. Result**
 
-We have investiageted two of the claims tha the paper proposed, one of the claims was LRW-hard would outperfrom the other splitting methods while the proposed optimal LRW method would be superior in performance than the LRW-Hard method. 
-
-The trained models can be found in the link table below:
+We have investigated two of the claims tha the paper proposed, which are the following:
+1 - Hard instances result in higher accuracies with respect to Easy instances, and Easy instances would result higher with respect to random validation set distribution, while the proposed Meta-learning based learned reweighting outperforms all other instance distribution techniques.
+2 - LRW-Opt has a margin maximization effect.
 
 ## **3.3.1. Accuracy Performance Comparison**
 
