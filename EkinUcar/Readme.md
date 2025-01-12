@@ -255,10 +255,6 @@ Our accuracy was much lower compared to the original paper. This could be becaus
 
 
 
-Figure ??: Original Paper's Accuracy Results for LRA Benchmarks
-
-<img width="650" alt="papers_results" src="https://github.com/user-attachments/assets/449671e3-f5a9-47a5-925b-ba08a80eef8a" />
-
 # 4. Conclusion
 
 @TODO: Discuss the paper in relation to the results in the paper and your results.
