@@ -87,7 +87,22 @@ Below are some of our interpretations about aspects that were unclear in the pap
 
 # 3. Experiments and results
 
-## 3.1. Experimental setup
+## 3.1. Dataset
+
+There are five distinct experiments conducted on five tasks of Long Range Arena (LRA) Benchmark. Therefore, we begin to explain experiments by first introducing the LRA benchmark and the tasks under this benchmark.
+
+According to [3], the LRA benchmark is a systematic framework designed to evaluate the performance of Transformer models in long-context scenarios. It includes tasks for testing the ability to handle sequences ranging from 1,000 to 16,000 tokens across various modalities like text, image and spatial reasoning. The five tasks of LRA are ListOps, Text Classification, Document Retrieval, Image Classification and Path Finder. There is also a task named Path Finder-X, extending Path Finder with extreme lengths. This task is not included in the performance evaluation of Las Attention. Therefore, we suffice to explain the five tasks, indicated above.
+
+**(i) ListOps:** The dataset consists of sequences with a hierarchical structure and operators MAX, MEAN, MEDIAN and SUM_MOD that are enclosed by delimiters. The model needs to access all tokens and model the logical structure of the inputs in order to make a prediction. 
+**(ii) Text Classification:** The dataset consists of text sequences at the byte or character level. The model needs to reason with compositional, unsegmented data in order to solve a meaningful real-world task. 
+**(iii) Document Retrieval:** The dataset consists of document pairs represented at the byte or character level. The model needs to compress long sequences into representations suitable for similarity-based matching. 
+**(iv) Image Classification:** The dataset consists of images represented as sequences of pixels. The model needs to learn the 2D spatial relations between input pixels. 
+**(v) Path Finder:** In this task, the model needs to make a binary classification indicating whether two points are connected with a by a path.
+
+The performance of Las Attention is evaluated based on these tasks. We evaluated our implementation of LaS Attention on ListOps and Document Retrieval tasks only due to our limited time and resources.
+
+
+## 3.2. Experimental setup
 
 The original paper provides the following hyperparameters for the experimental setups for different Long Range Arena (LRA) tasks:
 
@@ -181,8 +196,9 @@ Figure ??: Original Paper's Accuracy Results for LRA Benchmarks
 # 5. References
 
 [1] Zimerman, I., & Wolf, L. (2024). Viewing Transformers Through the Lens of Long Convolutions Layers. Proceedings of Machine Learning Research, 235, 62815-62831.  
-[2] Press, O., Smith, N. A., & Lewis, M. (2021). Train short, test long: Attention with linear biases enables input length extrapolation. arXiv preprint arXiv:2108.12409.
-[3] https://github.com/jadore801120/attention-is-all-you-need-pytorch/tree/master
+[2] Press, O., Smith, N. A., & Lewis, M. (2021). Train short, test long: Attention with linear biases enables input length extrapolation. arXiv preprint arXiv:2108.12409. 
+[3] Tay, Yi, et al. "Long range arena: A benchmark for efficient transformers." arXiv preprint arXiv:2011.04006 (2020). 
+[4] https://github.com/jadore801120/attention-is-all-you-need-pytorch/tree/master
 
 # Contact
 
