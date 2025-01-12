@@ -298,6 +298,15 @@ Overall, this project has been a valuable learning experience, serving as an int
 # 5. References
 
 ```latex
+@inproceedings{kosta2023adaptive,
+  title={Adaptive-SpikeNet: Event-Based Optical Flow Estimation Using Spiking Neural Networks with Learnable Neuronal Dynamics},
+  author={Kosta, Adarsh Kumar and Roy, Kaushik},
+  booktitle={International Conference on Robotics and Automation (ICRA)},
+  year={2023},
+  organization={IEEE}
+}
+
+```latex
 @inproceedings{lee2020spike,
   title={Spike-Flownet: Event-Based Optical Flow Estimation with Energy-Efficient Hybrid Neural Networks},
   author={Lee, Chankyu and Kosta, Adarsh Kumar and Zhu, Alex Zihao and Chaney, Kenneth and Daniilidis, Kostas and Roy, Kaushik},
@@ -305,7 +314,9 @@ Overall, this project has been a valuable learning experience, serving as an int
   pages={366--382},
   year={2020},
   organization={Springer}
-}# Contact
+}
+
+# Contact
 
 Atakan Durmaz - atakan.durmaz@metu.edu.tr
 Haktan Yalçın - yalcin.haktan@metu.edu.tr
