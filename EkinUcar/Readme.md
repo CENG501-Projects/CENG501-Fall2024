@@ -152,7 +152,7 @@ Download the S4 repository at [this link](https://github.com/state-spaces/s4/tre
 
 Download the LRA benchmark following the steps at [this link](https://github.com/state-spaces/s4/tree/main/src/dataloaders). Be careful about the directory structure.
 
-Change the ```plaintext transformer.py ``` under:
+Change the ```transformer.py``` under:
 
 ```plaintext
 s4-main/
@@ -162,6 +162,17 @@ s4-main/
 |            ├── transformer.py
 ```
 
+with our provided ```transformer.py```.
+
+Put the configuration files provided under ```/config``` under the ```/old``` directory: 
+
+```plaintext
+s4-main/
+├── configs/
+│   ├── experiment/
+│       ├── lra/
+|            ├── old/
+```
 
 
 ## 3.3. Results
