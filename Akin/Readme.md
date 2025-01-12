@@ -4,20 +4,20 @@ This readme file is an outcome of the [CENG501 (Spring 2024)](https://ceng.metu.
 
 # 1. Introduction
 
-This project aims to introduce and implement the paper [MotionTrack: Learning Robust Short-term and Long-term Motions for Multi-Object Tracking](https://arxiv.org/pdf/2303.10404) [1], which was published in CVPR 2023. The goal of this project is evaluate the reproducibility and proposed solution in the paper. The paper introduces a new set of methods for object tracking, especially in crowded places.
+This project aims to introduce and implement the paper [MotionTrack: Learning Robust Short-term and Long-term Motions for Multi-Object Tracking](https://arxiv.org/pdf/2303.10404) [1], which was published in CVPR 2023. The goal of this project is to evaluate the reproducibility and the proposed solution in the paper. The paper introduces a new set of methods for object tracking, especially in crowded places.
 
-Multi Object Tracking is one of the hot topics in computer vision and machine learning spaces. The primary challenge of MOT is deciding on accurate trajectories for objects across frames in video files, especially places like dense crowds. Although there are some existing methods, handling object tracking in dense crowds including lost ones still a problematic subject. Hence, challenges such as Multi Object Tracking (MOT) Challenge started to happen for a few years. This paper also uses MOT datasets to compare the results with several other papers.
+Multi-Object Tracking (MOT) is one of the hot topics in the computer vision and machine learning domains. The primary challenge of MOT is determining accurate trajectories for objects across frames in videos, especially in dense crowds. Although some existing methods address this, handling object tracking in dense crowds (including lost objects) remains problematic. Hence, challenges such as the Multi Object Tracking (MOT) Challenge have been introduced over the past few years. This paper also uses MOT datasets to compare results with those from several other papers.
 
 ![figures/introduction.png](figures/introduction.png)
 
 ## 1.1. Paper summary
 
-The paper focuses on solving problems in Multi-Object Tracking (MOT), such as keeping track of objects in crowded areas and when they're not visible from the view of the camera. It introduces a method called MotionTrack, which combines two ideas:
+The paper focuses on solving problems in Multi-Object Tracking (MOT), such as keeping track of objects in crowded areas and when they are not visible to the camera. It introduces a method called MotionTrack, which combines two ideas:
 
-- Interaction Module: Helps predict how objects will move in crowded spaces by understanding how they affect each other.
-- Refind Module: Helps find and reconnect objects that were lost by using their past movements.
+- **Interaction Module**: Helps predict how objects will move in crowded spaces by understanding how they affect each other.
+- **Refind Module**: Helps find and reconnect objects that were lost by using their past movements.
 
-The paper shows that MotionTrack performing better than other methods on two popular datasets (MOT17 and MOT20). Its main contributions are:
+The paper shows that MotionTrack outperforms other methods on two popular datasets (MOT17 and MOT20). Its main contributions are:
 
 - A way to predict movements in crowded areas.
 - A way to reconnect lost objects by using their history.
@@ -34,20 +34,20 @@ MotionTrack solves two main problems in tracking objects:
 - Tracking objects between nearby frames (short-range association).
 - Reconnecting objects that are lost for a while (long-range association).
 
-It uses an approach called tracking-by-detection, where objects are first detected in each frame and then connected across the video.
+It uses an approach called tracking-by-detection, where objects are first detected in each frame and then associated across the video.
 
 ![figures/general-overview.png](figures/general-overview.png)
 
 ### 2.1.1 Object Detection
 
-In this paper, first frames are processed by YOLOX[2] to detect the location of the items in each frame. Then, the locations of the people detected in each frames, and the delta values between frames are being used to train the algorithm.
+In this paper, the frames are first processed by YOLOX [2] to detect the locations of objects. Then, the locations of the people detected in each frame, along with the delta values between frames, are used to train the algorithm.
 
 ### 2.1.2 Interaction Module (Short-range Association)
 
-This module exists specifically for detecting the relation of people between frames. The main goal is detect people not being lost during frames. Refind Module will take the lead of finding the missing people between frames.
+This module exists specifically to detect the relationships of people between frames. The main goal is to prevent losing track of people from frame to frame, while the Refind Module is responsible for rediscovering people who disappear.
 
-- It creates a special matrix to detect how much one person affect each another.
-- A type of neural network being used in this matrix to predict how objects will move.
+- It creates a special matrix to detect how strongly one person affects another.
+- A type of neural network is used with this matrix to predict how objects move.
 - This makes it easier to track objects that might overlap or partially block each other in crowded scenes.
 
 ![figures/interaction-module.png](figures/interaction-module.png)
@@ -56,134 +56,133 @@ The figure above demonstrates how the interaction module works.
 
 ![figures/interaction1.png](figures/interaction1.png)
 
-First, an attention mechanism being used for the locations. `I` in here represents the input, namely `x, y, w, h, Δx, Δy, Δw, Δh`.
+First, an attention mechanism is applied to the locations. `I` represents the input, namely `x, y, w, h, Δx, Δy, Δw, Δh`.
 
 ![figures/interaction2.png](figures/interaction2.png)
 
-Then, the result of the attention is given to two convolution networks. Then, the results of the convolution networks being added and a PReLu function is applied.
+Next, the result of the attention is passed through two convolutional networks. The outputs of these networks are then added, and a PReLU function is applied.
 
 ![figures/interaction3.png](figures/interaction3.png)
 
-Then, the result of the operation above filtered by a sign function, and done an element-wise multiplication with the result of the attention matrix.
+Then, the result of the above operation is filtered by a sign function and undergoes an element-wise multiplication with the output of the attention matrix.
 
 ![figures/interaction4.png](figures/interaction4.png)
 
-Lastly, the result of this operation is multiplied by the embedding of the `O`. `O` here represents the second part of the data input `I`. Then, the results are given to a PReLu function.
+After that, the result of this operation is multiplied by the embedding of `O`, which represents the second part of the data input `I`. The results are then passed through a PReLU function.
 
-Then, the results are given to a Multi Layer Perception. At the end, we have `Poffs`, which represents the predicted delta values for `Δx, Δy, Δw, Δh` that will be applied for the next frame.
+Finally, these outputs are given to a Multi-Layer Perceptron (MLP). The final output, `Poffs`, represents the predicted delta values for `Δx, Δy, Δw, Δh` to be applied in the next frame.
 
 ### 2.1.3 Refind Module (Long-range Association)
 
-This module exists specifically for detecting/predicting the lost people during frames. The algorithm uses old behaviors of people to be able to understand and refind the lost people across frames.
+This module specifically handles detecting or predicting the positions of lost people across frames. The algorithm uses past behaviors of the tracked people to rediscover them when they disappear.
 
-- It uses the object’s past movements to calculate a score between the lost object and new detections.
-- If a match is found, it fixes the object’s position during the time it was hidden to make the tracking smoother
+- It uses an object’s past movements to calculate a score between the lost object and new detections.
+- If a match is found, it fixes the object’s position during the time it was hidden to make tracking smoother.
 
-The result of this module will be given back to interaction module to continue creating relations between frames.
+The result of this module is fed back to the interaction module to continue creating associations between frames.
 
 ![figures/correlation-matrix.png](figures/correlation-matrix.png)
 
-The figure above demonstrates how the correlation matrix work in the refind module.
+The figure above demonstrates how the correlation matrix works in the refind module.
 
 ![figures/refind1.png](figures/refind1.png)
 
-Refind module takes two different data as it's input. The first data `T` includes the lost tracklets between previous and current frame. The second data `D` represents the current non-matches (or newly matched) detections in the current frame. Each data point has 5 values, namely `t, x, y, w, h`. `t` here represents the frame id of where the data belongs.
+The refind module takes two different sets of data as its input. The first set, `T`, includes the lost tracklets between the previous and current frames. The second set, `D`, represents the current non-matching (or newly matched) detections in the current frame. Each data point has 5 values: `t, x, y, w, h`. Here, `t` represents the frame ID.
 
-First, the data `T` is given to a convolution network. Then, the result of this network is given to another convolution network once more, and a pooling algorithm to be applied. This gives us the `Ftraj`.
+First, the data `T` is passed through a convolutional network. The output is then passed through another convolutional network, followed by a pooling operation, resulting in `Ftraj`.
 
 ![figures/refind2.png](figures/refind2.png)
 
-Then, `Drest` is calculated. Drest is the differences between each detection and last known location of each tracklet. Then, a linear transformation applied to get `Fdete`.
+Next, `Drest` is calculated. `Drest` is the difference between each detection and the last known location of each tracklet. Then, a linear transformation is applied to get `Fdete`.
 
-Lastly, `Fdete` and `Ftraj` are combined into a future matrix. Then, the future matrix is given to a fully connected layer then a sigmoid function to get the correlation matrix. The correlation matrix here represents the possibility of matches between lost tracklets and detections.
+Finally, `Fdete` and `Ftraj` are combined into a future matrix, which is then passed through a fully connected layer and a sigmoid function to get the correlation matrix. This matrix represents the likelihood of matches between lost tracklets and detections.
 
 ### 2.1.5 Loss Functions
 
-For interaction module, Interaction over Union (IoU) loss function is being used. The exact formula of the function is:
+For the interaction module, the Intersection over Union (IoU) loss function is used. The exact formula is shown below:
 
 ![figures/interaction-loss.png](figures/interaction-loss.png)
 
-For refind module, a binary cross-entropy function is used for the loss function. In here, a 1-0 matrix is given to calculate this loss.
+For the refind module, a binary cross-entropy loss function is used. A 1-0 matrix is provided to compute this loss:
 
 ![figures/refind-loss.png](figures/refind-loss.png)
 
 ### 2.1.4 Overall Process
 
-- The system uses an object detection model (YOLOX [2]) to find objects in each frame.
-- The Interaction Module predicts where objects will move and links them across frames.
-- If an object is missing, the Refind Module uses its past movements to find it and reconnect it.
-- The system combines all the information to create paths for each object.
+1. The system uses an object detection model (YOLOX [2]) to find objects in each frame.
+2. The Interaction Module predicts where objects will move and associates them across frames.
+3. If an object is missing, the Refind Module uses its past movements to find it and reconnect it.
+4. The system combines all the information to create paths for each object.
 
 ## 2.2. Our interpretation
 
-For object detection, in the paper, it's not quite stated which trained version of YOLOX [2] is being used. I've done several tests, and found YOLOX trained with yolox_x dataset performed the best results. I'll be using PyTorch for my implementation for Interaction and Refind modules. The modules are trained by MOT17 and MOT20 datasets, like in the paper.
+In the paper, it is not explicitly stated which trained version of YOLOX [2] is used. Through experimentation, I found that YOLOX trained with the `yolox_x` model yields the best results. I will use PyTorch to implement the Interaction and Refind modules, which are trained on the MOT17 and MOT20 datasets, as described in the paper.
 
-The formats provided by MOT datasets (MOT17 and MOT20) and the required format by the paper is a bit different. Hence, I've wrote a data conversion script to change the format of the data before starting the training. MOT gives the location (the coordinates) of the people detected in the each frame. However, the implementation requires the both the coordinates and the size of each detection (width and height in the image) should also be given.
+The formats provided by the MOT datasets (MOT17 and MOT20) differ somewhat from what the paper requires. Therefore, I wrote a data conversion script to modify the dataset format before training. MOT provides the coordinates of detected people in each frame. However, the implementation requires both coordinates and size (width and height) for each detection.
 
-We've setup an environment such that first the input is given to the interaction module. Then based on the findings of the interaction module we expect the next position of each tracklet between frames. Then, refind module is run in the pipeline to get the results of locations of loss tracklets.
+We have set up an environment where the input is first passed to the interaction module. Based on the results of the interaction module, we predict the next position of each tracklet between frames. Next, the refind module is run in the pipeline to locate any lost tracklets.
 
-The pipeline keeps track of each tracklet, whether the item is lost in the frames or not. Due to this, a reset to the memory of the pipeline is necessary for each dataset, since they're representing different frames.
+The pipeline tracks each individual, including whether they are lost in a sequence of frames. Consequently, we must reset the pipeline’s memory for each dataset because they represent different sets of frames.
 
 # 3. Experiments and results
 
 ## 3.1. Experimental setup
 
-I'm using a MacBook Air M2 with 16 GB of ram with 8 GPUs to setup my environment. I'll be using PyTorch for implementations. The inputs will be first sent to YOLOX for object detection by frame by frame. Then, the two stage machine learning architecture will be used (interaction and refind modules) to find the relationship between frames for each person.
+I used a MacBook Air M2 with 16 GB of RAM and an 8-core GPU to set up my environment. I will use PyTorch for the implementation. The inputs are first sent to YOLOX for object detection on a frame-by-frame basis. Then, the two-stage machine learning architecture (interaction and refind modules) is used to find the relationships between frames for each person.
 
 ## 3.2. Running the code
 
-### 3.2.1 Setting up YOLOX and Pytorch.
+### 3.2.1 Setting up YOLOX and PyTorch
 
 First, one has to setup YOLOX, pytorch and necessary modules to local. Python 3 is required to run the project.
 
-- Install Python 3
-- Run `pip3 install -r requirements.txt` to install dependencies.
-- Run `git apply` for each patch in the `patches` folder.
+1. Install Python 3.
+2. Run `pip3 install -r requirements.txt` to install dependencies.
+3. Run `git apply` for each patch in the `patches` folder.
 
 We had to create some patches for the YOLOX library to ensure the compatibility of the code with our environment.
 
 ### 3.2.2 Downloading Pre-Trained YOLOX
 
-Download a pre-trained version of the YOLOX from [here](https://github.com/Megvii-BaseDetection/YOLOX/blob/main/README.md).
+Download a pre-trained version of YOLOX from [here](https://github.com/Megvii-BaseDetection/YOLOX/blob/main/README.md).
 
 ### 3.2.3 Downloading Datasets
 
-Download [MOT17](https://motchallenge.net/data/MOT17/) and [MOT20](https://motchallenge.net/data/MOT20/) datasets. In datasets, `gt.txt` files are being used to train the system.
+Download the [MOT17](https://motchallenge.net/data/MOT17/) and [MOT20](https://motchallenge.net/data/MOT20/) datasets. In these datasets, `gt.txt` files are used to train the system.
 
 ## 3.3. Results
 
-In the paper, it's not actually stated some details of the implementation, such as:
-- How many layers are being used for convolution networks. (It's stated with `N`)
-- The details about MLP (Multi Layer Perception)
-- How exactly Correlation matrix is calculated from `Ftraj` and `Fdete`.
-- How the metrics are calculated.
+In the paper, certain implementation details are not stated, such as:
 
-Hence, We filled those information with the most logical way.
+- How many layers are used for the convolutional networks (denoted as `N`).
+- The specifics of the MLP (Multi-Layer Perceptron).
+- The exact way the correlation matrix is calculated from `Ftraj` and `Fdete`.
+- How the metrics are computed.
 
-Here are the some difference values we used from the paper
+Hence, we filled in these details with the most logical assumptions.
 
-|                                         |                   |           |
+Below are some values we used, which differ from those in the paper:
+
+|                                         | Paper             | Us        |
 |-----------------------------------------|-------------------|-----------|
-| Value name                              | Paper             | Us        |
 | Sigmoid Threshold in interaction module | 0.6               | 0.5       |
-| Tracklet initilization score            | 0.7               | 0.5       |
+| Tracklet initialization score           | 0.7               | 0.5       |
 | Refind module reject threshold          | 0.9               | 0.5       |
 | Lost tracklet frame memory size         | 60 and 120 frames | 30 frames |
 
-Here are the training loss of interaction and refind modules.
+Below are the training losses of the interaction and refind modules.
 
 ![figures/train-loss-interaction.png](figures/train-loss-interaction.png)
 
 ![figures/train-loss-refind.png](figures/train-loss-refind.png)
 
-
 # 4. Conclusion
 
-In this project, we've implemented the paper entitled with "Motiontrack: Learning robust short-term and long-term motions for multi-object tracking". The paper introduced an algorithm to track people in videos for crowded areas. The paper especially introduces state-of-the-art algorithm to detect lost people and refind them in the crowded areas.
+In this project, we implemented the paper entitled “MotionTrack: Learning Robust Short-term and Long-term Motions for Multi-Object Tracking.” The paper introduces an algorithm to track people in crowded video scenes, particularly focusing on methods to rediscover lost individuals.
 
-Although the paper is mostly implemented, it's quite hard to build the pipeline with 100% compatible with like the paper suggested. First, it's quite hard to connect the inputs and outputs of the modules together, and keep a memory of the tracklets and detections throughout the training. Moreover, since it's hard to compare the results with the actual framework before finishing the two learning models.
+Although we have largely implemented the approach described in the paper, it is quite challenging to build a pipeline that is 100% compatible with the original specifications. First, it is difficult to connect the modules’ inputs and outputs while maintaining a memory of the tracklets and detections throughout training. Moreover, comparing the results with the original framework is challenging without completing both learning models.
 
-The idea that is provided by the paper is a simple but effective idea. This paper basically introduces the algorithm to predict the people behavior by how they're affecting each other, and using this data to connect the lost people in crowded areas. By calculating a projectory for each people, this paper connects the lost tracklets with detections.
+The main idea provided by the paper is both simple and effective. Essentially, it introduces an algorithm to predict people’s behavior by understanding how they affect one another, using this information to reconnect lost individuals in crowded areas. By calculating a trajectory for each person, the paper links lost tracklets with detections.
 
 # 5. References
 
