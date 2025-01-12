@@ -138,6 +138,15 @@ Use corresponding notebooks for training and evaluation. Follow the comments and
 
 **Figure 4**: Evaluation Results of GReg Experiment with ResNet-18 and CIFAR-100
 
+
+<img src="./Figures/densenet_greg_cifar10_graphs.png" alt="Figure 1: Training Results of DenseNet-121/CIFAR-10" width="800">
+
+**Figure 1**: Training Plots of GReg Experiment with DenseNet-121 and CIFAR-10
+
+<img src="./Figures/densenet_greg_cifar10_eval.jpg" alt="Figure 1: Evaluation Results of DenseNet-121/CIFAR-10" width="600">
+
+**Figure 2**: Evaluation Results of GReg Experiment with DenseNet-121 and CIFAR-10
+
 - **Discussion of Our Results**
 There is a significant deviation between our results and the original results. The main reason behind this could be the number of epochs and the initial learning rate. Although training loss was decreasing and validation accuracy was increasing, we finished training at epoch 20 to follow the experimental setup specified in the paper. In addition, we couldn't use the original initial learning rate (lr = 1.0), as we got NaN loss values for each epoch.
 
