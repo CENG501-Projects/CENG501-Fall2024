@@ -130,7 +130,7 @@ The hyperparameters we adjusted to suit our setup can be observed in Table2. The
 Table 2: Batch size and epoch adjustments in our experiments
 |                     | Batch Size | Epoch|
 |---------------------|--------|----------|
-| **Listops** |        | 40 |
+| **Listops** |    10    | 40 |
 | **Document Retrieval** |    6    | 7 | 
 
 -------------------------
