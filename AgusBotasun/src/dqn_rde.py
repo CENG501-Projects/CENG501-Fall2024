@@ -52,7 +52,7 @@ MIN_REPLAY_SIZE    = 10_000    # Initial sampling gathering before training
 TOTAL_TIMESTEPS    = 100_000   # Total time steps for training
 
 TRAIN_FREQUENCY    = 1         # 1 training call per env step
-UPDATES_PER_STEP   = 1         # replay ratio 1 => 4
+UPDATES_PER_STEP   = 2         # replay ratio 1 => 4
 TARGET_UPDATE_FREQ = 1         # update target net after each training step
 MAX_GRAD_NORM      = 10        # Maximunm norm of the gradient
 
