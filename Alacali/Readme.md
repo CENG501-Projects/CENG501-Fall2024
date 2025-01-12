@@ -352,6 +352,11 @@ if __name__ == "__main__":
   <em>Figure 16: Generator results (FL-GAN, IFL-GAN, MD-GAN), K=2 clients</em>
 </p>
 
+<p align="center">
+  <img src="figures/table.png" style="width: 70%;"><br>
+  <em>Figure 17: MNIST Scores (FL-GAN, IFL-GAN, MD-GAN)</em>
+</p>
+
 # 4. Conclusion
 
 In this part, the results shared are discussed from the perspective of the hypotheses created from the paper.
