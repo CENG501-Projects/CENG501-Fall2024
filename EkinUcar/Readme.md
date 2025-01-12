@@ -148,6 +148,20 @@ We conducted two experiments:
 
 @TODO: Explain your code & directory structure and how other people can run it.
 
+project/
+├── src/
+│   ├── main.py
+│   └── utils.py
+├── tests/
+│   ├── test_main.py
+│   └── test_utils.py
+├── docs/
+│   └── index.md
+├── .gitignore
+├── README.md
+└── requirements.txt
+
+
 ## 3.3. Results
 
 **1st Experiment (Full sMNIST Dataset and 2 Epochs):**
