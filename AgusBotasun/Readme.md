@@ -313,9 +313,39 @@ tensorboard==2.18.0
 ```
 
 ## 3.3. Results
-We have used the following hyperparameters for our results:
+We have used the hyperparameters given in the paper Table 3 and Table 4,[[1]].
 
 <!-- Action results table here (Figure 3) -->
+
+| Method                 | Replay Ratio (RR) | Avg Reward (epsilon=0.05) | Paper Resutls |
+|------------------------|-------------------|---------------------------|--------------|
+| **DQN**                | 1              | 21.00                          | 15.1 |
+|                        | 2              | 21.40                          | 10.9 |
+|                        | 4              | 21.13                          | 14.8 |
+| **DQN + SR**           | 1              | 21.60                          | 7.2 |
+|                        | 2              | 6.13                           | 6.4 | 
+|                        | 4              | 21.27                          | 7.9 |
+| **DQN + RDE**          | 1              | 0.00                           | 4.0 |
+|                        | 2              | 0.00                           | 16.8 |
+|                        | 4              | 10.93                          | 21.2 |
+
+*Table 1: Freeway-v4 Results*
+
+
+| Method                 | Replay Ratio (RR) | Avg Reward (epsilon=0.05) | Paper Resutls |
+|------------------------|-------------------|---------------------------|--------------|
+| **DQN**                | 1              | 21.00                          | 790.0 |
+|                        | 2              | 21.40                          | 907.2 |
+|                        | 4              | 21.13                          | 868.4 |
+| **DQN + SR**           | 1              | 21.60                          | 769.6 |
+|                        | 2              | 6.13                           | 832.0 | 
+|                        | 4              | 21.27                          | 954.8 |
+| **DQN + RDE**          | 1              | 0.00                           | 609.6 |
+|                        | 2              | 0.00                           | 831.6 |
+|                        | 4              | 10.93                          | 1223.2 |
+
+*Table 2: MsPacmanNoFrameskip-v4 Results*
+
 
 <p align="center">
   <img src="figures/freeway_v4_rr1.svg" style="width: 70%;"><br>
