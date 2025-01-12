@@ -123,6 +123,18 @@ The hyperparameters for the LaS attention are as follows:
 
 The authors built their experiments upon the existing S4 repository. In all experiments, they used causal transformers with 8 heads, and aligned training procedures and hyperparameters with the S4 repository. In another words, they used the default hyperparameters used in the S4 repository for the ones that are not specified in the above table. Dropout was set to 0 in all cases.
 
+We conducted our experiments on the ListOps and Document Retrieval tasks, as indicated in Section 3.1 of the paper, using a Google Colab instance with an A100 GPU. While Google Colab provides 40GB of GPU RAM for this GPU type, we had to reduce the batch sizes to avoid exceeding the memory limit for both tasks. Additionally, we were unable to complete the full number of epochs specified in the paper due to resource constraints. Apart from these adjustments, we used the same hyperparameters and architecture settings described in the paper. Lastly, we utilized the datasets in their full size without any reductions in the training, test or validation sets.
+
+The hyperparameters we adjusted to suit our setup can be observed in Table2. The number of epochs of Document Retrival task is considerably reduced compared to the setting of original paper. This is due to the fact that one epoch takes 3.5 hours with full dataset.
+
+Table 2: Batch size and epoch adjustments in our experiments
+|                     | Batch Size | Epoch|
+|---------------------|--------|----------|
+| **Listops** |        | 40 |
+| **Document Retrieval** |    6    | 7 | 
+
+-------------------------
+
 We ran our first experiment on Sequential MNIST (sMNIST); however, the paper does not provide setup details for this. For this reason, we used the setup parameters of the LRA Image task with the exception of batch size and number of epochs. We reduced the batch size to 10 to not exceed the Google Colab T4 GPU RAM. We also reduced the number of epochs due to limited runtime of Google Calob. Similar to the original paper, we built our code upon the existing S4 repository. Also, we adapted the Transformer architecture from [3] to hanve more flexibility in our architecture.
 
 We conducted two experiments:
