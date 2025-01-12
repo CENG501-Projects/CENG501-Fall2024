@@ -6,11 +6,11 @@ See the [CENG501 (Spring 2024) Project List](https://github.com/CENG501-Projects
 # 1. Introduction
 
 The paper subject to our implementation, published at NeurIPS 2023, introduces Reset Deep Ensemble Agents (RDE) [[1]], a framework that combines ensemble learning with periodic parameter resets to simultaneously mitigate primacy bias, and the performance collapse issues associated with parameter resetting. 
-This repository aims to reproduce the key findings of the paper, focusing on its proposed method's performance improvements in sample efficiency, safety, and stability.
+This repository aims to reproduce the paper's key findings, focusing on the proposed method's performance improvements in sample efficiency, safety, and stability.
 
-## 1.1. Paper summary
+## 1.1. Paper Summary
 
-Deep reinforcement learning (RL) combines neural networks and reinforcement learning to solve complex tasks. However, a key challenge in deep RL is *primacy bias*, a phenomenon where deep neural networks (DNNs) overfit to early experiences, which tend to be replayed more than newer experiences, due to design of replay buffers built into them. This bias impairs the learning process, particularly at higher replay ratios, leading to suboptimal performance and a decline in sample efficiency. Additionally, methods that mitigate primacy bias, such as *parameter resets*, can cause performance collapses immediately following resets, undermining their applicability in safe RL environments.
+Deep reinforcement learning (RL) combines neural networks and reinforcement learning to solve complex tasks. However, a key challenge in deep RL is *primacy bias*, a phenomenon where deep neural networks (DNNs) overfit to early experiences, which tend to be replayed more than newer experiences, due to the design of replay buffers built into them. This bias impairs the learning process, particularly at higher replay ratios, leading to suboptimal performance and a decline in sample efficiency. Additionally, methods that mitigate primacy bias, such as *parameter resets*, can cause performance collapses immediately following resets, undermining their applicability in safe RL environments.
 
 ### Key Contributions
 The paper introduces a novel approach to deep RL that:
@@ -20,11 +20,11 @@ The paper introduces a novel approach to deep RL that:
 4. Improves *sample efficiency* compared to baseline methods across continuous and discrete environments such as Atari-100k [[2]], MiniGrid [[3]], and DeepMind Control Suite [[4]].
 5. Tailors itself for *safety-critical* RL tasks through modifications in action selection, significantly reducing safety constraint violations.
 
-# 2. The method and our interpretation
+# 2. The Method and Our Interpretation
 
-## 2.1. The original method
+## 2.1. The Original Method
 
-The RDE framework proposes a novel methodology to tackle primacy bias and performance collapses in deep reinforcement learning. Overall diagram of the RDE is shown in the Figure 1, [[1]]. First, $N$ ensemble agents with unique sets of initialized parameters are created. Ensemble agents are adaptively composited into a single agent that interacts with the environment during the training phase. At every $T_{reset}$ time-step, a single agent $k$ is selected and all of its parameters $θ_k$ are reset by a resetting mechanism.
+The RDE framework proposes a novel methodology to tackle primacy bias and performance collapses in deep reinforcement learning. The overall diagram of the RDE is shown in Figure 1, [[1]]. First, $N$ ensemble agents with unique sets of initialized parameters are created. Ensemble agents are adaptively composited into a single agent that interacts with the environment during the training phase. At every $T_{reset}$ time-step, a single agent $k$ is selected and all of its parameters $θ_k$ are reset by a resetting mechanism.
 
 <p align="center">
   <img src="figures/overall_diagram_of_rde.png" style="width: 70%;"><br>
@@ -62,25 +62,25 @@ p^{safe}_{s} = \kappa * p_{s} + (1 - \kappa) * p^{c}_{s}
  -  $\kappa$ is a mixing coefficient that balances the importance of reward maximization (through Q-values) and safety cost minimization.
  - This adjustment ensures that the composite agent not only performs efficiently but also adheres to safety constraints, reducing violations in real-world scenarios.
 
-## 2.2. Our interpretation
+## 2.2. Our Interpretation
 
 The original paper uses Stable-Baselines3 [[5]] as its primary framework, and its main mechanisms are clearly explained. However, to the best of our knowledge, Stable-Baselines3 does not support a multi-agent structure or a reset mechanism without modifications to the library itself [[7]]. Below, we outline our approach to implementing these features.
 
 ### 1. **Sequential Reset Mechanism**
 
-The **Sequential Reset Mechanism** is a core innovation in the RDE framework that effectively mitigates primacy bias and prevents performance collapses caused by weight reseting. This approach ensures that the agents can benefit from high replay ratios without suffering from overfitting to early experiences. Below are the key details of the implementation:
+The **Sequential Reset Mechanism** is a core innovation in the RDE framework that effectively mitigates primacy bias and prevents performance collapses caused by weight resetting. This approach ensures that the agents can benefit from high replay ratios without suffering from overfitting to early experiences. Below are the key details of the implementation:
 
 1. **Configurable Reset Depth**
     - **full**: Reinitializes all layers of the neural network. 
     - **last1**: Only reinitializes the last layer of the network. 
     - **last2**: Only reinitializes the last two layers of the network. 
-    - The depth of reset can be configured based on the environment and the complexity of the task. In the original paper different reset depths for various environments and tasks have been selected.
+    - The depth of reset can be configured based on the environment and the complexity of the task. In the original paper, different reset depths for various environments and tasks have been selected.
 
 2. **Replay Buffer Preservation**
-    - The replay buffer is preserved across resets, allowing agents to learn from previously collected experiences without requiring new interactions with environment.
+    - The replay buffer is preserved across resets, allowing agents to learn from previously collected experiences without requiring new interactions with the environment.
 
 3. **Sequential Reset**
-    - At predefined intervals a single agent (the next one in the sequence) in the ensemble is selected for reset (parameter reinitialization), while others remain stable. The resetted agent is added to the end of the reset sequence.
+    - At predefined intervals, a single agent (the next one in the sequence) in the ensemble is selected for reset (parameter reinitialization), while others remain stable. The reset agent is added to the end of the reset sequence.
 
 #### Implementation
 
@@ -130,11 +130,11 @@ The **Sequential Reset Mechanism** is a core innovation in the RDE framework tha
 
 ### 2. Multi-Agent Structure
 
-The **Multi-Agent Structure (Ensemble)** is a core component of the RDE framework. The main idea is maintaining a group of agents, each with its own Q-network and optimizer, while sharing a centralized replay buffer. This structure tries to achieve diversity in learning while eliminating performance collapses in case of a agent's reset by depending other agents in the ensemble. Below are the key details of the implementation:
+The **Multi-Agent Structure (Ensemble)** is a core component of the RDE framework. The main idea is to maintain a group of agents, each with its own Q-network and optimizer while sharing a centralized replay buffer. This structure tries to achieve diversity in learning while eliminating performance collapses in case of an agent's reset by depending on other agents in the ensemble. Below are the key details of the implementation:
 
 1. **Ensemble of Agents**
     - The implementation creates $N$ agents, each with an identical neural network architecture but independently initialized parameters.
-    - Each agent interacts with the environment, contributes to the shared replay buffer.
+    - Each agent interacts with the environment and contributes to the shared replay buffer.
     - Each agent has its own Q-network and target network that are independently updated using the shared replay buffer.
     - Each agent has its own optimizer, which allows independent gradient updates.
 
@@ -145,7 +145,7 @@ The **Multi-Agent Structure (Ensemble)** is a core component of the RDE framewor
 
 #### 2.1 Implementation
 
-1. Creation of an ensemble of agents
+1. Ensemble of Agents
     ```python
             for _ in range(n_ensemble):
                 qnet = QNetworkAtari(n_actions).to(self.device)
@@ -238,11 +238,11 @@ The **Adaptive Action Selection** mechanism in the RDE framework ensures robust 
 
 ```
 
-# 3. Experiments and results
+# 3. Experiments and Results
 
-### 3.1 Experimental setup
+### 3.1 Experimental Setup
 
-### 3.1.1. Experimental setup of the Original Paper
+### 3.1.1. Experimental Setup of the Original Paper
 
 The original paper conducted experiments across a diverse range of tasks and environments. A summary of their setup is shown in the following parts.
 
@@ -260,7 +260,7 @@ The original paper conducted experiments across a diverse range of tasks and env
 
 ### Key Hyperparameters
 
-- **Reset Frequency**: Reset intervals adjusted based on the environment and replay ratio.
+- **Reset Frequency**: Reset intervals are adjusted based on the environment and replay ratio.
 - **Replay Ratio**: Tested with values like 1, 2, and 4 to analyze the impact of primacy bias.
 - **Ensemble Size**: Typically two agents, but experiments were conducted with larger ensembles for robustness.
 
@@ -278,7 +278,7 @@ Experiments are conducted in the [Freeway-v4](https://ale.farama.org/environment
 
 
 
-## 3.2. Running the code
+## 3.2. Running the Code
 
 ### Requirements
 1. Follow instructions in the [PyTorch](https://pytorch.org/) website to set it up for your own device. 
@@ -319,62 +319,62 @@ We have used the following hyperparameters for our results:
 
 <p align="center">
   <img src="figures/freeway_v4_rr1.svg" style="width: 70%;"><br>
-  <em>Figure 4: Rewards per episode over episodes for Freeway-v4 with all models. Replay ratio of 1 is used.</em>
+  <em>Figure 4: Rewards per episode over episodes for Freeway-v4 with all models. A replay ratio of 1 is used.</em>
 </p>
 
 <p align="center">
   <img src="figures/freeway_v4_rr2.svg" style="width: 70%;"><br>
-  <em>Figure 5: Rewards per episode over episodes for Freeway-v4 with all models. Replay ratio of 2 is used.</em>
+  <em>Figure 5: Rewards per episode over episodes for Freeway-v4 with all models. A replay ratio of 2 is used.</em>
 </p>
 
 <p align="center">
   <img src="figures/freeway_v4_rr4.svg" style="width: 70%;"><br>
-  <em>Figure 6: Rewards per episode over episodes for Freeway-v4 with all models. Replay ratio of 4 is used.</em>
+  <em>Figure 6: Rewards per episode over episodes for Freeway-v4 with all models. A replay ratio of 4 is used.</em>
 </p>
 
 <p align="center">
   <img src="figures/dqn_freeway_v4.svg" style="width: 70%;"><br>
-  <em>Figure 7: Rewards per episode over episodes for Freeway-v4 with DQN. Replay ratio of 1,2,4 are used.</em>
+  <em>Figure 7: Rewards per episode over episodes for Freeway-v4 with DQN. Replay ratios of 1,2,4 are used.</em>
 </p>
 
 <p align="center">
   <img src="figures/dqn_reset_freeway_v4.svg" style="width: 70%;"><br>
-  <em>Figure 8: Rewards per episode over episodes for Freeway-v4 with SR+DQN. Replay ratio of 1,2,4 are used.</em>
+  <em>Figure 8: Rewards per episode over episodes for Freeway-v4 with SR+DQN. Replay ratios of 1,2,4 are used.</em>
 </p>
 
 <p align="center">
   <img src="figures/rde_freeway_v4.svg" style="width: 70%;"><br>
-  <em>Figure 9: Rewards per episode over episodes for Freeway-v4 with RDE. Replay ratio of 1,2,4 are used.</em>
+  <em>Figure 9: Rewards per episode over episodes for Freeway-v4 with RDE. Replay ratios of 1,2,4 are used.</em>
 </p>
 
 <p align="center">
   <img src="figures/mspacmannoframeskip_v4_rr1.svg" style="width: 70%;"><br>
-  <em>Figure 10: Rewards per episode over episodes for MsPacmanNoFrameskip-v4 with all models. Replay ratio of 1 is used.</em>
+  <em>Figure 10: Rewards per episode over episodes for MsPacmanNoFrameskip-v4 with all models. A replay ratio of 1 is used.</em>
 </p>
 
 <p align="center">
   <img src="figures/mspacmannoframeskip_v4_rr2.svg" style="width: 70%;"><br>
-  <em>Figure 11: Rewards per episode over episodes for MsPacmanNoFrameskip-v4 with all models. Replay ratio of 2 is used.</em>
+  <em>Figure 11: Rewards per episode over episodes for MsPacmanNoFrameskip-v4 with all models. A replay ratio of 2 is used.</em>
 </p>
 
 <p align="center">
   <img src="figures/mspacmannoframeskip_v4_rr4.svg" style="width: 70%;"><br>
-  <em>Figure 12: Rewards per episode over episodes for MsPacmanNoFrameskip-v4 with all models. Replay ratio of 4 is used.</em>
+  <em>Figure 12: Rewards per episode over episodes for MsPacmanNoFrameskip-v4 with all models. A replay ratio of 4 is used.</em>
 </p>
 
 <p align="center">
   <img src="figures/dqn_mspacmannoframeskip_v4.svg" style="width: 70%;"><br>
-  <em>Figure 13: Rewards per episode over episodes for MsPacmanNoFrameskip-v4 with DQN. Replay ratio of 1,2,4 are used.</em>
+  <em>Figure 13: Rewards per episode over episodes for MsPacmanNoFrameskip-v4 with DQN. Replay ratios of 1,2,4 are used.</em>
 </p>
 
 <p align="center">
   <img src="figures/dqn_reset_mspacmannoframeskip_v4.svg" style="width: 70%;"><br>
-  <em>Figure 14: Rewards per episode over episodes for MsPacmanNoFrameskip-v4 with SR+DQN. Replay ratio of 1,2,4 are used.</em>
+  <em>Figure 14: Rewards per episode over episodes for MsPacmanNoFrameskip-v4 with SR+DQN. Replay ratios of 1,2,4 are used.</em>
 </p>
 
 <p align="center">
   <img src="figures/rde_mspacmannoframeskip_v4.svg" style="width: 70%;"><br>
-  <em>Figure 15: Rewards per episode over episodes for MsPacmanNoFrameskip-v4 with RDE. Replay ratio of 1,2,4 are used.</em>
+  <em>Figure 15: Rewards per episode over episodes for MsPacmanNoFrameskip-v4 with RDE. Replay ratios of 1,2,4 are used.</em>
 </p>
 
 <p align="center">
@@ -392,7 +392,7 @@ Another key takeaway is the manual setting of $\epsilon$, the exploration-to-exp
 
 RDE and SR+DQN seem to generate more robust solutions compared to vanilla DQN in some games like Freeway, where the DQN model learns the best possible solution of "mashing up" as there is no substantial *visible* penalty due to car crashes. RDE and SR+DQN however make occasional attempts to dodge cars if the action happens to be beneficial. This may be an advantage in exploitation for some other games where obstacles or detrimental actions are more erratic. </br>
 
-Visualizing the results of MsPacmanNoFrameskip-v4 showed that more convoluted games require more episodes of exploration and exploitation to better view the results, as more timesteps of actions are required to fully explore all options leading to varying levels of available rewards. Ms Pacman could, for instance, go for the power pellets and eat aliens to gain an increased number of rewards, instead of making a few short escapes towards small pellets to score fewer points in an easier manner. Since these action sequences are rather long, exploring enough solutions to apply such experiences would take more timesteps. Consequentially, the models seem to be performing similarly, with minor performance variations among each other.
+Visualizing the results of MsPacmanNoFrameskip-v4 showed that more convoluted games require more episodes of exploration and exploitation to generate better results, as more timesteps of actions are needed to fully explore all options leading to varying levels of available rewards. Ms Pacman could, for instance, go for the power pellets and eat aliens to gain an increased number of rewards, instead of making a few short escapes towards small pellets to reach a few instances of rewards more easily. Since these action sequences are rather long, exploring enough solutions to apply such experiences would take more timesteps. Consequentially, the models are performing similarly, with minor performance variations among each other.
 
 # 5. References
 
