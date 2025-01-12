@@ -266,7 +266,7 @@ We have investigated two of the claims tha the paper proposed, which are the fol
 
 ## **3.3.1. Accuracy Performance Comparison**
 
-We have extracted the following comparisons for LRW-Hard, LRW-Easy, LRW-Random, and LRW-Opt for the CIFAR-100, OxfordIITPet, FGVCAircraft, Stanford Cars, and Diabetic Retinopathy.
+We have extracted the following comparisons for LRW-Hard, LRW-Easy, LRW-Random, and LRW-Opt for the CIFAR-100, OxfordIITPet, FGVCAircraft, Stanford Cars, and Diabetic Retinopathy datasets:
 
 ### CIFAR-100 Accuracies
 ![CIFAR-100 Accuracies](https://github.com/Sinasi3/Sinasi3/blob/f620832b017d3f75226b3e4164f35878ac918463/CIFAR.PNG)
