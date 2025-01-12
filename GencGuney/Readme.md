@@ -67,6 +67,8 @@ We see **ZODE** as a unified way to handle multiple OOD “tests” (one per mod
   
 ![Energy distribution](images/energy-ood.png "Energy Score Distribution Demonstration")
 
+Figure 4: Energy Score Distribution Demonstration
+
 3. **Converting Scores into p-Values**  
    - Each model’s score distribution is characterized on the **ID dataset**. Essentially, we record how that model’s scoring function behaves across many known ID samples.  
    - When we see a new test sample, we measure how “extreme” its score is relative to that ID distribution.  
