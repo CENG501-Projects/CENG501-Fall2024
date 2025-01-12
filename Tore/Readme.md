@@ -239,7 +239,6 @@ This indicates that the learning process is robust and consistent, even when dis
 
 ![image](https://github.com/user-attachments/assets/4b6fbbd2-33d2-4782-b1c5-99c87f898296)
 
-
 Figure 3: Validation of assumptions on the toy model of learning a single attention head. (a) Assumption 4.4: weights perturbed at a random time during training (solid lines) tend back to the near-stationary point (dashed lines). (b) Assumption 4.5: weights perturbed at the beginning of a stage (solid lines) have same nonlinear evolution a
 
 In Figure 4 The stable rank of both 
@@ -260,10 +259,12 @@ This suggests that the value-output interactions are more complex and higher-dim
 Dataset Complexity:
 As the dataset complexity increases (CIFAR-10 < CIFAR-100 ), the stable rank values also increase, reflecting the need for higher complexity in learned representations to handle more complex data.
 We are able to repl'cate the results/
+
 ![image](https://github.com/user-attachments/assets/6711ba82-448b-494f-8530-89eee3c7c702)
 a)CIFAR10
 ![image](https://github.com/user-attachments/assets/7b961fe1-55d7-4c1b-af51-5fe02ba7bcb5)
 b)CIFAR100
+
 Figure 4: Stable rank of $∆W_KW^⊤_Q$ (blue) and $∆W_V W^⊤_O$
 (orange) on an arbitrary chosen layer
 throughout training for four different pairs of networks and tasks. The stable rank of a matrix W
