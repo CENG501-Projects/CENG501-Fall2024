@@ -308,6 +308,50 @@ The plots of each and every cost function (cs[i]) as well as the total cost Jc i
   <img src="/../main/AltunkolOzcan/images/cs4_iter500_2.png" alt="Derivative cost of value function cost first network for the control task of acrobot">
 </p> 
 
+According to Figure 13, the controller actually tries to get the system to the desired position but the acrobot spins meanwhile. This is where we change the wights of the cost functions in order to make the controller "more optimal". The results are presented between Figures 19-25.
+
+<p align="center">Figure 19: Performance of the acrobot controller in the second model, updated cost function fine tuning </p>
+<p align="center">
+  <img src="/../main/AltunkolOzcan/images/acrobot3.png" alt="Performance of the first network for the control task of acrobot">
+</p> 
+
+The plots of each and every cost function (cs[i]) as well as the total cost Jc is shown in Figure 20-25.
+
+<p align="center">Figure 20: Total loss of the acrobot controller in the second model, updated cost function fine tuning </p>
+<p align="center">
+  <img src="/../main/AltunkolOzcan/images/Jc_iter_500_3.png" alt="Total cost first network for the control task of acrobot">
+</p> 
+<p align="center">Figure 21: Running of the acrobot controller in the second model, updated cost function fine tuning </p>
+<p align="center">
+  <img src="/../main/AltunkolOzcan/images/cs0_iter500_3.png" alt="Running cost first network for the control task of acrobot">
+</p> 
+<p align="center">Figure 22: Terminal loss of the acrobot controller in the second model, updated cost function fine tuning </p>
+<p align="center">
+  <img src="/../main/AltunkolOzcan/images/cs1_iter500_3.png" alt="Terminal cost first network for the control task of acrobot">
+</p> 
+<p align="center">Figure 23: HJB loss of the acrobot controller in the second model, updated cost function fine tuning </p>
+<p align="center">
+  <img src="/../main/AltunkolOzcan/images/cs2_iter500_3.png" alt="HJB cost first network for the control task of acrobot">
+</p> 
+<p align="center">Figure 24: Final loss of the acrobot controller in the second model, updated cost function fine tuning </p>
+<p align="center">
+  <img src="/../main/AltunkolOzcan/images/cs3_iter500_3.png" alt="Final cost first network for the control task of acrobot">
+</p> 
+<p align="center">Figure 25: Derivative cost of value function loss of the acrobot controller in the second model, updated cost function fine tuning </p>
+<p align="center">
+  <img src="/../main/AltunkolOzcan/images/cs4_iter500_3.png" alt="Derivative cost of value function cost first network for the control task of acrobot">
+</p> 
+
+Figure 19 shows that fine tuning results in the network trying to achieve the velocity objective rather than the position objective. Moreover, we observe that test loss gradually becomes more and mroe different tha the training loss as iterations continue. This is why we also examine a checkpoint in finetuning, which is the results of the 100th fine tuning iteration. Figure 26 presents this results.
+
+<p align="center">Figure 26: Performance of the acrobot controller in the second model, updated cost function fine tuning, 100th iteration checkpoint performance </p>
+<p align="center">
+  <img src="/../main/AltunkolOzcan/images/acrobot4.png" alt="Performance of the first network for the control task of acrobot">
+</p> 
+
+Figure 26 shows that this is by far the best result we obtained. The angles are near $\pi$ and $\p-i$, which correspond to the same position so the cost is low. Moreover, velocities are reasonably favorable compared to the other tests. 
+
+
 ### 3.1.2. Dubins Car
 
 #### 3.1.2.1. Training and Testing of Dubins Car Trajectories
