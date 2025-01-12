@@ -298,16 +298,6 @@ In our file structure, here are the codes written (fully, partially) by us;
 
 ## 3.3. Results
 
-We have obtained the depthmap images created by the network. 
-
-They do not look right at all. We are working on it.
-<p align="center">
-<img src=https://github.com/user-attachments/assets/6bb8b8db-ea88-405f-ac78-2c90cf916da0>
-
-<img src=https://github.com/user-attachments/assets/979e8737-cb10-4e15-a5ed-c54292d51b2e>
-Figure 5,6. Input images and heatmap pairs. Generated from 30-epoch trained network.
-</p>
-
 The paper uses AP40 scores of the car category on KITTI test set at 0.7 IoU threshold to measure the performance of the model. It is also the official evaluation of KITTI contest. Results are available at the [KITTI website](https://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=3d). 
 
 ### 3.3.1. AP40@0.7 Metric
