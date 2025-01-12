@@ -268,7 +268,7 @@ Table 5: Performance of the best model for Document Retrieval task
 
 **Discussion for LRA Tasks:**  
 
-Compared to the original paper's results, our accuracy was low and had some fluctuations most likely due to small batch sizes. Despite this, there is some improvement as epochs progress in both experiments. There doesn't seem to be major overfitting or underfitting issues.
+Compared to the original paper's results, our accuracy was low and had some fluctuations most likely due to having small batch sizes with respect to our learning rate. Despite this, there is some improvement as epochs progress in both experiments. There doesn't seem to be major overfitting or underfitting issues. 
 
 
 # 4. Conclusion
