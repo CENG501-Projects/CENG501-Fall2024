@@ -209,7 +209,7 @@ $$
 ### Architecture Implementation
 
 
-The architecture in Figure 2 is designed to leverage the unique capabilities of event cameras for optical flow estimation. Event cameras provide asynchronous, high-temporal-resolution data, recording brightness changes as ON and OFF polarity events. These events are discretized into two spatiotemporal streams, the Former Events and the Latter Events, which represent brightness changes over two consecutive intervals. This discretization provides the foundational input for the network, encoding fine-grained motion information from the scene.
+The architecture in Figure 2 is designed to leverage the unique capabilities of event cameras for optical flow estimation. Event cameras provide asynchronous, high-temporal-resolution data, recording brightness changes as ON and OFF polarity events. These events are discretized into two spatiotemporal streams, the Former Events and the Latter Events, which represent brightness changes over two consecutive intervals. This discretization provides the foundational input for the network, encoding fine-grained motion information from the scene. On top of this discretization, we need to take into account ON and OFF events during the binning procedure. Each bin is composed of 4 frames coming from an ON event frame from Former Events, an OFF event frame from Former Events, an ON event frame from Latter Events and an OFF event frame from Latter Events.
 
 The encoder (represented by blue blocks) is responsible for extracting hierarchical features from the input event streams. It begins with the raw data encoded into b feature channels, which are progressively compressed through a series of convolutional and downsampling operations. With each stage, the spatial resolution decreases while the number of feature channels increases (b → 2b → 4b → 8b), enabling the model to capture increasingly abstract and higher-level spatiotemporal patterns. These features encapsulate both the spatial structure and the motion dynamics inherent in the input event data, providing the foundation for accurate optical flow estimation.
 
@@ -253,6 +253,8 @@ EPE
   loss.
 
 To experiment with this approach, we need to address the difference in data sizes between the two datasets. Specifically, we must apply zero-padding to the smaller-sized DSEC dataset to match the dimensions of MVSEC, enabling our network to process both datasets simultaneously.
+
+
 ## 3.2. Running the code
 
 @TODO: Explain your code & directory structure and how other people can run it.
