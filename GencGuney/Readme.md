@@ -122,7 +122,13 @@ This simplified experimental design therefore allowed us to test the working of 
 
 To reproduce the results, follow these steps:
 
-1. **Download the Datasets**:
+1. **Setup the Environment**:
+   - Make sure you have the necessary Python libraries installed. For this, ypu can run the following command:
+      ```bash
+     pip install -r requirements.txt
+     ```
+
+2. **Download the Datasets**:
    - Before running the main experiment, you need to download the required datasets using the `download_datasets.py` script. This will download CIFAR10 and the specified OOD datasets (SVHN, Places365, and Texture).
    
    - To download the datasets, run the following command:
@@ -130,14 +136,10 @@ To reproduce the results, follow these steps:
      python download_datasets.py --dataset_name --test
      ```
 
-2. **Obtain Pretrained Model Weights**
-   - Ensure pretrained weights are available for the models in the zoo. Place the `.pth` files in a directory (e.g., `weights/`) and ensure the file names match the expected format (`<model_name>_best.pth` or `<model_name>_final.pth`).
+3. **Obtain Pretrained Model Weights**
+   - You can download the pretrained weights from the following link: [Download Trained Weights](https://drive.google.com/uc?id=1q3S5VU4l4ATNLRCYdiaZTt0KOqpQ9HKW&export=download).
 
-3. **Setup the Environment**:
-   - Make sure you have the necessary Python libraries installed. For this, ypu can run the following command:
-      ```bash
-     pip install -r requirements.txt
-     ```
+   - If you'd like to train the model from scratch, you can use the provided script (model/train_cifar.py) with the parameters specified earlier.
 
 4. **Running the Experiment**:
 
@@ -354,16 +356,6 @@ In summary, ZODE establishes a solid theoretical foundation for OOD detection, m
 11. Grant Van Horn, Oisin Mac Aodha, Yang Song, Yin Cui, Chen Sun, Alex Shepard, Hartwig Adam, Pietro Perona, and Serge Belongie. The inaturalist species classification and detection dataset. In Proceedings of the IEEE conference on computer vision and pattern recognition, pages 8769–8778, 2018.
 12. Jianxiong Xiao, J Hays, KA Ehinger, A Oliva, and A Torralba. Sun database: Large-scale scene recognition from abbey to zoo. In IEEE Computer Society Conference on Computer Vision and Pattern Recognition, 2010.
 13. Alex Krizhevsky. Learning multiple layers of features from tiny images. Technical Report, University of Toronto, 2009.
-
-# 7. Appendix
-1. Training Weights
-
-   The weights for the trained models used in this study are available for download from the following link:
-
-   [Download Training Weights](https://drive.google.com/uc?id=1q3S5VU4l4ATNLRCYdiaZTt0KOqpQ9HKW&export=download
-   )
-
-   These weights can be used for further experimentation or replication of the results presented in this paper.
 
 # Contact
 
