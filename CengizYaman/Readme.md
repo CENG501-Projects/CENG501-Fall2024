@@ -178,3 +178,4 @@ As implementing ImageNet experiments would not be feasible in terms of time, we 
 # Contact
 
 Cenk Kerem Cengiz, cengizcenkkerem@gmail.com
+Arda Yaman, ardayaman3207@gmail.com
