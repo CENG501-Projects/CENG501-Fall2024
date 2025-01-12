@@ -295,7 +295,12 @@ When working with the DSEC dataset, the availability of ground truth data allows
 
 Overall, this project has been a valuable learning experience, serving as an introductory step in implementing deep learning architectures. It has also broadened our perspective on leveraging event-based sensing and highlighted the potential of neuromorphic computing in optical flow estimation.
 
-# 5. References
+# 5.  Contact
+
+Atakan Durmaz - atakan.durmaz@metu.edu.tr
+Haktan Yalçın - yalcin.haktan@metu.edu.tr
+
+# 6. References
 
 ```latex
 @inproceedings{kosta2023adaptive,
@@ -317,7 +322,4 @@ Overall, this project has been a valuable learning experience, serving as an int
 }
 
 
-# 6.  Contact
 
-Atakan Durmaz - atakan.durmaz@metu.edu.tr
-Haktan Yalçın - yalcin.haktan@metu.edu.tr
