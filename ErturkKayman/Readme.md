@@ -334,11 +334,19 @@ In different repositories, there are some example training set splits for KITTI 
 
 The paper also discusses the results on the validation set, which is some part of the training set (usually half in 3D object detection). They do provide an ablation study where we can see the contrubition of each component of the MonoATT archtitecture. At the bottom of the table, results for 3D object detection on validation set exists.
 
-![Figure 1: Ablation Study results of MonoATT, full architecture results are given at the bottom](https://github.com/user-attachments/assets/d9ceb45b-7663-4434-8579-8ff58a323323)
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/d9ceb45b-7663-4434-8579-8ff58a323323" alt="Architecture Overview">
+  <br>
+  <strong>Figure 6:</strong> Ablation Study results of MonoATT, full architecture results are given at the bottom
+</p>
 
 The paper also discusses integrating MonoATT components into existing transformer-based models. They claim to improve the AP40 scores of MonoDTR and MonoDETR structures. Validation set results are provided below. Please note that, as we used MonoDETR as base to implement MonoATT, it can be a good idea to compare our results with results provided in the table below.
 
-![image](https://github.com/user-attachments/assets/e3d02550-5d80-42f0-a6e2-b274cc6aa980)
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/e3d02550-5d80-42f0-a6e2-b274cc6aa980" alt="Architecture Overview">
+  <br>
+  <strong>Figure 7:</strong> AExtension of MonoATT to existing transformer-based monocular 3D object detectors
+</p>
 
 ### 3.3.3 Our Test Results
 
