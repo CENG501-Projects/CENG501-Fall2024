@@ -241,13 +241,13 @@ The **Salience-Guided Faithfulness Coefficient (SaCo)** is a robust framework fo
 #### **1. Clarifications and Potential Improvements**
 
 1. **Perturbation Strategy**
-   - SaCo perturbs pixel subsets by replacing them with the per-sample mean. While this is computationally efficient, it might inadvertently alter the underlying data distribution or introduce biases. Several alternative strategies could mitigate these effects:
+   - SaCo perturbs pixel subsets by replacing them with the per-sample mean. While this is computationally efficient, it might inadvertently alter the underlying data distribution or introduce biases. Several alternative strategies could mitigate these effects
      - **Gaussian Noise**: Replace pixels with random values sampled from a Gaussian distribution centered on the mean, preserving some statistical properties of the data.
      - **Blackout Perturbation**: Mask pixels entirely by setting their values to zero, simplifying interpretability but potentially losing context.
      - **Semantic Perturbation**: Replace pixels with semantically consistent features (e.g., nearby texture or color) to maintain contextual coherence. This method could align more closely with real-world scenarios.
 
 2. **Subset Size ($K$)**
-   - The choice of $K$, the number of pixel subsets, plays a pivotal role in SaCo’s evaluation granularity:
+   - The choice of $K$, the number of pixel subsets, plays a pivotal role in SaCo’s evaluation granularity
      - **Smaller $K$**: Reduces computational complexity but may result in overly coarse evaluations that obscure subtle discrepancies.
      - **Larger $K$**: Allows finer granularity but increases computational cost significantly.
    - A dynamic $K$ selection strategy based on the dataset complexity, salience map distribution, or task-specific requirements could provide an adaptive balance between efficiency and accuracy.
@@ -308,7 +308,7 @@ The original paper evaluates the faithfulness of post-hoc explanation methods fo
    - Images in all datasets are resized to **224x224** to match the input requirements of Vision Transformers.
 
 2. **Models**:
-   - The paper experiments with three widely used Vision Transformer models:
+   - The paper experiments with three widely used Vision Transformer models
      - **ViT-B**: Vision Transformer Base with 16x16 patches.
      - **ViT-L**: Vision Transformer Large with 16x16 patches.
      - **DeiT-B**: Data-efficient Image Transformer Base with 16x16 patches.
@@ -350,7 +350,7 @@ To evaluate the faithfulness of post-hoc explanation methods for Vision Transfor
 
 
 #### **1. Datasets**
-The experiments utilized three diverse datasets, each resized to meet the input requirements of Vision Transformers:
+The experiments utilized three diverse datasets, each resized to meet the input requirements of Vision Transformers
    - **CIFAR-10**: A dataset of 60,000 images across 10 classes with low resolution (32x32), resized to **224x224**.
    - **CIFAR-100**: Similar to CIFAR-10 but with 100 classes, resized to **224x224**.
    - **ImageNet (ILSVRC 2012)**: A large-scale dataset with 1.2 million images across 1,000 classes, resized to **224x224**.
@@ -404,7 +404,7 @@ The faithfulness of the explanation methods was assessed using the following met
 ---
 
 #### **5. Perturbation Setup**
-The evaluation involved systematic perturbations:
+The evaluation involved systematic perturbations
    - Images were divided into 10 subsets of pixels based on descending salience scores.
    - Perturbations were applied to each subset to measure the impact on model predictions.
 
@@ -488,7 +488,7 @@ The salience maps generated for the ImageNet example (Class 12, ID: 00006597) us
 
 
 
-The adjacent salience maps allow for a direct comparison of the interpretability of various explanation methods. Key observations include:
+The adjacent salience maps allow for a direct comparison of the interpretability of various explanation methods. Key observations include
 - Grad-CAM (Figure 4b) and Transformer-MM (Figure 4c) highlight distinct image regions, aligning well with the model's predictions.
 - Layer-wise Relevance Propagation (Figure 4d) provides fine-grained salience details, while Random Attribution (Figure 4e) lacks meaningful focus, serving as a baseline comparison.
 
