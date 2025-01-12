@@ -411,6 +411,8 @@ In this study, we explored a monocular 3D object detection approach leveraging A
 
 The paper claims state of the art results. Our results are slightly worse than the paper's claim, however, proves the key ideas of the paper. Computational complexity of the paper hardens the potential finetuning. Even with the lighest transormers and networks as possible, the training takes more than 10 hours with a decent deep learning machine with 4 GPUs. That makes it impossible to tune the hyperparameters by using methods like grid search. Also, the number of hyperparameters is too much and requires careful selection. Though, we have adopted most of them from MonoDetr, test results indicate them some hyperparameters are not optimum. We even had to use other researches or LLMs to guess some novel hyperparameters introduced in this work. Hence, with a more capable computing device, more time and more dedication, we believe that our results can be further improved. 
 
+We can still argue that our results are close enough to prove the use of MonoATT paper. With the clarifications of the uncertaion points and hyperparameters, the implementation provided by us can be used fully or partially for future developments. 
+
 
 # 5. References
 
