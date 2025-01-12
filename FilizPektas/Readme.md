@@ -213,7 +213,7 @@ pip install –r requirements.txt
 **Key Arguments**
 | Argument                | Type   | Default                                     | Description                                         |
 |-------------------------|--------|---------------------------------------------|-----------------------------------------------------|
-| `--id-datasets`         | str    | "CatsDogs Airplane Cars cifar100"           | Names of in-distribution datasets for training and evaluation. |
+| `--id-datasets`         | str    | "CatsDogs Airplane Cars cifar100 DR"        | Names of in-distribution datasets for training and evaluation. |
 | `--out-datasets`        | str    | ""                                          | Names of out-of-distribution datasets.             |
 | `--use-id-pickle-file`  | bool   | False                                       | Use an existing results file for in-distribution datasets. |
 | `--use-ood-pickle-file` | bool   | False                                       | Use an existing results file for out-of-distribution datasets. |
