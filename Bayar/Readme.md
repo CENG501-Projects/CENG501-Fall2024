@@ -374,7 +374,7 @@ The loss curves were promising. Both the training and validation losses decrease
 
 In general, the results of the experiments are consistent with the original paper. HAE and EMCA components seem to be reproduced when they are examined separately. However, the overall improvement in AP is slightly lower than the original paper. Quantitative analysis of EMCA weights also shows a similar trend, but the exact values are not the same. From these results, we can suspect that the implementation of EMCA is not exactly the same as the original paper, and this might be the reason for the lower AP improvement. 
 
-The ablations on the number of hybrid attention layers in HAE and the layer of input encoders in EMCA are not reported. These experiments can be easily reproduced using the provided codebase by changing the configuration files. num_hae_layers argument directly controls the number of hybrid attention layers. For the layer of input encoders in EMCA, you need the change constructor of the DeformableTransformerDecoder class.
+The ablations on the number of hybrid attention layers in HAE and the layer of input encoders in EMCA are not reported. These experiments can be easily reproduced using the provided codebase by changing the configuration files. num_hae_layers argument directly controls the number of hybrid attention layers. For the layer of input encoders in EMCA, you need the change constructor of the DeformableTransformerDecoder class. The implementation of a HAE and EMCA layers can be found starting from [line 1165 in models/dino/deforamble_transformer.py file](https://github.com/CENG501-Projects/CENG501-Fall2024/blob/bdd2709157894c6f16fb4a6e24e3b4e04db9f65f/Bayar/models/dino/deformable_transformer.py#L1165).
 
 # 5. References
 
