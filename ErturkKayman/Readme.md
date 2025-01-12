@@ -237,11 +237,14 @@ Other than the implementation, for visualizing the evaluation results, we have u
 
 In our file structure, here are the codes written (fully, partially) by us;
 
++ lib/datasets/kitti/kitti_eval_python/kitti_common.py (partially)
++ lib/helpers/model_helper.py (partially)
++ lib/helpers/tester_helper.py (partially)
++ lib/losses/focal_loss.py (partially)
 + lib/models/monoatt/adaptive_token_clustering.py 
 + lib/models/monoatt/cluster_center_estimation.py
 + lib/models/monoatt/monoatt.py (partially)
-+ lib/datasets/kitti/kitti_eval_python/kitti_common.py (partially)
-+ lib/losses/focal_loss.py (partially)
+
 
 ## 3.2. Running the code
 ### 3.2.1 Training
