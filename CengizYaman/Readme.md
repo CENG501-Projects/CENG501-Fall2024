@@ -125,7 +125,7 @@ Use corresponding notebooks for training and evaluation. Follow the comments and
 
 **Figure 1**: Training Plots of GReg Experiment with ResNet-18 and CIFAR-10
 
-![Figure 2: Evaluation Results of ResNet-18/CIFAR-10](./Figures/resnet_greg_cifar10_eval.png)
+![Figure 2: Evaluation Results of ResNet-18/CIFAR-10](./Figures/resnet_greg_cifar10_eval.jpg)
 
 **Figure 2**: Evaluation Results of GReg Experiment with ResNet-18 and CIFAR-10
 
