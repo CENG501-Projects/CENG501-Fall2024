@@ -258,7 +258,7 @@ The trained models can be found in the link table below:
 We have extracted the following comparisons for LRW-Hard, LRW-Easy, LRW-Random, and LRW-Opt for the CIFAR-100, OxfordIITPet, FGVCAircraft, Stanford Cars, and Diabetic Retinopathy.
 
 ### CIFAR-100 Accuracies
-![CIFAR-100 Accuracies]()
+![CIFAR-100 Accuracies](https://github.com/Sinasi3/Sinasi3/blob/f620832b017d3f75226b3e4164f35878ac918463/CIFAR.PNG)
 
 ### OxfordIIITPet Accuracies
 ![OxfordIITPet Accuracies](https://github.com/Sinasi3/Sinasi3/blob/f3a75ba52049e2d450195fee2bc328ed32c2e40b/Cats.PNG)
@@ -289,10 +289,10 @@ We have extracted the following comparisons for LRW-Hard, LRW-Easy, LRW-Random, 
 ## **3.3.2. Margin Maximization Effect**
 
 ### Margin Delta
-![Margin Maximiziaton](https://github.com/Sinasi3/Sinasi3/blob/f3a75ba52049e2d450195fee2bc328ed32c2e40b/Margin_Diff.PNG)
+![Margin Maximiziaton](https://github.com/Sinasi3/Sinasi3/blob/cc743aa8d459a865b90b45125eb96535a62f9cc3/Margin_New.PNG)
 
 ### Margin Gain
-![ERM Buckets](https://github.com/Sinasi3/Sinasi3/blob/6d3ccd2c043c280fce87ddf69d2d833a7496448a/resized_image.png)
+![ERM Buckets](https://github.com/Sinasi3/Sinasi3/blob/1a48372d386a0ff09168769de11a7b14622507bb/margin_data.png)
 
 ---
 
