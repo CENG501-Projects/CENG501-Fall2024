@@ -47,7 +47,7 @@ MIN_REPLAY_SIZE    = 10_000
 TOTAL_TIMESTEPS    = 100_000
 
 TRAIN_FREQUENCY    = 1        # steps between each training call
-UPDATES_PER_STEP   = 1        # replay ratio
+UPDATES_PER_STEP   = 4        # replay ratio
 TARGET_UPDATE_FREQ = 1        # update target after each train step
 MAX_GRAD_NORM      = 10
 
@@ -340,6 +340,9 @@ def evaluate_model(model_path=MODEL_PATH, episodes=10, epsilon=0.05, render=True
     with a given 'epsilon' (like 0.05 or 0.0 for purely greedy).
     Print average reward.
     """
+
+    print(f"Evaluation ! Environment: {ENV_ID} | RR: {UPDATES_PER_STEP} | Episodes: {episodes} | Epsilon: {epsilon}")
+
     # Use a different seed from training seed !
     # Do not clip rewards for evaluation !
     env = make_vec_env(ENV_ID, SEED + 100, False)
@@ -374,6 +377,7 @@ def evaluate_model(model_path=MODEL_PATH, episodes=10, epsilon=0.05, render=True
 
     env.close()
     avg_rew = np.mean(episode_rewards)
+    print(f"Episode rewards {episode_rewards}")
     print(f"Evaluation over {episodes} episodes, epsilon={epsilon}: avg reward={avg_rew:.2f}")
 
 # Main
@@ -382,8 +386,8 @@ if __name__ == "__main__":
     parser.add_argument("--evaluate", action="store_true", help="Evaluate the saved model.")
     parser.add_argument("--episodes", type=int, default=5, help="Number of eval episodes.")
     parser.add_argument("--epsilon", type=float, default=0.05, help="Epsilon used during evaluation.")
-    parser.add_argument("--render", type=bool, default=True, help="Render evaluations on screen.")
-    parser.add_argument("--print_actions", type=bool, default=False, help="Prints the action of the model during an episode.")
+    parser.add_argument("--render", action="store_true", help="Render evaluations on screen.")
+    parser.add_argument("--print_actions", action="store_true", help="Prints the action of the model during an episode.")
     args = parser.parse_args()
 
     if args.evaluate:
