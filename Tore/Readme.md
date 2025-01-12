@@ -242,13 +242,13 @@ This indicates that the learning process is robust and consistent, even when dis
 Figure 3: Validation of assumptions on the toy model of learning a single attention head. (a) Assumption 4.4: weights perturbed at a random time during training (solid lines) tend back to the near-stationary point (dashed lines). (b) Assumption 4.5: weights perturbed at the beginning of a stage (solid lines) have same nonlinear evolution a
 
 In Figure 4 The stable rank of both 
-$Δ𝑊_K 𝑊_V^⊤$.
+$Δ𝑊_K 𝑊_Q^⊤$.
   and 
 $Δ𝑊_𝑉 𝑊_𝑂^⊤$.
   increases monotonically during training, indicating that the learned representations become increasingly complex as the model trains.
 The increase in stable rank reflects the ability of the model to capture richer and more diverse relationships in the data.
 Differences Between 
-$Δ𝑊_K 𝑊_V^⊤$.
+$Δ𝑊_K 𝑊_Q^⊤$.
   and 
 $Δ𝑊_𝑉 𝑊_𝑂^⊤$.
 The stable rank of 
@@ -258,7 +258,7 @@ $Δ𝑊_K 𝑊_V^⊤$. (blue) across all models and datasets.
 This suggests that the value-output interactions are more complex and higher-dimensional compared to the key-query interactions.
 Dataset Complexity:
 As the dataset complexity increases (CIFAR-10 < CIFAR-100 ), the stable rank values also increase, reflecting the need for higher complexity in learned representations to handle more complex data.
-We are able to repl'cate the results/
+We are able to replicate the results/
 
 ![image](https://github.com/user-attachments/assets/6711ba82-448b-494f-8530-89eee3c7c702)
 a)CIFAR10
@@ -272,7 +272,7 @@ is defined as $∥W∥^2_F/∥W∥^2_2$, and gives a smooth approximation of the
 deviation (shaded area) are computed ac
 
 Figure 5 visualizes the eigenvalue spectra of the weight perturbations 
-$Δ𝑊_K 𝑊_V^⊤$  compared to their initial state 
+$Δ𝑊_K 𝑊_Q^⊤$  compared to their initial state 
 $𝑊_K 𝑊_V^⊤$ at initialization across different layers in a Vision Transformer (ViT) trained on CIFAR-10. The purpose is to demonstrate the emergence of a low-rank bias in the learned weight perturbations during training.
 We can"t observe similar patterns to paper.
 ![image](https://github.com/user-attachments/assets/12e6b657-1c68-41d3-81e2-c925d111382e)
@@ -283,7 +283,7 @@ in different layers. The learned perturbation exhibits extreme low-rank bias pos
 default initialization scales. 
 
 Figure 6 illustrates the evolution of the eigenvalues of the perturbations 
-$Δ𝑊_K 𝑊_V^⊤$ and 
+$Δ𝑊_K 𝑊_Q^⊤$ and 
 $Δ𝑊_𝑉 𝑊_𝑂^⊤$  during the training of a Vision Transformer (ViT) on CIFAR-10, under different initialization scales. The focus is on a single random attention head in Layer 2 throughout the training process.
 We somehow replicated the graphs but their evolution has more jagged patterns.
 ![image](https://github.com/user-attachments/assets/bf5db9ec-9c80-4515-9cc9-517528007cd4)
@@ -313,7 +313,13 @@ to lower-rank attention heads.
 
 # 4. Conclusion
 
-@TODO: Discuss the paper in relation to the results in the paper and your results.
+The paper investigates the learning dynamics of Vision Transformers (ViTs) and other attention-based architectures by studying the evolution of their weight matrices and perturbations during training. The authors focus on key quantities like the eigenvalue spectrum and stable rank of weight perturbations (e.g., 
+$Δ𝑊_K 𝑊_Q^⊤$ and 
+$Δ𝑊_V 𝑊_V^O$, revealing a consistent low-rank bias in attention heads across different tasks, datasets, and initialization scales. The study shows that learned perturbations exhibit a low-rank structure, where only a few dominant eigenvalues contribute significantly to the model's representations. Smaller initialization scales amplify this low-rank bias, leading to more efficient and focused learning, while larger scales result in more complex and higher-rank representations. Importantly, the results highlight that deeper layers tend to require higher stable ranks, capturing increasingly abstract features as training progresses.
+
+Additionally, the paper validates theoretical assumptions about the robustness of learned weights, showing that both random perturbations during training and those applied at the start of a stage have minimal impact on the learning trajectory. The findings demonstrate that ViTs exhibit incremental, stagewise learning dynamics, with periods of rapid improvement interspersed with plateaus in both loss and representation complexity. These insights emphasize the importance of initialization scale in influencing the learning dynamics, the hierarchical nature of attention mechanisms, and the emergence of low-rank structures. Overall, the study sheds light on the interplay between rank, initialization, and task complexity, offering practical guidelines for optimizing transformer-based architectures in vision and language tasks.
+
+In our study we are able to replicate most of heir results. We had problems in replicating the results for the eigenvalue spectra of the weight perturbations, we probably should select a better visualization window for observing the patterns that is shown in the paper. But other than we are able to observe the stable rank increase in the model for toy model. Eigen value perturbations for VIT model with CIFAR data showed more ragged pattern than stable increase, but there is a trend can be viewed.
 
 # 5. References
 
