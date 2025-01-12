@@ -218,9 +218,49 @@ Smaller batch size actually reduced the speed of learning. This is because the s
 
 For acrobot control task, we try to bring it to the upright position. Notice that this position is actually an unstable equilibrium because any amount of torque input to the acrobot would disturb the position. Throughout this task, we assume we know the exact dynamics of the acrobot, which is part of the paper [1] results. 
 
-In our first experiment, we build the controller network as the following. The network is a basic MLP of depth 6 and width 64 largest. The first and the second to last activation function are sine, the in betweens are LeakyReLU and the last activation is hyperbolic tangent. Tanh helps scale the control input to the allowed range. We would like to highlight that the allowed range is assumed to guarantee stability in the paper [1] whereas this assumption fails in the case of acrobot. Because, no matter how small the input torque is, the link velocities could possibly grow to infinity. Therefore, we cannot actually assume stability. The time limit for the control task is 5 seconds, consisting of 250 control inputs. We also train a value function network. In implementing this, we are highly influenced by the application in [6]. This network consists of a ResNet with width 20 and depth 10. [6] also add quadratic and linear terms to the result of the network to better approximate the value function. We do the same here. The derivatives of the value function are also calculated.
+In our first experiment, we build the controller network as the following. The network is a basic MLP of depth 5 and width 64 largest. The first and the second to last activation function are sine, the in betweens are LeakyReLU and the last activation is hyperbolic tangent. Tanh helps scale the control input to the allowed range. We would like to highlight that the allowed range is assumed to guarantee stability in the paper [1] whereas this assumption fails in the case of acrobot. Because, no matter how small the input torque is, the link velocities could possibly grow to infinity. Therefore, we cannot actually assume stability. The time limit for the control task is 5 seconds, consisting of 250 control inputs. We also train a value function network. In implementing this, we are highly influenced by the application in [6]. This network consists of a ResNet with width 16 and depth 10. [6] also add quadratic and linear terms to the result of the network to better approximate the value function. We do the same here. The derivatives of the value function are also calculated.
 
+The first experiment parameters are listed as below.
+  - $\alpha = [1.0, 1.0, 0.01, 0.01]$ are the cost coefficients. These are identical to the ones in the paper.
+  - Number of iterations = 5000
+  - Learning rate = 0.05 and decreased every 200 iterations by 5%.
+  - Batch size =  512
+  - Sampling variance = 5.0
+  - Sampling frequency = 150 samples
 
+One major realization was that the costs related to the Hamiltonian are far faster than the costs related to state trajectories to decrease. Usually, the HJB cost is the first to be optimized. Nevertheless, this results in poor state trajectories. In Figure 5, we present the position related states on top left, velocity related steps on bottomright. Control input is presented in top right and running cost is shown on bottom left. The horizontal axis corresponds to the time step.
+
+<p align="center">Figure 5: Performance of the acrobot controller in the first model </p>
+<p align="center">
+  <img src="/../main/AltunkolOzcan/images/acrobot1.png" alt="Performance of the first network for the control task of acrobot">
+</p> 
+
+The plots of each and every cost function (cs[i]) as well as the total cost Jc is shown in Figure 6-11.
+
+<p align="center">Figure 6: Total loss of the acrobot controller in the first model </p>
+<p align="center">
+  <img src="/../main/AltunkolOzcan/images/Jc_iter_500_1.png" alt="Total cost first network for the control task of acrobot">
+</p> 
+<p align="center">Figure 7: Running of the acrobot controller in the first model </p>
+<p align="center">
+  <img src="/../main/AltunkolOzcan/images/cs0_iter_500_1.png" alt="Running cost first network for the control task of acrobot">
+</p> 
+<p align="center">Figure 8: Terminal loss of the acrobot controller in the first model </p>
+<p align="center">
+  <img src="/../main/AltunkolOzcan/images/cs1_iter_500_1.png" alt="Terminal cost first network for the control task of acrobot">
+</p> 
+<p align="center">Figure 9: HJB loss of the acrobot controller in the first model </p>
+<p align="center">
+  <img src="/../main/AltunkolOzcan/images/cs2_iter_500_1.png" alt="HJB cost first network for the control task of acrobot">
+</p> 
+<p align="center">Figure 10: Final loss of the acrobot controller in the first model </p>
+<p align="center">
+  <img src="/../main/AltunkolOzcan/images/cs3_iter_500_1.png" alt="Final cost first network for the control task of acrobot">
+</p> 
+<p align="center">Figure 11: Derivative cost of value function loss of the acrobot controller in the first model </p>
+<p align="center">
+  <img src="/../main/AltunkolOzcan/images/cs4_iter_500_1.png" alt="Derivative cost of value function cost first network for the control task of acrobot">
+</p> 
 ### 3.1.2. Dubins Car
 
 #### 3.1.2.1. Training and Testing of Dubins Car Trajectories
