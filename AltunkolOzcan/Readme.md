@@ -243,23 +243,23 @@ The plots of each and every cost function (cs[i]) as well as the total cost Jc i
 </p> 
 <p align="center">Figure 7: Running of the acrobot controller in the first model </p>
 <p align="center">
-  <img src="/../main/AltunkolOzcan/images/cs0_iter_500_1.png" alt="Running cost first network for the control task of acrobot">
+  <img src="/../main/AltunkolOzcan/images/cs0_iter500_1.png" alt="Running cost first network for the control task of acrobot">
 </p> 
 <p align="center">Figure 8: Terminal loss of the acrobot controller in the first model </p>
 <p align="center">
-  <img src="/../main/AltunkolOzcan/images/cs1_iter_500_1.png" alt="Terminal cost first network for the control task of acrobot">
+  <img src="/../main/AltunkolOzcan/images/cs1_iter_5001.png" alt="Terminal cost first network for the control task of acrobot">
 </p> 
 <p align="center">Figure 9: HJB loss of the acrobot controller in the first model </p>
 <p align="center">
-  <img src="/../main/AltunkolOzcan/images/cs2_iter_500_1.png" alt="HJB cost first network for the control task of acrobot">
+  <img src="/../main/AltunkolOzcan/images/cs2_iter_5001.png" alt="HJB cost first network for the control task of acrobot">
 </p> 
 <p align="center">Figure 10: Final loss of the acrobot controller in the first model </p>
 <p align="center">
-  <img src="/../main/AltunkolOzcan/images/cs3_iter_500_1.png" alt="Final cost first network for the control task of acrobot">
+  <img src="/../main/AltunkolOzcan/images/cs3_iter_5001.png" alt="Final cost first network for the control task of acrobot">
 </p> 
 <p align="center">Figure 11: Derivative cost of value function loss of the acrobot controller in the first model </p>
 <p align="center">
-  <img src="/../main/AltunkolOzcan/images/cs4_iter_500_1.png" alt="Derivative cost of value function cost first network for the control task of acrobot">
+  <img src="/../main/AltunkolOzcan/images/cs4_iter_5001.png" alt="Derivative cost of value function cost first network for the control task of acrobot">
 </p> 
 ### 3.1.2. Dubins Car
 
