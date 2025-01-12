@@ -254,12 +254,6 @@ python main.py \
 
 The paper introduces two components, HAE and EMCA, and evaluates their impact on the AP results. The results are summarized in the table below.
 
-HAE implementation seems to be reproducing the results as expected. There is only slight differences in the AP values. Furthermore, our implementation even outperforms the original results in AP_L, which is the main concern of the paper.
-
-EMCA implementation also produces similar results to the original paper. However, the AP_L value is lower than the original results.
-
-Overall implementation of AugDETR (DINO + HAE + EMCA) increase the AP by 0.9 points compared to the baseline DINO model while the original paper reports 1.2 points increase. The increase in AP_L is suprisingly higher (2.4 points) than the original paper (1.7 points). 
-
 <!-- | Model              | AP   | AP_50 | AP_75 | AP_S | AP_M | AP_L |
 |-------------------|------|-------|-------|------|------|------|
 | DINO (bs=2) (reported)    | 49.0 | 66.6  | 53.5  | 32.0 | 52.3 | 63.0 |
@@ -284,6 +278,12 @@ Overall implementation of AugDETR (DINO + HAE + EMCA) increase the AP by 0.9 poi
 | ✓ | | 49.6 | 67.0 | 54.2 | 31.8 | 52.9 | 63.8 | 49.7 | 67.2 | 54.2 | 31.4 | 53.0 | 64.3 |
 | | ✓ | 49.8 | 67.4 | 54.6 | 33.0 | 52.8 | 64.7 | 49.7 | 67.4 | 54.5 | 32.1 | 53.2 | 64.4 |
 | ✓ | ✓ | 50.2 | 67.8 | 55.0 | 32.3 | 53.2 | 64.7 | 49.9 | 67.6 | 54.5 | 32.3 | 52.8 | 65.4 |
+
+HAE implementation seems to be reproducing the results as expected. There is only slight differences in the AP values. Furthermore, our implementation even outperforms the original results in AP_L, which is the main concern of the paper.
+
+EMCA implementation also produces similar results to the original paper. However, the AP_L value is lower than the original results.
+
+Overall implementation of AugDETR (DINO + HAE + EMCA) increase the AP by 0.9 points compared to the baseline DINO model while the original paper reports 1.2 points increase. The increase in AP_L is suprisingly higher (2.4 points) than the original paper (1.7 points). 
 
 Train and validation loss curves for all the ablation experiments are shown in Fig. 3. There is no surprising behavior in the loss curves, except from the abrupt decrease in the last epoch of DINO+EMCA. There, training process is killed with an error, and I had to switch to another GPU, reducing number of GPUs from 4 to 1. This might affect the results. I could not retry the experiment due to time constraints.
 
