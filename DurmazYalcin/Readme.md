@@ -244,6 +244,15 @@ For the primal tests, we use the [DSEC](https://dsec.ifi.uzh.ch/) dataset becaus
 
 During training, it is necessary to create the event bins for each optical flow groundtruth. However, this binning process is time-consuming and is repeated for every training epoch. To reduce the training time, pre-binning the relevant events and saving them in a separate folder can significantly reduce training time. By doing this, we can directly load the relevant events from the pre-binned files, eliminating the need for repeated binning during each epoch. 
 
+After the primal tests, we continued training with the photometric and smoothness loss functions on the [MVSEC](https://daniilidis-group.github.io/mvsec/) and the [DSEC](https://dsec.ifi.uzh.ch/) datasets as performed in the article. One possible extension we considered is starting the training process on the MVSEC dataset in an unsupervised manner. Since the MVSEC dataset does not include ground truth data, this approach could provide a robust initialization for the network. After unsupervised training on MVSEC, transitioning to supervised training with the DSEC dataset—which includes ground truth optical flow—might yield improved performance, particularly with respect to the 
+𝐿
+EPE
+L 
+EPE
+​
+  loss.
+
+To experiment with this approach, we need to address the difference in data sizes between the two datasets. Specifically, we must apply zero-padding to the smaller-sized DSEC dataset to match the dimensions of MVSEC, enabling our network to process both datasets simultaneously.
 ## 3.2. Running the code
 
 @TODO: Explain your code & directory structure and how other people can run it.
