@@ -282,11 +282,11 @@ We have extracted the following comparisons for LRW-Hard, LRW-Easy, LRW-Random, 
 
 -To start with, we observed that the LRW-Opt method came superior to all other methods in every dataset other than Diabetic Retinopathy. We believe the reason for this exception is because DR dataset is our biggest dataset but also the samples were really similar so the splitter network constraint of choosing hard samples effected its performance poorly and this lead to LRW-Hard perform better than LRW-Opt. 
 
--The paper claims that the LRW-Hard would be the successor to this method. We have seen this kind of relation in all the datasets except CIFAR-100. This aligns with the idea of choosing only the hardest sample for validation set increases the accuracy of the model.
+-The paper claims that the LRW-Hard would be the next highest accuracy in the comparison. We have seen this kind of relation in all the datasets except Diabetic Retinopathy. This aligns with the idea of choosing only the hardest sample for validation set increases the accuracy of the model.
 
--Just like LRW-Hard, LRW-Easy satisfied the paper's suggestions, but in CIFAR-100, it outperformed LRW-Hard, which was not the case in the article. 
+-Just like LRW-Hard, LRW-Easy satisfied the paper's suggestions. 
 
--LRW-Random didn't perform the way the article suggested in every case because of its stochastic nature. In Cats and Dogs, LRW-Random gave better results than LRW-Easy, but in other datasets, its performance mostly aligned with the paper's suggestion.
+-LRW-Random didn't perform the way the article suggested in every case because of its stochastic nature. In Cats and Dogs, LRW-Random gave better results than LRW-Easy, but in other datasets, its performance mostly aligned with the paper's suggestion of LRW-Easy > LRW-Random.
 
 
     
@@ -304,13 +304,15 @@ We have extracted the following comparisons for LRW-Hard, LRW-Easy, LRW-Random, 
 
 -We examined the Margin Maximization impact using the CIFAR-100 dataset. We received the test margin results for the LRW-Easy, LRW-Hard, and ERM procedures. 
 
--The Margin Delta graph's right skew clearly indicates that the mean margin delta between LRW-Hard and ERM is more than zero. SO we can say that Learned Reweighting improves margins of learned classifiers.
+-The Margin Delta graph's mean is very close to zero, which means that the instance weights are closer to the standard normal distribution. So we can say that Learned Reweighting 
+ technique proposed improves margins of learned classifiers.
 
--The LRW-easy and LRW-Hard were also clearly distinguished and LRW-Hard successfully outperforms LRW-Easy in terms of margin maximization effect as demonstrated in the Margin Gain graph. Additionally, LRW-Hard has a greater delta with respect to ERM than LRW-Easy on the selected ERM Margin Buckets.
+-The LRW-easy and LRW-Hard were also clearly distinguished and LRW-Hard successfully outperforms LRW-Easy in terms of margin maximization effect as demonstrated in the Margin Gain graph.
 
 ## **9.References**
 
-\[1\] Yujia Bao and Regina Barzilay. Learning to split for automatic bias detection. arXiv preprint arXiv:2204.13749, 2022\. 4, 11, 12
+\[1\] Jain, N., Suggala, A. S., & Shenoy, P. (2024). Improving generalization via meta-learning on hard samples. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (pp. 27600-27609).
 
+\[2\] Yujia Bao and Regina Barzilay. Learning to split for automatic bias detection. arXiv preprint arXiv:2204.13749, 2022\. 4, 11, 12
 ## 
 
