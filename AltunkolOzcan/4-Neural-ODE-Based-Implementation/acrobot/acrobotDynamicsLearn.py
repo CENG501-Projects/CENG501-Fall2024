@@ -42,14 +42,13 @@ def acrobotDynamics(z, u, p):
     # Compute dynamics matrices: Mass matrix (D), gravitational forces (G), and input (B)
     D, G, B = autoGen_acrobotDynamics(q1, q2, dq1, dq2, p['m1'], p['m2'], p['g'], p['l1'], p['l2'])
     # Solve for accelerations ddq
-    #m,s,v = torch.linalg.svd(D)
-    #rcondi = 1e-6
-    B = B.unsqueeze(-1).expand(-1, -1, u.shape[0])
-    u = u.view(1,1,-1)
-    right_side = B * u - G.unsqueeze(1)
-    #right_side = right_side.unsqueeze(1)
-    #ddq, residual, rank, sing_val = torch.linalg.lstsq(D.permute(2,0,1) , right_side.permute(2,0,1), rcond = rcondi, driver='gelss')
-    ddq = torch.linalg.solve(D.permute(2,0,1), right_side.permute(2,0,1))
+    m,s,v = torch.linalg.svd(D)
+    rcondi = 1e-6
+    #B = B.unsqueeze(-1).expand(-1, -1, u.shape[0])
+    right_side = B * u - G
+    right_side = right_side.unsqueeze(1)
+    ddq, residual, rank, sing_val = torch.linalg.lstsq(D.permute(2,0,1) , right_side.permute(2,0,1), rcond = rcondi, driver='gelss')
+    #ddq = torch.linalg.solve(D.permute(2,0,1), right_side.permute(2,0,1))
     #dz = torch.cat((torch.tensor([dq1, dq2]), ddq))
     dq1_reshaped = dq1.view(z.shape[0], 1, 1)
     dq2_reshaped = dq2.view(z.shape[0], 1, 1)
@@ -57,7 +56,6 @@ def acrobotDynamics(z, u, p):
     # Concatenate along the last dimension to form (1024, 1, 4)
     dz = torch.cat((dq1_reshaped, dq2_reshaped, ddq), dim=1)
     dz = dz.squeeze(2)
-    #dz = dz.permute(0,2,1)
     return dz
 #
 #q1 = torch.tensor(-1.0, requires_grad=False)
