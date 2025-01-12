@@ -64,6 +64,8 @@ We see **ZODE** as a unified way to handle multiple OOD “tests” (one per mod
    - **Energy Score**: Derived from the raw logits, it effectively measures how “strongly” the network responds overall. A higher (less negative) energy means the logits are weakly peaked and suggests OOD.  
    - **Mahalanobis Distance**: Uses the penultimate-layer features and checks how far these features are from the typical ID feature cloud. Large distances imply OOD.  
    - **KNN Distance**: Similarly, but more directly, we look at how far a test sample’s embedding is from its nearest neighbors in the ID training/validation feature bank. If it’s far from all neighbors, it’s likely OOD.
+  
+![Energy distribution](images/energy-ood.png "Energy Score Distribution Demonstration")
 
 3. **Converting Scores into p-Values**  
    - Each model’s score distribution is characterized on the **ID dataset**. Essentially, we record how that model’s scoring function behaves across many known ID samples.  
