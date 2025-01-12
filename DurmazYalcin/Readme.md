@@ -287,7 +287,13 @@ Finally, we visualize sample estimations from the network, showing both the grou
 
 # 4. Conclusion
 
-@TODO: Discuss the paper in relation to the results in the paper and your results.
+In this study, we utilized the MVSEC and DSEC datasets, both of which provide LIDAR, IMU, event camera, and grayscale image data. Among these, the DSEC dataset offers a more reliable ground truth compared to MVSEC. For our implementation, we focused exclusively on the event camera data to estimate optical flow using the adaptive spike flow architecture outlined in the referenced paper.
+
+Our architecture consists of three primary components: an encoder, residual connections, and a decoder. The encoder includes four cascaded and parallel working blocks to effectively extract features from the input data. This is followed by two convolutional layers with residual connections, enabling the network to retain and refine critical information. Finally, the decoder, comprising four cascaded and parallel blocks, estimates the optical flow as the output.
+
+When working with the DSEC dataset, the availability of ground truth data allows us to perform supervised training by backpropagating the error at each stage of the decoder. In contrast, due to the lack of reliable ground truth in the MVSEC dataset, training is carried out in an unsupervised manner. Our results align with those reported in the paper, with noticeable improvements observed on the DSEC dataset. This enhancement can be attributed to the architecture being specifically designed for custom hardware optimized for neuromorphic sensors like event cameras.
+
+Overall, this project has been a valuable learning experience, serving as an introductory step in implementing deep learning architectures. It has also broadened our perspective on leveraging event-based sensing and highlighted the potential of neuromorphic computing in optical flow estimation.
 
 # 5. References
 
@@ -296,4 +302,4 @@ Finally, we visualize sample estimations from the network, showing both the grou
 # Contact
 
 Atakan Durmaz - atakan.durmaz@metu.edu.tr
-Haktan Yalçın - haktan.yalcin@metu.edu.tr
+Haktan Yalçın - yalcin.haktan@metu.edu.tr
