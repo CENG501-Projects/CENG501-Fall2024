@@ -293,10 +293,10 @@ We have extracted the following comparisons for LRW-Hard, LRW-Easy, LRW-Random, 
 ## **3.3.2. Margin Maximization Effect**
 
 ### Margin Delta
-![Margin Maximiziaton](https://github.com/Sinasi3/Sinasi3/blob/5506aa0fe4de4fc55428efa90eeba89f23418e81/Margin_New1.PNG)
+![Margin Maximiziaton](https://github.com/Sinasi3/Sinasi3/blob/f620832b017d3f75226b3e4164f35878ac918463/Margin_Diff.PNG)
 
 ### Margin Gain
-![ERM Buckets](https://github.com/Sinasi3/Sinasi3/blob/5506aa0fe4de4fc55428efa90eeba89f23418e81/Margin_Buckets_New.png)
+![ERM Buckets](https://github.com/Sinasi3/Sinasi3/blob/1a48372d386a0ff09168769de11a7b14622507bb/margin_data.png)
 
 ---
 
@@ -304,13 +304,12 @@ We have extracted the following comparisons for LRW-Hard, LRW-Easy, LRW-Random, 
 
 -We examined the Margin Maximization impact using the CIFAR-100 dataset. We received the test margin results for the LRW-Easy, LRW-Hard, and ERM procedures. 
 
--The Margin Delta graph's mean is very close to zero, which means that the instance weights are closer to the standard normal distribution. So we can say that Learned Reweighting 
- technique proposed improves margins of learned classifiers.
+-The Margin Delta graph's mean is higher than zero and the instance weights are right-skewed, which means that the LRW-Hard classifier proves higher margins than ERM Classifier, and LRW-Hard classifier tends to produce higher margin results in overall. We can say that the proposed Learned Reweighting method improves margins of learned classifiers.
 
--The LRW-easy and LRW-Hard were also clearly distinguished and LRW-Hard successfully outperforms LRW-Easy in terms of margin maximization effect as demonstrated in the Margin Gain graph. The graph was also supported with standard error mean, which was very low for all buckets.
+-The LRW-easy and LRW-Hard were also clearly distinguished and LRW-Hard successfully outperforms LRW-Easy in terms of margin maximization effect as demonstrated in the Margin Gain graph in all buckets by LRW-Hard buckets consistently showing higher values. The graph was also supported with standard error mean to show how variant the distribution is for each bucket, which was very low for all buckets.
 
 # **4. Conclusion**
-We have provided a reproduction for the paper "Improving generalization via meta-learning on hard samples. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition" bu Jain et al. We have briefly introduced their method and provided an implementation. We have investigated the 2 claims of the paper, which were the in-performance distributions and margin maximization effect of their proposed methods. We have found that except for Diabetic Retinopathy dataset, the authors' claims hold and the accuracy values mostly followed the pattern LRW-Opt > LRW-Hard > LRW-Easy > LRW-Random. Margin maximization effect was also successfully demonstrated on CIFAR-100. We invesigated the claim of margin maximization by comparing the margin distribution of the LRW-Hard method with respect to ERM Margin and we compared the LRW-Hard and LRW-Easy instances with respect to ERM margin buckets. The margin maximization was proved to be improved by ERM in Hard instances, and the LRW-Hard method outperformed the the easy instances with respect to margin maximization. We have provided the code and models to our implementation and provided a benchmark to investigate the out-of-distribution claims of the paper.
+We have provided a reproduction for the paper "Improving generalization via meta-learning on hard samples. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition" bu Jain et al. We have briefly introduced their method and provided an implementation. We have investigated the 2 claims of the paper, which were the in-performance distributions and margin maximization effect of their proposed methods. We have found that except for Diabetic Retinopathy dataset, the authors' claims hold and the accuracy values mostly followed the pattern LRW-Opt > LRW-Hard > LRW-Easy > LRW-Random. Margin maximization effect was also successfully demonstrated on CIFAR-100. We invesigated the claim of margin maximization by comparing the margin distribution of the LRW-Hard method with respect to ERM Margin and we compared the LRW-Hard and LRW-Easy instances with respect to ERM margin buckets. The margin maximization was proved to be improved by ERM in Hard instances with the distribution being right-skewed for all instances, and the LRW-Hard method outperformed the the easy instances with respect to margin maximization, with very small errors in each bucket. We have provided the code and models to our implementation and provided a benchmark to further investigate the out-of-distribution claims of the paper.
 
 ## **5.References**
 
