@@ -379,4 +379,8 @@ Further extending our pruning strategies to transformer architectures and hybrid
 
 # Contact
 
-@TODO: Provide your names & email addresses and any other info with which people can contact you.
+
+- **Yavuz Selim Özkaya**  
+  Email: [e230518@metu.edu.tr](mailto:e149618@metu.edu.tr)  
+  LinkedIn: [Mustafa A. PESEN](https://www.linkedin.com/in/mustafa-a-pesen-01510487/) 
+  GitHub: [KontJerzy](https://github.com/KontJerzy)
