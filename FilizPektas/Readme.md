@@ -243,12 +243,15 @@ The dataset names are not case sensitive.
 **Example Commands:**
 
 1) Run with Default Parameters:
+   ```bash
    python main.py
 
 2) Custom Datasets and Parameters:
+   ```bash
    python main.py --id-datasets "CatsDogs cifar10" --batch-size 32 --epochs 50 --use-existing-erm True --use-existing-opt True --use-ood-pickle-file True
 
 3) Out-of-Distribution Processing:
+   ```bash
    python main.py --out-datasets "iwildcam" --use-ood-pickle-file True
 
 ## **3.3. Result**
