@@ -276,6 +276,38 @@ The parameters are listed as follows.
     
 In this network, we first set the coefficient of the terminal cost to 2, and other coefficients low. Then, after the 500th epoch, we set new coefficients for the total cost function as well as a new learning rate. The new weighting prioritizes the satisfaction of the HJB equation. We first present the results for the initial set of cost function weights.
 
+<p align="center">Figure 12: Performance of the acrobot controller in the second model </p>
+<p align="center">
+  <img src="/../main/AltunkolOzcan/images/acrobot2.png" alt="Performance of the first network for the control task of acrobot">
+</p> 
+
+The plots of each and every cost function (cs[i]) as well as the total cost Jc is shown in Figure 13-18.
+
+<p align="center">Figure 13: Total loss of the acrobot controller in the second model </p>
+<p align="center">
+  <img src="/../main/AltunkolOzcan/images/Jc_iter_500_2.png" alt="Total cost first network for the control task of acrobot">
+</p> 
+<p align="center">Figure 14: Running of the acrobot controller in the second model </p>
+<p align="center">
+  <img src="/../main/AltunkolOzcan/images/cs0_iter500_2.png" alt="Running cost first network for the control task of acrobot">
+</p> 
+<p align="center">Figure 15: Terminal loss of the acrobot controller in the second model </p>
+<p align="center">
+  <img src="/../main/AltunkolOzcan/images/cs1_iter500_2.png" alt="Terminal cost first network for the control task of acrobot">
+</p> 
+<p align="center">Figure 16: HJB loss of the acrobot controller in the second model </p>
+<p align="center">
+  <img src="/../main/AltunkolOzcan/images/cs2_iter500_2.png" alt="HJB cost first network for the control task of acrobot">
+</p> 
+<p align="center">Figure 17: Final loss of the acrobot controller in the second model </p>
+<p align="center">
+  <img src="/../main/AltunkolOzcan/images/cs3_iter500_2.png" alt="Final cost first network for the control task of acrobot">
+</p> 
+<p align="center">Figure 18: Derivative cost of value function loss of the acrobot controller in the second model </p>
+<p align="center">
+  <img src="/../main/AltunkolOzcan/images/cs4_iter500_2.png" alt="Derivative cost of value function cost first network for the control task of acrobot">
+</p> 
+
 ### 3.1.2. Dubins Car
 
 #### 3.1.2.1. Training and Testing of Dubins Car Trajectories
