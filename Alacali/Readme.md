@@ -329,6 +329,11 @@ if __name__ == "__main__":
   <em>Figure 15: Generator loss, balanced and imbalanced datasets, K=2 clients</em>
 </p>
 
+<p align="center">
+  <img src="figures/paper_mnist_results.png" style="width: 70%;"><br>
+  <em>Figure 16: Generator results (FL-GAN, IFL-GAN, MD-GAN), K=2 clients</em>
+</p>
+
 # 4. Conclusion
 
 In this part, the results shared are discussed from the perspective of the hypotheses created from the paper.
