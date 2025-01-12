@@ -399,13 +399,30 @@ When we compare our AP_R40@0.70, 0.70, 0.70 results with the paper, we can claim
 
 We will also provide precision-recall curves for each task. Precision-recall curves can be used to calculate all the results we provided earlier. Also, for exact calculations, on the output directory, stats files exist for each task, where one can find the corresping precision point for each recall value from 0 to 1. For the details, please check the [kitti_eval](https://github.com/prclibo/kitti_eval) repository where we took the code to both calculate stats and draw graphs.
 
-![car_detection](https://github.com/user-attachments/assets/28e6593e-c40f-4909-83c9-002a16cf53b0)
+<p align="center">
+  <img src=https://github.com/user-attachments/assets/28e6593e-c40f-4909-83c9-002a16cf53b0>
+  <br>
+  <strong>Figure 8:</strong> Precision recall curve of the task bbox for car category.
+</p>
 
-![car_detection_ground](https://github.com/user-attachments/assets/cc662b7f-71cf-41e2-b5d0-e055dd6fc26e)
+<p align="center">
+  <img src=https://github.com/user-attachments/assets/cc662b7f-71cf-41e2-b5d0-e055dd6fc26e>
+  <br>
+  <strong>Figure 9:</strong> Precision recall curve of the task bev for car category.
+</p>
 
-![car_detection_3d](https://github.com/user-attachments/assets/8deedf7c-2018-4e7c-bdce-533c4797a913)
+<p align="center">
+  <img src=https://github.com/user-attachments/assets/8deedf7c-2018-4e7c-bdce-533c4797a913>
+  <br>
+  <strong>Figure 10:</strong> Precision recall curve of the task 3d for car category.
+</p>
 
-![car_orientation](https://github.com/user-attachments/assets/81250bd0-2be4-4e75-ad58-89a5a1a62d68)
+<p align="center">
+  <img src=https://github.com/user-attachments/assets/81250bd0-2be4-4e75-ad58-89a5a1a62d68>
+  <br>
+  <strong>Figure 11:</strong> Precision recall curve of the task aos for car category.
+</p>
+
 
 In order to create the graphs or stats;
 
