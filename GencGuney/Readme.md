@@ -50,11 +50,47 @@ Theoretical analysis backs up the approach, showing that even as the model zoo e
 
 ## 2.2. Our interpretation
 
-ZODE provides a new way of balancing accuracy and usability in out-of-distribution detection. ZODE standardizes the outputs from different models by converting detection scores into p-values, hence allowing effective integration within the model zoo. More importantly, it leverages the Benjamini-Hochberg procedure to dynamically adjust the detection thresholds, which prevents error accumulation and thus maintains consistent detection performance.
+## Our Interpretation
 
-In our reproduction, simplicity and modularity were found to be the strong points of ZODE. The use of the model zoo brings flexibility in the approach, making it appropriate for different datasets and tasks. Regarding the practical implementation of ZODE, there are several challenges to be considered, such as high computational overhead due to model selection for each sample, storage of validation data, and higher memory and processing requirements for large-scale systems; parallel computing and distributed processing can reduce these issues.
+We see **ZODE** as a unified way to handle multiple OOD “tests” (one per model) under a rigorous statistical framework, ensuring each model's confidence measure (score) is properly accounted for.
 
-The quality and diversity of the model zoo are of prime importance for the success of ZODE. In practice, such a zoo is very resource-expensive to build, which may limit its utility for small teams. However, leaving practical matters aside, ZODE is a theoretically well-grounded and very strong method that improves OOD detection in many important ways.
+1. **Model Zoo as Multiple Perspectives**  
+   - In traditional OOD detection, we often rely on a single model’s output (e.g., ResNet18) to detect anomalies. However, models can be biased or limited by their training or architecture.  
+   - By building a **zoo of models** (e.g., different ResNet variants, DenseNet, etc.), each model provides a unique lens or perspective on what the in-distribution (ID) looks like.  
+   - Some networks might pick up on texture cues, others on shape or color distributions. By combining them, we can potentially catch a wider range of OOD scenarios.
+
+2. **Scoring Methods**  
+   - **MSP (Maximum Softmax Probability)**: We look at how confident a model is in its top predicted class. In distribution, this is typically **high**; out of distribution, it’s often **low**.  
+   - **Energy Score**: Derived from the raw logits, it effectively measures how “strongly” the network responds overall. A higher (less negative) energy means the logits are weakly peaked and suggests OOD.  
+   - **Mahalanobis Distance**: Uses the penultimate-layer features and checks how far these features are from the typical ID feature cloud. Large distances imply OOD.  
+   - **KNN Distance**: Similarly, but more directly, we look at how far a test sample’s embedding is from its nearest neighbors in the ID training/validation feature bank. If it’s far from all neighbors, it’s likely OOD.
+
+3. **Converting Scores into p-Values**  
+   - Each model’s score distribution is characterized on the **ID dataset**. Essentially, we record how that model’s scoring function behaves across many known ID samples.  
+   - When we see a new test sample, we measure how “extreme” its score is relative to that ID distribution.  
+     - For MSP, an **unusually low** value is extreme.  
+     - For Energy, an **unusually high** value is extreme.  
+     - For Mahalanobis/KNN distance, an **unusually large** distance is extreme.  
+   - Converting these extremes to **p-values** means: “What fraction of ID samples had scores this extreme or more?” The smaller that fraction, the more suspicious the sample is.
+
+4. **Multiple Hypothesis Testing with Benjamini-Hochberg**  
+   - Now, we have multiple p-values (one per model). Each is telling us: “I find this sample suspicious (OOD) at some level.”  
+   - We could simply say “if any p-value is below some threshold, declare OOD,” but that could inflate false alarms. On the other hand, requiring all p-values to be below the threshold might miss real OOD samples if only one model is good at detecting them.  
+   - **Benjamini-Hochberg (BH)** is a standard statistical tool to handle this exact scenario. We want to control the **false discovery rate** across multiple “tests.” A discovery here means “declaring a sample OOD.”  
+   - BH sorts the p-values, assigns a threshold to each based on rank, and decides if at least one is small enough to reject the notion that the sample is ID. In simpler terms, we only need a **single model** to strongly indicate OOD—provided that indication is statistically significant under BH’s unified scheme.
+
+5. **Why This Improves OOD Detection**  
+   - **Reduces Overreliance on One Model**: If a single model is uncertain about certain OOD types, others might catch them. Or if a model is too “loose,” BH can limit how often it alone triggers OOD on ID samples.  
+   - **Statistically Grounded**: Instead of arbitrary model aggregation (like averaging scores), BH provides a well-defined, theoretically justifiable multi-test approach.  
+   - **Handles Diverse Scores**: MSP, Energy, distance-based scores—each has different dynamic ranges and directions (higher or lower → OOD). P-values unify them in the same [0,1] scale. BH then only needs these p-values to determine significance.
+
+6. **Interpretation in Practice**  
+   - Each input sample arrives.  
+   - Each model says “I find this sample to have a p-value of X.” (i.e., “If this were ID, the chance of seeing a score at least this extreme is X.”)  
+   - If any of these p-values is small enough relative to its BH threshold, the pipeline flags the sample as OOD.  
+   - Because BH is controlling the false discovery rate, we don’t incorrectly flag too many ID samples—even though we’re effectively letting each model “vote” for OOD.
+
+In summary, our deeper interpretation is that **ZODE** elegantly **orchestrates** multiple OOD detectors, each with its own specialized scoring method, using BH to keep an appropriate lid on false detections while capitalizing on each method’s strengths. This synergy yields a **stronger, more robust** approach to OOD detection than relying on a single model or naive combination. 
 
 # 3. Experiments and results
 
