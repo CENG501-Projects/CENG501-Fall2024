@@ -155,22 +155,24 @@ Our accuracy was much lower compared to the original paper. This could be becaus
 
 Figure 4: Train Loss and Accuracy for LRA Listops Benchmark
 
-<img width="600" alt="train_graphs" src="https://github.com/user-attachments/assets/f7bdb811-214a-4267-b3dd-bb664c97f58c" />
+<img width="650" alt="train_graphs" src="https://github.com/user-attachments/assets/c4008269-8bdc-4f04-a028-4b49536bf526" />
+
 
 Figure 5: Validation Loss and Accuracy for LRA Listops Benchmark
 
-<img width="600" alt="val_graphs" src="https://github.com/user-attachments/assets/c5d04fe8-0f93-441f-98d3-70baa8fa8fb2" />
+<img width="650" alt="val_graphs" src="https://github.com/user-attachments/assets/18671c8f-8eb8-4470-85a5-e3256edadaab" />
+
 
 Figure 6: Test Loss and Accuracy for LRA Listops Benchmark
 
-<img width="600" alt="test_graphs" src="https://github.com/user-attachments/assets/c0fbd276-7307-41c7-ad7b-6644cd5b29ea" />
+<img width="650" alt="test_graphs" src="https://github.com/user-attachments/assets/c0fbd276-7307-41c7-ad7b-6644cd5b29ea" />
 
 
 
 
 Figure ??: Original Paper's Accuracy Results for LRA Benchmarks
 
-<img width="600" alt="papers_results" src="https://github.com/user-attachments/assets/449671e3-f5a9-47a5-925b-ba08a80eef8a" />
+<img width="650" alt="papers_results" src="https://github.com/user-attachments/assets/449671e3-f5a9-47a5-925b-ba08a80eef8a" />
 
 # 4. Conclusion
 
