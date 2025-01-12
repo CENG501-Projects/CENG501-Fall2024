@@ -428,12 +428,30 @@ Time batch is reduced since the network now learns the derivative terms, and we 
 
 
 ## 3.2. Running the code
+In our group repository, we have mutiple folders where we keep the related resources, similar codes and notes. Among them only 4-Neural-ODE-Based-Implementation folder is present here. This folder is where all the implementation happens. Inside we have different folders for different robot scenarios. 
 
-@TODO: Explain your code & directory structure and how other people can run it.
+Dependencies:
+  - Pytorch 2.5.1
+  - Numpy
+  - matplotlib
+  - os
+    
+### 3.2.1 Acrobot
+In order to run the files related to acrobot, root folder must be 4-Neural-ODE-Based-Implementation. 
+To perform system indetification run:
+```
+python -m acrobot.acrobot_learn
+```
+To perform optimal control, run:
+```
+python -m acrobot.trainOC
+```
 
 ## 3.3. Results
 
-@TODO: Present your results and compare them to the original paper. Please number your figures & tables as if this is a paper.
+### 3.3.1 Acrobot System Identification without Gradients
+
+The paper claims that the system identification of acrobot using neural networks without the guiding gradientsusing tanh activation functions minimizes the loss function as low as 0.0673 whereas we could improve only until around 0.6 over all the experiment instances. 
 
 # 4. Conclusion
 
