@@ -296,7 +296,7 @@ We have extracted the following comparisons for LRW-Hard, LRW-Easy, LRW-Random, 
 ![Margin Maximiziaton](https://github.com/Sinasi3/Sinasi3/blob/f620832b017d3f75226b3e4164f35878ac918463/Margin_Diff.PNG)
 
 ### Margin Gain
-![ERM Buckets](https://github.com/Sinasi3/Sinasi3/blob/1a48372d386a0ff09168769de11a7b14622507bb/margin_data.png)
+![ERM Buckets](https://github.com/Sinasi3/Sinasi3/blob/5506aa0fe4de4fc55428efa90eeba89f23418e81/Margin_Buckets_New.png)
 
 ---
 
