@@ -451,7 +451,7 @@ python -m acrobot.trainOC
 
 ### 3.3.1 Acrobot System Identification without Gradients
 
-The paper claims that the system identification of acrobot using neural networks without the guiding gradients using tanh activation functions minimizes the loss function as low as 0.0673 whereas we could improve only until around 0.6 over all the experiment instances. The authors have trained the network over 50000 epochs with unknown iterations in each. We tarined the networks over 10 epochs with 1000 iterations each.
+The paper claims that the system identification of acrobot using neural networks without the guiding gradients using sine activation functions minimizes the loss function as low as 0.0673 whereas we could improve only until around 0.6 over all the experiment instances. The authors have trained the network over 50000 epochs with unknown iterations in each. We tarined the networks over 10 epochs with 1000 iterations each.
 
 ### 3.3.1 Acrobot Control
 
@@ -459,7 +459,12 @@ The authors have provided results for the Acrobot control with learned dynamics.
 
 # 4. Conclusion
 
-@TODO: Discuss the paper in relation to the results in the paper and your results.
+We have tried to regenerate some of the results in the paper [1]. 
+
+In Acrobot scenarios, random sampling of the state and input space is done for system identification. Gradients of the state transifition function are not used to help train the network. We have found this application challenging because of the unclear details in the paper as well as the hardships of gaining an intuition behind data not belonging to a certain trajectory. Moreover, we have observed that network depth plays a crucial role in the accuracy of the model. In the control task, previous approaches such as [6] have used the learnt Hamiltonian and Value function to decide on the control input whereas the new paper [1] separates the controller completely as a network. We found that the separation of the networks for the value and the cost functions actually hinder training because the gradients diminish until they get to the parameters of the control input generating network. As a result, cost function terms related to Hamiltonians and its gradients etc. decrease faster than the terminal cost. To alleviate this problem, we trained the network in a continuing manner with different cost functions. In the first stage, we prioritized the terminal cost. In the second stage we prioritized the optimality of the controller. However, we still found that the convergence of the control network is quite slow compared to the value function network. Moreover, the terminal cost consists of two types of states; namely, position and velocity states. While we put emphasis on the cost of the position states as users, the paper [1] actually does not discriminate between the importance of any type of states and the authors provide the same cost coefficient for all the states. Although at initial stages of training position states we of utmost imprtance to the network, we observed that during fine tuning our network decided to satisfy the task for the velocity states, not that much for the position states.
+This resulted in lower cost, but unwanted trajectory. We believe that unlike [1], different cost coefficients in R and P (running cost and terminal cost matrivces) can help aid the situation.
+
+We have also observed an inconsistency between the least squares solutions of MATLAB and Python. We have studied various factors like condition numbering, solution methods etc. All the methods in Pythn seem to produce a certain result agreeing with each other whereas all the methods in MATLAB seem to produce another result agreeing with each other but conflicting with Pyhton. We actually resolved this problem using adaptive singular value thresholding in learning algorithm at first, but due to a difficulty in a bug we did not implement a similar procedure for later experiments. We believe this could be a silent and dangerous problem some programmers may not realize. 
 
 # 5. References
 
