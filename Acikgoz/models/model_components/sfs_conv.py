@@ -94,8 +94,10 @@ class FPU(nn.Module):
         batch_size, channels, height, width = x.shape
         outputs = []
         for scale in range(1, self.num_scales + 1):
+            #print(f"Processing Scale {scale}/{self.num_scales}...")
             frft_kernel_dynamic = frft_kernel(width, self.alpha, scale, sampling_interval=1.0)
             for orientation in range(self.num_orientations):
+                #print(f"  Processing Orientation {orientation + 1}/{self.num_orientations} for Scale {scale}...")
                 gabor_filter_dynamic = gabor_filter(
                     kernel_size=width,
                     sigma=4.0,
@@ -125,9 +127,88 @@ class CSU(nn.Module):
 
         return y_fused
 
+
+class OptimizedFPU(nn.Module):
+    def __init__(self, in_channels, out_channels, num_scales, num_orientations, alpha=0.8, width=64):
+        super(OptimizedFPU, self).__init__()
+        self.num_scales = num_scales
+        self.num_orientations = num_orientations
+        self.alpha = alpha
+        self.out_channels = out_channels
+        self.width = width  # Expected width of input tensor
+        self.pwc = nn.Conv2d(in_channels * num_scales * num_orientations, out_channels, kernel_size=1, bias=False)
+
+        # Precompute FrFT kernels and Gabor filters
+        self.frft_kernels = self._precompute_frft_kernels(width=width)
+        self.gabor_filters = self._precompute_gabor_filters(kernel_size=width)
+
+    def _precompute_frft_kernels(self, width):
+        kernels = []
+        for scale in range(1, self.num_scales + 1):
+            kernel = frft_kernel(width, self.alpha, scale, sampling_interval=1.0)
+            kernels.append(kernel)
+        return torch.stack(kernels)
+
+    def _precompute_gabor_filters(self, kernel_size):
+        filters = []
+        for orientation in range(self.num_orientations):
+            gabor_filter_dynamic = gabor_filter(
+                kernel_size=kernel_size,
+                sigma=4.0,
+                theta=orientation * torch.pi / self.num_orientations,
+                lambd=10.0,
+                gamma=0.5,
+                psi=0.0
+            )
+            filters.append(gabor_filter_dynamic)
+        return torch.stack(filters)
+
+    def forward(self, x):
+        batch_size, channels, height, width = x.shape
+
+        # Verify input dimensions
+        if width != self.width:
+            raise ValueError(f"Input width ({width}) does not match precomputed width ({self.width}).")
+
+        outputs = []
+        device = x.device
+
+        # Iterate over precomputed kernels and filters
+        for scale_idx in range(self.num_scales):
+            frft_kernel_dynamic = self.frft_kernels[scale_idx].to(device)
+            for orientation_idx in range(self.num_orientations):
+                gabor_filter_dynamic = self.gabor_filters[orientation_idx].to(device)
+
+                # Apply fractional Gabor transform
+                outputs.append(self._apply_filters(x, frft_kernel_dynamic, gabor_filter_dynamic))
+
+        # Concatenate outputs and apply pointwise convolution
+        concatenated = torch.cat(outputs, dim=1)
+        return self.pwc(concatenated)
+
+    @staticmethod
+    def _apply_filters(x, frft_kernel, gabor_filter):
+        batch_size, channels, height, width = x.shape
+
+        # FrFT
+        frft_kernel_resized = frft_kernel.view(1, 1, 1, width).to(x.device)
+        frft_output = torch.fft.fft(x, dim=-1)
+        frft_output = frft_output * frft_kernel_resized
+        frft_output = torch.fft.ifft(frft_output, dim=-1).real
+
+        # Gabor Filter
+        gabor_filter_expanded = gabor_filter.unsqueeze(0).unsqueeze(0).to(x.device)
+        gabor_output = F.conv2d(
+            frft_output,
+            gabor_filter_expanded.expand(channels, 1, *gabor_filter.size()),
+            groups=channels,
+            padding=gabor_filter.size(0) // 2
+        )
+        return gabor_output
+
 # SFS-Conv: Space-Frequency Selection Convolution
 class SFSConv(nn.Module):
-    def __init__(self, in_channels, out_channels, alpha=0.5, spu_groups=4, fpu_scales=4, fpu_orientations=8, alpha_fpu=0.8):
+    def __init__(self, in_channels, out_channels, alpha=0.5, spu_groups=4, fpu_scales=4, fpu_orientations=4, alpha_fpu=0.5, use_optimized_fpu=True):
         super(SFSConv, self).__init__()
         self.alpha = alpha
         self.spatial_channels = int((1 - alpha) * in_channels)
@@ -139,7 +220,10 @@ class SFSConv(nn.Module):
 
         # SPU and FPU
         self.spu = SPU(self.spatial_channels, self.spatial_channels, groups=spu_groups)
-        self.fpu = FPU(self.frequency_channels, self.frequency_channels, fpu_scales, fpu_orientations, alpha_fpu)
+        if use_optimized_fpu:
+            self.fpu = OptimizedFPU(self.frequency_channels, self.frequency_channels, fpu_scales, fpu_orientations, alpha_fpu)
+        else:
+            self.fpu = FPU(self.frequency_channels, self.frequency_channels, fpu_scales, fpu_orientations, alpha_fpu)
 
         # CSU: Combines outputs from SPU and FPU
         self.csu = CSU()

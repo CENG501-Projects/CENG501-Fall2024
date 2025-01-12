@@ -1,57 +1,79 @@
 import os
-from datetime import datetime
-
+import time
 import torch
 import yaml
 from torch import optim
-from torchvision.transforms import Compose, ToTensor, Normalize, Resize
 from torch.utils.tensorboard import SummaryWriter
-
-from datasets.hrsid_loader import load_train
+from torchvision.transforms import Compose, Resize, ToTensor
+from datasets.hrsid_loader import get_train_val_loaders
 from models.sfs_cnet_model import SFSCNet
-from util.metric_util import BBoxLoss, ClassificationLoss, MultiLabelClassificationLoss, match_bboxes, decode_bboxes
+from util.metric_util import calculate_losses, calculate_map, scale_boxes
+from util.visual_util import visualize_predictions
 
+def initialize_weights_xavier(model):
+    """Initialize the model weights using Xavier initialization."""
+    for m in model.modules():
+        if isinstance(m, (torch.nn.Conv2d, torch.nn.Linear)):
+            torch.nn.init.xavier_uniform_(m.weight)
+            if m.bias is not None:
+                torch.nn.init.zeros_(m.bias)
+
+def validate_tensor(tensor, name):
+    """Validate if a tensor contains NaN or Inf values."""
+    if torch.isnan(tensor).any():
+        raise ValueError(f"{name} contains NaN!")
+    if torch.isinf(tensor).any():
+        raise ValueError(f"{name} contains Inf!")
+
+def validate_predictions(pred_bboxes, pred_classes):
+    """Validate predictions to ensure they are within expected ranges."""
+    for i, bbox in enumerate(pred_bboxes):
+        validate_tensor(bbox, f"Predicted BBoxes [{i}]")
+    for i, cls in enumerate(pred_classes):
+        validate_tensor(cls, f"Predicted Classes [{i}]")
 
 def train_model(config_path="../config.yaml", checkpoint_path=None):
     # Load configuration
     with open(config_path, "r") as f:
         config = yaml.safe_load(f)
 
-    # Hyperparameters
+    # Training parameters
     num_epochs = config["training"]["num_epochs"]
     batch_size = config["training"]["batch_size"]
     learning_rate = config["training"]["learning_rate"]
     weight_decay = config["training"]["weight_decay"]
+    momentum = config["training"]["momentum"]
     save_dir = config["training"]["save_dir"]
-    input_size = tuple(config["training"]["input_size"])
+    log_dir = config["training"]["log_dir"]
     num_classes = config["model"]["num_classes"]
-    base_channels = config["model"]["base_channels"]
+    image_size = tuple(config["training"]["input_size"])
 
     os.makedirs(save_dir, exist_ok=True)
+    os.makedirs(log_dir, exist_ok=True)
 
-    # Dataset and DataLoader
-    transform = Compose([
-        Resize(input_size),
-        ToTensor(),
-        Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-    ])
-    train_loader = load_train(transform=transform, batch_size=batch_size)
+    # Define transformations
+    transform = Compose([Resize(image_size), ToTensor()])
 
-    # Model
-    model = SFSCNet()
-    model = model.to(device := torch.device("cuda" if torch.cuda.is_available() else "cpu"))
+    train_loader, val_loader = get_train_val_loaders(val_ratio=0.1, batch_size=1,transform=transform)
 
-    # Loss functions
-    bbox_loss_fn = BBoxLoss()
-    cls_loss_fn = MultiLabelClassificationLoss()
+    print(f"Train set size: {len(train_loader.dataset)}")
+    print(f"Validation set size: {len(val_loader.dataset)}")
 
-    # Optimizer
-    optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
+    # Initialize model
+    model = SFSCNet(use_optimized_fpu=False)
+    initialize_weights_xavier(model)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = model.to(device)
 
-    # TensorBoard writer
-    writer = SummaryWriter(log_dir=os.path.join(save_dir, "logs"))
+    # Optimizer and loss
+    optimizer = optim.SGD(model.parameters(), lr=learning_rate, momentum=momentum, weight_decay=weight_decay)
+    lambda_bbox = config["training"].get("lambda_bbox", 5.0)
+    lambda_cls = config["training"].get("lambda_cls", 0.5)
 
-    # Resume training from checkpoint if provided
+    # TensorBoard
+    writer = SummaryWriter(log_dir=log_dir)
+
+    # Resume training from checkpoint
     start_epoch = 0
     if checkpoint_path and os.path.exists(checkpoint_path):
         checkpoint = torch.load(checkpoint_path, map_location=device)
@@ -63,114 +85,53 @@ def train_model(config_path="../config.yaml", checkpoint_path=None):
     # Training loop
     for epoch in range(start_epoch, num_epochs):
         model.train()
-        epoch_bbox_loss = 0.0
-        epoch_cls_loss = 0.0
-        epoch_total_loss = 0.0
+        epoch_bbox_loss, epoch_cls_loss, epoch_total_loss = 0.0, 0.0, 0.0
+        start_epoch_time = time.time()
 
         print(f"\nEpoch {epoch + 1}/{num_epochs}")
         for batch_idx, batch in enumerate(train_loader, 1):
+            start_batch_time = time.time()
+
             images = batch["images"].to(device)
-            true_boxes = batch["boxes"]  # List of tensors [Batch_Size, Num_GT, 4]
-            true_labels = batch["labels"]  # List of tensors [Batch_Size, Num_GT]
+            true_boxes = [box.to(device) for box in batch["boxes"]]
+            true_labels = [label.to(device) for label in batch["labels"]]
 
-            # Forward pass
-            pred_bboxes, pred_classes = model(images)
-
-            decoded_bboxes = decode_bboxes(pred_bboxes, stride=1)
-
-            all_matched_pred_boxes = []
-            all_matched_true_boxes = []
-
-            for b in range(decoded_bboxes.size(0)):
-                if len(true_boxes[b]) == 0:
-                    continue
-
-                true_boxes[b] = true_boxes[b].to(decoded_bboxes.device)
-
-                matched_pred, matched_true = match_bboxes(decoded_bboxes[b], true_boxes[b])
-                all_matched_pred_boxes.append(matched_pred)
-                all_matched_true_boxes.append(matched_true)
-
-
-        # Initialize variables for this batch
-            all_matched_pred_boxes = []
-            all_matched_true_boxes = []
-            all_batch_labels = []
-            all_batch_pred_cls = []
-
-            # Per-image loss calculation
-            batch_size = pred_bboxes.size(0)
-            for b in range(batch_size):
-                if len(true_boxes[b]) == 0:
-                    # No ground truth for this image, skip
-                    continue
-
-                # Match predicted boxes to ground truth boxes
-                matched_pred, matched_true = match_bboxes(pred_bboxes[b], true_boxes[b])
-
-                all_matched_pred_boxes.append(matched_pred)
-                all_matched_true_boxes.append(matched_true)
-
-                gt_labels = true_labels[b].to(pred_classes.device)
-
-                if gt_labels.dim() == 0:
-                    gt_labels = gt_labels.unsqueeze(0)
-
-                # Get the first label for this image
-                chosen_label = gt_labels[0].long().unsqueeze(0)
-                all_batch_labels.append(chosen_label)
-
-                all_batch_pred_cls.append(pred_classes[b][0].unsqueeze(0))  # shape [1, num_classes]
-
-            # Compute bbox loss if any boxes matched
-            if len(all_matched_pred_boxes) > 0:
-                all_matched_pred = torch.cat(all_matched_pred_boxes, dim=0)  # [Total_Matched, 4]
-                all_matched_true = torch.cat(all_matched_true_boxes, dim=0)  # [Total_Matched, 4]
-                bbox_loss = bbox_loss_fn(all_matched_pred, all_matched_true)
-            else:
-                bbox_loss = torch.tensor(0.0, device=pred_bboxes.device)
-
-            # Compute classification loss if any labels are available
-            if len(all_batch_labels) > 0:
-                cls_targets = torch.cat(all_batch_labels, dim=0)  # [Total_Matched_labels]
-                cls_preds = torch.cat(all_batch_pred_cls, dim=0)  # [Total_Matched_labels, num_classes]
-                cls_loss = cls_loss_fn(cls_preds, cls_targets)
-            else:
-                cls_loss = torch.tensor(0.0, device=pred_bboxes.device)
-
-            # Total loss
-            total_loss = bbox_loss + cls_loss
-
-            # Backpropagation
             optimizer.zero_grad()
-            total_loss.backward()
-            optimizer.step()
 
-            # Update epoch losses
-            epoch_bbox_loss += bbox_loss.item()
-            epoch_cls_loss += cls_loss.item()
-            epoch_total_loss += total_loss.item()
+            try:
+                # Forward pass
+                pred_bboxes, pred_classes = model(images)
+                validate_predictions(pred_bboxes, pred_classes)
 
-            # Log batch details
-            print(f"Batch {batch_idx}/{len(train_loader)}")
-            print(f"  BBox Loss: {bbox_loss.item():.4f}")
-            print(f"  Class Loss: {cls_loss.item():.4f}")
-            print(f"  Total Loss: {total_loss.item():.4f}")
+                # Compute losses
+                losses = calculate_losses(pred_bboxes, pred_classes, true_boxes, true_labels, device=device, image_size=image_size)
+                bbox_loss, cls_loss = losses["bbox_loss"], losses["cls_loss"]
 
-            # Log losses to TensorBoard
-            writer.add_scalar("Train/Batch BBox Loss", bbox_loss.item(), epoch * len(train_loader) + batch_idx)
-            writer.add_scalar("Train/Batch Class Loss", cls_loss.item(), epoch * len(train_loader) + batch_idx)
-            writer.add_scalar("Train/Batch Total Loss", total_loss.item(), epoch * len(train_loader) + batch_idx)
+                #total_loss = bbox_loss + cls_loss
+                total_loss = lambda_bbox * bbox_loss + lambda_cls * cls_loss
 
-        # Epoch summary
-        avg_bbox_loss = epoch_bbox_loss / len(train_loader)
-        avg_cls_loss = epoch_cls_loss / len(train_loader)
-        avg_total_loss = epoch_total_loss / len(train_loader)
+                # Backward pass
+                total_loss.backward()
+                optimizer.step()
 
-        print(f"Epoch {epoch + 1} Summary:")
-        print(f"  Average BBox Loss: {avg_bbox_loss:.4f}")
-        print(f"  Average Class Loss: {avg_cls_loss:.4f}")
-        print(f"  Average Total Loss: {avg_total_loss:.4f}")
+                # Accumulate losses
+                epoch_bbox_loss += bbox_loss.item()
+                epoch_cls_loss += cls_loss.item()
+                epoch_total_loss += total_loss.item()
+
+                batch_time = time.time() - start_batch_time
+                print(f"Batch {batch_idx}/{len(train_loader)} - Time: {batch_time:.4f}s - BBox Loss: {bbox_loss:.4f}, Class Loss: {cls_loss:.4f}, Total Loss: {total_loss:.4f}")
+
+                # Log to TensorBoard
+                writer.add_scalar("Train/Batch BBox Loss", bbox_loss.item(), epoch * len(train_loader) + batch_idx)
+                writer.add_scalar("Train/Batch Class Loss", cls_loss.item(), epoch * len(train_loader) + batch_idx)
+                writer.add_scalar("Train/Batch Total Loss", total_loss.item(), epoch * len(train_loader) + batch_idx)
+
+            except ValueError as e:
+                print(f"Skipping Batch {batch_idx}/{len(train_loader)}: {e}")
+
+        epoch_time = time.time() - start_epoch_time
+        print(f"Epoch {epoch + 1} Summary: Avg BBox Loss: {epoch_bbox_loss / len(train_loader):.4f}, Avg Class Loss: {epoch_cls_loss / len(train_loader):.4f}, Avg Total Loss: {epoch_total_loss / len(train_loader):.4f}, Epoch Time: {epoch_time:.4f}s")
 
         # Save checkpoint
         checkpoint_path = os.path.join(save_dir, f"sfs_cnet_epoch_{epoch + 1}.pth")
@@ -181,46 +142,72 @@ def train_model(config_path="../config.yaml", checkpoint_path=None):
         }, checkpoint_path)
         print(f"Checkpoint saved to {checkpoint_path}")
 
+        # Validation
+        # Validation and Visualization
+        if epoch % 100 == 0:
+            model.eval()
+            predictions, ground_truths = [], []
+            with torch.no_grad():
+                for batch_idx, val_batch in enumerate(val_loader, 1):
+                    val_images = val_batch["images"].to(device)
+                    val_true_boxes = [box.to(device) for box in val_batch["boxes"]]
+                    val_true_labels = [label.to(device) for label in val_batch["labels"]]
+
+                    val_pred_bboxes, val_pred_classes = model(val_images)
+
+                    print(f"\nValidation Batch {batch_idx}/{len(val_loader)}")
+                    print(f"Predicted Bounding Boxes (First Sample):\n{val_pred_bboxes[0]}")
+                    print(f"Ground Truth Bounding Boxes (First Sample):\n{val_true_boxes[0]}")
+
+                    for i in range(len(val_images)):
+                        scaled_pred_bboxes = scale_boxes(val_pred_bboxes[i], image_size=image_size)
+                        predictions.append({
+                            "boxes": scaled_pred_bboxes.to(device),
+                            "labels": val_pred_classes[i].argmax(dim=-1).to(device)
+                        })
+                        ground_truths.append({
+                            "boxes": val_true_boxes[i],
+                            "labels": val_true_labels[i]
+                        })
+
+                        # Verbose individual sample predictions
+                        print(f"Sample {i + 1}:")
+                        print(f"  Predicted Boxes: {scaled_pred_bboxes}")
+                        print(f"  Predicted Labels: {val_pred_classes[i].argmax(dim=-1)}")
+                        print(f"  Ground Truth Boxes: {val_true_boxes[i]}")
+                        print(f"  Ground Truth Labels: {val_true_labels[i]}")
+
+                # Visualize the first batch
+                if len(predictions) == batch_size:
+                    visualize_predictions(
+                        val_images.to(device), predictions, ground_truths, epoch=epoch + 1
+                    )
+
+            # Calculate and log mAP
+            map_metrics = calculate_map(predictions, ground_truths, image_size=image_size, device=device)
+
+            print(f"\nValidation Results - Epoch {epoch + 1}:")
+            print(f"AP50: {map_metrics['AP50']:.4f}, AP75: {map_metrics['AP75']:.4f}")
+            print(f"Precision: {map_metrics['Precision']:.4f}, Recall: {map_metrics['Recall']:.4f}, "
+                  f"F1: {map_metrics['F1']:.4f}, Accuracy: {map_metrics['Accuracy']:.4f}")
+
+            # Log metrics to TensorBoard
+            writer.add_scalar("Validation/AP50", map_metrics["AP50"], epoch + 1)
+            writer.add_scalar("Validation/AP75", map_metrics["AP75"], epoch + 1)
+            writer.add_scalar("Validation/Precision", map_metrics["Precision"], epoch + 1)
+            writer.add_scalar("Validation/Recall", map_metrics["Recall"], epoch + 1)
+            writer.add_scalar("Validation/F1", map_metrics["F1"], epoch + 1)
+            writer.add_scalar("Validation/Accuracy", map_metrics["Accuracy"], epoch + 1)
+
+
     writer.close()
-    print("Training completed.")
-
-def initialize_model_xavier(model):
-    for m in model.modules():
-        if isinstance(m, (torch.nn.Conv2d, torch.nn.Linear)):
-            torch.nn.init.xavier_uniform_(m.weight)
-            if m.bias is not None:
-                torch.nn.init.zeros_(m.bias)
-
-
-def load_checkpoint(model, optimizer, checkpoint_path, device):
-    if not os.path.exists(checkpoint_path):
-        raise FileNotFoundError(f"Checkpoint not found: {checkpoint_path}")
-
-    checkpoint = torch.load(checkpoint_path, map_location=device)
-    model.load_state_dict(checkpoint['model_state_dict'])
-    optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-    start_epoch = checkpoint['epoch']
-    print(f"Checkpoint loaded: {checkpoint_path} (Resuming from epoch {start_epoch})")
-    return start_epoch
-
-
-def save_model_checkpoint(model, optimizer, epoch, save_dir):
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    save_path = os.path.join(save_dir, f"sfs_cnet_epoch_{epoch}_{timestamp}.pth")
-    torch.save({
-        'epoch': epoch,
-        'model_state_dict': model.state_dict(),
-        'optimizer_state_dict': optimizer.state_dict(),
-    }, save_path)
-    print(f"Model checkpoint saved to {save_path}")
-
 
 if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description="Train SFS-CNet for object detection.")
     parser.add_argument("--config", type=str, default="../config.yaml", help="Path to the configuration file.")
-    parser.add_argument("--checkpoint", type=str, help="Path to a checkpoint file to resume training.")
+    parser.add_argument("--checkpoint", type=str, default="../models/latest_model.pth", help="Path to a checkpoint file to resume training.")
     args = parser.parse_args()
 
     train_model(config_path=args.config, checkpoint_path=args.checkpoint)
