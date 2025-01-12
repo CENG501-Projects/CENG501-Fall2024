@@ -89,9 +89,9 @@ Below are some of our interpretations about aspects that were unclear in the pap
 
 ## 3.1. Dataset
 
-There are five distinct experiments conducted on five tasks of Long Range Arena (LRA) Benchmark. Therefore, we begin to explain experiments by first introducing the LRA benchmark and the tasks under this benchmark.
+There are five distinct experiments conducted on five tasks of LRA Benchmark. Therefore, we begin to explain experiments by first introducing the LRA benchmark and the tasks under this benchmark.
 
-According to [3], the LRA benchmark is a systematic framework designed to evaluate the performance of Transformer models in long-context scenarios. It includes tasks for testing the ability to handle sequences ranging from 1,000 to 16,000 tokens across various modalities like text, image and spatial reasoning. The five tasks of LRA are ListOps, Text Classification, Document Retrieval, Image Classification and Path Finder. There is also a task named Path Finder-X, extending Path Finder with extreme lengths. This task is not included in the performance evaluation of Las Attention. Therefore, we suffice to explain the five tasks, indicated above.
+According to [3], the LRA benchmark is a systematic framework designed to evaluate the performance of Transformer models in long-context scenarios. It includes tasks for testing the ability to handle sequences ranging from 1,000 to 16,000 tokens across various modalities like text, image and spatial reasoning. The five tasks of LRA are **ListOps**, **Text Classification**, **Document Retrieval**, **Image Classification** and **Path Finder**. There is also a task named **Path Finder-X**, extending Path Finder with extreme lengths. This task is not included in the performance evaluation of Las Attention. Therefore, we suffice to explain the five of them.
 
 **(i) ListOps:** The dataset consists of sequences with a hierarchical structure and operators MAX, MEAN, MEDIAN and SUM_MOD that are enclosed by delimiters. The model needs to access all tokens and model the logical structure of the inputs in order to make a prediction.
 
@@ -108,7 +108,7 @@ The performance of Las Attention is evaluated based on these tasks. We evaluated
 
 ## 3.2. Experimental setup
 
-The original paper provides the following hyperparameters for the experimental setups for different Long Range Arena (LRA) tasks:
+The original paper provides the following hyperparameters for the experimental setups for different LRA tasks:
 
 Table 1: Hyperparameter Configurations
 <img width="900" alt="LRA parameters" src="https://github.com/user-attachments/assets/ad5f033b-7d65-49b5-af5a-d59dce0dd289">
