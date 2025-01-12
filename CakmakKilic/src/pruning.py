@@ -7,6 +7,7 @@ from models.resnet import resnet20
 from training.train import train_model
 from training.evaluate import evaluate_model
 import torchvision.datasets as datasets
+import torch.nn.utils.prune as prune
 
 import matplotlib.pyplot as plt
 
