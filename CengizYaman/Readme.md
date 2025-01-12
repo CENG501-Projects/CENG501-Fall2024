@@ -181,6 +181,15 @@ There is a significant deviation between our results and the original results. T
 
 As implementing ImageNet experiments would not be feasible in terms of time, we skipped ImageNet experiments. Given GReg/GReg+ results in the "Experiments and Results" section are obtained using CIFAR-10 and CIFAR-100.
 
+Pretrained weights of our models can be downloaded from following links:
+[DenseNet121/CIFAR-10/GReg](https://drive.google.com/file/d/1aE5wnx-zG2d_Td9A8ucmev7AVtFhdACE/view?usp=sharing)
+[DenseNet121/CIFAR-100/GReg](https://drive.google.com/file/d/1VlTgB56IA1AdE3pk-Tl3H0__0s_PcvgZ/view?usp=sharing)
+[ResNet18/CIFAR-10/GReg](https://drive.google.com/file/d/1jsciGMFej8E4oi5DQpPa5D2C6b9QTcN6/view?usp=sharing)
+[ResNet18/CIFAR-100/GReg](https://drive.google.com/file/d/1pLb1qbLz-iqnsTFAQyMcb86MYNVQXqpx/view?usp=sharing)
+[ResNet18/CIFAR-10/GReg+](https://drive.google.com/file/d/1M9aTvYMCA7HRtRFk1C7PFLrSgeoBeKzK/view?usp=sharing)
+[ResNet18/CIFAR-100/GReg+](https://drive.google.com/file/d/1jB72gQwM-KQmcNnsPMFLTMxXnIOJNvvH/view?usp=sharing)
+
+
 # 5. References
 
 [1] Sharifi, S., Entesari, T., Safaei, B., Patel, V. M., & Fazlyab, M. (2025). Gradient-regularized out-of-distribution detection. In European Conference on Computer Vision (pp. 459-478). Springer, Cham.
