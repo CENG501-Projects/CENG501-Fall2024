@@ -171,17 +171,15 @@ Computational comlexity of the architecture is huge. Even with a decent deep lea
 
 ## 3.1. Experimental setup
 
-It is not easy to implement and finetune such a huge network from stracth. Hence, we decided to adapt the previous paper of the authors called MonoDetr. MonoDetr already implement the KITTI Dataset loader, trainer, tester, many of the loss calculations we need in this paper. We switched MonoDetr with MonoATT, added necessary new models such as AdaptiveTokenClustering, ClusterCenterEstimation, added related losses mentioned in the paper and trained. 
+It is not easy to implement and finetune such a huge network from stracth. Hence, we decided to adapt the previous paper of the authors called MonoDetr. MonoDetr already implements the KITTI Dataset loader, trainer, tester, many of the loss calculations we need in this paper. We switched MonoDetr with MonoATT, added necessary new models such as AdaptiveTokenClustering, ClusterCenterEstimation, added related losses mentioned in the paper and trained. 
 
 Though we tried to stick the MonoATT paper; due to time constraints, implementation difficulties and huge number of hyperparameters, we could not follow the paper exactly on some points. The table below summarizes our implementation vs. paper's implementation. 
 
 | Aspect                  | MonoATT Paper               | Our Implementation         | Status/Comments                        |
 |-------------------------|-----------------------|----------------------------|----------------------------------------|
 | *Backbone*            | DLA-34               | ResNet-50                  | We got worse results with DLA-34, hence kept the ResNet-50 from MonoDetr                  |
-| *Multi-stage Feature Reconstruction (MFR)* | Global/local integration    | Single-stage reconstruction            | Basic, functional                  |
+| *Multi-stage Feature Reconstruction (MFR)* | Global/local integration    | Depth based reconstruction from MonoDetr       | Provides good results                  |
 | *Detection Head*      | GUPNet               | Custom detection head       | We kept the detection head from MonoDetr                     |
-| *Loss Function*       | Composite losses      | Smooth L1 loss              | Needs refinement                       |
-| *Evaluation*          | KITTI metrics        | Basic evaluation scripts    | Needs refinement                      |
 
 We have used the libraries and tools:
   - *PyTorch:* Framework for model development and training.
@@ -191,7 +189,6 @@ We have used the libraries and tools:
   - *KITTI Dataset:* Used for training and evaluation.
   - *Matplotlib:* For visualizing results (predictions and bounding boxes).
   - *Deformable DETR:*  Deformable DETR is an efficient and fast-converging end-to-end object detector. (Which requires special compilation for each GPU-Cuda pair.)
-
     
 We have implemented (fully or partially):
 - Dataset Loading:
@@ -216,12 +213,6 @@ We have implemented (fully or partially):
     Added skip connections to preserve original spatial information.
     Output: Reconstructed feature maps of shape (B, C, H, W).
     (Mostly adopted from MonoDetr, not fully implemented because of the unknown hyperparameters. Instead we integrated the MonoDetr's output mechanism.)
-- Mono3D Detection Head:
-    Designed a detection head to predict 3D bounding box parameters:
-        Location: (x, y, z)
-        Dimensions: (h, w, l)
-        Orientation: (theta)
-    Output: Tensor of shape (B, 7, H’, W’).
 - Loss Function:
     On top of the loss from MonoDetr for 3D object detection, loss used for scoring is added. It is implemented as a focal loss as mentioned in the paper. 
 - Training:
@@ -243,6 +234,7 @@ In our file structure, here are the codes written (fully, partially) by us;
 + lib/helpers/model_helper.py (partially)
 + lib/helpers/tester_helper.py (partially)
 + lib/losses/focal_loss.py (partially)
++ lib/models/monoatt/__init__.py (partially)
 + lib/models/monoatt/adaptive_token_clustering.py 
 + lib/models/monoatt/cluster_center_estimation.py
 + lib/models/monoatt/monoatt.py (partially)
@@ -293,7 +285,8 @@ In our file structure, here are the codes written (fully, partially) by us;
   ```
   nohup bash train.sh configs/monoatt.yaml > logs/monoatt.log 2>&1 &
   ```
-  Training process will evaluate the model after every epoch. (Configurable in the config file.) It will compare the existing the best with the current evaluation result and along with the latest checkpoint, it will also save the best checkpoint as well. 
+  Training process will evaluate the model after every epoch. (Configurable in the config file.) It will compare the existing the best with the current evaluation result and along with the latest checkpoint, it will also save the best checkpoint as well.
+  
 ### 3.2.2 Testing
 - In order to test the checkpoint, run
   ```
@@ -414,7 +407,10 @@ In order to create the graphs or stats;
 
 # 4. Conclusion
 
-@TODO: Discuss the paper in relation to the results in the paper and your results.
+In this study, we explored a monocular 3D object detection approach leveraging Adaptive Token Transformer. The proposed architecture incorporates hierarchical feature extraction, token clustering, and transformer-based refinement, aiming to improve 3D localization from single-image inputs. By allowing adaptive tokens, and leveraging a selective attention mechanism, the paper aims to create meaningfull tokens and based on their attentions, locate 3D objects. They not only show the novel architecture but they also mention the integration of MonoATT mechanism to different transformer based architectures. 
+
+The paper claims state of the art results. Our results are slightly worse than the paper's claim, however, proves the key ideas of the paper. Computational complexity of the paper hardens the potential finetuning. Even with the lighest transormers and networks as possible, the training takes more than 10 hours with a decent deep learning machine with 4 GPUs. That makes it impossible to tune the hyperparameters by using methods like grid search. Also, the number of hyperparameters is too much and requires careful selection. Though, we have adopted most of them from MonoDetr, test results indicate them some hyperparameters are not optimum. We even had to use other researches or LLMs to guess some novel hyperparameters introduced in this work. Hence, with a more capable computing device, more time and more dedication, we believe that our results can be further improved. 
+
 
 # 5. References
 
