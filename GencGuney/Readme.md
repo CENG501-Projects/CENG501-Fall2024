@@ -208,55 +208,55 @@ The initial results reveal some inconsistencies with the thresholding method, re
 
 The results obtained from our initial experiments highlight some interesting findings, but also reveal certain areas that require further refinement. In our evaluation, we focus on comparing the performance of different OOD detection methods (ZODE-MSP, ZODE-Energy, and ZODE-Mahalanobis) across various OOD datasets: SVHN, Places365, and Texture.
 
-Key Observations:
-ZODE-MSP (Maximum Softmax Probability):
+### Key Observations: 
 
-SVHN TPR (95.40%): This shows that the model correctly identifies the majority of in-distribution (ID) samples from the SVHN dataset, with relatively high sensitivity.
+- **ZODE-MSP (Maximum Softmax Probability):**
 
-SVHN FPR (38.54%): The False Positive Rate for SVHN is quite high, indicating that a significant portion of out-of-distribution (OOD) samples from the SVHN dataset are incorrectly labeled as ID samples.
+   SVHN TPR (95.40%): This shows that the model correctly identifies the majority of in-distribution (ID) samples from the SVHN dataset, with relatively high sensitivity.
 
-SVHN AUC (78.43%): The Area Under the ROC Curve (AUC) is a moderately high value, but there is room for improvement, especially in minimizing false positives.
+   SVHN FPR (38.54%): The False Positive Rate for SVHN is quite high, indicating that a significant portion of out-of-distribution (OOD) samples from the SVHN dataset are incorrectly labeled as ID samples.
 
-Places365 TPR (91.49%) and Texture TPR (89.80%) show good performance for ID detection in these datasets. These values reflect that the model effectively distinguishes between ID and OOD samples, but the FPR for Places365 (12.41%) and Texture (36.06%) could be reduced. The higher FPR for Texture could imply that the model has trouble distinguishing between ID and OOD in this specific dataset.
+   SVHN AUC (78.43%): The Area Under the ROC Curve (AUC) is a moderately high value, but there is room for improvement, especially in minimizing false positives.
 
-Average TPR is 86.44%, which is solid, indicating the model does a good job of correctly identifying ID samples across all OOD datasets. However, the Average FPR (22.53%) is higher than expected, suggesting that there are several false positives, especially for certain OOD datasets like Texture.
+   Places365 TPR (91.49%) and Texture TPR (89.80%) show good performance for ID detection in these datasets. These values reflect that the model effectively distinguishes between ID and OOD samples, but the FPR for Places365 (12.41%) and Texture (36.06%) could be reduced. The higher FPR for Texture could imply that the model has trouble distinguishing between ID and OOD in this specific dataset.
 
-ZODE-Energy:
+   Average TPR is 86.44%, which is solid, indicating the model does a good job of correctly identifying ID samples across all OOD datasets. However, the Average FPR (22.53%) is higher than expected, suggesting that there are several false positives, especially for certain OOD datasets like Texture.
 
-SVHN TPR (95.97%) is slightly better than the MSP method, indicating that the model is more sensitive when detecting ID samples.
+- **ZODE-Energy:**
 
-SVHN FPR (30.80%) is reduced compared to MSP, but still higher than desired. This suggests that although the model is more effective at identifying ID samples, it still misclassifies a notable percentage of OOD samples as ID.
+   SVHN TPR (95.97%) is slightly better than the MSP method, indicating that the model is more sensitive when detecting ID samples.
 
-SVHN AUC (82.58%) reflects a moderate improvement in overall detection performance compared to ZODE-MSP, but there is still room for optimization.
+   SVHN FPR (30.80%) is reduced compared to MSP, but still higher than desired. This suggests that although the model is more effective at identifying ID samples, it still misclassifies a notable percentage of OOD samples as ID.
 
-Places365 TPR (98.03%) shows a high true positive rate, demonstrating that the model performs well in identifying ID samples from the Places365 dataset.
+   SVHN AUC (82.58%) reflects a moderate improvement in overall detection performance compared to ZODE-MSP, but there is still room for optimization.
 
-Places365 FPR (0.12%) is very low, showing that the Energy method is excellent at avoiding false positives in this dataset.
+   Places365 TPR (98.03%) shows a high true positive rate, demonstrating that the model performs well in identifying ID samples from the Places365 dataset.
 
-Texture TPR (97.22%) and Texture FPR (19.31%): Energy performs very well for Texture as well, though the FPR is still higher than the ideal range.
+   Places365 FPR (0.12%) is very low, showing that the Energy method is excellent at avoiding false positives in this dataset.
 
-Average TPR is 92.74%, which is a significant improvement over MSP, indicating that the model is more reliable at identifying ID samples.
+   Texture TPR (97.22%) and Texture FPR (19.31%): Energy performs very well for Texture as well, though the FPR is still higher than the ideal range.
 
-Average FPR (10.62%) is much lower, showing that the Energy method has a better overall ability to reject false positives than the MSP method.
+   Average TPR is 92.74%, which is a significant improvement over MSP, indicating that the model is more reliable at identifying ID samples.
 
-Average AUC (92.74%): This is the highest among the methods, confirming that ZODE-Energy provides the best overall balance between identifying ID samples and minimizing false positives.
+   Average FPR (10.62%) is much lower, showing that the Energy method has a better overall ability to reject false positives than the MSP method.
 
-ZODE-Mahalanobis:
+   Average AUC (92.74%): This is the highest among the methods, confirming that ZODE-Energy provides the best overall balance between identifying ID samples and minimizing false positives.
 
-SVHN TPR (95.82%) and Places365 TPR (64.18%): The TPR for Mahalanobis is comparable to ZODE-Energy on SVHN, but significantly lower on Places365. This indicates that the Mahalanobis method struggles more with identifying ID samples from certain datasets, particularly in the case of Places365.
+- **ZODE-Mahalanobis:**
 
-SVHN FPR (18.09%) and Places365 FPR (67.52%): These values are lower than for ZODE-MSP and Energy on SVHN, but the FPR for Places365 is quite high, which undermines the overall effectiveness of this method for that dataset.
+   SVHN TPR (95.82%) and Places365 TPR (64.18%): The TPR for Mahalanobis is comparable to ZODE-Energy on SVHN, but significantly lower on Places365. This indicates that the Mahalanobis method struggles more with identifying ID samples from certain datasets, particularly in the case of Places365.
 
-Texture TPR (97.94%) and Texture FPR (18.23%): Mahalanobis does better on Texture, with a high TPR and a relatively lower FPR compared to the other methods.
+   SVHN FPR (18.09%) and Places365 FPR (67.52%): These values are lower than for ZODE-MSP and Energy on SVHN, but the FPR for Places365 is quite high, which undermines the overall effectiveness of this method for that dataset.
 
-Average TPR of 81.91% shows that this method is not as effective as ZODE-Energy or MSP at identifying ID samples across all datasets.
+   Texture TPR (97.94%) and Texture FPR (18.23%): Mahalanobis does better on Texture, with a high TPR and a relatively lower FPR compared to the other methods.
 
-Average FPR (32.06%) is the highest among the methods, particularly due to the high FPR on Places365. This suggests that while the Mahalanobis method may have some utility, it faces difficulties when handling larger or more complex OOD datasets.
+   Average TPR of 81.91% shows that this method is not as effective as ZODE-Energy or MSP at identifying ID samples across all datasets.
 
-Average AUC (81.91%) confirms that Mahalanobis does not perform as well as Energy in terms of overall classification performance.
+   Average FPR (32.06%) is the highest among the methods, particularly due to the high FPR on Places365. This suggests that while the Mahalanobis method may have some utility, it faces difficulties when handling larger or more complex OOD datasets.
 
-Conclusion:
-The ZODE-Energy method outperforms both ZODE-MSP and ZODE-Mahalanobis across almost all metrics, providing the highest TPR (92.74%), the lowest FPR (10.62%), and the best overall AUC (92.74%). This indicates that Energy-based scoring methods are particularly effective for OOD detection in our experiments. ZODE-MSP performs decently but exhibits higher false positive rates, especially with certain OOD datasets like Texture, and does not reach the same level of accuracy as Energy. ZODE-Mahalanobis, while promising for some datasets, has weaker performance overall, especially with Places365, and requires further tuning to be more effective across all datasets.
+   Average AUC (81.91%) confirms that Mahalanobis does not perform as well as Energy in terms of overall classification performance.
+
+In conclusion, the ZODE-Energy method outperforms both ZODE-MSP and ZODE-Mahalanobis across almost all metrics, providing the highest TPR (92.74%), the lowest FPR (10.62%), and the best overall AUC (92.74%). This indicates that Energy-based scoring methods are particularly effective for OOD detection in our experiments. ZODE-MSP performs decently but exhibits higher false positive rates, especially with certain OOD datasets like Texture, and does not reach the same level of accuracy as Energy. ZODE-Mahalanobis, while promising for some datasets, has weaker performance overall, especially with Places365, and requires further tuning to be more effective across all datasets.
 
 
 **NOTE:**  
