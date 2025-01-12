@@ -391,17 +391,21 @@ However, the research only minds 3d and bev results. Before comparing the result
 
 When we compare our AP_R40@0.70, 0.70, 0.70 results with the paper, we can claim that we produced comparable but slightly bad results. As we inherit some parts from the MonoDETE architecture, it could be a good idea to compare our results with MonoDETR results where MonoATT is integrated which is given in the Image X. The comparison results show that for 3d detection tasks (3d and bev), for all difficulty levels, we produces approximately 2 points less than reported in the paper. Considering the unknown hyperparameters, lack of computation power and other results we will discuss in the conclusion, it can be considered as normal. 
 
-We have calculated the precision-recall graph. KITTI dataset 3D benchmark is tested on AP40 values on IOU 0.7. However, it looks like our network could not predict a single car correctly. Hence, precision recall curves look as follows. 
+We will also provide precision-recall curves for each task. Precision-recall curves can be used to calculate all the results we provided earlier. Also, for exact calculations, on the output directory, stats files exist for each task, where one can find the corresping precision point for each recall value from 0 to 1. For the details, please check the [kitti_eval](https://github.com/prclibo/kitti_eval) repository where we took the code to both calculate stats and draw graphs.
 
-<p align="center">
-<img src=https://github.com/user-attachments/assets/57e3a035-8c28-432e-8165-3f7f765b8f99>
-</p>
-<p align="center"> Figure 7. Precision recall curve of Car category (test set) </p>
+![car_detection](https://github.com/user-attachments/assets/28e6593e-c40f-4909-83c9-002a16cf53b0)
 
-Expected AP40 values for different datasets from the original implementations are:
+![car_detection_ground](https://github.com/user-attachments/assets/cc662b7f-71cf-41e2-b5d0-e055dd6fc26e)
 
+![car_detection_3d](https://github.com/user-attachments/assets/8deedf7c-2018-4e7c-bdce-533c4797a913)
 
+![car_orientation](https://github.com/user-attachments/assets/81250bd0-2be4-4e75-ad58-89a5a1a62d68)
 
+In order to create the graphs or stats;
+
+- Compile the kitti_eval project. (Check README of the project.)
+- Then, use ./evaluate_object_3d_offline_ap40 TrainingDataset/label_2/ outputs/
+- Results will be placed under the outputs directory.
 
 # 4. Conclusion
 
