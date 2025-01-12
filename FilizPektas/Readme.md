@@ -307,14 +307,19 @@ We have extracted the following comparisons for LRW-Hard, LRW-Easy, LRW-Random, 
 -The Margin Delta graph's mean is very close to zero, which means that the instance weights are closer to the standard normal distribution. So we can say that Learned Reweighting 
  technique proposed improves margins of learned classifiers.
 
--The LRW-easy and LRW-Hard were also clearly distinguished and LRW-Hard successfully outperforms LRW-Easy in terms of margin maximization effect as demonstrated in the Margin Gain graph.
+-The LRW-easy and LRW-Hard were also clearly distinguished and LRW-Hard successfully outperforms LRW-Easy in terms of margin maximization effect as demonstrated in the Margin Gain graph. The graph was also supported with standard error mean, which was very low for all buckets.
 
-## **9.References**
+# **4. Conclusion**
+We have provided a reproduction for the paper "Improving generalization via meta-learning on hard samples. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition" bu Jain et al. We have briefly introduced their method and provided an implementation. We have investigated the 2 claims of the paper, which were the in-performance distributions and margin maximization effect of their proposed methods. We have found that except for Diabetic Retinopathy dataset, the authors' claims hold and the accuracy values mostly followed the pattern LRW-Opt > LRW-Hard > LRW-Easy > LRW-Random. Margin maximization effect was also successfully demonstrated on CIFAR-100. We invesigated the claim of margin maximization by comparing the margin distribution of the LRW-Hard method with respect to ERM Margin and we compared the LRW-Hard and LRW-Easy instances with respect to ERM margin buckets. The margin maximization was proved to be improved by ERM in Hard instances, and the LRW-Hard method outperformed the the easy instances with respect to margin maximization. We have provided the code and models to our implementation and provided a benchmark to investigate the out-of-distribution claims of the paper.
+
+## **5.References**
 
 \[1\] Jain, N., Suggala, A. S., & Shenoy, P. (2024). Improving generalization via meta-learning on hard samples. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (pp. 27600-27609).
 
 \[2\] Yujia Bao and Regina Barzilay. Learning to split for automatic bias detection. arXiv preprint arXiv:2204.13749, 2022\. 4, 11, 12
 
 \[3\] Ye, H. J., Hu, H., Zhan, D. C., & Sha, F. (2020). Few-shot learning via embedding adaptation with set-to-set functions. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition (pp. 8808-8817).
+
+\[4\] Marklund, H., Xie, S. M., Zhang, M., Balsubramani, A., Hu, W., Yasunaga, M., ... & Liang, P. (2020). Wilds: A benchmark of in-the-wild distribution shifts. arXiv preprint arXiv:2012.07421.
 ## 
 
