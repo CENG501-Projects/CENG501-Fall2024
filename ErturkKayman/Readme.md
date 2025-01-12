@@ -354,6 +354,7 @@ Our results on Car category with the metric AP@0.70, 0.70, 0.70;
 | 3d  | 30.2722  | 24.3026  | 20.0706 |
 | aos  | 89.12  | 84.95  | 76.66 |
 
+
 Our results on Car category with the metric AP_R40@0.70, 0.70, 0.70 (which the paper uses to evaluate performance);
 | Task  | Easy | Moderate | Hard |
 | --- | --- | --- | ---| 
@@ -361,6 +362,7 @@ Our results on Car category with the metric AP_R40@0.70, 0.70, 0.70 (which the p
 | bev  | 35.8728 | 25.9677  | 22.2793 |
 | 3d  | 27.2766 | 19.5595  | 16.3184 |
 | aos  | 94.66 | 84.85  | 76.99 |
+
 
 Our results on Car category with the metric AP@0.70, 0.50, 0.50;
 | Task  | Easy | Moderate | Hard |
@@ -370,6 +372,7 @@ Our results on Car category with the metric AP@0.70, 0.50, 0.50;
 | 3d  | 65.0951 | 47.8151  | 44.9623 |
 | aos  | 89.12 |  84.95  | 76.66 |
 
+
 Our results on Car category with the metric AP_R40@0.70, 0.50, 0.50:
 | Task  | Easy | Moderate | Hard |
 | --- | --- | --- | ---| 
@@ -377,6 +380,7 @@ Our results on Car category with the metric AP_R40@0.70, 0.50, 0.50:
 | bev  | 70.5631 | 51.0103  | 45.9255 |
 | 3d  | 67.0701 | 47.9734  | 42.8475 |
 | aos  | 94.66 |  84.85  | 76.99 |
+
 
 We have calculated the precision-recall graph. KITTI dataset 3D benchmark is tested on AP40 values on IOU 0.7. However, it looks like our network could not predict a single car correctly. Hence, precision recall curves look as follows. 
 
