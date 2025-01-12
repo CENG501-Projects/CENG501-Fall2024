@@ -314,5 +314,7 @@ We have extracted the following comparisons for LRW-Hard, LRW-Easy, LRW-Random, 
 \[1\] Jain, N., Suggala, A. S., & Shenoy, P. (2024). Improving generalization via meta-learning on hard samples. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (pp. 27600-27609).
 
 \[2\] Yujia Bao and Regina Barzilay. Learning to split for automatic bias detection. arXiv preprint arXiv:2204.13749, 2022\. 4, 11, 12
+
+\[3\] Ye, H. J., Hu, H., Zhan, D. C., & Sha, F. (2020). Few-shot learning via embedding adaptation with set-to-set functions. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition (pp. 8808-8817).
 ## 
 
