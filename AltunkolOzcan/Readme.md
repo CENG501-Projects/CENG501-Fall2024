@@ -451,15 +451,17 @@ python -m acrobot.trainOC
 
 ### 3.3.1 Acrobot System Identification without Gradients
 
-The paper claims that the system identification of acrobot using neural networks without the guiding gradientsusing tanh activation functions minimizes the loss function as low as 0.0673 whereas we could improve only until around 0.6 over all the experiment instances. 
+The paper claims that the system identification of acrobot using neural networks without the guiding gradients using tanh activation functions minimizes the loss function as low as 0.0673 whereas we could improve only until around 0.6 over all the experiment instances. The authors have trained the network over 50000 epochs with unknown iterations in each. We tarined the networks over 10 epochs with 1000 iterations each.
+
+### 3.3.1 Acrobot Control
+
+The authors have provided results for the Acrobot control with learned dynamics. We have implemented acrobot control with known dynamics. The results in the paper declare terminal loss around 1.07. We could only lower the terminal cost until around 16 during training and around 19 during testing. To be fair, none of the necessary details are provided in the paper. Therefore, we have improvised a lot during our experiments. 
 
 # 4. Conclusion
 
 @TODO: Discuss the paper in relation to the results in the paper and your results.
 
 # 5. References
-
-@TODO: Provide your references here.
 
 [1] S. Engin and V. Isler, "Neural Optimal Control using Learned System Dynamics," 2023 IEEE International Conference on Robotics and Automation (ICRA), London, United Kingdom, 2023, pp. 953-960, doi: 10.1109/ICRA48891.2023.10160339.
 
