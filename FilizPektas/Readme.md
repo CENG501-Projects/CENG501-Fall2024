@@ -324,4 +324,6 @@ We have provided a reproduction for the paper "Improving generalization via meta
 
 # Contact
 
-@TODO: Provide your names & email addresses and any other info with which people can contact you.
+Mustafa Şinasi PEKTAŞ - pektasmustafa03@gmail.com
+
+Ulas FİLİZ - filizula1@gmail.com
