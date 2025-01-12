@@ -166,7 +166,8 @@ The sampling frequency of the generated true data points are also not given. We 
 
 ## 3.1. Experimental setup
 
-### 3.1.1. Training and Testing of Acrobot System Identification
+### 3.1.1 Acrobot
+#### 3.1.1.1 Training and Testing of Acrobot System Identification
 
 As explained in the previous section, Acrobot is trained using random samples from the space. Then, a previously unknown trajectory is tested by giving the neural network to an ODE solver. Here, we first detail the network training procedure and provide various results.
 
@@ -212,6 +213,13 @@ The increase of training loss may indicate that the network capacity is low, lea
 </p>
 
 Smaller batch size actually reduced the speed of learning. This is because the smaller batch size yields noisy gradients as expected. 
+
+#### 3.1.1.2 Control of Acrobot
+
+For acrobot control task, we try to bring it to the upright position. Notice that this position is actually an unstable equilibrium because any amount of torque input to the acrobot would disturb the position. Throughout this task, we assume we know the exact dynamics of the acrobot, which is part of the paper [1] results. 
+
+In our first experiment, we build the controller network as the following. The network is a basic MLP of depth 6 and width 64 largest. The first and the second to last activation function are sine, the in betweens are LeakyReLU and the last activation is hyperbolic tangent. Tanh helps scale the control input to the allowed range. We would like to highlight that the allowed range is assumed to guarantee stability in the paper [1] whereas this assumption fails in the case of acrobot. Because, no matter how small the input torque is, the link velocities could possibly grow to infinity. Therefore, we cannot actually assume stability. The time limit for the control task is 5 seconds, consisting of 250 control inputs. We also train a value function network. In implementing this, we are highly influenced by the application in [6]. This network consists of a ResNet with width 20 and depth 10. [6] also add quadratic and linear terms to the result of the network to better approximate the value function. We do the same here. The derivatives of the value function are also calculated.
+
 
 ### 3.1.2. Dubins Car
 
