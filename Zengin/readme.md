@@ -92,7 +92,7 @@ In *Figure 2* it has shown that the limitations of cumulative perturbation with 
 </div>
 
 #### Contributions of SaCo
-To address these challenges, the paper introduces the **Salience-guided Faithfulness Coefficient (SaCo)**, a novel evaluation framework designed to:
+To address these challenges, the paper introduces the **Salience-guided Faithfulness Coefficient (SaCo)**, a novel evaluation framework designed to
 1. Analyze the statistical relationships between salience scores and their actual impact on model predictions.
 2. Evaluate the model’s response to distinct pixel groups, explicitly capturing the expected disparities in their contributions.
 3. Provide a robust benchmark for distinguishing meaningful explanations from random attribution methods.
@@ -145,11 +145,11 @@ Each pixel $p$ in the salience map is assigned a salience score  $M(x, \hat{y})_
 
 #### **3. Grouping into Subsets**
 
-The ranked pixels are divided into $K$ equally sized subsets $G_1, G_2, \dots, G_K$, where:
+The ranked pixels are divided into $K$ equally sized subsets $G_1, G_2, \dots, G_K$, where
 - $G_1$: Contains the pixels with the highest salience scores.
 - $G_K$: Contains the pixels with the lowest salience scores.
 
-Each subset $G_i$ is defined as:
+Each subset $G_i$ is defined as
 
 
 $$
@@ -213,7 +213,7 @@ $$
 F \in [-1, 1]
 $$
 
-where:
+where
 - $F > 0$: Indicates that the salience scores align with the model’s behavior.
 - $F$ < 0: Indicates violations of faithfulness.
 - The absolute value $|F|$: Represents the degree of correlation between salience scores and model confidence.
@@ -222,7 +222,7 @@ where:
 
 #### **8. Advantages Over Existing Metrics**
 
-Unlike traditional cumulative perturbation-based metrics, SaCo:
+Unlike traditional cumulative perturbation-based metrics, SaCo
 - Evaluates the influence of pixel subsets individually, avoiding conflated impacts.
 - Considers the absolute differences in salience scores, providing a more granular and reliable evaluation of faithfulness.
 
@@ -288,7 +288,7 @@ The **Salience-Guided Faithfulness Coefficient (SaCo)** is a robust framework fo
    - As ViTs rely on hierarchical self-attention mechanisms, SaCo’s framework aligns well with the architecture’s inherent structure, enabling meaningful insights into how different parts of the model contribute to predictions.
 
 
-SaCo represents a significant step forward in evaluating salience-based explanations for ViTs, offering robustness, adaptability, and precision. By addressing the outlined refinements, SaCo could evolve into an even more versatile and impactful metric for model interpretability in computer visio
+SaCo represents a significant step forward in evaluating salience-based explanations for ViTs, offering robustness, adaptability, and precision. By addressing the outlined refinements, SaCo could evolve into an even more versatile and impactful metric for model interpretability in computer vision.
 
 ---
 
@@ -299,7 +299,7 @@ SaCo represents a significant step forward in evaluating salience-based explanat
 The experimental setup in this project is designed to align closely with the methodology described in the original paper.
 
 ##### **Paper's Experimental Setup**
-The original paper evaluates the faithfulness of post-hoc explanation methods for Vision Transformers using their proposed **Salience-guided Faithfulness Coefficient (SaCo)** alongside several established metrics. The details of the setup are as follows:
+The original paper evaluates the faithfulness of post-hoc explanation methods for Vision Transformers using their proposed **Salience-guided Faithfulness Coefficient (SaCo)** alongside several established metrics. The details of the setup are as follows
 
 1. **Datasets**:
    - **CIFAR-10**: 60,000 images (32x32 resolution), 10 classes.
@@ -315,7 +315,7 @@ The original paper evaluates the faithfulness of post-hoc explanation methods fo
    - The models tokenize the input images into patches and add a special classification token (`[CLS]`) for prediction.
 
 3. **Explanation Methods**:
-   The paper investigates 10 post-hoc explanation methods across three categories:
+   The paper investigates 10 post-hoc explanation methods across three categories
    - **Gradient-Based Methods**:
      - Integrated Gradients
      - Grad-CAM
@@ -331,7 +331,7 @@ The original paper evaluates the faithfulness of post-hoc explanation methods fo
      - Transformer Attribution
 
 4. **Evaluation Metrics**:
-   The following metrics are used to evaluate the faithfulness of explanation methods:
+   The following metrics are used to evaluate the faithfulness of explanation methods
    - **Salience-guided Faithfulness Coefficient (SaCo)**: Measures the alignment of salience scores with the actual influence of input regions.
    - **Area Under the Curve (AUC)**: Measures the degradation in model accuracy as high-salience pixels are progressively perturbed. Lower AUC indicates a better explanation.
    - **Area Over the Perturbation Curve (AOPC)**: Quantifies the variation in output probabilities when perturbing high-salience regions. Higher AOPC indicates a better explanation.
@@ -345,7 +345,7 @@ The original paper evaluates the faithfulness of post-hoc explanation methods fo
 ---
 ### **My Experimental Setup**
 
-To evaluate the faithfulness of post-hoc explanation methods for Vision Transformers (ViTs), I conducted experiments leveraging the **Salience-guided Faithfulness Coefficient (SaCo)** alongside established metrics. This setup not only follows the framework proposed in the original paper but also introduces practical considerations for implementation. Below are the detailed steps of the experimental process:
+To evaluate the faithfulness of post-hoc explanation methods for Vision Transformers (ViTs), I conducted experiments leveraging the **Salience-guided Faithfulness Coefficient (SaCo)** alongside established metrics. This setup not only follows the framework proposed in the original paper but also introduces practical considerations for implementation. Below are the detailed steps of the experimental process
 
 
 
@@ -368,7 +368,7 @@ Each model tokenized input images into fixed-size patches and used the `[CLS]` t
 ---
 
 #### **3. Explanation Methods**
-To analyze the interpretability of ViTs, I implemented and evaluated the following post-hoc explanation methods, which can be found in the folder [`models`](./models):
+To analyze the interpretability of ViTs, I implemented and evaluated the following post-hoc explanation methods, which can be found in the folder [`models`](./models)
 
    - **Gradient-Based**:
      - Grad-CAM.
@@ -392,7 +392,7 @@ To analyze the interpretability of ViTs, I implemented and evaluated the followi
 ---
 
 #### **4. Evaluation Metrics**
-The faithfulness of the explanation methods was assessed using the following metrics, which are available in the folder [`metrics`](./metrics):
+The faithfulness of the explanation methods was assessed using the following metrics, which are available in the folder [`metrics`](./metrics)
    - **Salience-guided Faithfulness Coefficient (SaCo)**:
      - Measures the alignment between salience scores and the actual influence of input regions on predictions.
      - Implementation is provided in `SaCo.py`.
@@ -622,7 +622,7 @@ In this subsection, we compare the salience maps, salience scores, and confidenc
 
 #### **3.2.5 Large-Scale Experiments**
 
-In addition to the case study, we conducted large-scale experiments across **CIFAR-10**, **CIFAR-100**, and **ImageNet** datasets. The results from these experiments are summarized in **Figure 4**, comparing **SaCo** with other metrics.
+In addition to the case study, authors conducted large-scale experiments across **CIFAR-10**, **CIFAR-100**, and **ImageNet** datasets. The results from these experiments are summarized in **Figure 6**, comparing **SaCo** with other metrics.
 
 **Findings**:
 - **SaCo** consistently scores **Random Attribution** near zero, differentiating it from other explanation methods, even outperforming some state-of-the-art methods.
@@ -635,16 +635,16 @@ In addition to the case study, we conducted large-scale experiments across **CIF
 
 <div align="center">
   <img src="assets/dataset comp.png" alt="Comparison Graph of Explanation Methods" width="700" height="400">
-  <p style="font-size: 12px; font-style: italic;">Figure 6: Comparison of explanation methods across CIFAR-10, CIFAR-100, and ImageNet datasets. **SaCo** provides consistent and meaningful results, while other metrics such as AOPC and LOdds*show inconsistency and misleading evaluations for methods like Random Attribution.</p>
+  <p style="font-size: 12px; font-style: italic;">Figure 6: Comparison of explanation methods across CIFAR-10, CIFAR-100, and ImageNet datasets. SaCo provides consistent and meaningful results, while other metrics such as AOPC and LOdds show inconsistency and misleading evaluations for methods like Random Attribution.</p>
 </div>
 
 ---
 
-### 3.2.6 Effects of Designs in Explanation Methods**
+### 3.2.6 **Effects of Designs in Explanation Methods**
 
-In this section, we investigate the impact of design choices in attention-based explanation methods that aim to improve the alignment with the **faithfulness core assumption**. Attention-based methods have been shown to outperform other methods due to the intrinsic relevance of attention mechanisms in **Vision Transformers (ViTs)**. We hypothesize that utilizing well-designed aggregation rules and incorporating auxiliary information, such as gradient information, can improve the faithfulness of explanations. 
+In this section, authors investigate the impact of design choices in attention-based explanation methods that aim to improve the alignment with the **faithfulness core assumption**. Attention-based methods have been shown to outperform other methods due to the intrinsic relevance of attention mechanisms in **Vision Transformers (ViTs)**. Authors hypothesize that utilizing well-designed aggregation rules and incorporating auxiliary information, such as gradient information, can improve the faithfulness of explanations. 
 
-To validate this hypothesis, we conducted ablation experiments on four variations of attention-based explanation methods:
+To validate this hypothesis, ablation experiments on four variations of attention-based explanation methods are conducted.
 
 1. **Utilizing Attention Weights in the Final Layer**.
 2. **Aggregating Attention Information Across All Layers**.
@@ -668,9 +668,9 @@ As illustrated, the integration of gradient information, especially when combine
 
 ---
 
-### 3.2.7 Further Evaluation on the Role of Attention-Based Methods**
+### **3.2.7 Further Evaluation on the Role of Attention-Based Methods**
 
-We now analyze the performance of attention-based explanation methods across different values of **K** (the number of pixel subsets), as shown in Table 2. The results are averaged over three Vision Transformer models on **ImageNet**.
+Authors analyze the performance of attention-based explanation methods across different values of **K** (the number of pixel subsets), as shown in Table 2. The results are averaged over three Vision Transformer models on **ImageNet**.
 
 ---
 
@@ -682,22 +682,22 @@ We now analyze the performance of attention-based explanation methods across dif
 | **10**  | 0.1647 | 0.1142   | 0.0120 | 0.3066 | 0.3902      | 0.0155   | 0.1835   | 0.2453  | 0.4558    | 0.3629 |
 | **20**  | 0.1785 | 0.1000   | 0.0054 | 0.2282 | 0.2906      | -0.0201  | 0.1411   | 0.1956  | 0.3651    | 0.3617 |
 
-From the table, it is evident that as **K** increases (i.e., a finer granularity of subsets), the **SaCo** scores for most methods improve, indicating better alignment with the core assumption of faithfulness. Among the attention-based methods, **Transformer Attribution** and **Transformer MM** consistently achieve higher scores, reinforcing the effectiveness of attention aggregation techniques.
+From the Table 2, it is evident that as **K** increases (i.e., a finer granularity of subsets), the **SaCo** scores for most methods improve, indicating better alignment with the core assumption of faithfulness. Among the attention-based methods, **Transformer Attribution** and **Transformer MM** consistently achieve higher scores, reinforcing the effectiveness of attention aggregation techniques.
 
 ---
 
 ### **Conclusion of the Ablative Study and Performance Comparison**
 
-The findings from our ablation study and the experiments conducted on large-scale datasets confirm that integrating gradient information and leveraging attention aggregation techniques significantly improve the faithfulness of post-hoc explanation methods for **Vision Transformers**. These results not only highlight the strengths of **SaCo** in providing a more faithful evaluation but also point to the importance of well-designed attention-based methods for explaining complex models like ViTs.
+The findings from  ablation study and the experiments conducted on large-scale datasets confirm that integrating gradient information and leveraging attention aggregation techniques significantly improve the faithfulness of post-hoc explanation methods for **Vision Transformers**. These results not only highlight the strengths of **SaCo** in providing a more faithful evaluation but also point to the importance of well-designed attention-based methods for explaining complex models like ViTs.
 
 This study underscores the need for more sophisticated explanation methods that combine gradient information with attention mechanisms across multiple layers to generate more accurate and faithful explanations.
 
 ### 4. Conclusion
 
-In this work, **SaCo**, a novel evaluation metric for assessing the **faithfulness** of post-hoc explanations in **Vision Transformers (ViTs) is presented**. **SaCo** method leverages **salience-guided comparisons** of pixel subsets to evaluate their contributions to the model’s prediction, offering a more robust benchmark for evaluating explanation methods. The key insights from our experiments and analysis include:
+In this work, **SaCo**, a novel evaluation metric for assessing the **faithfulness** of post-hoc explanations in **Vision Transformers (ViTs) is presented**.  **SaCo** method leverages **salience-guided comparisons** of pixel subsets to evaluate their contributions to the model’s prediction, offering a more robust benchmark for evaluating explanation methods. The key insights from our experiments and analysis include
 
 1. **Correlation Analysis**:
-   -  Analysis shows that **SaCo** is essential because existing metrics often overlap in what they capture, but fail to adequately consider the critical aspect of **faithfulness** in explanation methods.
+   -  Analysis shows that **SaCo** is essential because existing metrics often overlap in what they understand, but fail to adequately consider the critical aspect of **faithfulness** in explanation methods.
    
 2. **Unique Identification of Random Attribution**:
    - Unlike traditional metrics, **SaCo** can identify **Random Attribution** as lacking any meaningful information, offering consistent and reliable results that are free from the dependency on the order in which pixels are perturbed.
@@ -705,7 +705,7 @@ In this work, **SaCo**, a novel evaluation metric for assessing the **faithfulne
 3. **Performance of Attention-Based Methods**:
    - Results show that **attention-based methods** are generally more faithful in explaining Vision Transformers. Furthermore, their performance can be improved by incorporating **gradient information** and **multi-layer aggregation**, demonstrating the potential for enhancing their effectiveness.
 
-In summary, **SaCo** provides a comprehensive and rigorous evaluation framework for measuring **faithfulness** in Vision Transformer explanations. Our findings contribute valuable insights into the development of explainability techniques for **ViTs**, and pave the way for future research in the field of **explainable AI (XAI)**. 
+In summary, **SaCo** provides a comprehensive and rigorous evaluation framework for measuring **faithfulness** in Vision Transformer explanations. Our findings contribute valuable insights into the development of explainability techniques for **ViTs**, and pave the way for future research in the field of **Explainable AI (XAI)**. 
 
 
 ### 5. References
