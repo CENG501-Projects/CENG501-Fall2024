@@ -58,15 +58,15 @@ class UNetFeatureExtractor(nn.Module):
         # Decoder
         # 1/8 Resolution
         y1 = self.decoder_block_1a(x4)
-        y1 = torch.cat((y1, f3), dim=0)
+        #y1 = torch.cat((y1, f3), dim=0)
         y1 = self.decoder_block_1b(y1)
         # 1/4 Resolution
         y2 = self.decoder_block_2a(y1)
-        y2 = torch.cat((y2, f2), dim=0)
+        #y2 = torch.cat((y2, f2), dim=0)
         y2 = self.decoder_block_2b(y2)
         # 1/2 Resolution
         y3 = self.decoder_block_3a(y2)
-        y3 = torch.cat((y3, f1), dim=0)
+        #y3 = torch.cat((y3, f1), dim=0)
         y3 = self.decoder_block_3b(y3)
         # 1 Resolution
 
@@ -91,6 +91,3 @@ class UNetFeatureExtractor(nn.Module):
         nn.BatchNorm2d(out_channels),
         nn.ReLU(inplace=True)
         )
-
-model = UNetFeatureExtractor()
-summary(model, (1, 864, 864))

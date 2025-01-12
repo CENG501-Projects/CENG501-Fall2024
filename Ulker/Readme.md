@@ -357,11 +357,238 @@ The preprocessing of datasets like MegaDepth is a critical step in preparing dat
 
 ## 3.1. Experimental setup
 
-@TODO: Describe the setup of the original paper and whether you changed any settings.
+### 3.1.1 Dataset
+
+Due to the substantial size (~600 GB) of datasets commonly used in the literature for feature matching tasks, such as those mentioned in the paper, downloading, storing, and training models on these datasets would be extremely time-consuming and resource-intensive. To address this, a custom dataset was created based on the COCO2014 dataset, which serves as a foundational image dataset.
+
+The following steps were performed to construct the dataset:
+
+**Base Image Selection:** Images were sourced from the COCO2014 dataset. This dataset provides diverse and high-quality images, making it a suitable starting point for feature matching tasks.
+
+**Image Distortion:** For each image, two variations were generated:
+
+1) The original image.
+2) A distorted version created by applying random transformations, including rotation, shifting, and other geometric distortions. These transformations simulate real-world variations, ensuring the dataset's robustness.
+
+**Feature Extraction:** Features were extracted from both the original and distorted images using SuperPoint. This model was selected because it is integrated as the detection head in the paper's proposed model, ensuring consistency and reliability in feature selection.
+
+**Feature Matching:** The extracted features were matched using SuperGlue, a well-established model known for its reliability in feature matching tasks. This ensured high-quality ground-truth correspondences between the image pairs.
+
+**Dataset Construction:** The matched features from the original and distorted image pairs were stored to form the dataset. The dataset was structured to be compatible with the experimental pipeline.
+
+**Implementation Details:** The original SuperGlue implementation was utilized for the matching process.
+To perform random distortions, updates were made to the "model/utils.py" file. These updates included functions for generating geometric transformations and applying them to the images.
+
+**Dataset Splitting:**
+The final dataset was divided into three subsets:
+Training Set: For model training.
+Validation Set: For hyperparameter tuning and validation during training.
+Test Set: For evaluating the model's performance.
+
+This custom dataset ensures efficiency in training while maintaining the quality required for reliable feature matching experiments. The sample from dataset (images, keypoints, matches) is shown below.
+
+![A sample from dataset](imgs/dataset.png)
+
+### 3.1.2 Model Implementation - Local Feature Extractor
+The model implementation was divided into four modules as outlined in the paper. This section describes the details of the first module, Local Feature Extractor:
+
+**Architecture Design:**
+
+The Local Feature Extractor module was implemented using a U-Net architecture, as suggested in the paper. Specifically, the encoder from SuperPoint was extended with a decoder to form a complete U-Net structure.
+
+**Feature Extraction:**
+
+The encoder processed input images to generate a latent representation, which was subsequently passed through the decoder. The decoder reconstructed multi-scale features, which are required by other modules in the pipeline. Each step in the decoder returned feature maps to ensure compatibility and reusability across different modules.
+
+**Depth Design:**
+
+While the paper specifies the final feature resolution as 832x832x64, the intermediate layer depths were not provided. To maintain a robust design, the decoder was constructed with progressively higher depth in earlier layers. Specifically:
+
+The latent space featured a greater depth to capture detailed feature representations.
+Each preceding decoder step reduced the depth by a factor of two, culminating in the final 64-channel feature map.
+
+**Output and Integration:**
+The decoder outputs were designed to be accessible by subsequent modules such as the View Switching Module and the Conflict-Free Coarse Matching Module. This ensured a seamless flow of multi-scale feature information throughout the model.
+
+This implementation adheres to the principles laid out in the paper, ensuring high-quality feature extraction while allowing for modular design and extensibility.
+
+
+### 3.1.3 View Switcher
+
+**Input Preparation:**
+The View Switcher module received inputs from the latent space and decoder outputs of the Local Feature Extractor module.
+
+Four different feature layers were combined into a single input. However, the paper did not specify how these layers should be combined or the exact dimensions for the View Switcher. To address this:
+All feature layers were resized to 832x832 resolution using reshaping techniques.
+Their depths were adjusted to create a unified input tensor with dimensions 90x832x832.
+
+**Correlation Blocks:**
+
+The module implemented the correlation blocks as described in the paper.
+A CNN block was constructed with two Conv-BN-ReLU-MaxPool layers. Although hyperparameters were not provided, convolution layers were configured to have 20 input channels and 20 output channels to maintain simplicity and efficiency.
+
+**Feature Switching:**
+
+Based on the output of the correlation blocks, a softmax operation determined which image contained more distinguishable features. The keypoints from this image were passed to the detection head for extraction.
+
+**Detection Head:**
+
+The detection head was based on SuperPoint, with its weights frozen as per the paper's suggestion. However, since the input and output layer dimensions differed from SuperPoint's original implementation, the weights could not be directly reused. Instead, the weights were recalculated during training.
+
+**Output Features:**
+
+The module produced two outputs:
+
+Sparse features for the image with more distinguishable keypoints.
+
+Dense features for the other image.
+
+This implementation ensures the View Switcher module effectively identifies and processes features for subsequent matching tasks.
+
+### 3.1.4 Conflict-Free Coarse Matching Module
+
+**Input Preparation:**
+
+The input to this module was directly taken from the output of the View Switcher module.
+
+While the paper did not specify the input dimensions, the implementation utilized an input size of 90x832x832.
+
+**Self-Attention and Cross-Attention:**
+
+Self-attention layers were applied first, followed by cross-attention layers to process the input features.
+
+The paper mentioned an embedding length of 256 for the attention layers. However, to align the size properly, two rounds of average pooling were applied, resulting in an embedding dimension of 208.
+
+**Many-to-One Matching Layer:**
+
+A many-to-one matching layer was implemented as described in the paper.
+
+A "dustbin" was added to handle unmatched features, resulting in two feature sets with dimensions:
+
+91x208x208 (including the dustbin).
+
+90x208x208 (original features).
+
+**Output Features:**
+
+The final output from this module consisted of the processed feature sets ready for fine matching in subsequent stages of the pipeline.
+
+This module ensures conflict-free coarse matching by leveraging advanced attention mechanisms and many-to-one matching, aligning with the paper's proposed design.
+
+### 3.1.5 Fine Matching Module
+
+**Input Features:**
+
+The Fine Matching Module utilized the output from the Conflict-Free Coarse Matching Module and the final layer of the U-Net from the Local Feature Extractor module.
+For each keypoint in the source image's features, cross-attention was applied over batch windows of the target image's features.
+
+**Window Size and Keypoint Determination:**
+
+The default attention window size was used to process the features.
+
+To determine keypoints for the source image, a CNN-Flatten-Linear-Softmax layer sequence was added to map the features to the keypoint space, producing an output layer with the same length as the number of keypoints.
+
+**Keypoint Extraction for the Target Image:**
+
+While the paper explicitly described keypoint extraction for the source image, it did not provide details for the target image.
+
+To address this, the same mechanism used for the source image was applied to the target image. This ensured consistency in the keypoint extraction process and leveraged the features from both images effectively.
+
+**Output Features:**
+
+The final output of this module included the refined keypoints and matching probabilities for both the source and target images.
+
+This module refined the coarse matches and ensured sub-pixel accuracy in the matching process, adhering to the design principles outlined in the paper.
+
+### 3.1.6 Supervision Loss
+
+A custom loss function was designed to optimize the performance of the feature matching pipeline. The loss function comprised the following components:
+
+**1-Coarse Matching Loss:**
+
+This loss measured the accuracy of the coarse matches generated in the Conflict-Free Coarse Matching Module.
+
+A negative log-likelihood loss was applied to the matching probabilities to penalize incorrect matches and encourage correct ones.
+
+**2-Fine Matching Loss:**
+
+To refine the matches, an L2 distance loss was computed between the predicted keypoint positions and the ground-truth positions at the sub-pixel level.
+
+This ensured that the fine matches were both accurate and precise.
+
+**3-Dustbin Loss:**
+
+A separate loss term was introduced for the "dustbin" feature in the Conflict-Free Coarse Matching Module to handle unmatched regions effectively.
+
+Non-matchable features were penalized if they were incorrectly assigned to valid matches, encouraging proper use of the dustbin.
+
+**4-View Switching Loss:**
+
+For the View Switcher module, a binary cross-entropy loss was applied to evaluate whether the image with more distinguishable features was correctly identified.
+
+This loss ensured that the correct image was chosen as the source for keypoint detection.
+
+**Total Loss:**
+
+The total loss was a weighted sum of the above components, allowing for fine-grained control over the optimization process.
+
+This loss function was critical in aligning the outputs of different modules, ensuring cohesive and accurate feature matching throughout the pipeline.
 
 ## 3.2. Running the code
 
-@TODO: Explain your code & directory structure and how other people can run it.
+**Project Directory Structure**
+
+- **`data/`** The `data` folder contains directories for input data used during training and testing.
+
+   - **`img1/`**: Contains images for the first set used in training and testing.
+   - **`img2/`**: Contains images for the second set used in training and testing.
+   - **`labels/`**: Contains ground truth labels for the images.
+   - **`dataset_generator/`**: Contains the model and scripts for generating datasets from SuperGlue and COCO for training purposes.
+
+- **`src/`** The `src` folder includes the core implementation of the project.
+
+   - **`modules/`**: Directory containing the model modules.
+      - **`LocalFeatureExtraction.py`**: The first model module used for extracting local features from images.
+      - **`ViewSwitching.py`**: The second model module responsible for view switching.
+      - **`ConflictFreeCoarseMatching.py`**: The third model module for conflict-free coarse matching.
+      - **`FineMatching.py`**: The fourth model module for fine matching of features.
+      - **`Supervision.py`**: The module containing the loss function used for training.
+      - **`Superpoint.py`**: Includes the SuperPoint model implementation.
+      - **`superpoint_v1.pth`**: Pretrained weights for the SuperPoint model.
+
+   - **`RCM.py`**: The main model file where the architecture and training process are implemented.
+   - **`dataset_loader.py`**: Utility file containing functions to load datasets and prepare them for training.
+
+- **`imgs/`** The `imgs` folder contains images used in the `Readme.md` file for documentation purposes.
+- **`README.md`**: An overview of the project
+- **`train.py`**: The script to train the model
+
+
+To train the model with the prepared dataset, a train.py script was developed. This script is responsible for loading the dataset, splitting it into training, validation, and test sets, and managing the training loop. Key features include:
+
+**Dataset Integration:**
+
+The part utilizes the dataset_loader module to load the prepared dataset.
+
+The dataset is automatically split into training, validation, and test subsets.
+
+**Training Loop:**
+
+The training code is designed to calculate validation metrics at the end of each epoch to monitor model performance during training.
+
+**Resource Limitations:**
+
+Due to the high number of parameters in the model, the script encountered "CUDA out of memory" errors when running on an RTX 4060 GPU.
+
+These errors arise from the wrong implemented large sizes of intermediate tensors during forward and backward propagation.
+
+**Size Adjustment Constraints:**
+
+Given the time constraints, the model's size and tensor dimensions were not adjusted to fit within the available GPU memory.
+
+As a result, the full training process could not be completed under the current hardware limitations.
+
+This highlights the importance of efficient memory management and careful size selection during model design to ensure compatibility with available hardware resources.
 
 ## 3.3. Results
 
@@ -369,14 +596,21 @@ The preprocessing of datasets like MegaDepth is a critical step in preparing dat
 
 # 4. Conclusion
 
-@TODO: Discuss the paper in relation to the results in the paper and your results.
+This project aimed to implement and evaluate a feature matching model as outlined in the referenced paper. However, due to the lack of clarity in the paper regarding several critical aspects—such as dataset preparation details and module size specifications—the full implementation and training of the model could not be completed successfully. The addition of the View Switcher module, which determines the source and target images dynamically, is a unique aspect of the model and distinguishes it from other approaches.
+
+Despite its innovative aspects, the model suffers from high complexity compared to state-of-the-art models like LoFTR, LightGlue, and SuperPoint/SuperGlue. Many architectural elements in the proposed design are inspired by these models, but the integration of a keypoint extractor directly into the matcher module increases the overall system's complexity. While this design choice offers the potential for end-to-end feature matching and keypoint extraction, it also introduces significant computational overhead and architectural intricacies that challenge practical implementation and scalability.
+
+In summary, while the proposed model introduces novel concepts, its execution is hindered by incomplete details and practical challenges, leaving room for further refinement and optimization to make it more competitive with existing state-of-the-art methods.
+
+Despite dedicating over 80+ hours to this complex project and tackling it individually, I was unable to complete the training process. The primary challenges stemmed from the project's complex architecture and the lack of precise guidelines for certain components, which significantly blocks progress within the limited time frame.
 
 # 5. References
 
 - RCM: Conflict-Free Local Feature Matching with Dynamic View Switching [1]
 - SuperPoint: Self-Supervised Interest Point Detection and Description [2]
 - U-Net https://lmb.informatik.uni-freiburg.de/people/ronneber/u-net/
+- SuperGlue Original Implementation https://github.com/magicleap/SuperGluePretrainedNetwork
 
 # Contact
 
-@TODO: Provide your names & email addresses and any other info with which people can contact you.
+Melih Ülker - mgulker@outlook.com
