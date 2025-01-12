@@ -262,7 +262,7 @@ We have investigated two of the claims tha the paper proposed, which are the fol
 
 1 - Hard instances result in higher accuracies with respect to Easy instances, and Easy instances would result higher with respect to random validation set distribution, while the proposed Meta-learning based learned reweighting outperforms all other instance distribution techniques.
 
-2 - LRW-Opt has a margin maximization effect.
+2 - LRW-Hard has a margin maximization effect.
 
 ## **3.3.1. Accuracy Performance Comparison**
 
