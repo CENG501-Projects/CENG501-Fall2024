@@ -253,12 +253,7 @@ These results highlight the robustness of ZODE-KNN and ZODE-Energy as top-perfor
 
 The initial results reveal some inconsistencies with the thresholding method, rendering the outcomes unreliable at this stage. Nevertheless, the Maximum Softmax Probability (MSP) scores provided below have been accurately computed, and the validation tests have been successfully executed.  
 
-| Scoring Method      | SVHN TPR (%) | SVHN FPR (%) | SVHN AUC (%) | Places365 TPR (%) | Places365 FPR (%) | Places365 AUC (%) | Texture TPR (%) | Texture FPR (%) | Texture AUC (%) | Avg TPR (%) | Avg FPR (%) | Avg AUC (%) |  
-|----------------------|--------------|--------------|--------------|--------------------|--------------------|--------------------|------------------|------------------|------------------|-------------|-------------|-------------|  
-| **ZODE-MSP**         | 95.40        | 38.54        | 78.43        | 12.41             | 91.49             | 15.81             | 89.80           | 36.06           | 79.67           | 9.82        | 92.79       | 22.53       | 86.44       |  
-| **ZODE-Energy**      | 95.97        | 30.80        | 82.58        | 0.12              | 98.03             | 1.76              | 97.22           | 19.31           | 88.44           | 1.11        | 97.43       | 10.62       | 92.74       |  
-| **ZODE-Mahalanobis** | 95.82        | 18.09        | 88.87        | 67.52             | 64.18             | 0.00              | 97.94           | 18.23           | 88.83           | 56.44       | 69.72       | 32.06       | 81.91       |  
-| **ZODE-KNN**         | x            | x            | x            | x                 | x                 | x                 | x               | x               | x               | x           | x           | x           | x           |  
+![alt text](<images/our_results.png>)
 
 The results obtained from our initial experiments highlight some interesting findings, but also reveal certain areas that require further refinement. In our evaluation, we focus on comparing the performance of different OOD detection methods (ZODE-MSP, ZODE-Energy, and ZODE-Mahalanobis) across various OOD datasets: SVHN, Places365, and Texture.
 
