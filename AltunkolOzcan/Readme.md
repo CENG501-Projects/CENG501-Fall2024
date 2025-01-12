@@ -411,6 +411,21 @@ The training procedure is as follows: At each epoch, a new true trajectory (true
 
 Time batch is reduced since the network now learns the derivative terms, and we already have the sampled derivatives (i.e., the network does not have to build a relationship between the previous and future states). Also, the number of iterations per epoch is reduced to 25, since after around that number, the newtork just starts to memorize the trajectory (as far as we have seen). Since we generate new trajectories every 25 iterations, we also reduced the time horizon and data points, and increased the sampling rate to 100 Hz to have better resolution. We have detected some unstable learning behavior in individual trajectory iterations, hence we used larger batches of initial conditions (this also makes sense since we lowered the batch time and time horizon, we have additional place for more data and computations). Finally, we increased the neurons in MLP layers as given above. We have run the code for several hundreds of epochs, and obtained some reducing loss characteristics, which was promising. Nevertheless, it took too much training time to get small enough errors in trajectories, which may be consistent with the implemented paper as the authors state that they have trained their network for 50000 epochs! Furthermore, more hyperparameter tuning has to be done to make the network converge even more. The duration of this project was not allowed us to fully complete the learning process. However, the current trained network's performance can be seen in the figures below. As seen in the gif, the network is not able to approximate most of the trajectories at the first run; but as the iterations proceed, we see that it learns to approximate the curve. But it cannot learn the state transition function correctly, since we can see that it cannot fit the next trajectory in the first run of the next epoch. Hopefully, we can see that the loss trend still decreases in the long run, by investigating the other images below.
 
+<p align="center">
+  <img src="/../main/AltunkolOzcan/images/milestone3_images/g1.gif" alt="Training the state transitions of Dubins Car">
+</p>
+<p align="center">Figure x: Learning the state transition function of the Dubins Car system</p>
+
+<p align="center">
+  <img src="/../main/AltunkolOzcan/images/milestone3_images/loss_over_1000_epochs.png" alt="Testing loss over 1000 epochs">
+</p>
+<p align="center">Figure x: Testing loss over 1000 epochs</p>
+
+<p align="center">
+  <img src="/../main/AltunkolOzcan/images/milestone3_images/loss_over_1000_epochs_filtered.png" alt="Testing loss filtered">
+</p>
+<p align="center">Figure x: Testing loss over 1000 epochs, filtered with a moving average of window size 10.</p>
+
 
 ## 3.2. Running the code
 
