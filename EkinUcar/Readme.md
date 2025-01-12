@@ -34,8 +34,9 @@ Local and Smooth (LaS) Attention exploits the principles of smoothness and expon
 
 $$ LAS_c(Q,K,V) = AP\left(SF\left(exp\left(-\alpha_c D_L\right) \odot \left(\frac{QK^T}{\sqrt{d_k}}\right)\right)\right)$$
 
-Architecture of LaS attention can be seen in figure below.
+Architecture of LaS attention can be seen in Figure 1.
 
+Figure 1: Architecture of LaS Attention.
 ![image](https://github.com/user-attachments/assets/d5aa4895-da99-4186-b50f-d22249d48da2)
 
 
@@ -54,8 +55,9 @@ where the ELD matrix is defined as
 
 $$ ELD = exp\left(-\alpha_c D_L\right) $$
 
-$D_L$ is the distance matrix multiplied by the causality mask ($-\alpha_c$). The distance matrix is computed as follows:
+$D_L$ is the distance matrix multiplied by the causality mask ($-\alpha_c$). The distance matrix is computed as in Figure 2.
 
+Figure 2: Distance Matrix.
 ![image](https://github.com/user-attachments/assets/ee1cb4c7-2290-4c8c-b4de-cc53777bd0d5)
 
 
@@ -135,11 +137,10 @@ Table 2: Batch size and epoch adjustments in our experiments
 | **Listops** |    10    | 40 |
 | **Document Retrieval** |    6    | 7 | 
 
--------------------------
 
-We ran our first experiment on Sequential MNIST (sMNIST); however, the paper does not provide setup details for this. For this reason, we used the setup parameters of the LRA Image task with the exception of batch size and number of epochs. We reduced the batch size to 10 to not exceed the Google Colab T4 GPU RAM. We also reduced the number of epochs due to limited runtime of Google Calob. Similar to the original paper, we built our code upon the existing S4 repository. Also, we adapted the Transformer architecture from [3] to hanve more flexibility in our architecture.
+For our experiments on sMNIST, the paper does not provide setup details. For this reason, we used the setup parameters of the LRA Image task with the exception of batch size and number of epochs. We reduced the batch size to 10 to not exceed the Google Colab T4 GPU RAM. We also reduced the number of epochs due to limited runtime of Google Calob. Similar to the original paper, we built our code upon the existing S4 repository. Also, we adapted the Transformer architecture from [3] to have more flexibility in our architecture.
 
-We conducted two experiments:
+We conducted two experiments for sMNIST task:
 
 **(i)** First experiment uses the whole dataset and the model is trained for two epochs.
 
@@ -182,14 +183,14 @@ Then, you can follow the notebooks we provided under ```codes/``` to train LaS A
 
 **1st Experiment (Full sMNIST Dataset and 2 Epochs):**
 
-Figure 1: Train and Validation loss for sMNIST   
+Figure 3: Train and Validation loss for sMNIST   
 
 ![image](https://github.com/user-attachments/assets/fdb9e367-402d-4029-ba85-b49bcb20a4da)
 
 
 **2nd Experiment (1/20 sMNIST Dataset and 80 Epochs):**
 
-Figure 2: Train and Validation loss for small sMNIST 
+Figure 4: Train and Validation loss for small sMNIST 
 
 ![image(2)](https://github.com/user-attachments/assets/d34e6291-61c8-41d5-bae4-e7c61f1da04f)
 
@@ -202,7 +203,7 @@ Table 3: Training and validation accuracies for our implementation
 
 <br><br>
 
-Figure 3: Original paper's accuracy results  
+Figure 5: Original paper's accuracy results  
 
 <img width="350" alt="Papers_MNIST_results" src="https://github.com/user-attachments/assets/ad2ce844-7860-4b1b-9871-3cfcb8541344">
 
@@ -212,12 +213,12 @@ Figure 3: Original paper's accuracy results
 
 The loss and accuracy results for this experiment are shown below. The gaps between segments are due to saving a checkpoint and continuing training from that model.  
 
-Figure 4: Loss Graphs for LRA Listops Benchmark
+Figure 6: Loss Graphs for LRA Listops Benchmark
 
 ![loss](https://github.com/user-attachments/assets/7bc84ff3-825a-43cd-a7a8-d8e3fb7e083e)  
 
 
-Figure 5: Accuracy Graphs for LRA Listops Benchmark
+Figure 7: Accuracy Graphs for LRA Listops Benchmark
 
 ![accuracy](https://github.com/user-attachments/assets/798d52b5-d198-4d20-b91d-9ff7676af439)  
 
@@ -235,12 +236,12 @@ Table 4: Performance of the best model for Listops task
 
 The accuracies we obtained for Document Retrieval task can be seen in Figure XX. The x-axis shows the global steps and y-axis shows the accuracy for each epoch. Accuracies are registered per epoch.
 
-Figure XX: Train, Test and Validation Accuracies for Document Retrieval Task
+Figure 8: Train, Test and Validation Accuracies for Document Retrieval Task
 ![aan_acc](https://github.com/user-attachments/assets/c612c459-1e00-4076-9bfe-058cfc3b9397)
 
 The losses we obtained for Document Retrieval task can be seen in Figure YY. The x-axis shows the global steps and y-axis shows the loss for each epoch. Losses are registered per epoch.
 
-Figure YY: Train, Test and Validation Losses for Document Retrieval Task
+Figure 9: Train, Test and Validation Losses for Document Retrieval Task
 ![aan_loss](https://github.com/user-attachments/assets/3809f3ca-1a42-4564-a87b-486309640ef6)
 
 We choose our best model based on the validation accuracy score. The best model's performance can be observed in Table-ZZZ.
