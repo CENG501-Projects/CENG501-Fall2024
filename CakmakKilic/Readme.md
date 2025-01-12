@@ -143,13 +143,22 @@ Below is a brief explanation of how to run the code and navigate the project str
 
 ### src Folder
 
-Contains all the scripts, including the ResNet-20 model code, pruning/QAT versions, helper functions, dataset handling, and separate Python files for each method.
-Running any of the Python files here (named according to the method they implement) will train the model using that method and display an accuracy graph against synthetic noise.
+The src folder is organized into four main folders: data, dataset, models, and training, each of which encapsulates specific implementation details.
+
+The data folder contains the training and testing datasets, with the data sourced from the Torch library. 
+The dataset folder includes the noisy_cifar10.py file, which implements the logic for adding synthetic noise to the dataset.
+
+The models folder features three distinct model implementations: a baseline ResNet, a ResNet with dropout, and a ResNet for quantization-aware training (QAT). Specifically, resnet.py [5] provides multiple ResNet implementations, but only ResNet20 is utilized in this work, as outlined in the paper. The resnet_with_dropout.py file extends the baseline ResNet20 model by incorporating a dropout parameter, while resnet_qat.py implements the ResNet20 model tailored for QAT. The quantization-aware model was constructed using the quant module in the PyTorch library.
+
+The training folder comprises four files: train.py, evaluate.py, qat.py, and utils.py. The train.py script includes two training loop implementations: a standard loop and a validation-enabled loop, which facilitates early stopping. Similarly, evaluate.py provides two evaluation functions: a basic evaluation routine and one that calculates loss for early stopping. The utils.py file contains a utility function to create training and validation splits. The qat.py file is dedicated to fine-tuning and evaluating quantized models. It first fuses the model defined in models/resnet_qat.py, configures it using the FBGEMM kernel, and prepares it for QAT. The model is then fine-tuned, converted to a quantized version, and evaluated.
+
+Finally, the src folder contains six Python scripts, each corresponding to a specific training and evaluation setup. Running any of these scripts trains the model using the designated method and outputs an accuracy graph against varying levels of synthetic noise.
 
 ### models Folder
 
-Holds the our saved trained models based on the scripts in src.
-You can load these models to test or evaluate accuracies without train model.
+The repository also includes a folder that stores the saved trained models generated based on the scripts in the src folder. Within the baseline folder, there are three types of baseline models. The resnet20* and resnet20-pruning* models share the same weights, as the existing baseline model was utilized for the pruning implementation. Models with names starting with non_quantized_model* originate from the quantized ResNet, where the model was initially trained from scratch and then fine-tuned as a pre-trained model.
+
+These saved models can be loaded directly for testing or accuracy evaluation without re-training the models.
 
 ## 3.3. Results
 
@@ -200,7 +209,7 @@ We were unable to replicate the facial AU detection experiments described in the
 
 Although the paper has demonstrated that strategies like pruning, dropout, weight decay, and early stopping can yield better performance in the presence of noisy data, our implementation did not replicate those gains. While our results followed a curve similar to that in the paper, we experienced a slight loss rather than the expected improvement when applying these techniques. One likely explanation is our inability to optimally tune the hyperparameters or model configurations such as the learning rate, early stopping validation ratio, pruning parameters, and dropout settings for this setup.
 
-However, our quantization results are similar to the improvements reported in the paper. In contrast to the other methods, quantization effectively combated label noise and improved performance.
+However, our quantization results are similar to the improvements reported in the paper. In contrast to the other methods, quantization effectively fighted label noise and improved performance.
 
 # 5. References
 
