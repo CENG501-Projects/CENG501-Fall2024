@@ -100,9 +100,11 @@ The paper cites a previous work related to the application of deep learning meth
 
 Acrobot is an underactuated double pendulum. The control task is to bring both links to an upright position and keep it there with zero control effort. This corresponds to the target state $[\pi, \pi, 0, 0]$ with target input of $0$. We try to restrict inputs between $250 Nm$ and $-250Nm$. We derive the Hamiltonian and other costs/metrics by assuming the exact $f$ function is known. The control time horizon is 1 second, which consists of 50 control steps. 
 
-The controller and the value function network architectures are unclear in the original paper. The controller network is made up of 6 layer MLP with sine and LeakyReLU activation functions in the hidden layers. The last layer of this network is followed by a tanh function as advised in the paper. We experiment with width and depth of this network. The value function network is made up of a ResNet and some quadratic terms added as in [6]. 
+The controller and the value function network architectures are unclear in the original paper. The controller network in our implementation is made up of 6 layer MLP with sine and LeakyReLU activation functions in the hidden layers. The last layer of this network is followed by a tanh function as advised in the paper. We experiment with width and depth of this network. The value function network is made up of a ResNet and some quadratic terms added as in [6]. 
 
 We also found use in changing $\alpha$ coefficients of cost terms during training. We first focus on the terminal cost, then change to the coefficients in the paper [1] to focus on optimal control. 
+
+To calculate the various costs, we have come up with methods. The running cost and the terminal cost are set as in [1]. These terms are integrated during training as done in [6]. As a result, we do not expect our network to ever reach zero cost because it is impossible. To calculate the Hamilton Jacobi Bellman equation cost, we evaluate the gradient of the value function network with respect to time by concatanating each state with the corresponding time. The value function network result is used in the calculation of the final cost-to-go cost together with the terminal cost calculation. Differently from the paper [1], we also use the state derivatives of the value function network to match the state derivatives of the cost to go network as in [6]. 
 
 ### 2.2.3 Data Generation
 
