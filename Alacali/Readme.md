@@ -238,28 +238,44 @@ Hyperparameters: Learning rate = 0.0002, batch size = 128, Adam optimizer with b
 
 @TODO: Present your results and compare them to the original paper. Please number your figures & tables as if this is a paper.
 
-Client K=2, Balanced
+### Client K=2, Balanced
    <p align="center">
   <img src="figures/generator_loss_plot_balanced_k=2.png" style="width: 70%;"><br>
   <em>Figure 7: Generator loss, balanced dataset, K=2 clients</em>
 </p>
+   <p align="center">
+     <img src="figures/balanced_k=2.png" style="width: 70%;"><br>
+     <em>Figure 8: Generator results, balanced dataset, K=2 clients</em>
+</p>
 
-Client K=2, Imbalanced
+### Client K=2, Imbalanced
    <p align="center">
   <img src="figures/generator_loss_plot_imbalanced_k=2.png" style="width: 70%;"><br>
-  <em>Figure 8: Generator loss, imbalanced dataset, K=2 clients</em>
+  <em>Figure 9: Generator loss, imbalanced dataset, K=2 clients</em>
+</p>
+<p align="center">
+     <img src="figures/imbalanced_k=2.png" style="width: 70%;"><br>
+     <em>Figure 10: Generator results, imbalanced dataset, K=2 clients</em>
 </p>
 
-Client K=5, Balanced
+### Client K=5, Balanced
    <p align="center">
   <img src="figures/generator_loss_plot_balanced_k=5.png" style="width: 70%;"><br>
-  <em>Figure 9: Generator loss, balanced dataset, K=5 clients</em>
+  <em>Figure 11: Generator loss, balanced dataset, K=5 clients</em>
+</p>
+<p align="center">
+     <img src="figures/balanced_k=5.png" style="width: 70%;"><br>
+     <em>Figure 12: Generator results, balanced dataset, K=5 clients</em>
 </p>
 
-Client K=5, Imbalanced
+### Client K=5, Imbalanced
    <p align="center">
-  <img src="figures/generator_loss_plot_balanced_k=5.png" style="width: 70%;"><br>
-  <em>Figure 10: Generator loss, imbalanced dataset, K=5 clients</em>
+  <img src="figures/generator_loss_plot_imbalanced_k=5.png" style="width: 70%;"><br>
+  <em>Figure 13: Generator loss, imbalanced dataset, K=5 clients</em>
+</p>
+<p align="center">
+     <img src="figures/imbalanced_k=5.png" style="width: 70%;"><br>
+     <em>Figure 14: Generator results, imbalanced dataset, K=5 clients</em>
 </p>
 
 # 4. Conclusion
