@@ -187,6 +187,10 @@ You can simply run the provided python code ```LaSattn_sMNIST.py``` as below:
 
 python LaSattn_sMNIST.py
 
+**Trained Models:**  
+
+We couldn't upload the trained models due to large file size.
+
 
 ## 3.4. Results
 
