@@ -212,20 +212,38 @@ We hypothesize that increasing the number of clients (i.e., moving from k=2 to k
 2- Robustness to Data Imbalance
 When moving from balanced datasets to imbalanced and extremely imbalanced datasets, we hypothesize that IFLGAN will maintain higher fidelity in generated data and exhibit lower performance degradation than MDGAN and FLGAN. This is because IFLGAN is designed to mitigate divergence caused by heterogeneous data distributions and to reduce the negative effects of highly skewed data partitions across different clients.
 
-3- Improvement Over Centralized Training Baselines
-Although centralized GAN training on balanced datasets often yields strong performance, we hypothesize that the federated GAN models—particularly IFLGAN—will demonstrate competitive or superior performance on certain tasks, even in imbalanced scenarios. This arises from the fact that federated training can leverage diverse local data while preserving privacy and preventing overfitting that may occur in a single-site centralized dataset.
-
-4- Impact on Convergence and Stability
+3- Impact on Convergence and Stability
 Finally, we hypothesize that the federated approach with carefully designed aggregation (IFLGAN) will converge more stably than the simpler distributed methods (MDGAN or FLGAN) as it handles partial updates more effectively. In other words, while MDGAN and FLGAN may converge faster in some cases, IFLGAN will yield more consistent and reliable convergence trends across different levels of data imbalance.
 
-#### Training Procedure
+### Training Procedure
 Dataset: MNIST divided into K = 2,5 with partitioning the numbers sequentially (number of clients) parts, normalized to [-1, 1].
 
-Balanced Scenario:
+### Balanced Scenario:
 
-Imbalanced Scenario:
+In the balanced case, each client (or “worker”) receives roughly the same number of samples for its assigned digits. For instance, if each client is supposed to handle certain MNIST digits:
 
-Hyperparameters (for all models): 
+#### K=2:
+- Client 1 might get digits {0, 1, 2, 3, 4} (10,000 samples) 
+- Client 2 might get digits {5, 6, 7, 8, 9} (10,000 samples)
+
+#### K=5:
+- Each of the 5 clients receives up to 10K samples from their assigned digit groups. For example, Client 1 = {0,1}, up to 10K samples, Client 2 = {2,3}, up to 10K samples and so on...
+
+### Imbalanced Scenario:
+
+In the imbalanced case, one client (often the first client) gets significantly more samples than the others. The standard approach in our code is:
+
+Client 1 gets up to 10K samples.All other clients get a smaller limit (for example, 1K). This intentionally skews the dataset distribution so that:
+
+#### K=2:
+- Client 1 (digits {0,1,2,3,4}) => 10,000 samples
+- Client 2 (digits {5,6,7,8,9}) => 1,000 samples
+
+#### K=5:
+- Client 1 => 10K samples
+- Clients 2..5 => 1K each
+
+### Hyperparameters (for all models): 
 - Learning rate = 0.0002
 - Batch size = 128
 - Adam optimizer with betas = (0.5, 0.999).
@@ -338,18 +356,30 @@ if __name__ == "__main__":
 
 In this part, the results shared are discussed from the perspective of the hypotheses created from the paper.
 
+## Summary of the work:
+
+Unlike the results shared in the paper and the expectation of the hypothesis 1, the generator loss of IFL-GAN was always the highest between other architectures. The design of the models and the choices for the parameters were at first aligned with the shared ones in the paper, but the poor results have given the encourage to change them accordingly. After settling on the sufficient results of FL-GAN with the priori knowledge of it as the worst model among the three, it was expected that other models would perform better. But that was not the case. In fact, in every scenario it performed the best, both image-wise and loss-wise.
+
 1- Performance Across Different Client Numbers
+In the paper, it was discussed that FL-GAN had performed the worst in MNIST dataset, which can be seen in figures 15 and 17. However, in FL-GAN, one trains both local generators and discriminators, and intuition should be towards that it converging relatively faster than MD-GAN, which was supported by the results since for the same number of epochs, the number of models trained is larger than MD-GAN in which only one global generator is trained. 
 
 2- Robustness to Data Imbalance
+It was expected that directly averaging the local parameters in FL-GAN would perform worst than IFL-GAN, but in light of the results, especially in the imbalanced cases, the MMD mechanism inside the IFL-GAN architecture couldn't prevent the global model from overfitting to the dataset of the client with the largest-numbered dataset of 0's and 1's. Simple averaging mechanism of both MD-GAN and FL-GAN seems to cope with imbalanced data while MD-GAN generator fell short on converging. 
 
-3- Improvement Over Centralized Training Baselines
+3- Impact on Convergence and Stability
 
-4- Impact on Convergence and Stability
+Loss-wise, none of the loss graphs showed the expected 50% rate theoretical loss convergence of the generator. In addition, during the research phase, it was mentioned a number of times that instead of looking at the loss for the performance of the GAN, it is better to print the images that the model is trained to generate. This perspective have influenced the approach of examining the performance of the models and the results. It was observed that FLGAN converged faster (around 100 epochs) in all of the  cases, MD-GAN showed that parameter tuning is still necessary for obtaining meaningful results, and IFL-GAN presented unreliable convergence trends across different levels of data imbalance.
 
 
 # 5. References
 
-@TODO: Provide your references here.
+[1] W. Li, J. Chen, Z. Wang et al., “IFL-GAN: improved federated learn‐ing generative adversarial network with maximum mean discrepancy model aggregation,” IEEE Transactions on Neural Networks and Learning Systems, doi: 10.1109/TNNLS.2022.3167482
+
+[2] I. Goodfellow et al., "Generative adversarial nets", Proc. Adv. Neural Inf. Process. Syst., pp. 2672-2680, 2014.
+
+[3] C. Hardy, E. Le Merrer and B. Sericola, "MD-GAN: Multi-discriminator generative adversarial networks for distributed datasets", arXiv:1811.03850, 2018.
+
+[4] H. Brendan McMahan, E. Moore, D. Ramage, S. Hampson and B. Agüera y Arcas, "Communication-efficient learning of deep networks from decentralized data", arXiv:1602.05629, 2016.
 
 # Contact
 
