@@ -328,6 +328,16 @@ In conclusion, ZODE provides a robust framework for OOD detection, combining sta
 11. Grant Van Horn, Oisin Mac Aodha, Yang Song, Yin Cui, Chen Sun, Alex Shepard, Hartwig Adam, Pietro Perona, and Serge Belongie. The inaturalist species classification and detection dataset. In Proceedings of the IEEE conference on computer vision and pattern recognition, pages 8769–8778, 2018.
 12. Jianxiong Xiao, J Hays, KA Ehinger, A Oliva, and A Torralba. Sun database: Large-scale scene recognition from abbey to zoo. In IEEE Computer Society Conference on Computer Vision and Pattern Recognition, 2010.
 
+# 7. Appendix
+1. Training Weights
+
+   The weights for the trained models used in this study are available for download from the following link:
+
+   [Download Training Weights](https://drive.google.com/uc?id=1q3S5VU4l4ATNLRCYdiaZTt0KOqpQ9HKW&export=download
+   )
+
+   These weights can be used for further experimentation or replication of the results presented in this paper.
+
 # Contact
 
 - [Esra Genç](mailto:esra.genc@metu.edu.tr)
