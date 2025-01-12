@@ -315,9 +315,9 @@ Figure 8. Expected AP40 values table from the paper.
 </p>
 However, it is not possible for us to test our model on the test set. Test set labels are not shared and to get the results of the test set, one needs to submit the model to the KITTI website. However, we cannot submit our results to the contest because of the rules. KITTI website states that model submission step must only be followed if a paper is about to be submitted to a conference where the experimental results are ready, other evaluations (eg, in the context of model ablations, a student's class project or Master's thesis) must be conducted on the training set. Hence, we decided to split the training set into two equal parts for training and testing. 
 
-In different repositories, there are some example training set splits for KITTI dataset. We have also provided our training-test split files under the dataset directory. However, if scores in the paper may not be reached, this could be one of the reasons. The paper does not give any information on training-test split. 
+In different repositories, there are some example training set splits for KITTI dataset. We have also provided our training-test split files under the dataset directory. However, MonoATT paper does not give any information about the training-test split. After some research, we have concluded that on monocular 3D detection tasks, usually splitting the KITTI training set which has 7500 images into half for training and test is a good practice. Our training-test split is taken from the [OpenPCDet](https://github.com/open-mmlab/OpenPCDet/tree/master/data/kitti) repository.
 
-###3.3.1 AP40@0.7 Metric
+###3.3.1. AP40@0.7 Metric
 
 The paper uses AP40 metric at 0.7 IoU threshold. The term AP40@0.7 is a performance metric commonly used in object detection tasks, particularly in 3D object detection tasks, such as those in autonomous driving. Let’s break it down:
 
