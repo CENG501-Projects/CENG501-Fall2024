@@ -148,19 +148,18 @@ We conducted two experiments:
 
 @TODO: Explain your code & directory structure and how other people can run it.
 
+Download the S4 repository at [this link](https://github.com/state-spaces/s4/tree/main).
+
+Download the LRA benchmark following the steps at [this link](https://github.com/state-spaces/s4/tree/main/src/dataloaders). Be careful about the directory structure.
+
+Change the ```plaintext transformer.py ``` under:
+
 ```plaintext
-project/
+s4-main/
 ├── src/
-│   ├── main.py
-│   └── utils.py
-├── tests/
-│   ├── test_main.py
-│   └── test_utils.py
-├── docs/
-│   └── index.md
-├── .gitignore
-├── README.md
-└── requirements.txt
+│   ├── models/
+│       ├── baselines/
+|            ├── transformer.py
 ```
 
 
