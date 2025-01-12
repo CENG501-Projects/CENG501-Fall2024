@@ -196,13 +196,24 @@ Figure 6: Test Loss and Accuracy for LRA Listops Benchmark
 
 ### Experiment: Document Retrieval Task
 
+The accuracies we obtained for Document Retrieval task can be seen in Figure XX. The x-axis shows the global steps and y-axis shows the accuracy for each epoch. Accuracies are registered per epoch.
+
 Figure XX: Train, Test and Validation Accuracies for Document Retrieval Task
 ![aan_acc](https://github.com/user-attachments/assets/c612c459-1e00-4076-9bfe-058cfc3b9397)
+
+The losses we obtained for Document Retrieval task can be seen in Figure YY. The x-axis shows the global steps and y-axis shows the loss for each epoch. Losses are registered per epoch.
 
 Figure YY: Train, Test and Validation Losses for Document Retrieval Task
 ![aan_loss](https://github.com/user-attachments/assets/3809f3ca-1a42-4564-a87b-486309640ef6)
 
+We choose our best model based on the validation accuracy score. The best model's performance can be observed in Table-ZZZ.
 
+Table 2: Performance of the best model for Document Retrieval task
+|                     | Accuracy | Loss|
+|---------------------|--------|----------|
+| **Training** |    54.208    | 0.68699 |
+| **Validation** |    55.041    | 0.6818 | 
+| **Test** |    54.743    | 88.455 | 
 
 **Discussion:**  
 
