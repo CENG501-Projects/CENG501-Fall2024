@@ -135,6 +135,10 @@ def sample_hierarchical_rules_type_b(num_features, num_layers, m, num_classes, s
 
 
 def sample_data_from_paths(samples_indices, paths, m, num_classes, num_layers, s, s0, seed=0, synonym_start_layer=42):
+
+    if isinstance(samples_indices, int):
+        samples_indices = torch.tensor(samples_indices)
+
     Pmax = m ** ((s ** num_layers - 1) // (s - 1)) * num_classes
     sparse_tuple_size = s * (s0 + 1)
 
@@ -167,7 +171,7 @@ def sample_data_from_paths(samples_indices, paths, m, num_classes, num_layers, s
             perm = torch.randperm(len(samples_indices))
             samples_indices = samples_indices[perm]
 
-        print(f"Group size will be {groups_size}//({m} ** ({s} ** {l}))")
+        # print(f"Group size will be {groups_size}//({m} ** ({s} ** {l}))")
         groups_size //= m ** (s ** l)
         
         layer_indices = samples_indices.div(groups_size, rounding_mode='floor')

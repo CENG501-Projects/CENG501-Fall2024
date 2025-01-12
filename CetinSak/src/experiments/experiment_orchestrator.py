@@ -1,4 +1,4 @@
-import tomllib as toml
+from pip._vendor import tomli as toml
 import copy
 from pprint import pprint
 import argparse
@@ -86,8 +86,6 @@ if __name__ == "__main__":
     for idx, (config_dict, args) in enumerate(zip(config_dict_list, config_args_list)):
         print("Running experiment with following config:")
         pprint(config_dict)
-
-        print(args.p)
 
         assert not (args.diffeo_retry_count > 1 and args.synonym_retry_count > 1), "Cannot run synonym and diffeo experiment at the same time"
 

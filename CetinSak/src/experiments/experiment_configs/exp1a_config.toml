@@ -1,10 +1,10 @@
 [srhm]
-num_features = 6
-m = 6
+num_features = 10
+m = 10
 s = 2
 s0 = 2
 num_layers = 2
-num_classes = 6
+num_classes = 10
 input_format = "onehot" # can be long, decimal, binary, pairs or onehot
 whitening = 0
 diffeo_retry_count=1
@@ -12,11 +12,11 @@ synonym_retry_count=1
 seed_diffeo=3
 seed_synonym='nil'
 sensitivity_stop_ratio = 'nil'
-p='nil'
-test_acc_stop = 0.95
+p=20000
+test_acc_stop = 1
 
 [model]
-net = "cnn" # can be cnn, fcn or lcn
+net = "lcn" # can be cnn, fcn or lcn
 random_features = 0
 width = 512
 batch_norm = 0

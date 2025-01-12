@@ -57,6 +57,8 @@ def opt_algo(args, net):
     """
 
     # rescale loss by alpha or alpha**2 if doing feature-lazy
+    if args.net in ['VGG11', 'VGG16', 'ResNet18', 'ResNet34', 'EfficientNetB0']:
+        args.lr = 10e-4
     args.lr = args.lr / args.alpha
 
     if args.optim == "sgd":

@@ -1,6 +1,11 @@
 from src.SRHM.cnn import CNN
 from src.SRHM.fcn import FCN
 from src.SRHM.lcn import LocallyHierarchicalNet as LCN
+from src.models.efficientnet import EfficientNetB0
+from src.models.vgg import VGG
+from src.models.resnet import ResNet18, ResNet34
+
+# 'LCN', 'CNN', 'VGG11', 'VGG16', 'ResNet18', 'ResNet34', 'EfficientNetB0'
 
 import torch
 
@@ -52,15 +57,15 @@ def model_initialization(args, input_dim, ch):
         )
     # Models 'VGG11', 'VGG16', 'ResNet18', 'ResNet34', 'EfficientNetB0'
     elif args.net == "VGG11":
-        net = None
+        net = VGG(vgg_name="VGG11", num_classes=num_outputs, num_ch=args.width)
     elif args.net == "VGG16":
-        net = None
+        net = VGG(vgg_name="VGG16", num_classes=num_outputs)
     elif args.net == "ResNet18":
-        net = None
+        net = ResNet18(num_classes=num_outputs)
     elif args.net == "ResNet34":
-        net = None
+        net = ResNet34(num_classes=num_outputs)
     elif args.net == "EfficientNetB0":
-        net = None
+        net = EfficientNetB0(num_classes=num_outputs, num_ch=1)
 
     assert net is not None, "Network architecture not in the list!"
 

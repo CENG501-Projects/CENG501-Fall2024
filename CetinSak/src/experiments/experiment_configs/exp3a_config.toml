@@ -1,10 +1,10 @@
 # Experiment 3A - Synonymic Sensitivity of LCN Networks
 [srhm]
-num_features = [3,6,9,12]
+num_features = [12,3,9,6]
 m = "num_features"
 s = 2
 s0 = [0,1,2,4]
-num_layers = [2,3]
+num_layers = [3,2]
 num_classes = "num_features"
 input_format = "onehot" # can be decimal, binary, pairs or onehot
 whitening = 0
@@ -17,7 +17,7 @@ p='nil'
 test_acc_stop = 'nil'
 
 [model]
-net = "cnn" # can be cnn, fcn or lcn
+net = "lcn" # can be cnn, fcn or lcn
 random_features = 0
 width = 512
 batch_norm = 0
@@ -36,6 +36,7 @@ zero_loss_epochs = 0
 zero_loss_threshold = 0.01
 rescale_epochs = 0
 alpha = 1.0
+skip_existing=true
 
 [observables]
 stability = 0 # 1 to compute it at every checkpoint, 2 at the end of training

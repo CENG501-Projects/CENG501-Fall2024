@@ -123,7 +123,6 @@ class LocallyHierarchicalNet(nn.Module):
 
         self.beta = nn.Parameter(torch.randn(h, out_dim))
 
-
     def forward(self, x):
         y = self.net(x)
         y = y.mean(dim=[-1])
