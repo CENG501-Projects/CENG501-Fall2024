@@ -304,7 +304,7 @@ if __name__ == "__main__":
 
 ### Client K=5, Balanced
    <p align="center">
-  <img src="figures/generator_loss_plot_balanced_k=5.png" style="width: 70%;"><br>
+  <img src="figures/combined_gan_losses.png=5.png" style="width: 70%;"><br>
   <em>Figure 11: Generator loss, balanced dataset, K=5 clients</em>
 </p>
 <p align="center">
