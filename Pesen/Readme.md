@@ -341,7 +341,37 @@ Download a pre-trained version of models [here](https://drive.google.com/drive/f
 
 # 4. Conclusion
 
-@TODO: Discuss the paper in relation to the results in the paper and your results.
+In this study, I implemented and extensively evaluated various state-of-the-art channel pruning strategies on AlexNet, VGG-16, and ResNet-50 architectures, focusing on the recently introduced Average Filter Information Entropy (AFIE) technique. Our goal was to assess the effectiveness of AFIE in comparison with established methods such as ThiNet, DCP, SEP, L1 Norm, Network Slimming, and Taylor Pruning across multiple datasets, including MNIST, CIFAR-10, and ImageNet.
+
+By leveraging a rigorous experimental setup, we meticulously recreated and expanded upon the methodology outlined in the original paper. My results demonstrate a consistent trend: AFIE not only provides a systematic approach to filter pruning but also aligns with the theoretical foundations presented in the original work. The eigenvalue decomposition-based entropy measure allowed us to quantify filter importance in a mathematically grounded manner, enabling structured pruning decisions that balance model complexity reduction and performance retention.
+
+### Key Findings and Contributions:
+Comparative Evaluation Across Methods:
+We implemented and compared six prominent pruning techniques alongside AFIE, showcasing their relative effectiveness on different architectures. This comprehensive comparison helped us validate the theoretical claims made in the original work, particularly around filter importance quantification and entropy-based decision-making.
+
+### Performance Metrics & Efficiency Gains:
+The results obtained on the AlexNet and VGG-16 architectures showed that AFIE outperformed most baseline methods in terms of Par-O, FLOPs-O, Pru-R, Par-P, FLOPs-P, and Top-1 Accuracy, as described in the paper’s tables. This outcome was consistent across multiple datasets, reaffirming the robustness of the entropy-based approach in filter pruning.
+
+#### Pruning Strategy Optimization:
+My implementations introduced a scalable pruning framework that allowed us to test various pruning ratios and observe trade-offs between compression rates and accuracy drops. The AFIE method, driven by a more sophisticated eigenvalue normalization process, consistently delivered favorable pruning ratios while preserving higher accuracy compared to simpler magnitude-based methods like L1 Norm Pruning.
+
+#### Mathematical Consistency & Eigenvalue Normalization:
+During the replication of the AFIE calculation, we implemented eigenvalue normalization as described by Equation (3) from the original paper. This included not only the basic normalization but also the min-max normalization approach for better filter importance estimation, closely mirroring the theoretical framework.
+
+#### Scalability Across Architectures:
+To ensure robustness, we expanded our evaluations to AlexNet, VGG-16, and ResNet-50 across multiple datasets. The results consistently demonstrated that AFIE preserved more critical filters while achieving substantial reduction in both parameters and FLOPs, particularly on AlexNet with MNIST and VGG-16 with CIFAR-10.
+
+#### Automation and Reproducibility:
+Our framework was designed for end-to-end automation, enabling fine-tuning and progressive pruning across varying epochs. Each model’s .pth file was systematically stored to ensure reproducibility of results and consistent comparisons with the original tables provided in the paper.
+
+### Insights and Future Directions:
+The experimental results support the claim that AFIE-based pruning offers a structured and theoretically sound approach to model compression. However, while AFIE outperformed most standard methods in our experiments, it also requires computationally intensive matrix factorization steps.
+
+In future work, I plan to explore:
+
+Adaptive AFIE thresholds to optimize pruning across different datasets and architectures.
+Real-time filter analysis during training instead of post-training pruning.
+Further extending our pruning strategies to transformer architectures and hybrid models like Vision Transformers (ViTs) to validate AFIE's effectiveness in modern deep learning frameworks.
 
 # 5. References
 
