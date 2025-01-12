@@ -105,6 +105,8 @@ According to [3], the LRA benchmark is a systematic framework designed to evalua
 
 The performance of Las Attention is evaluated based on these tasks. We evaluated our implementation of LaS Attention on ListOps and Document Retrieval tasks only due to our limited time and resources.
 
+We also evaluated LaS Attention on **sMNIST** **(Sequential MNIST)**, which is a common benchmark task for time series classification. We provide details of implementation and evaluation in the next sections.
+
 
 ## 3.2. Experimental setup
 
