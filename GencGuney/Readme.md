@@ -139,6 +139,8 @@ To reproduce the results, follow these steps:
      ```
 
 3. **Obtain Pretrained Model Weights**
+   We trained the models in the model zoo for CIFAR using a batch size of 128, 100 epochs, a train-validation split of 0.9, an initial learning rate of 0.1, and the SGD optimizer with momentum (0.9), weight decay (5e-4).
+   
    - You can download the pretrained weights from the following link: [Download Trained Weights](https://drive.google.com/uc?id=1q3S5VU4l4ATNLRCYdiaZTt0KOqpQ9HKW&export=download).
 
    - If you'd like to train the model from scratch, you can use the provided script (model/train_cifar.py) with the parameters specified earlier.
