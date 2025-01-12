@@ -160,7 +160,7 @@ Figure 4: Train Loss and Accuracy for LRA Listops Benchmark
 
 Figure 5: Validation Loss and Accuracy for LRA Listops Benchmark
 
-<img width="650" alt="val_graphs" src="https://github.com/user-attachments/assets/18671c8f-8eb8-4470-85a5-e3256edadaab" />
+<img width="650" alt="val_graphs" src="https://github.com/user-attachments/assets/2b2088cd-229f-4a45-800e-455a2841c9a8" />
 
 
 Figure 6: Test Loss and Accuracy for LRA Listops Benchmark
