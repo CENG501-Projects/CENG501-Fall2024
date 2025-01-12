@@ -150,7 +150,7 @@ def get_scaled_flows(flow:np.array):
     return scaled_flows
 ```
 
-### Integrate and Fire Neurons
+### Integrate and Fire Neurons (Leaky)
 We utilize the IF neuron implementation from the [Spike-FlowNet GitHub](https://github.com/chan8972/Spike-FlowNet) as a starting point. However, the provided IF neuron does not include leakage. Since the proposed method requires a leaky IF neuron, we incorporate the leakage mechanism into the implementation.
 ```python
 # IF neuron from Spike-FlowNet
