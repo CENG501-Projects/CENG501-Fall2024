@@ -149,9 +149,9 @@ We conducted two experiments for sMNIST task:
 **(ii)** Second experiment uses 1/20 of the dataset and the model is trained for 80 epochs.
 
 
-## 3.2. Running the code
+## 3.3. Running the code
 
-@TODO: Explain your code & directory structure and how other people can run it.
+**For LRA tasks:**  
 
 Download the S4 repository at [this link](https://github.com/state-spaces/s4/tree/main).
 
@@ -181,7 +181,14 @@ s4-main/
 
 Then, you can follow the notebooks we provided under ```codes/``` to train LaS Attention.
 
-## 3.3. Results
+**For sMNIST task:**  
+
+You can simply run the python code ```LaSattn_sMNIST.py``` as below:
+
+python LaSattn_sMNIST.py
+
+
+## 3.4. Results
 
 ### **1st Experiment (Full sMNIST Dataset and 2 Epochs):**
 
