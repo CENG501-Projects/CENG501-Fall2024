@@ -343,9 +343,9 @@ The paper also discusses the results on the validation set, which is some part o
 The paper also discusses integrating MonoATT components into existing transformer-based models. They claim to improve the AP40 scores of MonoDTR and MonoDETR structures. Validation set results are provided below. Please note that, as we used MonoDETR as base to implement MonoATT, it can be a good idea to compare our results with results provided in the table below.
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/e3d02550-5d80-42f0-a6e2-b274cc6aa980" alt="Architecture Overview">
+  <img src="https://github.com/user-attachments/assets/5714aec3-33bf-4982-bde0-bbd0194ca5b0" alt= Extension of MonoATT to existing transformer-based monocular 3D object detectors>
   <br>
-  <strong>Figure 7:</strong> AExtension of MonoATT to existing transformer-based monocular 3D object detectors
+  <strong>Figure 7:</strong> Extension of MonoATT to existing transformer-based monocular 3D object detectors
 </p>
 
 ### 3.3.3 Our Test Results
