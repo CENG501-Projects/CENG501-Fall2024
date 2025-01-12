@@ -110,7 +110,6 @@ We applied a series of standard data augmentation and normalization techniques:
 - Batch size was set to 1024 for faster training.  
 - Initial learning rate was set to 0.001 as it is the default of Adam optimizer.
 
-
 For all regularization and compression techniques, we used above settings as baseline model and dataset preparation.
 
 ### Early Stopping:  
@@ -118,8 +117,14 @@ For all regularization and compression techniques, we used above settings as bas
 - 20% of the training data was reserved as the validation set.  
 - Early stopping was implemented with a patience of 10 epochs. It means that training was stopped if validation performance did not improve for 10 consecutive epochs.
 
+### Pruning
 
+- The original paper did not specify a pruning ratio. Therefore, we experimentally tested various pruning rates, ranging from 1% to 50%.
+- We finally chose a 2% pruning rate because the accuracy at higher pruning ratios was lower.
 
+### Dropout
+
+We added Dropout right after the initial layer, after each block, and again before the final linear layer. 
 
 # 3. Experiments and results
 
@@ -134,16 +139,21 @@ To accelerate the training process, all experiments were conducted on a Google C
 
 ## 3.2. Running the code
 
-@TODO: Explain your code & directory structure and how other people can run it.
+Below is a brief explanation of how to run the code and navigate the project structure:
+
+### src Folder
+
+Contains all the scripts, including the ResNet-20 model code, pruning/QAT versions, helper functions, dataset handling, and separate Python files for each method.
+Running any of the Python files here (named according to the method they implement) will train the model using that method and display an accuracy graph against synthetic noise.
+
+### models Folder
+
+Holds the our saved trained models based on the scripts in src.
+You can load these models to test or evaluate accuracies without train model.
 
 ## 3.3. Results
 
-@TODO: Present your results and compare them to the original paper. Please number your figures & tables as if this is a paper.
-
-<p align="center">
-  <img src="imgs/original-accuracy.png" alt="" style="width: 50%;"><br>
-  <em> Figure 1: On Cifar10: (a) Accuracy gain with respect to the baseline model (no regularization applied) as a function of s. (b) Accuracy as a function of the percentage s of training examples randomly reannotated.(from the paper)</em>
-</p>
+We trained a total of 132 ResNet20 models using different synthetic noise levels, applying the methods discussed in the paper which are pruning, dropout, weight decay, early stopping, and quantization longside the baseline. The accuracy of each trained model was plotted against increasing levels of synthetic noise. The results are presented below.
 
 <p align="center">
   <img src="imgs/baseline.png" alt="" style="width: 50%;"><br>
@@ -162,12 +172,35 @@ To accelerate the training process, all experiments were conducted on a Google C
 
 <p align="center">
   <img src="imgs/dropout.png" alt="" style="width: 50%;"><br>
-  <em> Figure 4: On Cifar10: Effect of Noisy Annotations on ResNet Performance with Dropout</em>
+  <em> Figure 5: On Cifar10: Effect of Noisy Annotations on ResNet Performance with Dropout</em>
+</p>
+
+For all models, accuracy started in the 80–90% range and initially decreased slowly. As synthetic noise increased further, this decrease became more pronounced, leading to a sharper drop in accuracy.
+
+Below is the combined accuracy graph of all the methods, and the accuracy gap between each method and the baseline model we experiment following with results from the paper.
+
+<p align="center">
+  <img src="imgs/accuracies.png" alt="" style="width: 50%;"><br>
+  <em> Figure 6: Accuracy as a function of the percentage s of training examples randomly reannotated. (ours)</em>
+</p>
+
+<p align="center">
+  <img src="imgs/accuracy_gap.png" alt="" style="width: 50%;"><br>
+  <em> Figure 7: Accuracy gain with respect to the baseline model (no regularization applied) as a function of s.(ours)</em>
+</p>
+
+<p align="center">
+  <img src="imgs/original-accuracy.png" alt="" style="width: 50%;"><br>
+  <em> Figure 8: On Cifar10: (a) Accuracy gain with respect to the baseline model (no regularization applied) as a function of s. (b) Accuracy as a function of the percentage s of training examples randomly reannotated.(from the paper)</em>
 </p>
 
 # 4. Conclusion
 
-@TODO: Discuss the paper in relation to the results in the paper and your results.
+We were unable to replicate the facial AU detection experiments described in the paper because we did not have free access to the BP4D dataset, and we also could not use the paper’s vanilla architecture. In addition, the label smoothing technique proposed in the paper was not well-suited for the CIFAR-10 dataset, so we did not include it in our experiments. In the first part of our study, we therefore tested all the methods discussed for ResNet—except label smoothing.
+
+Although the paper has demonstrated that strategies like pruning, dropout, weight decay, and early stopping can yield better performance in the presence of noisy data, our implementation did not replicate those gains. While our results followed a curve similar to that in the paper, we experienced a slight loss rather than the expected improvement when applying these techniques. One likely explanation is our inability to optimally tune the hyperparameters or model configurations such as the learning rate, early stopping validation ratio, pruning parameters, and dropout settings for this setup.
+
+However, our quantization results are similar to the improvements reported in the paper. In contrast to the other methods, quantization effectively combated label noise and improved performance.
 
 # 5. References
 
