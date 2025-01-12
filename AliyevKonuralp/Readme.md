@@ -140,7 +140,17 @@ This unstable behavior could be caused by several issues, such as a learning rat
 
 # 4. Conclusion
 
-@TODO: Discuss the paper in relation to the results in the paper and your results.
+We investigated the combination of Faster R-CNN and False Negative Prediction Module (FNPM) for domain adaptation in the context of object detection tasks in this experiment.
+Main Results: 
+In conclusion, the size and complexity of the datasets posed several difficulties for the experimental setup and implementation process of this study. We had to deal with large datasets, such as Sim10k, Cityscapes, and BDD100k, which presented computational challenges. Notwithstanding these difficulties, we were able to train the model using the available data and put the model's essential elements into practice.
+Variable training and validation losses made it challenging to optimize the training process, suggesting that the model was having trouble convergently. Although the design used FNPM and adversarial learning in accordance with the suggested methodology, the task's complexity made it difficult to obtain consistent results. The model had trouble generalizing, especially when the source and target datasets had different domains.
+The size of the datasets utilized also added to the experiments' complexity because it took a lot of time to manage and process such big datasets. To improve performance and stability in future work, it will be crucial to further fine-tune hyperparameters, improve data augmentation techniques, and possibly use more computational resources.
+As part of the conclusion, I've included the last collection of pictures and graphs from the experiment, including loss curves and model performance on validation data. These will demonstrate the experiment's development and aid in visualizing the areas that require improvement. Mean Average Precision is not successful because of insufficient tuning and using less data. Please find image below:
+
+
+![model_outputs](https://github.com/user-attachments/assets/9668fde3-56e1-45f5-9403-6308d8ed8108)
+
+
 
 # 5. References
 
