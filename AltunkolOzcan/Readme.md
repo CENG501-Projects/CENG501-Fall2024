@@ -247,20 +247,35 @@ The plots of each and every cost function (cs[i]) as well as the total cost Jc i
 </p> 
 <p align="center">Figure 8: Terminal loss of the acrobot controller in the first model </p>
 <p align="center">
-  <img src="/../main/AltunkolOzcan/images/cs1_iter_5001.png" alt="Terminal cost first network for the control task of acrobot">
+  <img src="/../main/AltunkolOzcan/images/cs1_iter500_1.png" alt="Terminal cost first network for the control task of acrobot">
 </p> 
 <p align="center">Figure 9: HJB loss of the acrobot controller in the first model </p>
 <p align="center">
-  <img src="/../main/AltunkolOzcan/images/cs2_iter_5001.png" alt="HJB cost first network for the control task of acrobot">
+  <img src="/../main/AltunkolOzcan/images/cs2_iter500_1.png" alt="HJB cost first network for the control task of acrobot">
 </p> 
 <p align="center">Figure 10: Final loss of the acrobot controller in the first model </p>
 <p align="center">
-  <img src="/../main/AltunkolOzcan/images/cs3_iter_5001.png" alt="Final cost first network for the control task of acrobot">
+  <img src="/../main/AltunkolOzcan/images/cs3_iter500_1.png" alt="Final cost first network for the control task of acrobot">
 </p> 
 <p align="center">Figure 11: Derivative cost of value function loss of the acrobot controller in the first model </p>
 <p align="center">
-  <img src="/../main/AltunkolOzcan/images/cs4_iter_5001.png" alt="Derivative cost of value function cost first network for the control task of acrobot">
+  <img src="/../main/AltunkolOzcan/images/cs4_iter500_1.png" alt="Derivative cost of value function cost first network for the control task of acrobot">
 </p> 
+
+Although the difference between training and testing curves is not dramatic, the network actually fails to properly control the robot. Therefore, we alter the architecture and the parameters and train another controller.
+
+The parameters are listed as follows.
+  - Control horizon = 5 seconds (same as the previous network)
+  - Initial $\alpha = [2.0, 0.01, 0.005, 0.005]$
+  - Final $\alpha = [1.0, 10.0, 0.01, 0.01]$ (same as the paper)
+  - ResNet width = 20
+  - Starting learning rate = 0.03, decrease every 250 iterations by 5%. After 500 iterations, set to 0.01
+  - Batch size = 32
+  - Resample frequency = 150 samples
+  - Variance of the samples = 1.0
+    
+In this network, we first set the coefficient of the terminal cost to 2, and other coefficients low. Then, after the 500th epoch, we set new coefficients for the total cost function as well as a new learning rate. The new weighting prioritizes the satisfaction of the HJB equation. We first present the results for the initial set of cost function weights.
+
 ### 3.1.2. Dubins Car
 
 #### 3.1.2.1. Training and Testing of Dubins Car Trajectories
