@@ -316,7 +316,8 @@ Overall, this project has been a valuable learning experience, serving as an int
   organization={Springer}
 }
 
-# Contact
+
+# 6.  Contact
 
 Atakan Durmaz - atakan.durmaz@metu.edu.tr
 Haktan Yalçın - yalcin.haktan@metu.edu.tr
