@@ -84,6 +84,8 @@ Below are some of our interpretations about aspects that were unclear in the pap
 **(v)** By observing the Figure 3, we inferred that as the $\alpha_c$ value increases, the weights corresponding to distant neighbours approaches to 0. This puts more emphasis on close neighbours. 
 
 Figure 3: $\alpha_c$ values
+
+
 <img width="861" alt="image" src="https://github.com/user-attachments/assets/e929a3b0-608b-4fb7-a050-fb70edd0782a">
 
 
