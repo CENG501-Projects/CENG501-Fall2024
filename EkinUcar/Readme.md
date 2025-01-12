@@ -183,14 +183,14 @@ Then, you can follow the notebooks we provided under ```codes/``` to train LaS A
 
 ## 3.3. Results
 
-###**1st Experiment (Full sMNIST Dataset and 2 Epochs):**
+### **1st Experiment (Full sMNIST Dataset and 2 Epochs):**
 
 Figure 4: Train and Validation loss for sMNIST   
 
 ![image](https://github.com/user-attachments/assets/fdb9e367-402d-4029-ba85-b49bcb20a4da)
 
 
-###**2nd Experiment (1/20 sMNIST Dataset and 80 Epochs):**
+### **2nd Experiment (1/20 sMNIST Dataset and 80 Epochs):**
 
 Figure 5: Train and Validation loss for small sMNIST 
 
@@ -211,7 +211,7 @@ Figure 6: Original paper's accuracy results
 
 <br><br>
 
-###**3rd Experiment (Full LRA Listops Dataset, 40 Epochs):**
+### **3rd Experiment (Full LRA Listops Dataset, 40 Epochs):**
 
 The loss and accuracy results for this experiment are shown below. The gaps between segments are due to saving a checkpoint and continuing training from that model.  
 
@@ -234,7 +234,7 @@ Table 4: Performance of the best model for Listops task
 | **Test** |    37.000    |  1.891  |  
 
 
-###**4th Experiment (Full LRA Document Retrieval Dataset, 7 Epochs):**
+### **4th Experiment (Full LRA Document Retrieval Dataset, 7 Epochs):**
 
 The accuracies we obtained for Document Retrieval task can be seen in Figure 9. The x-axis shows the global steps and y-axis shows the accuracy for each epoch. Accuracies are registered per epoch.
 
@@ -274,7 +274,7 @@ While our reproduction did not match the original paper's results, we hope that 
 
 [1] Zimerman, I., & Wolf, L. (2024). Viewing Transformers Through the Lens of Long Convolutions Layers. Proceedings of Machine Learning Research, 235, 62815-62831.  
 [2] Press, O., Smith, N. A., & Lewis, M. (2021). Train short, test long: Attention with linear biases enables input length extrapolation. arXiv preprint arXiv:2108.12409. 
-[3] Tay, Yi, et al. "Long range arena: A benchmark for efficient transformers." arXiv preprint arXiv:2011.04006 (2020). 
+[3] Tay, Yi, et al. "Long range arena: A benchmark for efficient transformers." arXiv preprint arXiv:2011.04006 (2020).  
 [4] https://github.com/jadore801120/attention-is-all-you-need-pytorch/tree/master
 
 # Contact
