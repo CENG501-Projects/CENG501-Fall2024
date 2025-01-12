@@ -153,7 +153,7 @@ Our accuracy was much lower compared to the original paper. This could be becaus
 
 <img width="571" alt="train_graphs" src="https://github.com/user-attachments/assets/f7bdb811-214a-4267-b3dd-bb664c97f58c" />
 
-<img width="550" alt="val_graphs" src="https://github.com/user-attachments/assets/c5d04fe8-0f93-441f-98d3-70baa8fa8fb2" />
+<img width="570" alt="val_graphs" src="https://github.com/user-attachments/assets/c5d04fe8-0f93-441f-98d3-70baa8fa8fb2" />
 
 <img width="570" alt="test_graphs" src="https://github.com/user-attachments/assets/c0fbd276-7307-41c7-ad7b-6644cd5b29ea" />
 
