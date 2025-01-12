@@ -274,4 +274,5 @@ Finally, we visualize sample estimations from the network, showing both the grou
 
 # Contact
 
-@TODO: Provide your names & email addresses and any other info with which people can contact you.
+Atakan Durmaz - atakan.durmaz@metu.edu.tr
+Haktan Yalçın - haktan.yalcin@metu.edu.tr
