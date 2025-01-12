@@ -381,6 +381,15 @@ Our results on Car category with the metric AP_R40@0.70, 0.50, 0.50:
 | 3d  | 67.0701 | 47.9734  | 42.8475 |
 | aos  | 94.66 |  84.85  | 76.99 |
 
+The results are segmented by different IoU thresholds (@0.70, 0.70, 0.70 and @0.70, 0.50, 0.50), which show the model's performance under varying levels of strictness for bounding box overlap.
+Metrics evaluated include:
+- bbox AP: Accuracy of 2D bounding box predictions.
+- bev AP: Accuracy of bird's-eye view predictions.
+- 3d AP: Accuracy of 3D bounding box predictions.
+- aos AP: Orientation accuracy (alignment between predicted and actual orientations).
+However, the research only minds 3d and bev results. Before comparing the results with the paper, it is safe to say on 3d tasks (3d and bev), model performs much much better if strict thresholds are not used. That indicates the model's capacity for accuractely detecting 3D objects, however, slight inaccuries on the bounding box placement or exact coordinate detection so that when the threshold is strict it causes the detection to fail.
+
+When we compare our AP_R40@0.70, 0.70, 0.70 results with the paper, we can claim that we produced comparable but slightly bad results. As we inherit some parts from the MonoDETE architecture, it could be a good idea to compare our results with MonoDETR results where MonoATT is integrated which is given in the Image X. The comparison results show that for 3d detection tasks (3d and bev), for all difficulty levels, we produces approximately 2 points less than reported in the paper. Considering the unknown hyperparameters, lack of computation power and other results we will discuss in the conclusion, it can be considered as normal. 
 
 We have calculated the precision-recall graph. KITTI dataset 3D benchmark is tested on AP40 values on IOU 0.7. However, it looks like our network could not predict a single car correctly. Hence, precision recall curves look as follows. 
 
