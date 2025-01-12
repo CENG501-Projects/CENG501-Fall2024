@@ -1,4 +1,4 @@
-# Gradient-Regularized Out-of-Distribution Detection
+![image](https://github.com/user-attachments/assets/9b7e19d3-ed75-4b2d-9cbd-71870e75e0fc)# Gradient-Regularized Out-of-Distribution Detection
 
 This readme file is an outcome of the [CENG501 (Spring 2024)](https://ceng.metu.edu.tr/~skalkan/DL/) project for reproducing a paper without an implementation. See [CENG501 (Spring 42) Project List](https://github.com/CENG501-Projects/CENG501-Fall2024) for a complete list of all paper reproduction projects.
 
@@ -152,6 +152,16 @@ Use corresponding notebooks for training and evaluation. Follow the comments and
 
 **Figure 7**: Training Plots of GReg Experiment with DenseNet-121 and CIFAR-100
 
+## 3.3.2 GReg+ Experiments
+
+<img src="./Figures/resnet_greg+_cifar10_graphs.png" alt="Figure 1: Training Results of ResNet-18/CIFAR-10" width="800">
+
+**Figure 9**: Training Plots of GReg+ Experiment with ResNet-18 and CIFAR-10
+
+
+<img src="./Figures/resnet_greg+_cifar109_graphs.png" alt="Figure 1: Training Results of ResNet-18/CIFAR-100" width="800">
+
+**Figure 11**: Training Plots of GReg+ Experiment with ResNet-18 and CIFAR-100
 
 - **Discussion of Our Results**
 There is a significant deviation between our results and the original results. The main reason behind this could be the number of epochs and the initial learning rate. Although training loss was decreasing and validation accuracy was increasing, we finished training at epoch 20 to follow the experimental setup specified in the paper. In addition, we couldn't use the original initial learning rate (lr = 1.0), as we got NaN loss values for each epoch.
