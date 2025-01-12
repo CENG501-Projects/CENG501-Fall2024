@@ -9,21 +9,22 @@ import torch.optim as optim
 
 from torch.optim.lr_scheduler import ExponentialLR
 from util.Sin import Sin
-from .acrobotDynamics import acrobotDynamics
-from .acrobot_dataset import sampleYdotAcrobot
+from acrobotDynamicsLearn import acrobotDynamics
+from acrobot_dataset import sampleYdotAcrobot
 
 parser = argparse.ArgumentParser('ODE demo')
-parser.add_argument('--method', type=str, choices=['dopri5', 'adams'], default='dopri5')
+parser.add_argument('--method', type=str, choices=['dopri5', 'adams','rk4'], default='rk4')
 parser.add_argument('--time_horizon', type=float, default=128)
 parser.add_argument('--data_size', type=int, default=8192)
-parser.add_argument('--batch_time', type=int, default=32)
-parser.add_argument('--batch_size', type=int, default=64)
-parser.add_argument('--niters', type=int, default=1000)
-parser.add_argument('--epochs', type=int, default=15)
+parser.add_argument('--batch_time', type=int, default=8)
+parser.add_argument('--batch_size', type=int, default=32)
+parser.add_argument('--niters', type=int, default=500)
+parser.add_argument('--epochs', type=int, default=50)
 parser.add_argument('--test_freq', type=int, default=20)
 parser.add_argument('--viz', action='store_true', default=True)
 parser.add_argument('--gpu', type=int, default=0)
 parser.add_argument('--adjoint', action='store_true')
+parser.add_argument('--save', default='experiments/acrobot-sys-id-model2/run')
 args = parser.parse_args()
 
 if args.adjoint:
@@ -39,8 +40,8 @@ true_y0 = torch.zeros((4,)).to(device)  # Initial (x, y, theta)
 
 t = torch.linspace(0., args.time_horizon, args.data_size).to(device)  # Time vector
 # define input bounds
-u_max = 1
-u_min = -1
+u_max = 3
+u_min = -3
 
 # Generate random control inputs for training data
 u_seq = u_min + (u_max - u_min)*torch.rand(args.data_size, device=device)
@@ -61,9 +62,9 @@ class Lambda(nn.Module):
 
 # Create the ODE function instance
 p = {
-    'm1': 10,
-    'm2': 20,
-    'g': 9,
+    'm1': 2,
+    'm2': 1,
+    'g': 9.81,
     'l1': 3,
     'l2': 5
 }
@@ -132,10 +133,11 @@ def visualizeLearnedDots(true_ydot, pred_ydot, iteration):
     plt.draw()
 
 
-def visualize(true_y, pred_y, odefunc, itr):
+def visualize(true_y, pred_y, itr):
 
     if args.viz:
-
+        ul = torch.max(true_y)
+        ll = torch.min(true_y)
         ax_traj.cla()
         ax_traj.set_title('Trajectories')
         ax_traj.set_xlabel('t')
@@ -143,7 +145,7 @@ def visualize(true_y, pred_y, odefunc, itr):
         ax_traj.plot(t.cpu().numpy(), true_y.cpu().numpy()[:, 0,], 'g-')
         ax_traj.plot(t.cpu().numpy(), pred_y.cpu().numpy()[:, 0,], 'b--')
         ax_traj.set_xlim(t.cpu().min(), t.cpu().max())
-        ax_traj.set_ylim(-200, 200)
+        ax_traj.set_ylim(ul, ll)
         ax_traj.legend()
 
         ax_traj2.cla()
@@ -153,7 +155,7 @@ def visualize(true_y, pred_y, odefunc, itr):
         ax_traj2.plot(t.cpu().numpy(), true_y.cpu().numpy()[:, 1,], 'g-')
         ax_traj2.plot(t.cpu().numpy(), pred_y.cpu().numpy()[:, 1,], 'b--')
         ax_traj2.set_xlim(t.cpu().min(), t.cpu().max())
-        ax_traj2.set_ylim(-200, 200)
+        ax_traj2.set_ylim(ul, ll)
         ax_traj2.legend()
 
         ax_traj3.cla()
@@ -163,7 +165,7 @@ def visualize(true_y, pred_y, odefunc, itr):
         ax_traj3.plot(t.cpu().numpy(), true_y.cpu().numpy()[:, 2,], 'g-')
         ax_traj3.plot(t.cpu().numpy(), pred_y.cpu().numpy()[:, 2,], 'b--')
         ax_traj3.set_xlim(t.cpu().min(), t.cpu().max())
-        ax_traj3.set_ylim(-200, 200)
+        ax_traj3.set_ylim(ul, ll)
         ax_traj3.legend()
 
         ax_traj4.cla()
@@ -173,7 +175,7 @@ def visualize(true_y, pred_y, odefunc, itr):
         ax_traj4.plot(t.cpu().numpy(), true_y.cpu().numpy()[:, 3,], 'g-')
         ax_traj4.plot(t.cpu().numpy(), pred_y.cpu().numpy()[:, 3,], 'b--')
         ax_traj4.set_xlim(t.cpu().min(), t.cpu().max())
-        ax_traj4.set_ylim(-200, 200)
+        ax_traj4.set_ylim(ul, ll)
         ax_traj4.legend()
         fig.tight_layout()
         """plt.savefig('png/{:03d}'.format(itr))"""
@@ -188,13 +190,13 @@ class ODEFunc(nn.Module):
         self.batch_u = batch_u  # Control input batch (alpha_t, v_t)
         
         self.net = nn.Sequential(
-            nn.Linear(5, 32),  # 4 states  + 1 control input
+            nn.Linear(5, 50),  # 4 states  + 1 control input
             Sin(),
-            nn.Linear(32, 32),
+            nn.Linear(50,100),
             Sin(),
-            nn.Linear(32, 10),
+            nn.Linear(100,50),
             Sin(),
-            nn.Linear(10, 4),  # Output for the derivatives (dx/dt, dy/dt, dtheta/dt)
+            nn.Linear(50, 4),  # Output for the derivatives (dx/dt, dy/dt, dtheta/dt)
         )
 
         # Weight initialization for the layers
@@ -249,12 +251,13 @@ class RunningAverageMeter(object):
 
 if __name__ == '__main__':
 
+    visualize(true_traj_y, true_traj_y, 0)
     #visualizeLearnedDots(true_ydot, true_y, 1)
     ii = 0
     
     func = ODEFunc().to(device)
-    optimizer = optim.Adam(func.parameters(), lr=2e-2)
-    scheduler = ExponentialLR(optimizer, gamma=0.85)  # Decays LR by 10% every epoch
+    optimizer = optim.Adam(func.parameters(), lr=1e-2)
+    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size = 2, gamma=0.95)  # Decays LR by 10% every epoch
     end = time.time()
 
     time_meter = RunningAverageMeter(0.97)
@@ -290,18 +293,43 @@ if __name__ == '__main__':
                     pred_ydot = func.forward(t,true_y)
                     valid_loss = torch.mean((pred_ydot - true_ydot)**2)
                     valid_loss_history.append(valid_loss)
-                    print('Epoch: {:4d} | Iter {:04d} | Total Loss {:.6f}'.format(epoch, itr, loss.item()))
+                    print('Epoch: {:4d} | Lr {:.5f} | Iter {:04d} | Total Loss {:.6f}'.format(epoch, optimizer.param_groups[0]['lr'],itr, loss.item()))
                     #visualizeLearnedDots(true_ydot, pred_ydot,ii)
-                    visualize(true_traj_y, pred_ytraj, func, ii)
+                    visualize(true_traj_y, pred_ytraj, ii)
                     ii += 1
+                    
         end = time.time()
         scheduler.step()  # Decay the learning rate at the end of each epoch
-        torch.save(func.state_dict(), "acrobot_1.pth")
+        torch.save(func.state_dict(), "acrobot_model.pth")
         loss_history.append(loss_meter.avg)
+
+        fig = plt.figure(figsize=(10, 6))
+        ax = fig.add_subplot(2,1,1)
+        ax.plot(loss_history, label='Training Loss Until Epoch {:3d}' .format(epoch))
+        ax.set_title('Loss During Training', fontsize=16)
+        ax.set_xlabel('Epoch', fontsize=14)
+        ax.set_ylabel('Loss', fontsize=14)
+        ax.legend(fontsize=12)
+        ax.grid(True)
+
+        ax = fig.add_subplot(2,1,2)
+        ax.plot(valid_loss_history, label='Whole Validation Loss Until Epoch {:3d}' .format(epoch))
+        ax.set_title('Loss During Testing', fontsize=16)
+        ax.set_xlabel('Iteration*{:5d}'.format(args.test_freq), fontsize=14)
+        ax.set_ylabel('Loss', fontsize=14)
+        ax.legend(fontsize=12)
+        ax.grid(True)
+
+        sPath = args.save + '/figs/' + 'acrobot-learn' + "-iter" + str(epoch) +  '.png'
+        if not os.path.exists(os.path.dirname(sPath)):
+            os.makedirs(os.path.dirname(sPath))
+        plt.savefig(sPath, dpi=300)
+        plt.close()
+
     
     """Export the obtained model parameters"""
-    #torch.save(func.state_dict(), 'dubins.pth')
-    #print('Model parameters exported to dubins.pth')
+    torch.save(func.state_dict(), 'acrobotbigmodel.pth')
+    print('Model parameters exported to acrobotbigmodel.pth')
 
     """
     Use the following code to load the model parameters from file

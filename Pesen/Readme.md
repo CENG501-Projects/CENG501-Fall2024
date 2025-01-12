@@ -163,7 +163,22 @@ This setup highlights the framework's adaptability to different models and datas
 
 ## 3.2. Running the code
 
-@TODO: Explain your code & directory structure and how other people can run it.
+### 3.2.1 Setting up PyTorch
+
+First, visit https://pytorch.org/ then choose PyTorch Build version, Your OS, Package, Language, Compute Platform. There will appear the command, such as `pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118`
+
+### 3.2.2 Setting up Model
+
+1. Install Python 3.
+2. Build virtual environment `python -m venv venv`
+3. Activate it `.\venv\Scripts\Activate.ps1`
+4. Run pip3 install -r requirements.txt to install dependencies.
+5. Go to `src/models`
+6. Run `python model_pruner_alexnet.py` or `python model_pruner_resnet50.py` or `python model_pruner_vgg16.py`
+
+### 3.2.3  Downloading Pre-Trained Models
+
+Download a pre-trained version of models [here](https://drive.google.com/drive/folders/1LdOA16mwhu4acZ3qMtYcJL_VE-tf4iXC?usp=drive_link)
 
 ## 3.3. Results
 ### 3.3.1. The evaluation of each convolutional layer for AlexNet on MNIST.
@@ -326,7 +341,37 @@ This setup highlights the framework's adaptability to different models and datas
 
 # 4. Conclusion
 
-@TODO: Discuss the paper in relation to the results in the paper and your results.
+In this study, I implemented and extensively evaluated various state-of-the-art channel pruning strategies on AlexNet, VGG-16, and ResNet-50 architectures, focusing on the recently introduced Average Filter Information Entropy (AFIE) technique. Our goal was to assess the effectiveness of AFIE in comparison with established methods such as ThiNet, DCP, SEP, L1 Norm, Network Slimming, and Taylor Pruning across multiple datasets, including MNIST, CIFAR-10, and ImageNet.
+
+By leveraging a rigorous experimental setup, we meticulously recreated and expanded upon the methodology outlined in the original paper. My results demonstrate a consistent trend: AFIE not only provides a systematic approach to filter pruning but also aligns with the theoretical foundations presented in the original work. The eigenvalue decomposition-based entropy measure allowed us to quantify filter importance in a mathematically grounded manner, enabling structured pruning decisions that balance model complexity reduction and performance retention.
+
+### Key Findings and Contributions:
+Comparative Evaluation Across Methods:
+We implemented and compared six prominent pruning techniques alongside AFIE, showcasing their relative effectiveness on different architectures. This comprehensive comparison helped us validate the theoretical claims made in the original work, particularly around filter importance quantification and entropy-based decision-making.
+
+### Performance Metrics & Efficiency Gains:
+The results obtained on the AlexNet and VGG-16 architectures showed that AFIE outperformed most baseline methods in terms of Par-O, FLOPs-O, Pru-R, Par-P, FLOPs-P, and Top-1 Accuracy, as described in the paper’s tables. This outcome was consistent across multiple datasets, reaffirming the robustness of the entropy-based approach in filter pruning.
+
+#### Pruning Strategy Optimization:
+My implementations introduced a scalable pruning framework that allowed us to test various pruning ratios and observe trade-offs between compression rates and accuracy drops. The AFIE method, driven by a more sophisticated eigenvalue normalization process, consistently delivered favorable pruning ratios while preserving higher accuracy compared to simpler magnitude-based methods like L1 Norm Pruning.
+
+#### Mathematical Consistency & Eigenvalue Normalization:
+During the replication of the AFIE calculation, we implemented eigenvalue normalization as described by Equation (3) from the original paper. This included not only the basic normalization but also the min-max normalization approach for better filter importance estimation, closely mirroring the theoretical framework.
+
+#### Scalability Across Architectures:
+To ensure robustness, we expanded our evaluations to AlexNet, VGG-16, and ResNet-50 across multiple datasets. The results consistently demonstrated that AFIE preserved more critical filters while achieving substantial reduction in both parameters and FLOPs, particularly on AlexNet with MNIST and VGG-16 with CIFAR-10.
+
+#### Automation and Reproducibility:
+Our framework was designed for end-to-end automation, enabling fine-tuning and progressive pruning across varying epochs. Each model’s .pth file was systematically stored to ensure reproducibility of results and consistent comparisons with the original tables provided in the paper.
+
+### Insights and Future Directions:
+The experimental results support the claim that AFIE-based pruning offers a structured and theoretically sound approach to model compression. However, while AFIE outperformed most standard methods in our experiments, it also requires computationally intensive matrix factorization steps.
+
+In future work, I plan to explore:
+
+Adaptive AFIE thresholds to optimize pruning across different datasets and architectures.
+Real-time filter analysis during training instead of post-training pruning.
+Further extending our pruning strategies to transformer architectures and hybrid models like Vision Transformers (ViTs) to validate AFIE's effectiveness in modern deep learning frameworks.
 
 # 5. References
 
@@ -334,4 +379,8 @@ This setup highlights the framework's adaptability to different models and datas
 
 # Contact
 
-@TODO: Provide your names & email addresses and any other info with which people can contact you.
+
+- **Mustafa Ahmet PESEN**  
+  - Email: [e230518@metu.edu.tr](mailto:e149618@metu.edu.tr)    
+  - LinkedIn: [Mustafa A. PESEN](https://www.linkedin.com/in/mustafa-a-pesen-01510487/)     
+  - GitHub: [KontJerzy](https://github.com/KontJerzy)

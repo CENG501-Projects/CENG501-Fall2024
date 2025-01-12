@@ -15,6 +15,7 @@ seed_synonym='nil'
 sensitivity_stop_ratio = 0.1
 p='nil'
 test_acc_stop = 'nil'
+skip_existing=true
 
 [model]
 net = "cnn" # can be cnn, fcn or lcn

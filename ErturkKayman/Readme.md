@@ -171,17 +171,21 @@ Computational comlexity of the architecture is huge. Even with a decent deep lea
 
 ## 3.1. Experimental setup
 
-It is not easy to implement and finetune such a huge network from stracth. Hence, we decided to adapt the previous paper of the authors called MonoDetr. MonoDetr already implement the KITTI Dataset loader, trainer, tester, many of the loss calculations we need in this paper. We switched MonoDetr with MonoATT, added necessary new models such as AdaptiveTokenClustering, ClusterCenterEstimation, added related losses mentioned in the paper and trained. 
+It is not easy to implement and finetune such a huge network from stracth. Hence, we decided to adapt the previous paper of the authors called MonoDetr. MonoDetr already implements the KITTI Dataset loader, trainer, tester, many of the loss calculations we need in this paper. We switched MonoDetr with MonoATT, added necessary new models such as AdaptiveTokenClustering, ClusterCenterEstimation, added related losses mentioned in the paper and trained. 
 
 Though we tried to stick the MonoATT paper; due to time constraints, implementation difficulties and huge number of hyperparameters, we could not follow the paper exactly on some points. The table below summarizes our implementation vs. paper's implementation. 
 
 | Aspect                  | MonoATT Paper               | Our Implementation         | Status/Comments                        |
 |-------------------------|-----------------------|----------------------------|----------------------------------------|
 | *Backbone*            | DLA-34               | ResNet-50                  | We got worse results with DLA-34, hence kept the ResNet-50 from MonoDetr                  |
-| *Multi-stage Feature Reconstruction (MFR)* | Global/local integration    | Single-stage reconstruction            | Basic, functional                  |
+| *Multi-stage Feature Reconstruction (MFR)* | Global/local integration    | Depth based reconstruction from MonoDetr       | Provides good results                  |
 | *Detection Head*      | GUPNet               | Custom detection head       | We kept the detection head from MonoDetr                     |
-| *Loss Function*       | Composite losses      | Smooth L1 loss              | Needs refinement                       |
-| *Evaluation*          | KITTI metrics        | Basic evaluation scripts    | Needs refinement                      |
+| *Tokens* | Adaptive Tokens | Combination of adaptive and raw tokens | Creating adaptive tokens for all features are hugely expensive |
+| *Patches* | (1x1) patches | (4x4 patches) | Using every feature independently is costly |
+
+Among the simplicifations we had to make due to computational complexity, we think 2 of them are the most important. 
+- We had to create 4x4 patches to reduce the complexity. The original implementation most likely use 1x1 patches since the network itself chooses the adative tokens by combining patches, but in order to train the network in a feasible time, we used 4x4 patches.
+- We had to combine raw tokens with adaptive tokens in order to reduce the computational complexity. Applying adaptive token transformer to all of the feature levels is not feasible with our computational power.
 
 We have used the libraries and tools:
   - *PyTorch:* Framework for model development and training.
@@ -191,7 +195,6 @@ We have used the libraries and tools:
   - *KITTI Dataset:* Used for training and evaluation.
   - *Matplotlib:* For visualizing results (predictions and bounding boxes).
   - *Deformable DETR:*  Deformable DETR is an efficient and fast-converging end-to-end object detector. (Which requires special compilation for each GPU-Cuda pair.)
-
     
 We have implemented (fully or partially):
 - Dataset Loading:
@@ -216,12 +219,6 @@ We have implemented (fully or partially):
     Added skip connections to preserve original spatial information.
     Output: Reconstructed feature maps of shape (B, C, H, W).
     (Mostly adopted from MonoDetr, not fully implemented because of the unknown hyperparameters. Instead we integrated the MonoDetr's output mechanism.)
-- Mono3D Detection Head:
-    Designed a detection head to predict 3D bounding box parameters:
-        Location: (x, y, z)
-        Dimensions: (h, w, l)
-        Orientation: (theta)
-    Output: Tensor of shape (B, 7, H’, W’).
 - Loss Function:
     On top of the loss from MonoDetr for 3D object detection, loss used for scoring is added. It is implemented as a focal loss as mentioned in the paper. 
 - Training:
@@ -243,6 +240,7 @@ In our file structure, here are the codes written (fully, partially) by us;
 + lib/helpers/model_helper.py (partially)
 + lib/helpers/tester_helper.py (partially)
 + lib/losses/focal_loss.py (partially)
++ lib/models/monoatt/__init__.py (partially)
 + lib/models/monoatt/adaptive_token_clustering.py 
 + lib/models/monoatt/cluster_center_estimation.py
 + lib/models/monoatt/monoatt.py (partially)
@@ -293,7 +291,8 @@ In our file structure, here are the codes written (fully, partially) by us;
   ```
   nohup bash train.sh configs/monoatt.yaml > logs/monoatt.log 2>&1 &
   ```
-  Training process will evaluate the model after every epoch. (Configurable in the config file.) It will compare the existing the best with the current evaluation result and along with the latest checkpoint, it will also save the best checkpoint as well. 
+  Training process will evaluate the model after every epoch. (Configurable in the config file.) It will compare the existing the best with the current evaluation result and along with the latest checkpoint, it will also save the best checkpoint as well.
+  
 ### 3.2.2 Testing
 - In order to test the checkpoint, run
   ```
@@ -333,7 +332,7 @@ For a prediction to be considered a true positive, the IoU between the predicted
 According to the paper, MonoATT results are, 
 <p align="center">
 <img src=https://github.com/user-attachments/assets/0ea9c088-07e2-40e9-885b-3b3ff3b226bb>
-Figure 8. Expected AP40 values table from the paper.
+Figure 5. Expected AP40 values table from the paper.
 </p>
 However, it is not possible for us to test our model on the test set. Test set labels are not shared and to get the results of the test set, one needs to submit the model to the KITTI website. However, we cannot submit our results to the contest because of the rules. KITTI website states that model submission step must only be followed if a paper is about to be submitted to a conference where the experimental results are ready, other evaluations (eg, in the context of model ablations, a student's class project or Master's thesis) must be conducted on the training set. Hence, we decided to split the training set into two equal parts for training and testing. 
 
@@ -341,11 +340,19 @@ In different repositories, there are some example training set splits for KITTI 
 
 The paper also discusses the results on the validation set, which is some part of the training set (usually half in 3D object detection). They do provide an ablation study where we can see the contrubition of each component of the MonoATT archtitecture. At the bottom of the table, results for 3D object detection on validation set exists.
 
-![image](https://github.com/user-attachments/assets/d9ceb45b-7663-4434-8579-8ff58a323323)
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/d9ceb45b-7663-4434-8579-8ff58a323323" alt="Architecture Overview">
+  <br>
+  <strong>Figure 6:</strong> Ablation Study results of MonoATT, full architecture results are given at the bottom
+</p>
 
 The paper also discusses integrating MonoATT components into existing transformer-based models. They claim to improve the AP40 scores of MonoDTR and MonoDETR structures. Validation set results are provided below. Please note that, as we used MonoDETR as base to implement MonoATT, it can be a good idea to compare our results with results provided in the table below.
 
-![image](https://github.com/user-attachments/assets/e3d02550-5d80-42f0-a6e2-b274cc6aa980)
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/5714aec3-33bf-4982-bde0-bbd0194ca5b0" alt= Extension of MonoATT to existing transformer-based monocular 3D object detectors>
+  <br>
+  <strong>Figure 7:</strong> Extension of MonoATT to existing transformer-based monocular 3D object detectors
+</p>
 
 ### 3.3.3 Our Test Results
 
@@ -394,17 +401,34 @@ Metrics evaluated include:
 - aos AP: Orientation accuracy (alignment between predicted and actual orientations).
 However, the research only minds 3d and bev results. Before comparing the results with the paper, it is safe to say on 3d tasks (3d and bev), model performs much much better if strict thresholds are not used. That indicates the model's capacity for accuractely detecting 3D objects, however, slight inaccuries on the bounding box placement or exact coordinate detection so that when the threshold is strict it causes the detection to fail.
 
-When we compare our AP_R40@0.70, 0.70, 0.70 results with the paper, we can claim that we produced comparable but slightly bad results. As we inherit some parts from the MonoDETE architecture, it could be a good idea to compare our results with MonoDETR results where MonoATT is integrated which is given in the Image X. The comparison results show that for 3d detection tasks (3d and bev), for all difficulty levels, we produces approximately 2 points less than reported in the paper. Considering the unknown hyperparameters, lack of computation power and other results we will discuss in the conclusion, it can be considered as normal. 
+When we compare our AP_R40@0.70, 0.70, 0.70 results with the paper, we can claim that we produced comparable but slightly bad results. As we inherit some parts from the MonoDETE architecture, it could be a good idea to compare our results with MonoDETR results where MonoATT is integrated which is given in the Image 7. The comparison results show that for 3d detection tasks (3d and bev), for all difficulty levels, we produces approximately 2 points less than reported in the paper. Considering the unknown hyperparameters, lack of computation power and simplifications we discussed earlier, it can be considered as normal. 
 
 We will also provide precision-recall curves for each task. Precision-recall curves can be used to calculate all the results we provided earlier. Also, for exact calculations, on the output directory, stats files exist for each task, where one can find the corresping precision point for each recall value from 0 to 1. For the details, please check the [kitti_eval](https://github.com/prclibo/kitti_eval) repository where we took the code to both calculate stats and draw graphs.
 
-![car_detection](https://github.com/user-attachments/assets/28e6593e-c40f-4909-83c9-002a16cf53b0)
+<p align="center">
+  <img src=https://github.com/user-attachments/assets/28e6593e-c40f-4909-83c9-002a16cf53b0>
+  <br>
+  <strong>Figure 8:</strong> Precision recall curve of the task bbox for car category.
+</p>
 
-![car_detection_ground](https://github.com/user-attachments/assets/cc662b7f-71cf-41e2-b5d0-e055dd6fc26e)
+<p align="center">
+  <img src=https://github.com/user-attachments/assets/cc662b7f-71cf-41e2-b5d0-e055dd6fc26e>
+  <br>
+  <strong>Figure 9:</strong> Precision recall curve of the task bev for car category.
+</p>
 
-![car_detection_3d](https://github.com/user-attachments/assets/8deedf7c-2018-4e7c-bdce-533c4797a913)
+<p align="center">
+  <img src=https://github.com/user-attachments/assets/8deedf7c-2018-4e7c-bdce-533c4797a913>
+  <br>
+  <strong>Figure 10:</strong> Precision recall curve of the task 3d for car category.
+</p>
 
-![car_orientation](https://github.com/user-attachments/assets/81250bd0-2be4-4e75-ad58-89a5a1a62d68)
+<p align="center">
+  <img src=https://github.com/user-attachments/assets/81250bd0-2be4-4e75-ad58-89a5a1a62d68>
+  <br>
+  <strong>Figure 11:</strong> Precision recall curve of the task aos for car category.
+</p>
+
 
 In order to create the graphs or stats;
 
@@ -414,7 +438,14 @@ In order to create the graphs or stats;
 
 # 4. Conclusion
 
-@TODO: Discuss the paper in relation to the results in the paper and your results.
+In this study, we explored a monocular 3D object detection approach leveraging Adaptive Token Transformer. The proposed architecture incorporates hierarchical feature extraction, token clustering, and transformer-based refinement, aiming to improve 3D localization from single-image inputs. By allowing adaptive tokens, and leveraging a selective attention mechanism, the paper aims to create meaningfull tokens and based on their attentions, locate 3D objects. They not only show the novel architecture but they also mention the integration of MonoATT mechanism to different transformer based architectures. 
+
+The paper also discuss that MonoATT architecture does not perform well only on 3D object evaluation but also it performs well on Bird Eye Evaluation object detection task. Our findings supports the paper's claim as we could also provide comparable results on the task.
+
+The paper claims state of the art results. Our results are slightly worse than the paper's claim, however, proves the key ideas of the paper. Computational complexity of the paper hardens the potential finetuning. Even with the lighest transormers and networks as possible, along with the simplifications we made, the training takes more than 10 hours with a decent deep learning machine with 4 GPUs. That makes it impossible to tune the hyperparameters by using methods like grid search. Also, the number of hyperparameters is too much and requires careful selection. Though, we have adopted most of them from MonoDetr, test results indicate them some hyperparameters are not optimum. We even had to use other researches or LLMs to guess some novel hyperparameters introduced in this work. Hence, with a more capable computing device, more time and more dedication, we believe that our results can be further improved. 
+
+We can still argue that our results are close enough to prove the use of MonoATT paper. With the clarifications of the uncertaion points and hyperparameters, the implementation provided by us can be used fully or partially for future developments. 
+
 
 # 5. References
 

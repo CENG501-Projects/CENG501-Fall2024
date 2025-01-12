@@ -147,7 +147,7 @@ class EfficientNet(nn.Module):
     def forward(self, x):
         out = swish(self.bn1(self.conv1(x)))
         out = self.layers(out)
-        out = F.adaptive_avg_pool2d(out, 1)
+        out = F.avg_pool2d(out, kernel_size=out.size()[2:])
         out = out.view(out.size(0), -1)
         dropout_rate = self.cfg["dropout_rate"]
         if self.training and dropout_rate > 0:

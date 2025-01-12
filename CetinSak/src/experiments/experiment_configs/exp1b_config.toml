@@ -1,8 +1,8 @@
 [srhm]
-num_features = [4,6,8,10]
+num_features = [10,6,8,4]
 m = "num_features"
 s = 2
-s0 = 0
+s0 = [0,1,2,4]
 num_layers = [3, 2]
 num_classes = "num_features"
 input_format = "onehot" # can be decimal, binary, pairs or onehot
@@ -30,7 +30,7 @@ lr = 0.01
 momentum = 0.9
 weight_decay = 5e-4
 reg_type = "l2"
-epochs = 256
+epochs = 20
 zero_loss_epochs = 0
 zero_loss_threshold = 0.01
 rescale_epochs = 0

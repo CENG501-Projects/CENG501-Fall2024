@@ -73,6 +73,8 @@ class DeformableTransformer(nn.Module):
 
                  use_hae=False,
                  num_hybrid_layers=2,
+
+                 use_emca=False
                  ):
         super().__init__()
         self.num_feature_levels = num_feature_levels
@@ -85,6 +87,7 @@ class DeformableTransformer(nn.Module):
         self.num_queries = num_queries
         self.random_refpoints_xy = random_refpoints_xy
         self.use_detached_boxes_dec_out = use_detached_boxes_dec_out
+        self.use_emca = use_emca
         assert query_dim == 4
 
         if num_feature_levels > 1:
@@ -112,7 +115,9 @@ class DeformableTransformer(nn.Module):
                                                           dropout, activation,
                                                           num_feature_levels, nhead, enc_n_points, add_channel_attention=add_channel_attention, use_deformable_box_attn=use_deformable_box_attn, box_attn_type=box_attn_type)
             if use_hae:
-                hybrid_encoder_layer = HybridAttentionEncoderLayer(d_model, dim_feedforward,)
+                hybrid_encoder_layer = HybridAttentionEncoderLayer(d_model, dim_feedforward,
+                                                                   dropout, activation,
+                                                                   num_feature_levels, nhead, enc_n_points, add_channel_attention=add_channel_attention, use_deformable_box_attn=use_deformable_box_attn, box_attn_type=box_attn_type)
             else:
                 hybrid_encoder_layer = None
         else:
@@ -131,7 +136,15 @@ class DeformableTransformer(nn.Module):
 
         # choose decoder layer type
         if deformable_decoder:
-            decoder_layer = DeformableTransformerDecoderLayer(d_model, dim_feedforward,
+            if use_emca:
+                decoder_layer = EncoderMixingDeformableTransformerDecoderLayer(d_model, dim_feedforward,
+                                                          dropout, activation,
+                                                          num_feature_levels, nhead, dec_n_points, use_deformable_box_attn=use_deformable_box_attn, box_attn_type=box_attn_type,
+                                                          key_aware_type=key_aware_type,
+                                                          decoder_sa_type=decoder_sa_type,
+                                                          module_seq=module_seq)
+            else:
+                decoder_layer = DeformableTransformerDecoderLayer(d_model, dim_feedforward,
                                                           dropout, activation,
                                                           num_feature_levels, nhead, dec_n_points, use_deformable_box_attn=use_deformable_box_attn, box_attn_type=box_attn_type,
                                                           key_aware_type=key_aware_type,
@@ -262,6 +275,105 @@ class DeformableTransformer(nn.Module):
             self.refpoint_embed.weight.data[:, :2] = inverse_sigmoid(self.refpoint_embed.weight.data[:, :2])
             self.refpoint_embed.weight.data[:, :2].requires_grad = False
 
+    def prepare_two_stage_outputs(self, memory, mask_flatten, spatial_shapes, bs, refpoint_embed=None, tgt=None):
+            """
+            Prepare outputs for two-stage processing.
+            
+            Args:
+                memory: Output from encoder
+                mask_flatten: Flattened attention mask
+                spatial_shapes: Spatial shapes of feature maps
+                bs: Batch size
+                refpoint_embed: Reference point embeddings (optional)
+                tgt: Target embeddings (optional)
+                
+            Returns:
+                tuple: (refpoint_embed, tgt, init_box_proposal, 
+                    enc_outputs_class_unselected, enc_outputs_coord_unselected, 
+                    output_proposals, output_memory, tgt_undetach, refpoint_embed_undetach)
+            """
+            output_memory = None
+            output_proposals = None
+            enc_outputs_class_unselected = None
+            enc_outputs_coord_unselected = None
+            tgt_undetach = None
+            refpoint_embed_undetach = None
+            init_box_proposal = None
+
+            if self.two_stage_type == 'standard':
+                if self.two_stage_learn_wh:
+                    input_hw = self.two_stage_wh_embedding.weight[0]
+                else:
+                    input_hw = None
+
+                # Generate encoder output proposals
+                output_memory, output_proposals = gen_encoder_output_proposals(memory, mask_flatten, spatial_shapes, input_hw)
+                output_memory = self.enc_output_norm(self.enc_output(output_memory))
+                
+                if self.two_stage_pat_embed > 0:
+                    bs, nhw, _ = output_memory.shape
+                    # output_memory: bs, n, 256; self.pat_embed_for_2stage: k, 256
+                    output_memory = output_memory.repeat(1, self.two_stage_pat_embed, 1)
+                    _pats = self.pat_embed_for_2stage.repeat_interleave(nhw, 0) 
+                    output_memory = output_memory + _pats
+                    output_proposals = output_proposals.repeat(1, self.two_stage_pat_embed, 1)
+
+                if self.two_stage_add_query_num > 0:
+                    assert refpoint_embed is not None
+                    output_memory = torch.cat((output_memory, tgt), dim=1)
+                    output_proposals = torch.cat((output_proposals, refpoint_embed), dim=1)
+
+                # Generate class and coordinate predictions
+                enc_outputs_class_unselected = self.enc_out_class_embed(output_memory)
+                enc_outputs_coord_unselected = self.enc_out_bbox_embed(output_memory) + output_proposals # (bs, \sum{hw}, 4) unsigmoid
+                
+                # Select top-k proposals
+                topk = self.num_queries
+                topk_proposals = torch.topk(enc_outputs_class_unselected.max(-1)[0], topk, dim=1)[1] # bs, nq
+
+                # Gather boxes
+                refpoint_embed_undetach = torch.gather(enc_outputs_coord_unselected, 1, topk_proposals.unsqueeze(-1).repeat(1, 1, 4)) # unsigmoid
+                refpoint_embed_ = refpoint_embed_undetach.detach()
+                init_box_proposal = torch.gather(output_proposals, 1, topk_proposals.unsqueeze(-1).repeat(1, 1, 4)).sigmoid() # sigmoid
+
+                # Gather tgt
+                tgt_undetach = torch.gather(output_memory, 1, topk_proposals.unsqueeze(-1).repeat(1, 1, self.d_model))
+                if self.embed_init_tgt:
+                    tgt_ = self.tgt_embed.weight[:, None, :].repeat(1, bs, 1).transpose(0, 1) # nq, bs, d_model
+                else:
+                    tgt_ = tgt_undetach.detach()
+
+                if refpoint_embed is not None:
+                    refpoint_embed = torch.cat([refpoint_embed, refpoint_embed_], dim=1)
+                    tgt = torch.cat([tgt, tgt_], dim=1)
+                else:
+                    refpoint_embed, tgt = refpoint_embed_, tgt_
+
+            elif self.two_stage_type == 'no':
+                tgt_ = self.tgt_embed.weight[:, None, :].repeat(1, bs, 1).transpose(0, 1) # nq, bs, d_model
+                refpoint_embed_ = self.refpoint_embed.weight[:, None, :].repeat(1, bs, 1).transpose(0, 1) # nq, bs, 4
+                
+                if refpoint_embed is not None:
+                    refpoint_embed = torch.cat([refpoint_embed, refpoint_embed_], dim=1)
+                    tgt = torch.cat([tgt, tgt_], dim=1)
+                else:
+                    refpoint_embed, tgt = refpoint_embed_, tgt_
+
+                if self.num_patterns > 0:
+                    tgt_embed = tgt.repeat(1, self.num_patterns, 1)
+                    refpoint_embed = refpoint_embed.repeat(1, self.num_patterns, 1)
+                    tgt_pat = self.patterns.weight[None, :, :].repeat_interleave(self.num_queries, 1) # 1, n_q*n_pat, d_model
+                    tgt = tgt_embed + tgt_pat
+
+                init_box_proposal = refpoint_embed_.sigmoid()
+
+            else:
+                raise NotImplementedError(f"unknown two_stage_type {self.two_stage_type}")
+                
+            return (refpoint_embed, tgt, init_box_proposal, 
+                    enc_outputs_class_unselected, enc_outputs_coord_unselected,
+                    output_proposals, output_memory, tgt_undetach, refpoint_embed_undetach)
+
     def forward(self, srcs, masks, refpoint_embed, pos_embeds, tgt, attn_mask=None):
         """
         Input:
@@ -324,70 +436,17 @@ class DeformableTransformer(nn.Module):
         # - enc_intermediate_refpoints: None or (nenc+1, bs, nq, c) or (nenc, bs, nq, c)
         #########################################################
 
-        if self.two_stage_type =='standard':
-            if self.two_stage_learn_wh:
-                input_hw = self.two_stage_wh_embedding.weight[0]
-            else:
-                input_hw = None
-            output_memory, output_proposals = gen_encoder_output_proposals(memory, mask_flatten, spatial_shapes, input_hw)
-            output_memory = self.enc_output_norm(self.enc_output(output_memory))
-            
-            if self.two_stage_pat_embed > 0:
-                bs, nhw, _ = output_memory.shape
-                # output_memory: bs, n, 256; self.pat_embed_for_2stage: k, 256
-                output_memory = output_memory.repeat(1, self.two_stage_pat_embed, 1)
-                _pats = self.pat_embed_for_2stage.repeat_interleave(nhw, 0) 
-                output_memory = output_memory + _pats
-                output_proposals = output_proposals.repeat(1, self.two_stage_pat_embed, 1)
+        (refpoint_embed, tgt, init_box_proposal,
+         enc_outputs_class_unselected, enc_outputs_coord_unselected,
+         output_proposals, output_memory, tgt_undetach, refpoint_embed_undetach) = self.prepare_two_stage_outputs(
+            memory=memory,
+            mask_flatten=mask_flatten,
+            spatial_shapes=spatial_shapes,
+            bs=srcs[0].shape[0],  # Get batch size from first source tensor
+            refpoint_embed=refpoint_embed,
+            tgt=tgt
+        )
 
-            if self.two_stage_add_query_num > 0:
-                assert refpoint_embed is not None
-                output_memory = torch.cat((output_memory, tgt), dim=1)
-                output_proposals = torch.cat((output_proposals, refpoint_embed), dim=1)
-
-            enc_outputs_class_unselected = self.enc_out_class_embed(output_memory)
-            enc_outputs_coord_unselected = self.enc_out_bbox_embed(output_memory) + output_proposals # (bs, \sum{hw}, 4) unsigmoid
-            topk = self.num_queries
-            topk_proposals = torch.topk(enc_outputs_class_unselected.max(-1)[0], topk, dim=1)[1] # bs, nq
-
-            # gather boxes
-            refpoint_embed_undetach = torch.gather(enc_outputs_coord_unselected, 1, topk_proposals.unsqueeze(-1).repeat(1, 1, 4)) # unsigmoid
-            refpoint_embed_ = refpoint_embed_undetach.detach()
-            init_box_proposal = torch.gather(output_proposals, 1, topk_proposals.unsqueeze(-1).repeat(1, 1, 4)).sigmoid() # sigmoid
-
-            # gather tgt
-            tgt_undetach = torch.gather(output_memory, 1, topk_proposals.unsqueeze(-1).repeat(1, 1, self.d_model))
-            if self.embed_init_tgt:
-                tgt_ = self.tgt_embed.weight[:, None, :].repeat(1, bs, 1).transpose(0, 1) # nq, bs, d_model
-            else:
-                tgt_ = tgt_undetach.detach()
-
-            if refpoint_embed is not None:
-                refpoint_embed=torch.cat([refpoint_embed,refpoint_embed_],dim=1)
-                tgt=torch.cat([tgt,tgt_],dim=1)
-            else:
-                refpoint_embed,tgt=refpoint_embed_,tgt_
-
-        elif self.two_stage_type == 'no':
-            tgt_ = self.tgt_embed.weight[:, None, :].repeat(1, bs, 1).transpose(0, 1) # nq, bs, d_model
-            refpoint_embed_ = self.refpoint_embed.weight[:, None, :].repeat(1, bs, 1).transpose(0, 1) # nq, bs, 4
-
-            if refpoint_embed is not None:
-                refpoint_embed=torch.cat([refpoint_embed,refpoint_embed_],dim=1)
-                tgt=torch.cat([tgt,tgt_],dim=1)
-            else:
-                refpoint_embed,tgt=refpoint_embed_,tgt_
-
-            if self.num_patterns > 0:
-                tgt_embed = tgt.repeat(1, self.num_patterns, 1)
-                refpoint_embed = refpoint_embed.repeat(1, self.num_patterns, 1)
-                tgt_pat = self.patterns.weight[None, :, :].repeat_interleave(self.num_queries, 1) # 1, n_q*n_pat, d_model
-                tgt = tgt_embed + tgt_pat
-
-            init_box_proposal = refpoint_embed_.sigmoid()
-
-        else:
-            raise NotImplementedError("unknown two_stage_type {}".format(self.two_stage_type))
         #########################################################
         # End preparing tgt
         # - tgt: bs, NQ, d_model
@@ -397,15 +456,33 @@ class DeformableTransformer(nn.Module):
         #########################################################
         # Begin Decoder
         #########################################################
-        hs, references = self.decoder(
-                tgt=tgt.transpose(0, 1), 
-                memory=memory.transpose(0, 1), 
-                memory_key_padding_mask=mask_flatten, 
+        if self.use_emca:
+            # Pass all encoder outputs to decoder
+            hs, references = self.decoder(
+                tgt=tgt.transpose(0, 1),
+                memory=enc_intermediate_output,  # Pass all encoder outputs
+                memory_key_padding_mask=mask_flatten,
                 pos=lvl_pos_embed_flatten.transpose(0, 1),
-                refpoints_unsigmoid=refpoint_embed.transpose(0, 1), 
-                level_start_index=level_start_index, 
+                refpoints_unsigmoid=refpoint_embed.transpose(0, 1),
+                level_start_index=level_start_index,
                 spatial_shapes=spatial_shapes,
-                valid_ratios=valid_ratios,tgt_mask=attn_mask)
+                valid_ratios=valid_ratios,
+                tgt_mask=attn_mask
+            )
+        else:
+            # Original non-EMCA forward path            
+            hs, references = self.decoder(
+                tgt=tgt.transpose(0, 1),
+                memory=memory.transpose(0, 1),
+                memory_key_padding_mask=mask_flatten,
+                pos=lvl_pos_embed_flatten.transpose(0, 1),
+                refpoints_unsigmoid=refpoint_embed.transpose(0, 1),
+                level_start_index=level_start_index,
+                spatial_shapes=spatial_shapes,
+                valid_ratios=valid_ratios,
+                tgt_mask=attn_mask
+            )
+
         #########################################################
         # End Decoder
         # hs: n_dec, bs, nq, d_model
@@ -456,7 +533,7 @@ class TransformerEncoder(nn.Module):
         if num_layers > 0:
             if hybrid_encoder_layer is not None:
                 self.layers = _get_clones(hybrid_encoder_layer, num_hybrid_layers)
-                assert num_layers > num_hybrid_layers
+                assert num_layers >= num_hybrid_layers
                 self.layers += _get_clones(encoder_layer, num_layers - num_hybrid_layers, layer_share=enc_layer_share)
             else:
                 self.layers = _get_clones(encoder_layer, num_layers, layer_share=enc_layer_share)
@@ -580,15 +657,14 @@ class TransformerEncoder(nn.Module):
                 out_i = torch.gather(output, 1, ref_token_index.unsqueeze(-1).repeat(1, 1, self.d_model))
                 intermediate_output.append(out_i)
                 intermediate_ref.append(ref_token_coord)
+            
+            if ref_token_index is None:
+                intermediate_output.append(output)
 
         if self.norm is not None:
             output = self.norm(output)
 
-        if ref_token_index is not None:
-            intermediate_output = torch.stack(intermediate_output) # n_enc/n_enc-1, bs, \sum{hw}, d_model
-            intermediate_ref = torch.stack(intermediate_ref)
-        else:
-            intermediate_output = intermediate_ref = None
+        intermediate_output = torch.stack(intermediate_output) # n_enc/n_enc-1, bs, \sum{hw}, d_model
 
         return output, intermediate_output, intermediate_ref
 
@@ -1082,6 +1158,8 @@ def build_deformable_transformer(args):
 
         use_hae=args.use_hae,
         num_hybrid_layers=args.num_hybrid_layers,
+
+        use_emca=args.use_emca,
     )
 
 class HybridAttentionEncoderLayer(DeformableTransformerEncoderLayer):
@@ -1102,6 +1180,20 @@ class HybridAttentionEncoderLayer(DeformableTransformerEncoderLayer):
         self.dropout_std = nn.Dropout(dropout)
         self.norm_std = nn.LayerNorm(d_model)
 
+        # ffn after standard self-attention
+        self.linear1_std = nn.Linear(d_model, d_ffn)
+        self.activation_std = _get_activation_fn(activation, d_model=d_ffn)
+        self.dropout2_std = nn.Dropout(dropout)
+        self.linear2_std = nn.Linear(d_ffn, d_model)
+        self.dropout3_std = nn.Dropout(dropout)
+        self.norm2_std = nn.LayerNorm(d_model)
+
+    def forward_ffn_std(self, src):
+        src2 = self.linear2_std(self.dropout2_std(self.activation_std(self.linear1_std(src))))
+        src = src + self.dropout3_std(src2)
+        src = self.norm2_std(src)
+        return src
+
     def forward(self, src, pos, reference_points, spatial_shapes, level_start_index, key_padding_mask=None):
 
         p5_start = level_start_index[-1]
@@ -1115,6 +1207,8 @@ class HybridAttentionEncoderLayer(DeformableTransformerEncoderLayer):
                                         key_padding_mask=p5_key_padding)[0].transpose(0, 1)
         p5_src = p5_src + self.dropout_std(p5_attn_src)
         p5_src = self.norm_std(p5_src)
+
+        p5_src = self.forward_ffn_std(p5_src)
         
         # Replace P5 in splits
         # bs x (p1 + p2 + p3) x d_model -> bs x (p1 + p2 + p3 + p4) x d_model
@@ -1134,3 +1228,118 @@ class HybridAttentionEncoderLayer(DeformableTransformerEncoderLayer):
             src = self.norm_channel(src + self.activ_channel(src))
 
         return src
+
+class EncoderMixingDeformableTransformerDecoderLayer(DeformableTransformerDecoderLayer):
+    def __init__(self, d_model=256, d_ffn=1024,
+                 dropout=0.1, activation="relu",
+                 n_levels=4, n_heads=8, n_points=4,
+                 use_deformable_box_attn=False,
+                 box_attn_type='roi_align',
+                 key_aware_type=None,
+                 decoder_sa_type='ca',
+                 module_seq=['sa', 'ca', 'ffn']):
+        super().__init__(d_model, d_ffn, dropout, activation,
+                        n_levels, n_heads, n_points, use_deformable_box_attn,
+                        box_attn_type, key_aware_type, decoder_sa_type, module_seq)
+        
+        # Initialize weights for encoder mixing
+        self.encoder_mixing_weights = nn.Linear(d_model, 6)  # 6 encoder layers
+        self.sigmoid = nn.Sigmoid()
+        
+    def forward_ca(self,
+                  tgt,                       # nq, bs, d_model
+                  tgt_query_pos,             # pos for query. MLP(Sine(pos))
+                  tgt_query_sine_embed,      # pos for query. Sine(pos)
+                  tgt_key_padding_mask,
+                  tgt_reference_points,      # nq, bs, 4
+                  memory,                    # list of tensors from encoder
+                  memory_key_padding_mask,
+                  memory_level_start_index,  # num_levels
+                  memory_spatial_shapes,     # bs, num_levels, 2
+                  memory_pos,                # pos for memory
+                  self_attn_mask=None,
+                  cross_attn_mask=None):
+        
+        # Apply key-aware processing if specified
+        if self.key_aware_type is not None:
+            if self.key_aware_type == 'mean':
+                tgt = tgt + memory[-1].mean(0, keepdim=True)  # Use last encoder layer for key-aware
+            elif self.key_aware_type == 'proj_mean':
+                tgt = tgt + self.key_aware_proj(memory[-1]).mean(0, keepdim=True)
+            else:
+                raise NotImplementedError(f"Unknown key_aware_type: {self.key_aware_type}")
+        
+        # Generate mixing weights based on query features
+        # [nq, bs, d_model] -> [nq, bs, 6]
+        mixing_weights = self.sigmoid(self.encoder_mixing_weights(tgt))
+        
+        # Initialize output
+        final_output = 0
+        
+        # Get query with position embeddings
+        q = self.with_pos_embed(tgt, tgt_query_pos)  # [nq, bs, d_model]
+            
+        # Process each encoder layer
+        for layer_idx, enc_output in enumerate(memory):
+            # Ensure memory has correct shape [bs, hw, d_model]
+            if enc_output.shape[1] != memory_key_padding_mask.shape[1]:
+                enc_output = enc_output.permute(1, 0, 2)
+                
+            # Apply cross attention for current encoder layer
+            layer_output = self.cross_attn(
+                q.transpose(0, 1),                            # [bs, nq, d_model]
+                tgt_reference_points.transpose(0, 1).contiguous(),  # [bs, nq, 4]
+                enc_output,                                    # [bs, hw, d_model]
+                memory_spatial_shapes,
+                memory_level_start_index,
+                memory_key_padding_mask
+            ).transpose(0, 1)                                # back to [nq, bs, d_model]
+            
+            # Apply mixing weight for current layer
+            layer_weight = mixing_weights[:, :, layer_idx:layer_idx+1]
+            final_output = final_output + layer_weight * layer_output
+        
+        # Apply dropout and layer norm
+        tgt = tgt + self.dropout1(final_output)
+        tgt = self.norm1(tgt)
+        
+        return tgt
+
+    def forward(self,
+                tgt,                        # nq, bs, d_model
+                tgt_query_pos=None,         # pos for query. MLP(Sine(pos))
+                tgt_query_sine_embed=None,  # pos for query. Sine(pos)
+                tgt_key_padding_mask=None,
+                tgt_reference_points=None,  # nq, bs, 4
+                memory=None,               # list of encoder outputs
+                memory_key_padding_mask=None,
+                memory_level_start_index=None,  # num_levels
+                memory_spatial_shapes=None,     # bs, num_levels, 2
+                memory_pos=None,               # pos for memory
+                self_attn_mask=None,
+                cross_attn_mask=None):
+        
+        # Process modules in specified sequence
+        for funcname in self.module_seq:
+            if funcname == 'ffn':
+                tgt = self.forward_ffn(tgt)
+            elif funcname == 'ca':
+                tgt = self.forward_ca(
+                    tgt, tgt_query_pos, tgt_query_sine_embed,
+                    tgt_key_padding_mask, tgt_reference_points,
+                    memory, memory_key_padding_mask, memory_level_start_index,
+                    memory_spatial_shapes, memory_pos,
+                    self_attn_mask, cross_attn_mask
+                )
+            elif funcname == 'sa':
+                tgt = self.forward_sa(
+                    tgt, tgt_query_pos, tgt_query_sine_embed,
+                    tgt_key_padding_mask, tgt_reference_points,
+                    memory[-1], memory_key_padding_mask, memory_level_start_index,
+                    memory_spatial_shapes, memory_pos,
+                    self_attn_mask, cross_attn_mask
+                )
+            else:
+                raise ValueError(f'Unknown funcname {funcname}')
+        
+        return tgt

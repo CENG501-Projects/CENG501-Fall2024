@@ -75,6 +75,8 @@ def get_args_parser():
     # HAE parameters
     parser.add_argument('--use_hae', action='store_true')
     parser.add_argument('--num_hybrid_layers', default=2, type=int)
+
+    parser.add_argument('--use_emca', action='store_true')
     
     return parser
 

@@ -378,19 +378,19 @@ After the system successfully learned a specific trajectory, the model parameter
 <p align="center">
   <img src="/../main/AltunkolOzcan/images/epoch2_iter100.PNG" alt="Test of the predicted trajectory">
 </p>
-<p align="center">Figure 6: True and predicted trajectories in the beginning of the training</p>
+<p align="center">Figure 27: True and predicted trajectories in the beginning of the training</p>
 
 <p align="center">
   <img src="/../main/AltunkolOzcan/images/epoch19_iter40.PNG" alt="Test of the predicted trajectory">
 </p>
-<p align="center">Figure 7: True and predicted trajectories at the end of the training</p>
+<p align="center">Figure 28: True and predicted trajectories at the end of the training</p>
 
 <p align="center">
   <img src="/../main/AltunkolOzcan/images/loss_per_epoch.PNG" alt="Loss per epoch">
 </p>
-<p align="center">Figure 8: Loss value at the end of each epoch</p>
+<p align="center">Figure 29: Loss value at the end of each epoch</p>
 
-#### 3.1.2.2. Learning the Next State vs. Learning the State Transition Function
+#### 3.1.2.2. Learning the State Transition Function
 
 Until this point, we investigated the training procedure by constructing a neural network that learns the next state of the dubins car system, when the current states and control inputs are given as inputs. Even though this methodology successfully fits the given trajectories after some learning iterations, when another random trajectory is produced, the network prediction starts to fail significantly. By tuning the learning rate, batch size, and other such parameters we tried to train the network for thousands of epochs consisting of hundreds of iterations. However, we realized that the network does not converge to a successful one, and training stops after the average loss reaches around a certain value. In fact, the implemented paper trains the system identification network by making it learn the state transition function (i.e. the derivatives of the states), which may be more effective while dealing with system identification problems for several reasons. One possible reason might be that the derivative terms include some more information about the past and the future of the states depending on the system; however, we thought that with proper training, the system could still extract the same information and predict the next states, if it can predict the derivatives in another case. This brings other considerations, such as the fact that the states are not normalized values, which may bring some numerically unstable gradients when predicting the next state. Predicting derivatives by calculating the loss over the state transition function might be mitigating this effect in some way. However, in real-life cases, sampling states and taking derivatives in discrete systems may bring multiple problems, such as high distortion due to amplified noise. Still, this approach might be beneficial in some applications. As the paper trained the network to learn the state transition function, and our other attempts of training a network to predict the trajectories directly, we implemented the method in the paper as the next step to see how well it performs. As soon as we implemented the training structure, the network started predicting the trajectories much better in smaller number of iterations, in a very small training time. This was a great cue to know that it was on the right track. Also, as we increased the network widths (i.e. number of neurons in hidden layers), the performance increased significantly. Hence, we started training the network in that fashion. 
 
@@ -411,22 +411,67 @@ The training procedure is as follows: At each epoch, a new true trajectory (true
 
 Time batch is reduced since the network now learns the derivative terms, and we already have the sampled derivatives (i.e., the network does not have to build a relationship between the previous and future states). Also, the number of iterations per epoch is reduced to 25, since after around that number, the newtork just starts to memorize the trajectory (as far as we have seen). Since we generate new trajectories every 25 iterations, we also reduced the time horizon and data points, and increased the sampling rate to 100 Hz to have better resolution. We have detected some unstable learning behavior in individual trajectory iterations, hence we used larger batches of initial conditions (this also makes sense since we lowered the batch time and time horizon, we have additional place for more data and computations). Finally, we increased the neurons in MLP layers as given above. We have run the code for several hundreds of epochs, and obtained some reducing loss characteristics, which was promising. Nevertheless, it took too much training time to get small enough errors in trajectories, which may be consistent with the implemented paper as the authors state that they have trained their network for 50000 epochs! Furthermore, more hyperparameter tuning has to be done to make the network converge even more. The duration of this project was not allowed us to fully complete the learning process. However, the current trained network's performance can be seen in the figures below. As seen in the gif, the network is not able to approximate most of the trajectories at the first run; but as the iterations proceed, we see that it learns to approximate the curve. But it cannot learn the state transition function correctly, since we can see that it cannot fit the next trajectory in the first run of the next epoch. Hopefully, we can see that the loss trend still decreases in the long run, by investigating the other images below.
 
+<p align="center">
+  <img src="/../main/AltunkolOzcan/images/milestone3_images/g1.gif" alt="Training the state transitions of Dubins Car">
+</p>
+<p align="center">Figure 30: Learning the state transition function of the Dubins Car system</p>
+
+<p align="center">
+  <img src="/../main/AltunkolOzcan/images/milestone3_images/loss_over_1000_epochs.png" alt="Testing loss over 1000 epochs">
+</p>
+<p align="center">Figure 31: Testing loss over 1000 epochs</p>
+
+<p align="center">
+  <img src="/../main/AltunkolOzcan/images/milestone3_images/loss_over_1000_epochs_filtered.png" alt="Testing loss filtered">
+</p>
+<p align="center">Figure 32: Testing loss over 1000 epochs, filtered with a moving average of window size 10.</p>
+
 
 ## 3.2. Running the code
+In our group repository, we have mutiple folders where we keep the related resources, similar codes and notes. Among them only 4-Neural-ODE-Based-Implementation folder is present here. This folder is where all the implementation happens. Inside we have different folders for different robot scenarios. 
 
-@TODO: Explain your code & directory structure and how other people can run it.
+Dependencies:
+  - Pytorch 2.5.1
+  - Numpy
+  - matplotlib
+
+
+### 3.2.1 Acrobot
+In order to run the files related to acrobot, root folder must be 4-Neural-ODE-Based-Implementation. 
+To perform system indetification run:
+```
+python -m acrobot.acrobot_learn
+```
+To perform optimal control, run:
+```
+python -m acrobot.trainOC
+```
 
 ## 3.3. Results
 
-@TODO: Present your results and compare them to the original paper. Please number your figures & tables as if this is a paper.
+The results of the experiments done for each system are discussed in the Experiments section. Unfortunately, we were not able to reproduce the exact training results in the implemented paper. However, the methodology we applied seem to make progress, and hence in this section we compare the training results of each case with the results of the referenced paper.
+
+### 3.3.1 Acrobot System Identification (without Gradients)
+
+The paper claims that the system identification of acrobot using neural networks without the guiding gradients using sine activation functions minimizes the loss function as low as 0.0673 whereas we could improve only until around 0.6 over all the experiment instances. The authors have trained the network over 50000 epochs with unknown iterations in each. We tarined the networks over 10 epochs with 1000 iterations each.
+
+### 3.3.2 Acrobot Control
+
+The authors have provided results for the Acrobot control with learned dynamics. We have implemented acrobot control with known dynamics. The results in the paper declare terminal loss around 1.07. We could only lower the terminal cost until around 16 during training and around 19 during testing. To be fair, none of the necessary details are provided in the paper. Therefore, we have improvised a lot during our experiments. 
+
+### 3.3.3 Dubins Car System Identification (without Gradients)
+
+The paper claims that the system identification of acrobot using neural networks without the guiding gradients using sine activation functions minimizes the loss function as low as 0.014 whereas we could improve only until around 0.064, which is promising enough but still far from the referenced result. The authors have trained the network over 50000 epochs with unknown iterations in each. We tarined the network over 1000 epochs with 25 iterations each.
 
 # 4. Conclusion
 
-@TODO: Discuss the paper in relation to the results in the paper and your results.
+In this project, our aim was to implement the methods and reproduce/validate some of the results in the Neural Optimal Control using Learned System Dynamics paper [1]. We believe that if the results of the paper is easily reproduced by some codes in this repository, the contribution of the paper to the general literature will be enhanced. To implement the methods, we started from simpler examples, to understand the concepts and delved deeper into the main training problem as we progressed. Due to some uncertainties and the absent information in the paper, we had to make many assumptions about the training procedure. The paper investigated many cases, and authors compared their results with many other different methods from the literature. We did not have time to reproduce most of the results, but we still wrote some foundational codes and made meaningful experiments to enlighten the possible problems and hardships of the training procedure and the related concepts. Furthermore, we were able to train system identification networks for two of the systems (Acrobot and Dubins Car) and train a controller for one of them (Acrobot), and obtain some results to compare. The results were satisfying enough for us, as we had limited time and labour during the course of this project.
+
+In Acrobot scenarios, random sampling of the state and input space is done for system identification. Gradients of the state transifition function are not used to help train the network. We have found this application challenging because of the unclear details in the paper as well as the hardships of gaining an intuition behind data not belonging to a certain trajectory. Moreover, we have observed that network depth plays a crucial role in the accuracy of the model. In the control task, previous approaches such as [6] have used the learnt Hamiltonian and Value function to decide on the control input whereas the new paper [1] separates the controller completely as a network. We found that the separation of the networks for the value and the control functions actually hinder training because the gradients diminish until they get to the parameters of the control input generating network. As a result, cost function terms related to Hamiltonians and its gradients etc. decrease faster than the terminal cost. To alleviate this problem, we trained the network in a continuing manner with different cost functions. In the first stage, we prioritized the terminal cost. In the second stage we prioritized the optimality of the controller. However, we still found that the convergence of the control network is quite slow compared to the value function network. Moreover, the terminal cost consists of two types of states; namely, position and velocity states. While we put emphasis on the cost of the position states as users, the paper [1] actually does not discriminate between the importance of any type of states and the authors provide the same cost coefficient for all the states. Although at initial stages of training position states we of utmost imprtance to the network, we observed that during fine tuning our network decided to satisfy the task for the velocity states, not that much for the position states. This resulted in lower cost, but unwanted trajectory. We believe that unlike [1], different cost coefficients in R and P (running cost and terminal cost matrivces) can help aid the situation. In Dubins Car scenarios, we have observed similar problems as in the case for acrobot, however; as the system is less complex, we overcame these problems more easily.
+
+We have also observed an inconsistency between the least squares solutions of MATLAB and Python. We have studied various factors like condition numbering, solution methods etc. All the methods in Python seem to produce a certain result agreeing with each other whereas all the methods in MATLAB seem to produce another result agreeing with each other but conflicting with Pyhton. We actually resolved this problem using adaptive singular value thresholding in learning algorithm at first, but due to a difficulty in a bug we did not implement a similar procedure for later experiments. We believe this could be a silent and dangerous problem some programmers may not realize. Finally, as further work, at least all of the results for the Acrobot and Dubins Car systems can be reproduced by training the network using more data, computing power, and better tuning. This would make a complete comprehension and provide a good guideline for implementing the other systems mentioned in the paper, which would be a significant contribution to the literature.
 
 # 5. References
-
-@TODO: Provide your references here.
 
 [1] S. Engin and V. Isler, "Neural Optimal Control using Learned System Dynamics," 2023 IEEE International Conference on Robotics and Automation (ICRA), London, United Kingdom, 2023, pp. 953-960, doi: 10.1109/ICRA48891.2023.10160339.
 
@@ -439,6 +484,8 @@ Time batch is reduced since the network now learns the derivative terms, and we 
 [5] Matthew Kelly (2024). Acrobot Derivation and Simulation (https://github.com/MatthewPeterKelly/Acrobot_Derivation_Matlab), GitHub. Retrieved December 10, 2024.
 
 [6] D. Onken, L. Nurbekyan, X. Li, S. W. Fung, S. Osher, and L. Ruthotto, "A Neural Network Approach for High-Dimensional Optimal Control Applied to Multiagent Path Finding," IEEE Transactions on Control Systems Technology, 2022, doi: 10.1109/TCST.2022.3172872.
+
 # Contact
 
-@TODO: Provide your names & email addresses and any other info with which people can contact you.
+Işık Emir Altunkol - emir.altunkol01@gmail.com
+Selin Ezgi Özcan - segozcan@gmail.com
