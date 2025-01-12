@@ -180,19 +180,17 @@ Figure 3: Original paper's accuracy results
 
 **3rd Experiment (Full LRA Listops Dataset, 40 Epochs):**
 
-Figure 4: Train Loss and Accuracy for LRA Listops Benchmark
+Figure 4: Loss Graphs for LRA Listops Benchmark
 
-<img width="650" alt="train_graphs" src="https://github.com/user-attachments/assets/c4008269-8bdc-4f04-a028-4b49536bf526" />
-
-
-Figure 5: Validation Loss and Accuracy for LRA Listops Benchmark
-
-<img width="650" alt="val_graphs" src="https://github.com/user-attachments/assets/2b2088cd-229f-4a45-800e-455a2841c9a8" />
+![loss](https://github.com/user-attachments/assets/7bc84ff3-825a-43cd-a7a8-d8e3fb7e083e)  
 
 
-Figure 6: Test Loss and Accuracy for LRA Listops Benchmark
+Figure 5: Accuracy Graphs for LRA Listops Benchmark
 
-<img width="650" alt="test_graphs" src="https://github.com/user-attachments/assets/c0fbd276-7307-41c7-ad7b-6644cd5b29ea" />
+![accuracy](https://github.com/user-attachments/assets/798d52b5-d198-4d20-b91d-9ff7676af439)  
+
+
+
 
 ### Experiment: Document Retrieval Task
 
