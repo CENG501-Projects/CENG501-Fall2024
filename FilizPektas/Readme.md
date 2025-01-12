@@ -170,7 +170,8 @@ In the paper, some of the approaches were not clearly mentioned. Here is what we
 
 - Instructions on how ERM Classifier is constructed was left vague. We have checked the supplementary material, and we have seen different networks are used for different datasets, and we decided that aforementioned ERM Classifier is actually a network trained on a Cross Entropy loss objective to ensure empirical risk minimization.
 - Gain over ERM in percentage was frequently used in their graphics, but the authors did not specify how that measure is actually calculated. We ran the experiments at our CIFAR-100 implementation with WRN28-10 network, and we have compared the accuracies. We have seen that gains over ERM is calculated by dividing the current model's accuracy result by the ERM model's accuracy result, and multiply by -1 if the nominator is less than the denominator.
-  
+- Splitting generation method for LRW-Opt was not clearly demonstrated. The authors has specify that the margins produced by the splitter network are classified by its value being lower than 0.5, which ensures the validation set values are comprised of "Hard" instances. This was not the case for every epoch, the produced margin values might not always follow this pattern, and validation set was not containing any instances. For these cases, we added random splitting to fill the validation set to the amount of the specified delta.
+
 Other than these parts, paper was quite detailed and clear about its methods and approaches, proving every mathematical aspect they used and explaining every method they implemented.
 
 # **3. Experiments and Results**
@@ -199,6 +200,10 @@ Datasets were divided into training and validation sets using a delta value of m
 
 You can download the prerequisites from the requirements.txt file as follows:
 
+pip install –r requirements.txt
+
+Our trained models can be found in the following lists. We also added .pkl files for some datasets, which includes the result dictionary to be used for the visualization.
+
 **Trained Models**
 | Dataset Name | Link                                                                        |
 |--------------|-----------------------------------------------------------------------------|
@@ -208,7 +213,6 @@ You can download the prerequisites from the requirements.txt file as follows:
 | `airplane`   | https://drive.google.com/file/d/1fNVQgjevbjJkroFU6WWOzjWgwHIDV52u/view      |
 | `DR`         | https://drive.google.com/file/d/1q1a3hLSLKqRwB4QjBTaVIPqnT8zJUk-3/view      |
 
-pip install –r requirements.txt
 
 **Key Arguments**
 | Argument                | Type   | Default                                     | Description                                         |
