@@ -93,10 +93,14 @@ There are five distinct experiments conducted on five tasks of Long Range Arena 
 
 According to [3], the LRA benchmark is a systematic framework designed to evaluate the performance of Transformer models in long-context scenarios. It includes tasks for testing the ability to handle sequences ranging from 1,000 to 16,000 tokens across various modalities like text, image and spatial reasoning. The five tasks of LRA are ListOps, Text Classification, Document Retrieval, Image Classification and Path Finder. There is also a task named Path Finder-X, extending Path Finder with extreme lengths. This task is not included in the performance evaluation of Las Attention. Therefore, we suffice to explain the five tasks, indicated above.
 
-**(i) ListOps:** The dataset consists of sequences with a hierarchical structure and operators MAX, MEAN, MEDIAN and SUM_MOD that are enclosed by delimiters. The model needs to access all tokens and model the logical structure of the inputs in order to make a prediction. 
-**(ii) Text Classification:** The dataset consists of text sequences at the byte or character level. The model needs to reason with compositional, unsegmented data in order to solve a meaningful real-world task. 
-**(iii) Document Retrieval:** The dataset consists of document pairs represented at the byte or character level. The model needs to compress long sequences into representations suitable for similarity-based matching. 
-**(iv) Image Classification:** The dataset consists of images represented as sequences of pixels. The model needs to learn the 2D spatial relations between input pixels. 
+**(i) ListOps:** The dataset consists of sequences with a hierarchical structure and operators MAX, MEAN, MEDIAN and SUM_MOD that are enclosed by delimiters. The model needs to access all tokens and model the logical structure of the inputs in order to make a prediction.
+
+**(ii) Text Classification:** The dataset consists of text sequences at the byte or character level. The model needs to reason with compositional, unsegmented data in order to solve a meaningful real-world task.
+
+**(iii) Document Retrieval:** The dataset consists of document pairs represented at the byte or character level. The model needs to compress long sequences into representations suitable for similarity-based matching.
+
+**(iv) Image Classification:** The dataset consists of images represented as sequences of pixels. The model needs to learn the 2D spatial relations between input pixels.
+
 **(v) Path Finder:** In this task, the model needs to make a binary classification indicating whether two points are connected with a by a path.
 
 The performance of Las Attention is evaluated based on these tasks. We evaluated our implementation of LaS Attention on ListOps and Document Retrieval tasks only due to our limited time and resources.
