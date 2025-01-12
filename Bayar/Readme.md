@@ -225,6 +225,8 @@ cd ../../..
 
 ### Training
 
+#### DINO + HAE
+
 ```bash
 python main.py \
 	--output_dir logs/DINO/R50-MS4 -c config/DINO/DINO_4scale.py \
@@ -234,7 +236,34 @@ python main.py \
 	dn_box_noise_scale=1.0 --use_hae
 ```
 
+#### DINO + EMCA
+
+```bash
+python main.py \
+	--output_dir logs/DINO/R50-MS4 -c config/DINO/DINO_4scale.py \
+    --coco_path {/path/to/coco} \
+	--options dn_scalar=100 embed_init_tgt=TRUE \
+	dn_label_coef=1.0 dn_bbox_coef=1.0 use_ema=False \
+	dn_box_noise_scale=1.0 --use_emca
+```
+
+#### AugDETR (DINO + HAE + EMCA)
+
+```bash
+python main.py \
+    --output_dir logs/DINO/R50-MS4 -c config/DINO/DINO_4scale.py \
+    --coco_path {/path/to/coco} \
+    --options dn_scalar=100 embed_init_tgt=TRUE \
+    dn_label_coef=1.0 dn_bbox_coef=1.0 use_ema=False \
+    dn_box_noise_scale=1.0 --use_hae --use_emca
+```
+
+You can also control the number of hybrid attention layers using the `--num_hae_layers` argument. The default value is 2.
+
+
 ### Evaluation
+
+#### DINO + HAE
 
 ```bash
 python main.py \
@@ -244,7 +273,30 @@ python main.py \
         --options dn_scalar=100 embed_init_tgt=TRUE \
         dn_label_coef=1.0 dn_bbox_coef=1.0 use_ema=False \
         dn_box_noise_scale=1.0 --use_hae
+```
 
+#### DINO + EMCA
+
+```bash
+python main.py \
+  --output_dir logs/DINO/R50-MS4-%j \
+        -c config/DINO/DINO_4scale.py --coco_path {/path/to/coco} \
+        --eval --resume {/path/to/checkpoint} \
+        --options dn_scalar=100 embed_init_tgt=TRUE \
+        dn_label_coef=1.0 dn_bbox_coef=1.0 use_ema=False \
+        dn_box_noise_scale=1.0 --use_emca
+```
+
+#### AugDETR (DINO + HAE + EMCA)
+
+```bash
+python main.py \
+  --output_dir logs/DINO/R50-MS4-%j \
+        -c config/DINO/DINO_4scale.py --coco_path {/path/to/coco} \
+        --eval --resume {/path/to/checkpoint} \
+        --options dn_scalar=100 embed_init_tgt=TRUE \
+        dn_label_coef=1.0 dn_bbox_coef=1.0 use_ema=False \
+        dn_box_noise_scale=1.0 --use_hae --use_emca
 ```
 
 
