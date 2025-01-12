@@ -326,7 +326,7 @@ For a prediction to be considered a true positive, the IoU between the predicted
 According to the paper, MonoATT results are, 
 <p align="center">
 <img src=https://github.com/user-attachments/assets/0ea9c088-07e2-40e9-885b-3b3ff3b226bb>
-Figure 8. Expected AP40 values table from the paper.
+Figure 5. Expected AP40 values table from the paper.
 </p>
 However, it is not possible for us to test our model on the test set. Test set labels are not shared and to get the results of the test set, one needs to submit the model to the KITTI website. However, we cannot submit our results to the contest because of the rules. KITTI website states that model submission step must only be followed if a paper is about to be submitted to a conference where the experimental results are ready, other evaluations (eg, in the context of model ablations, a student's class project or Master's thesis) must be conducted on the training set. Hence, we decided to split the training set into two equal parts for training and testing. 
 
@@ -334,7 +334,7 @@ In different repositories, there are some example training set splits for KITTI 
 
 The paper also discusses the results on the validation set, which is some part of the training set (usually half in 3D object detection). They do provide an ablation study where we can see the contrubition of each component of the MonoATT archtitecture. At the bottom of the table, results for 3D object detection on validation set exists.
 
-![image](https://github.com/user-attachments/assets/d9ceb45b-7663-4434-8579-8ff58a323323)
+![Figure 1: Ablation Study results of MonoATT, full architecture results are given at the bottom](https://github.com/user-attachments/assets/d9ceb45b-7663-4434-8579-8ff58a323323)
 
 The paper also discusses integrating MonoATT components into existing transformer-based models. They claim to improve the AP40 scores of MonoDTR and MonoDETR structures. Validation set results are provided below. Please note that, as we used MonoDETR as base to implement MonoATT, it can be a good idea to compare our results with results provided in the table below.
 
