@@ -349,80 +349,90 @@ We have used the hyperparameters given in the paper Table 3 and Table 4,[[1]].
 
 <p align="center">
   <img src="figures/freeway_v4_rr1.svg" style="width: 70%;"><br>
-  <em>Figure 4: Rewards per episode over episodes for Freeway-v4 with all models. A replay ratio of 1 is used.</em>
+  <em>Figure 3: Rewards per episode over episodes for Freeway-v4 with all models. A replay ratio of 1 is used.</em>
 </p>
 
 <p align="center">
   <img src="figures/freeway_v4_rr2.svg" style="width: 70%;"><br>
-  <em>Figure 5: Rewards per episode over episodes for Freeway-v4 with all models. A replay ratio of 2 is used.</em>
+  <em>Figure 4: Rewards per episode over episodes for Freeway-v4 with all models. A replay ratio of 2 is used.</em>
 </p>
 
 <p align="center">
   <img src="figures/freeway_v4_rr4.svg" style="width: 70%;"><br>
-  <em>Figure 6: Rewards per episode over episodes for Freeway-v4 with all models. A replay ratio of 4 is used.</em>
+  <em>Figure 5: Rewards per episode over episodes for Freeway-v4 with all models. A replay ratio of 4 is used.</em>
 </p>
 
 <p align="center">
   <img src="figures/dqn_freeway_v4.svg" style="width: 70%;"><br>
-  <em>Figure 7: Rewards per episode over episodes for Freeway-v4 with DQN. Replay ratios of 1,2,4 are used.</em>
+  <em>Figure 6: Rewards per episode over episodes for Freeway-v4 with DQN. Replay ratios of 1,2,4 are used.</em>
 </p>
 
 <p align="center">
   <img src="figures/dqn_reset_freeway_v4.svg" style="width: 70%;"><br>
-  <em>Figure 8: Rewards per episode over episodes for Freeway-v4 with SR+DQN. Replay ratios of 1,2,4 are used.</em>
+  <em>Figure 7: Rewards per episode over episodes for Freeway-v4 with SR+DQN. Replay ratios of 1,2,4 are used.</em>
 </p>
 
 <p align="center">
   <img src="figures/rde_freeway_v4.svg" style="width: 70%;"><br>
-  <em>Figure 9: Rewards per episode over episodes for Freeway-v4 with RDE. Replay ratios of 1,2,4 are used.</em>
+  <em>Figure 8: Rewards per episode over episodes for Freeway-v4 with RDE. Replay ratios of 1,2,4 are used.</em>
 </p>
 
 <p align="center">
   <img src="figures/mspacmannoframeskip_v4_rr1.svg" style="width: 70%;"><br>
-  <em>Figure 10: Rewards per episode over episodes for MsPacmanNoFrameskip-v4 with all models. A replay ratio of 1 is used.</em>
+  <em>Figure 9: Rewards per episode over episodes for MsPacmanNoFrameskip-v4 with all models. A replay ratio of 1 is used.</em>
 </p>
 
 <p align="center">
   <img src="figures/mspacmannoframeskip_v4_rr2.svg" style="width: 70%;"><br>
-  <em>Figure 11: Rewards per episode over episodes for MsPacmanNoFrameskip-v4 with all models. A replay ratio of 2 is used.</em>
+  <em>Figure 10: Rewards per episode over episodes for MsPacmanNoFrameskip-v4 with all models. A replay ratio of 2 is used.</em>
 </p>
 
 <p align="center">
   <img src="figures/mspacmannoframeskip_v4_rr4.svg" style="width: 70%;"><br>
-  <em>Figure 12: Rewards per episode over episodes for MsPacmanNoFrameskip-v4 with all models. A replay ratio of 4 is used.</em>
+  <em>Figure 11: Rewards per episode over episodes for MsPacmanNoFrameskip-v4 with all models. A replay ratio of 4 is used.</em>
 </p>
 
 <p align="center">
   <img src="figures/dqn_mspacmannoframeskip_v4.svg" style="width: 70%;"><br>
-  <em>Figure 13: Rewards per episode over episodes for MsPacmanNoFrameskip-v4 with DQN. Replay ratios of 1,2,4 are used.</em>
+  <em>Figure 12: Rewards per episode over episodes for MsPacmanNoFrameskip-v4 with DQN. Replay ratios of 1,2,4 are used.</em>
 </p>
 
 <p align="center">
   <img src="figures/dqn_reset_mspacmannoframeskip_v4.svg" style="width: 70%;"><br>
-  <em>Figure 14: Rewards per episode over episodes for MsPacmanNoFrameskip-v4 with SR+DQN. Replay ratios of 1,2,4 are used.</em>
+  <em>Figure 13: Rewards per episode over episodes for MsPacmanNoFrameskip-v4 with SR+DQN. Replay ratios of 1,2,4 are used.</em>
 </p>
 
 <p align="center">
   <img src="figures/rde_mspacmannoframeskip_v4.svg" style="width: 70%;"><br>
-  <em>Figure 15: Rewards per episode over episodes for MsPacmanNoFrameskip-v4 with RDE. Replay ratios of 1,2,4 are used.</em>
+  <em>Figure 14: Rewards per episode over episodes for MsPacmanNoFrameskip-v4 with RDE. Replay ratios of 1,2,4 are used.</em>
 </p>
 
 <p align="center">
   <img src="figures/epsilon.svg" style="width: 70%;"><br>
-  <em>Figure 16: Decay of exploration-to-exploitation ratio over episodes. </em>
+  <em>Figure 15: Decay of exploration-to-exploitation ratio over episodes. </em>
 </p>
 
 # 4. Conclusion
 
-From the results, it is evident that RDE offers better performance compared to SR+DQN, especially in the vicinity of sequential resets, as claimed in the paper. </br>
+*Freeway* and *MsPacman* were selected from the Atari-100k environments for different purposes. *Freeway* was chosen because it offers fast training due to its low action space and allows meaningful "Episode Reward vs. Episode Count" plots, as its reward policy is unaffected by reward clipping. In contrast, *MsPacman* was selected to evaluate model performance in a more complex action space. Additionally, it is one of the best-performing games in Atari-100k for the proposed RDE model in the original study.
 
-However, we weren't able to perform the experiments with the same amount of timesteps (1e5 compared to 1e6), due to the memory requirements of the operations. This may have led RDE to yield similar or subpar results to vanilla DQN's results. These findings are also reflected in the reward score tables of the paper as well, for some environments. </br>
+Figure 7 highlights the importance of replay ratio. As the replay ratio increases, the models converge faster. However, if sufficient training steps are available, models with lower replay ratios also converge to the same performance levels, demonstrating that convergence is primarily limited by the model's capabilities rather than replay ratios alone.
 
-Another key takeaway is the manual setting of $\epsilon$, the exploration-to-exploitation ratio. This seems to be intentionally done for the sake of experimentation in the original paper, therefore it is left in. Since the number of episodes that are considered for exploration is significantly low (no exploration is done whatsoever after 1e4 steps), the models are put to the challenge of generalizing to the replay buffer quickly and reliably. Making $\epsilon$ decrease in the direction of increasing rewards may add robustness to the model training procedure. </br>
+Figure 8 illustrates the impact of the vanilla reset procedure. During network resets, model performance collapses are clearly observed. One of the most significant claims of RDE is its ability to prevent such performance collapses.
 
-RDE and SR+DQN seem to generate more robust solutions compared to vanilla DQN in some games like Freeway, where the DQN model learns the best possible solution of "mashing up" as there is no substantial *visible* penalty due to car crashes. RDE and SR+DQN however make occasional attempts to dodge cars if the action happens to be beneficial. This may be an advantage in exploitation for some other games where obstacles or detrimental actions are more erratic. </br>
+Figure 9 examines RDE's dependency on replay ratio and its resistance to performance collapses during reset operations. Unfortunately, the RDE model failed to learn effectively with replay ratios of 1 and 2. Even with a replay ratio of 4, RDE performed worse than both vanilla DQN and DQN with vanilla reset. However, despite undergoing multiple resets, no performance collapses were observed, indicating that RDE effectively mitigates instability during resets.
 
-Visualizing the results of MsPacmanNoFrameskip-v4 showed that more convoluted games require more episodes of exploration and exploitation to generate better results, as more timesteps of actions are needed to fully explore all options leading to varying levels of available rewards. Ms Pacman could, for instance, go for the power pellets and eat aliens to gain an increased number of rewards, instead of making a few short escapes towards small pellets to reach a few instances of rewards more easily. Since these action sequences are rather long, exploring enough solutions to apply such experiences would take more timesteps. Consequentially, the models are performing similarly, with minor performance variations among each other.
+Table 1 and Table 2 reveal that vanilla DQN and DQN with vanilla resets performed better than reported in the original paper, while RDE significantly underperformed across all tested scenarios. This suggests that the current implementation of RDE requires further tuning or optimization to achieve its proposed performance.
+
+A critical observation is the use of the same hyperparameters across different environments, which may not be optimal. Manual configuration of $\epsilon$, the exploration-to-exploitation ratio, and its decay schedule are especially important. After $\epsilon$ decays to its minimum value, exploration reduces significantly, and the model attempts to optimize its current policy. If the model fails to obtain meaningful rewards before this point, training becomes increasingly difficult. Additionally, the minimum replay buffer length before training is crucial; if the model cannot experience rewards before training starts, it faces challenges in forming an effective policy. A more dynamic $\epsilon$ schedule, where $\epsilon$ decreases in response to increasing rewards, could add robustness to the training process. Furthermore, the number of training steps should be adjusted to account for the varying complexities of different games.
+
+It should also be noted that the overall performance of the models varied significantly between training sessions, even with the same random seed. On top of this, evaluation results were highly dependent on individual runs. For instance, some models achieved scores exceeding 1000 points in *MsPacman*, but the results shared in this study are the mean averages over 15 evaluation episodes with a different seed from the training seed.
+
+It is also worth noting that RDE demands significantly more computational resources and training time compared to vanilla DQN and DQN with vanilla reset. The ensemble-based approach involves maintaining multiple agent networks, which significantly increases the memory usage and computational complexity of the training process. Additional operations, such as softmax-based action selection and sequential resets, further introduce computational overhead that increases runtime. These resource-intensive requirements, combined with the need for longer training durations to fully exploit RDE's potential, highlight the importance of optimizing its implementation for practical use in more complex environments. The need to train and manage multiple networks simultaneously underscores the importance of efficient resource allocation and parallel processing in deploying RDE effectively.
+
+Visualizing the results for *MsPacman* highlighted that more complex games require additional episodes of exploration and exploitation to produce better results. Longer action sequences are needed to discover optimal strategies that maximize rewards. For example, in *MsPacman*, the model could prioritize eating power pellets and ghosts to achieve higher scores rather than focusing on small pellets for incremental rewards. However, identifying and leveraging these longer sequences requires sufficient exploration, which was limited by the reduced number of timesteps in our experiments. Consequently, the models performed similarly, with minor variations in performance across configurations.
+
+Overall, while RDE demonstrated its ability to prevent performance collapses during resets, its current implementation failed to match or exceed the performance of simpler methods like vanilla DQN and DQN with vanilla resets. Further research is needed to refine the RDE framework, particularly in terms of hyperparameter tuning and scaling for more complex environments.
 
 # 5. References
 
