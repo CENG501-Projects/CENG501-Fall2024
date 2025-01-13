@@ -135,19 +135,15 @@ Assume that we desire to estimate the optical flow at time instant $t_k$. We det
 When backpropagation is applied at four different scales of optical flow, we adjust the motion values (optical flow) for each scale. For example, if an image is resized to be twice as large, the motion of each pixel also doubles. To ensure the motion stays accurate, we scale the optical flow values to match the size of the image at each scale. This way, the optical flow at each scale correctly represents the motion for that specific scale.
 
 ```python
-def get_scaled_flows(flow:np.array):
-    scaled_flows = []
-    old_height = flow.shape[0]
-    old_width  = flow.shape[1]
-
-    # Resize the flows by (1,2,4,8)
+def get_scaled_tensors(tensor):
+    flow_tensor_arr = []
+    H = tensor.shape[2]
+    W  = tensor.shape[3]
     for idx in range(4):
-        new_height = int(old_height / (2**idx))
-        new_width  = int(old_width / (2**idx))
-        # Resize and divide by (2**idx)
-        scaled_flow = cv2.resize(flow, (new_width,new_height), interpolation=cv2.INTER_LINEAR) / (2**idx)
-        scaled_flows.append(scaled_flow)
-    return scaled_flows
+        new_W, new_H = W // (2**idx), H // (2**idx)
+        resized_tensor = F.interpolate(tensor, size=(new_H, new_W), mode='bilinear', align_corners=False)
+        flow_tensor_arr.append(resized_tensor)
+    return flow_tensor_arr
 ```
 
 ### Integrate and Fire Neurons (Leaky)
@@ -205,7 +201,6 @@ $$
 # 3. Experiments and results
 
 ## 3.1. Experimental setup
-
 ### Architecture Implementation
 
 
@@ -221,8 +216,16 @@ An additional component of the architecture is the spike accumulator (green arro
 
 The final output consists of full-scale flow predictions generated at multiple resolutions. This multi-resolution approach allows the network to capture fine-grained motion details while simultaneously providing a broader perspective on scene dynamics. Such a design is particularly effective in handling complex, high-speed motion scenarios, making it well-suited for tasks where precision and adaptability are essential.
 
-### Training Procedure
-For the primal tests, we use the [DSEC](https://dsec.ifi.uzh.ch/) dataset because it provides highly accurate groundtruth data. However, not all sequences in the [DSEC](https://dsec.ifi.uzh.ch/) dataset include groundtruth optical flow. Therefore, we download and utilize only the sequences that contain groundtruth. Please organize the folder structure as follows:
+
+
+## 3.2. Running the code
+
+### Preprocessing The Data
+Working with raw data in DSEC and MVSEC can be highly time-consuming due to the storage of events in long arrays, making the extraction of relevant events for a single iteration inefficient. To address this, we binarize the events offline before training. Preprocessing codes for both MVSEC and DSEC are available.
+
+For MVSEC, simply download the relevant data. Use the provided [preprocessing script for MVSEC](https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/MVSECUtils/preprocessMVSEC.py) for efficient binarization and preparation.
+
+For DSEC, download the dataset and ensure the data format adheres to the required structure before running [the preprocessing script for DSEC](https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/DSECUtils/preprocessDSEC.py). 
 ```bash
 ├── path_to_dataset
       ├── thun_00_a
@@ -242,23 +245,51 @@ For the primal tests, we use the [DSEC](https://dsec.ifi.uzh.ch/) dataset becaus
       ...
 ```
 
-During training, it is necessary to create the event bins for each optical flow groundtruth. However, this binning process is time-consuming and is repeated for every training epoch. To reduce the training time, pre-binning the relevant events and saving them in a separate folder can significantly reduce training time. By doing this, we can directly load the relevant events from the pre-binned files, eliminating the need for repeated binning during each epoch. 
+Once the preprocessed data is available, store them as training set and validation set in different paths.
+```bash
+├── path_to_dataset
+      ├── training
+          ├── Sequence 1
+              ├── 00000.hdf5
+              ├── 00001.hdf5
+              ...
+          ├── Sequence 2
+          ├── Sequence 3
+          ...
+          ├── Sequence n
+      ├── validation
+          ├── Sequence n+1
+          ├── Sequence n+2
+          ...
+```
 
-After the primal tests, we continued training with the photometric and smoothness loss functions on the [MVSEC](https://daniilidis-group.github.io/mvsec/) and the [DSEC](https://dsec.ifi.uzh.ch/) datasets as performed in the article. One possible extension we considered is starting the training process on the MVSEC dataset in an unsupervised manner. Since the MVSEC dataset does not include ground truth data, this approach could provide a robust initialization for the network. After unsupervised training on MVSEC, transitioning to supervised training with the DSEC dataset—which includes ground truth optical flow—might yield improved performance, particularly with respect to the 
-𝐿
-EPE
-L 
-EPE
-​
-  loss.
+### Training
+The ground truth provided by MVSEC is less accurate compared to DSEC. To address this, **we use self-supervised loss for MVSEC**, leveraging the data without relying heavily on its less precise ground truth. Conversely, **for DSEC, we apply supervised loss**, taking advantage of its more accurate ground truth annotations. 
 
-To experiment with this approach, we need to address the difference in data sizes between the two datasets. Specifically, we must apply zero-padding to the smaller-sized DSEC dataset to match the dimensions of MVSEC, enabling our network to process both datasets simultaneously.
+Additionally, we have designed two distinct networks, each with specific input format requirements. Due to these differences, separate training codes are provided for each network and for each dataset. 
 
+* [Train EventFlow network with DSEC dataset using supervised loss.](https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/TrainEventFlowWithDSEC.py)
+* [Train EventFlow network with MVSEC dataset using self-supervised loss.](https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/TrainEventFlowWithMVSEC.py)
+* [Train Spiking network with DSEC dataset using supervised loss.](https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/TrainSpikeFlowWithDSEC.py)
+* [Train Spiking network with MVSEC dataset using self-supervised loss.](https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/TrainSpikeFlowWithMVSEC.py)
 
-## 3.2. Running the code
+All parameters and paths are managed in one class. Simply set the paths for training and validation data, and the scripts will handle data processing automatically. You can also adjust the batch size based on your system's capabilities.
+```python
+class parameters:
+    def __init__(self):
+        self.train_data_path    = "/media/romer/Additional/OpticalFlow/Training"
+        self.valid_data_path    = "/media/romer/Additional/OpticalFlow/Validation"
 
-@TODO: Explain your code & directory structure and how other people can run it.
-
+        self.saving_path  = "checkpoints/MVSEC/SpikingNet" 
+        self.epochs       = 50
+        
+        self.batch_size   = 64
+        
+        self.lr           = 5e-5 
+        self.momentum     = 0.9
+        self.weight_decay = 4e-4
+        self.beta         = 0.999
+```
 ## 3.3. Results
 Inside the [DSEC](https://dsec.ifi.uzh.ch/) dataset, we identified 8,211 frames with optical flow as ground truth. Of these, 8,170 frames were used for training, while the remaining 41 frames were set aside for validation. The network was trained for 30 epochs, and the training and validation losses are reported below.
 <div align="center">
