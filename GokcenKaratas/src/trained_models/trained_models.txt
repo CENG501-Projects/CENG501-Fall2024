@@ -1,0 +1,2 @@
+Trained models can be accessed by using the following link. They are not included in the repository due to large sizes:
+https://drive.google.com/drive/folders/1pxGARBAajiyQjXxHF6mM4UyS9GFCBxgX?usp=sharing
