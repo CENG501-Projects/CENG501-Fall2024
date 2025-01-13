@@ -221,11 +221,11 @@ The final output consists of full-scale flow predictions generated at multiple r
 ## 3.2. Running the code
 
 ### Preprocessing The Data
-Working with raw data in DSEC and MVSEC can be highly time-consuming due to the storage of events in long arrays, making the extraction of relevant events for a single iteration inefficient. To address this, we binarize the events offline before training. Preprocessing codes for both MVSEC and DSEC are available.
+Working with raw data in [DSEC](https://dsec.ifi.uzh.ch/) and [MVSEC](https://daniilidis-group.github.io/mvsec/) can be highly time-consuming due to the storage of events in long arrays, making the extraction of relevant events for a single iteration inefficient. To address this, we binarize the events offline before training. Preprocessing codes for both [MVSEC](https://daniilidis-group.github.io/mvsec/) and [DSEC](https://dsec.ifi.uzh.ch/) are available.
 
-For MVSEC, simply download the relevant data. Use the provided [preprocessing script for MVSEC](https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/MVSECUtils/preprocessMVSEC.py) for efficient binarization and preparation.
+For [MVSEC](https://daniilidis-group.github.io/mvsec/), simply download the relevant data. Use the provided [preprocessing script for MVSEC](https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/MVSECUtils/preprocessMVSEC.py) for efficient binarization and preparation.
 
-For DSEC, download the dataset and ensure the data format adheres to the required structure before running [the preprocessing script for DSEC](https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/DSECUtils/preprocessDSEC.py). 
+For [DSEC](https://dsec.ifi.uzh.ch/), download the dataset and ensure the data format adheres to the required structure before running [the preprocessing script for DSEC](https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/DSECUtils/preprocessDSEC.py). 
 ```bash
 ├── path_to_dataset
       ├── thun_00_a
@@ -304,17 +304,9 @@ Finally, we visualize sample estimations from the network, showing both the grou
 </div>
 
 According to our observations with the [DSEC](https://dsec.ifi.uzh.ch/) dataset, we trained the network with the [MVSEC](https://daniilidis-group.github.io/mvsec/) dataset for 20 epochs, and the training and validation losses are reported below.
-<div align="center">
-  <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/training_losses.png" alt="description" width="50%">
-</div>
-
-The validation loss is smaller than the training loss because the validation set includes a simpler scenario with relatively stable and moderate optical flow. In contrast, the training set contains samples with higher optical flow vectors.
-
-Finally, we visualize sample estimations from the network, showing both the ground truth optical flow and the estimated flow. It is important to note that the ground truth is available only for a sparse set of pixels. To facilitate comparison, we apply the same mask to the estimated flow, resulting in a masked estimated flow. This masking is done purely for your convenience to directly compare the ground truth with the estimation.
-<div align="center">
-  <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/ESvsGT.gif" alt="description" width="95%">
-</div>
-
+```
+Will be available later
+```
 
 # 4. Conclusion
 
