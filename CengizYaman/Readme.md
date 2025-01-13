@@ -199,7 +199,9 @@ Pretrained weights of our models can be downloaded from following links:
 # 5. References
 
 [1] Sharifi, S., Entesari, T., Safaei, B., Patel, V. M., & Fazlyab, M. (2025). Gradient-regularized out-of-distribution detection. In European Conference on Computer Vision (pp. 459-478). Springer, Cham.
+
 [2] Liu, W., Wang, X., Owens, J., Li, Y.: Energy-based out-of-distribution detection. Advances in neural information processing systems 33, 21464–21475 (2020)
+
 [3] Wang, L., Han, M., Li, X., Zhang, N., Cheng, H.: Review of classification methods on unbalanced data sets. IEEE Access 9, 64606–64628 (2021)
 
 # Contact
