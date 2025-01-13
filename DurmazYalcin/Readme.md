@@ -292,7 +292,7 @@ class parameters:
 ```
 
 ### Inference
-You can find our trained weigths [here](https://drive.google.com/drive/folders/14KGo-5k25KVVTg1SH69Qhbxw1FsrhNle?usp=sharing).
+You can find our trained weigths [here](https://drive.google.com/drive/folders/14KGo-5k25KVVTg1SH69Qhbxw1FsrhNle?usp=sharing). For your convenience, we have provided preprocessed data samples from DSEC. Simply download the samples to quickly check the trained weights using the inference script.
 
 ## 3.3. Results
 
