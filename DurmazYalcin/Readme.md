@@ -295,7 +295,7 @@ class parameters:
 To visualize the losses versus epoches, you can use our [loss visualizer](https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/visualize_losses.py).
 
 ### Inference
-You can find our trained weigths [here](https://drive.google.com/drive/folders/14KGo-5k25KVVTg1SH69Qhbxw1FsrhNle?usp=sharing). For your convenience, we have provided preprocessed data samples from DSEC. Simply download the samples to quickly check the trained weights using the inference script. Make sure to madify the path to checkpoints and path to `SampleData'.
+You can find our trained weigths [here](https://drive.google.com/drive/folders/14KGo-5k25KVVTg1SH69Qhbxw1FsrhNle?usp=sharing). For your convenience, we have provided preprocessed data samples from DSEC. Simply download the samples to quickly check the trained weights using the [inference script](https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Inference.py). Make sure to madify the path to checkpoints and path to `SampleData'.
 
 ```python
 if __name__ == "__main__":
