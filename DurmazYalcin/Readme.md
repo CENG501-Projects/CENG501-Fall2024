@@ -295,6 +295,8 @@ class parameters:
 You can find our trained weigths [here](https://drive.google.com/drive/folders/14KGo-5k25KVVTg1SH69Qhbxw1FsrhNle?usp=sharing).
 
 ## 3.3. Results
+
+### Supervised Learning
 Inside the [DSEC](https://dsec.ifi.uzh.ch/) dataset, we identified 8,211 frames with optical flow as ground truth. Of these, 8,170 frames were used for training, while the remaining 41 frames were set aside for validation. The network was trained for 30 epochs, and the training and validation losses are reported below.
 <div align="center">
   <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/training_losses.png" alt="description" width="50%">
@@ -307,10 +309,14 @@ Finally, we visualize sample estimations from the network, showing both the grou
   <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/ESvsGT.gif" alt="description" width="95%">
 </div>
 
-According to our observations with the [DSEC](https://dsec.ifi.uzh.ch/) dataset, we trained the network with the [MVSEC](https://daniilidis-group.github.io/mvsec/) dataset for 20 epochs, and the training and validation losses are reported below.
-```
-Will be available later
-```
+### Self-Supervised Learnin
+We have trained the network with the [MVSEC](https://daniilidis-group.github.io/mvsec/) dataset using self-supervised loss. Approximately 58k successive image pairs with corresponding event data are available in MVSEC. We used 43k samples for training and the remaining 5k for validation.
+
+We depict the training loss and validaion loss below. As expected, the losses decrease more slowly compared to supervised learning. 
+<div align="center">
+  <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/unsupervised_learning_losses.png" alt="description" width="50%">
+</div>
+
 
 # 4. Conclusion
 
