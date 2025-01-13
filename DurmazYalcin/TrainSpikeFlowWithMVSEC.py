@@ -12,8 +12,8 @@ import os, shutil, time, sys
 
 class parameters:
     def __init__(self):
-        self.train_data_path    = "/media/ogam-mgeo/acikdata/Additional/OpticalFlow/Training"
-        self.valid_data_path    = "/media/ogam-mgeo/acikdata/Additional/OpticalFlow/Validation"
+        self.train_data_path    = "/media/romer/Additional/OpticalFlow/Training"
+        self.valid_data_path    = "/media/romer/Additional/OpticalFlow/Validation"
 
         self.saving_path  = "checkpoints/MVSEC/SpikingNet" 
         self.epochs       = 50
