@@ -290,6 +290,10 @@ class parameters:
         self.weight_decay = 4e-4
         self.beta         = 0.999
 ```
+
+### Inference
+You can find our trained weigths [here](https://drive.google.com/drive/folders/14KGo-5k25KVVTg1SH69Qhbxw1FsrhNle?usp=sharing).
+
 ## 3.3. Results
 Inside the [DSEC](https://dsec.ifi.uzh.ch/) dataset, we identified 8,211 frames with optical flow as ground truth. Of these, 8,170 frames were used for training, while the remaining 41 frames were set aside for validation. The network was trained for 30 epochs, and the training and validation losses are reported below.
 <div align="center">
