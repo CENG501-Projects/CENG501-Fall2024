@@ -342,7 +342,6 @@ Haktan Yalçın - yalcin.haktan@metu.edu.tr
   organization={IEEE}
 }
 
-```latex
 @inproceedings{lee2020spike,
   title={Spike-Flownet: Event-Based Optical Flow Estimation with Energy-Efficient Hybrid Neural Networks},
   author={Lee, Chankyu and Kosta, Adarsh Kumar and Zhu, Alex Zihao and Chaney, Kenneth and Daniilidis, Kostas and Roy, Kaushik},
@@ -351,6 +350,7 @@ Haktan Yalçın - yalcin.haktan@metu.edu.tr
   year={2020},
   organization={Springer}
 }
+```
 
 
 
