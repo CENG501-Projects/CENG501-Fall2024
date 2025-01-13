@@ -292,7 +292,14 @@ class parameters:
 ```
 
 ### Inference
-You can find our trained weigths [here](https://drive.google.com/drive/folders/14KGo-5k25KVVTg1SH69Qhbxw1FsrhNle?usp=sharing). For your convenience, we have provided preprocessed data samples from DSEC. Simply download the samples to quickly check the trained weights using the inference script.
+You can find our trained weigths [here](https://drive.google.com/drive/folders/14KGo-5k25KVVTg1SH69Qhbxw1FsrhNle?usp=sharing). For your convenience, we have provided preprocessed data samples from DSEC. Simply download the samples to quickly check the trained weights using the inference script. Make sure to madify the path to checkpoints and path to `SampleData'.
+
+```python
+if __name__ == "__main__":
+    model      = EventFlow().cuda()
+    model.load_state_dict(torch.load('<modify_here>/best.pth', weights_only=True))
+    path_to_data = "<modify_here>/SampleData"
+```
 
 ## 3.3. Results
 
