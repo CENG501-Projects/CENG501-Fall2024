@@ -6,7 +6,7 @@ This readme file is an outcome of the [CENG501 (Spring 2024)](https://ceng.metu.
 
 Emotion recognition plays a crucial role in human-computer interaction systems. In the scope of emotion recognition, the contextual features of images can help the model identify the emotion classes effectively. For this matter, context-aware emotion recognition (CAER)[2] approaches have been developed in a way that incorporates such context features by specifically focusing on them. However, CAER methods often suffer from context bias, leading to suboptimal results. The negative effects of such context bias can be so powerful that in some cases, the emotion classes of the given images can be predicted solely depending on the contextual features regardless of the actual object (humans in this case).
 
-<p align="center"> <img src="https://github.com/bahadirkaratas/GoksenKaratas/blob/main/GoksenKaratas/images/image1.png" alt="Emotion Recognition Context Bias" width="600" height="600"> </p>
+<p align="center"> <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/GokcenKaratas/images/image1.png" alt="Emotion Recognition Context Bias" width="600" height="600"> </p>
 
 This paper introduces a novel framework, **Counterfactual Emotion Inference (CLEF)** [1], to mitigate context bias and improve robustness in CAER tasks. Specifically, a generalized causal graph is formulated to shed light to the causal relationships between variables in CAER flow. Following the graph, a non-invasive context branch is integrated to capture the adverse direct effect caused by the context bias. 
 
@@ -37,12 +37,13 @@ For evaluating the performance of the proposed framework, experiments are conduc
 
 The proposed method formulates the problem as a causal graph and uses the implied relations to mitigate the direct effects of context bias while preserving the desired undirect prior.
 First, the authors start by defining the preliminary relations obtained from causal graph theory:
-<p align="center"> <img src="https://github.com/bahadirkaratas/GoksenKaratas/blob/main/GoksenKaratas/images/CausalGraphs.png" alt="Emotion Recognition Context Bias" width="400"> </p>
+<p align="center"> <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/GokcenKaratas/images/CausalGraphs.png" alt="Emotion Recognition Context Bias" width="400"> </p>
 
 To architecturally define the framework, the authors introduce an additional context branch to the pre-existing CAER architecture in order to denote the contextual bias. Once the emotion recognition problem is formulated as a causal graph, the given relations became useful for extracting direct effects of branches.
 While extending the factual component, they also introduce a counterfactual component with a very similar architecture as the factual one. The main motivation behind this choice is to incorporate the extracted realations from the causal graphs and be able to govern the effects of the contextual features. 
 
-<p align="center"> <img src="https://github.com/bahadirkaratas/GoksenKaratas/blob/main/GoksenKaratas/images/Architecture.png" alt="Architecture" width="900"> </p>
+<p align="center"> <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/GokcenKaratas/images/Architecture.png" alt="Architecture" width="900"> </p>
+
 
 
 
@@ -61,17 +62,17 @@ The causal graph formulation of vanilla CAER framework is provided as follows:
 **Link C/S → E → Y** captures the indirect causal effect of C and S on the model predictions Y through the ensemble representations E.
 
 By examining the CAER causal graph links, the additional relations are introduced into the causal graph of CLEF. To mitigate the interference of the harmful context bias on model predictions, they exclude the biased direct effect along the link X → C → Y. The causality in the factual scenarios is formulated as follows:
-<p align="left"> <img src="https://github.com/bahadirkaratas/GoksenKaratas/blob/main/GoksenKaratas/images/EQ5.png" alt="EQ5" width="400"> </p>
+<p align="left"> <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/GokcenKaratas/images/EQ5.png" alt="EQ5" width="400"> </p>
 
 This reflects the confounded emotion predictions since it suffers from the undesired effects of the pure context bias. To be able to fix  distinct causal effects in the context semantics, the Total Effect (TE) of C = c and S = s are calculated:
-<p align="left"> <img src="https://github.com/bahadirkaratas/GoksenKaratas/blob/main/GoksenKaratas/images/EQ6.png" alt="EQ6" width="400"> </p>
+<p align="left"> <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/GokcenKaratas/images/EQ6.png" alt="EQ6" width="400"> </p>
 
 where c∗ and e∗ represent the non-treatment conditions for observed values of C and E, where c and s leading to e are not given.
 Next, the Natural Direct Effect (NDE) for the harmful bias in context semantics is estimated in order to clarify the causalty between them
-<p align="left"> <img src="https://github.com/bahadirkaratas/GoksenKaratas/blob/main/GoksenKaratas/images/EQ7.png" alt="EQ7" width="400"> </p>
+<p align="left"> <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/GokcenKaratas/images/EQ7.png" alt="EQ7" width="400"> </p>
 
 To exclude the explicitly captured context bias in NDE, Total Indirect Effect (TIE) is estimated by subtracting NDE from TE
-<p align="left"> <img src="https://github.com/bahadirkaratas/GoksenKaratas/blob/main/GoksenKaratas/images/EQ9.png" alt="EQ9" width="400"> </p>
+<p align="left"> <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/GokcenKaratas/images/EQ9.png" alt="EQ9" width="400"> </p>
 The resulting TIE is than used as the unbiased prediction during inference.
 
 
@@ -85,20 +86,20 @@ CLEF’s predictions consist of two parts:
 The context branch is a neural network like ResNet to receive context images with masked subjects. The masking operation contains masking out the subject by assigning the pixel values of the subject to zero. Here, masking forces the network to focus on pure context semantics for estimating the direct effect. 
 
 Once the values for both branches are calculated, a pragmatic fusion strategy φ(·) is introduced to obtain the final score Y_{c,e}(X):
-<p align="left"> <img src="https://github.com/bahadirkaratas/GoksenKaratas/blob/main/GoksenKaratas/images/Fusion.png" alt="fusion" width="400"> </p>
+<p align="left"> <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/GokcenKaratas/images/Fusion.png" alt="fusion" width="400"> </p>
 
 **Training**
 
 The authors state that as a universal framework, they have selected multi-class classification problem as an example to adopt the cross-entropy loss as the objective function. The general loss is calculated by summing the losses of two branches independently:
 
-<p align="left"> <img src="https://github.com/bahadirkaratas/GoksenKaratas/blob/main/GoksenKaratas/images/LossSummation.png" alt="loss" width="400"> </p>
+<p align="left"> <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/GokcenKaratas/images/LossSummation.png" alt="loss" width="400"> </p>
 
 
 For the counterfactual branch, the imagined Y_e*(X) is implemented as a trainable parameter initialized by the uniform distribution since neural networks cannot handle void inputs. It should be noted that the Y_e*(X) is shared by all samples. To be able to regularize Y_e*(X), since inappropriate values can cause TIE to be dominated by TE or NDE, Kullback-Leibler divergence is employed.
-<p align="left"> <img src="https://github.com/bahadirkaratas/GoksenKaratas/blob/main/GoksenKaratas/images/KL.png" alt="kl" width="400"> </p>
+<p align="left"> <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/GokcenKaratas/images/KL.png" alt="kl" width="400"> </p>
 
 After integrating all components together, the final loss is formulated as the following:
-<p align="left"> <img src="https://github.com/bahadirkaratas/GoksenKaratas/blob/main/GoksenKaratas/images/FinalLoss.png" alt="finalloss" width="400"> </p>
+<p align="left"> <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/GokcenKaratas/images/FinalLoss.png" alt="finalloss" width="400"> </p>
 
 ---
 
