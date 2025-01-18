@@ -11,18 +11,27 @@ import os, shutil, time, sys
 
 class parameters:
     def __init__(self):
-        self.train_data_path    = "/media/romer/Additional/OpticalFlow/Training"
-        self.valid_data_path    = "/media/romer/Additional/OpticalFlow/Validation"
-
-        self.saving_path  = "checkpoints/MVSEC/ConvNet" 
+        # Path to training and validation data
+        self.train_data_path    = "/media/hakito/HDD/event_data/mvsec/OpticalFlow/Training"
+        self.valid_data_path    = "/media/hakito/HDD/event_data/mvsec/OpticalFlow/Validation"
+        
+        # Where the save the output
+        self.saving_path  = "checkpoints/EventFlow/MVSEC" 
+        
+        # Number of training epoches
         self.epochs       = 50
         
-        self.batch_size   = 128
+        # Batch size
+        self.batch_size   = 1
         
-        self.lr           = 1e-4 
+        # Optimization parameters
+        self.lr           = 1e-5
         self.momentum     = 0.9
         self.weight_decay = 4e-4
         self.beta         = 0.999
+        
+        # Spiking Network initial leakage factor
+        self.beta_init = 1.0    # 1 means no leakage
         
         
 class trainManager:
@@ -42,6 +51,7 @@ class trainManager:
         self.train_data_path = self.params.train_data_path
         self.valid_data_path = self.params.valid_data_path
 
+        # Load the training and validation dataset
         trainDataMVSEC  = MVSECManipulator(self.train_data_path)
         self.train_data = DataLoader(trainDataMVSEC,batch_size=self.params.batch_size, shuffle=False)
 
@@ -52,6 +62,9 @@ class trainManager:
         self.losses = open(os.path.join(self.params.saving_path, "losses.txt"),"w")
         self.losses.write("# epoch, training loss, validation loss, epoch duration (sec)\n")
         self.losses.close()
+        
+        print(f"Len of training data : {len(self.train_data)}")
+        print(f"Len of validation data : {len(self.valid_data)}")
         
     def train(self):
         best_loss = 1e10
@@ -64,17 +77,28 @@ class trainManager:
                 # Get events
                 binarized_events = item['left_events']
                 
+                # Get the size of the original image
+                _, _, H, W = binarized_events[0].shape
+                
                 # Prepare the input
                 input = torch.cat(binarized_events, dim=1).float().cuda()
                 
-                # Estimate the optical flow
-                scaled_flows   = self.model(input)
+                # Get the estimated scaled flows
+                estimated_scaled_flows_padded = self.model(input)
+                
+                # Get rid of the padded parts
+                estimated_scaled_flows = []
+                for scale_idx, padded_estimated_scale in enumerate(estimated_scaled_flows_padded):
+                    new_H = H//(2**scale_idx)
+                    new_W = W//(2**scale_idx)
+                    scaled_flow = padded_estimated_scale[:,:, :new_H, :new_W]
+                    estimated_scaled_flows.append(scaled_flow)
                 
                 # Get image frames
                 curr_image_frame = item['curr_raw_img'].unsqueeze(1)
                 next_image_frame = item['next_raw_img'].unsqueeze(1)
                 
-                photometric_loss = multi_scale_photometric_loss(scaled_flows=scaled_flows, curr_frame=curr_image_frame, next_frame=next_image_frame)
+                photometric_loss = multi_scale_photometric_loss(scaled_flows=estimated_scaled_flows, curr_frame=curr_image_frame, next_frame=next_image_frame)
 
                 self.optimizer.zero_grad()
                 photometric_loss.backward()
@@ -83,8 +107,9 @@ class trainManager:
                 train_loss += photometric_loss.item()
 
                 # Clean up memory
-                del input, scaled_flows, photometric_loss, curr_image_frame, next_image_frame   # Free tensors
+                del input, estimated_scaled_flows, photometric_loss, curr_image_frame, next_image_frame   # Free tensors
                 torch.cuda.empty_cache()
+
             train_loss /= len(self.train_data)
 
             ################# Validation #################
@@ -97,19 +122,27 @@ class trainManager:
                     # Prepare the input
                     input = torch.cat(binarized_events, dim=1).float().cuda()
                     
-                    # Estimate the optical flow
-                    scaled_flows   = self.model(input)
+                    # Get the estimated scaled flows
+                    estimated_scaled_flows_padded = self.model(input)
+                    
+                    # Get rid of the padded parts
+                    estimated_scaled_flows = []
+                    for scale_idx, padded_estimated_scale in enumerate(estimated_scaled_flows_padded):
+                        new_H = H//(2**scale_idx)
+                        new_W = W//(2**scale_idx)
+                        scaled_flow = padded_estimated_scale[:,:, :new_H, :new_W]
+                        estimated_scaled_flows.append(scaled_flow)
                     
                     # Get image frames
                     curr_image_frame = item['curr_raw_img'].unsqueeze(1)
                     next_image_frame = item['next_raw_img'].unsqueeze(1)
                     
-                    photometric_loss = multi_scale_photometric_loss(scaled_flows=scaled_flows, curr_frame=curr_image_frame, next_frame=next_image_frame)
+                    photometric_loss = multi_scale_photometric_loss(scaled_flows=estimated_scaled_flows, curr_frame=curr_image_frame, next_frame=next_image_frame)
 
                     valid_loss += photometric_loss.item()
 
                     # Clean up memory
-                    del input, scaled_flows, photometric_loss, curr_image_frame, next_image_frame   # Free tensors
+                    del input, estimated_scaled_flows, photometric_loss, curr_image_frame, next_image_frame   # Free tensors
                     torch.cuda.empty_cache()
 
             valid_loss /= len(self.valid_data)
@@ -130,8 +163,8 @@ class trainManager:
             
             # If this model is better then the previous one,
             # save this as the best
-            if valid_loss < best_val_loss:
-                best_val_loss = valid_loss
+            if valid_loss < best_loss:
+                best_loss = valid_loss
                 model_save_path = os.path.join(self.params.saving_path, "best.pth")
                 torch.save(self.model.state_dict(), model_save_path)
                 self.model.cuda()  # Move back to GPU

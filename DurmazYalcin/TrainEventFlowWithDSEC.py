@@ -15,16 +15,27 @@ import sys
 
 class parameters:
     def __init__(self):
-        self.saving_path  = "checkpoints/DSEC/ConNet" 
+        # Path to training and validation data
+        self.train_data_path = "/media/hakito/HDD/event_data/dsec/ProcessedDSEC/training"
+        self.valid_data_path = "/media/hakito/HDD/event_data/dsec/ProcessedDSEC/validation"
+        
+        # Where the save the output
+        self.saving_path  = "checkpoints/EventFlow/DSEC" 
+        
+        # Number of training epoches
         self.epochs       = 50
         
-        self.batch_size   = 10
+        # Batch size
+        self.batch_size   = 1
         
-        self.lr           = 1e-4 
+        # Optimization parameters
+        self.lr           = 1e-5
         self.momentum     = 0.9
         self.weight_decay = 4e-4
         self.beta         = 0.999
         
+        # Spiking Network initial leakage factor
+        self.beta_init = 1.0    # 1 means no leakage
 
 def get_scaled_validty_tensors(validity: np.array):
     validity_tensor_arr = []
@@ -70,16 +81,18 @@ def computeLoss(flow_gt, estimated_scaled_flows):
         
 class TrainingManager:
     def __init__(self):
-        self.model      = EventFlow().cuda()
+        # Load parameters
         self.params     = parameters()
         
+        # Initialize the model
+        self.model      = EventFlow().cuda()
+        
+        # Optimizer
         self.optimizer = torch.optim.Adam(self.model.parameters(), self.params.lr, betas=(self.params.momentum, self.params.beta))
         
-        trainig_path    = "/media/hakito/HDD/event_data/dsec/ProcessedDSEC/training"
-        validation_path = "/media/hakito/HDD/event_data/dsec/ProcessedDSEC/validation"
-        
-        self.train_data = DataLoader( DSECManipulator(trainig_path)   , batch_size=self.params.batch_size )
-        self.valid_data = DataLoader( DSECManipulator(validation_path), batch_size=self.params.batch_size )
+        # Load the training and validation dataset
+        self.train_data = DataLoader( DSECManipulator(self.params.train_data_path)   , batch_size=self.params.batch_size )
+        self.valid_data = DataLoader( DSECManipulator(self.params.valid_data_path), batch_size=self.params.batch_size )
         
         # Make sure that the saving path is available
         if not os.path.exists(self.params.saving_path):
@@ -89,6 +102,7 @@ class TrainingManager:
         self.losses = open(os.path.join(self.params.saving_path, "losses.txt"),"w")
         self.losses.write("# epoch, training loss, validation loss, epoch duration (sec)\n")
         self.losses.close()
+        
         
         print(f"Len of training data : {len(self.train_data)}")
         print(f"Len of validation data : {len(self.valid_data)}")
@@ -104,14 +118,25 @@ class TrainingManager:
                 # Get events
                 binarized_events = item['left_events']
                 
+                # Get the size of the original image
+                _, _, H, W = binarized_events[0].shape
+                
                 # Prepare the input
                 input = torch.cat(binarized_events, dim=1).float().cuda()
                 
-                # Estimate the optical flow
-                estimated_scaled_flows   = self.model(input)
+                # Get the estimated scaled flows
+                estimated_scaled_flows_padded = self.model(input)
                 
+                # Get rid of the padded parts
+                estimated_scaled_flows = []
+                for scale_idx, padded_estimated_scale in enumerate(estimated_scaled_flows_padded):
+                    new_H = H//(2**scale_idx)
+                    new_W = W//(2**scale_idx)
+                    scaled_flow = padded_estimated_scale[:,:, :new_H, :new_W]
+                    estimated_scaled_flows.append(scaled_flow)
+                    
                 # Get the groundturth and validty mask
-                flow_gt = padding(item['optical_flow'].cuda())
+                flow_gt = item['optical_flow'].cuda()
                 
                 # Compute the loss
                 loss = computeLoss(flow_gt, estimated_scaled_flows)
@@ -125,6 +150,7 @@ class TrainingManager:
                 # Clean up memory
                 del input, estimated_scaled_flows, flow_gt, loss  # Free tensors
                 torch.cuda.empty_cache()
+                break
 
             train_loss /= len(self.train_data)
             ################# Validation #################
@@ -137,11 +163,19 @@ class TrainingManager:
                     # Prepare the input
                     input = torch.cat(binarized_events, dim=1).float().cuda()
                     
-                    # Estimate the optical flow
-                    estimated_scaled_flows   = self.model(input)
+                    # Get the estimated scaled flows
+                    estimated_scaled_flows_padded = self.model(input)
                     
+                    # Get rid of the padded parts
+                    estimated_scaled_flows = []
+                    for scale_idx, padded_estimated_scale in enumerate(estimated_scaled_flows_padded):
+                        new_H = H//(2**scale_idx)
+                        new_W = W//(2**scale_idx)
+                        scaled_flow = padded_estimated_scale[:,:, :new_H, :new_W]
+                        estimated_scaled_flows.append(scaled_flow)
+                        
                     # Get the groundturth and validty mask
-                    flow_gt = padding(item['optical_flow'].cuda())
+                    flow_gt = item['optical_flow'].cuda()
                     
                     # Compute the loss
                     loss = computeLoss(flow_gt, estimated_scaled_flows)
@@ -150,6 +184,7 @@ class TrainingManager:
                     # Clean up memory
                     del input, estimated_scaled_flows, flow_gt, loss  # Free tensors
                     torch.cuda.empty_cache()
+                    print("hdfsfere")
 
             val_loss /= len(self.valid_data)
             
@@ -179,6 +214,7 @@ class TrainingManager:
             
             # Clean up additional memory after epoch
             torch.cuda.empty_cache()
+            
 if __name__ == "__main__":
     trainer = TrainingManager()
     trainer.train()

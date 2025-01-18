@@ -74,9 +74,6 @@ def get_scaled_frame(frame, scale):
 
 
 def multi_scale_photometric_loss(scaled_flows, curr_frame, next_frame):
-    # We have padded the input, as a result, we also pad the output
-    curr_frame = padding(curr_frame)
-    next_frame = padding(next_frame)
     total_photometric_loss = 0.0
     for idx, scaled_flow in enumerate(scaled_flows):
         # Compute the scale
@@ -84,7 +81,6 @@ def multi_scale_photometric_loss(scaled_flows, curr_frame, next_frame):
         # Get scaled frames
         curr_scaled_frame = get_scaled_frame(curr_frame.float(), scale=scale).cuda()
         next_scaled_frame = get_scaled_frame(next_frame.float(), scale=scale).cuda()
-
         # Warp current frame
         warped_frame   = warp_frame(curr_scaled_frame.cuda(), scaled_flow.cuda())
         warping_err    = next_scaled_frame.cuda() - warped_frame

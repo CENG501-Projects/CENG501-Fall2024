@@ -1,5 +1,5 @@
 from MVSECUtils.MVSECLoader import MVSECManipulator
-from models.leakyNeuron import SpikingFlowNet
+from models.SpikingFlow import SpikingNet
 from utils.visualization_utils import flow_to_image
 from utils.losses import multi_scale_photometric_loss
 from utils.utils import padding
@@ -12,20 +12,27 @@ import os, shutil, time, sys
 
 class parameters:
     def __init__(self):
-        self.train_data_path    = "/media/romer/Additional/OpticalFlow/Training"
-        self.valid_data_path    = "/media/romer/Additional/OpticalFlow/Validation"
-
-        self.saving_path  = "checkpoints/MVSEC/SpikingNet" 
+        # Path to training and validation data
+        self.train_data_path    = "/media/hakito/HDD/event_data/mvsec/OpticalFlow/Training"
+        self.valid_data_path    = "/media/hakito/HDD/event_data/mvsec/OpticalFlow/Validation"
+        
+        # Where the save the output
+        self.saving_path  = "checkpoints/SpikingNet/MVSEC" 
+        
+        # Number of training epoches
         self.epochs       = 50
         
-        self.batch_size   = 64
+        # Batch size
+        self.batch_size   = 1
         
-        self.lr           = 5e-5 
+        # Optimization parameters
+        self.lr           = 1e-5
         self.momentum     = 0.9
         self.weight_decay = 4e-4
         self.beta         = 0.999
         
-        
+        # Spiking Network initial leakage factor
+        self.beta_init = 1.0    # 1 means no leakage
         
 class trainManager:
     def __init__(self):
@@ -35,7 +42,7 @@ class trainManager:
             os.makedirs(self.params.saving_path)
         
         # Initialize the model
-        self.model      = SpikingFlowNet().cuda()
+        self.model      = SpikingNet(self.params).cuda()
         
         # Initialize the optimizer
         self.optimizer = torch.optim.Adam(self.model.parameters(), self.params.lr, betas=(self.params.momentum, self.params.beta))
@@ -50,15 +57,17 @@ class trainManager:
         # Save the losses as well
         self.losses = open(os.path.join(self.params.saving_path, "losses.txt"),"w")
         self.losses.write("# epoch, training loss, validation loss, epoch duration (sec)")
+        self.losses.close()
+        
+        print(f"Len of training data : {len(self.train_data)}")
+        print(f"Len of validation data : {len(self.valid_data)}")
         
     def train(self):
         for epoch in range(self.params.epochs):
             t_start = time.monotonic_ns()
             ################# Training #################
             train_loss = 0.0
-            counter = 0
             for idx, item in enumerate(self.train_data):
-                
                 # Get events
                 binarized_events = item['left_events']
                 
@@ -67,17 +76,28 @@ class trainManager:
                     padded_sample = padding(sample)
                     input_array.append(padded_sample)
 
-                # Prepare the input
-                input = torch.stack(input_array, dim=-1).float()
+                # Get the size of the original image
+                _, _, H, W = sample.shape
                 
-                # Estimate the optical flow
-                scaled_flows   = self.model(input, 0.75)
+                # Prepare the input
+                input = torch.stack(input_array, dim=0).float().cuda()
+
+                # Get the estimated scaled flows
+                estimated_scaled_flows_padded = self.model(input)
+                
+                # Get rid of the padded parts
+                estimated_scaled_flows = []
+                for scale_idx, padded_estimated_scale in enumerate(estimated_scaled_flows_padded):
+                    new_H = H//(2**scale_idx)
+                    new_W = W//(2**scale_idx)
+                    scaled_flow = padded_estimated_scale[:,:, :new_H, :new_W]
+                    estimated_scaled_flows.append(scaled_flow)
                 
                 # Get image frames
                 curr_image_frame = item['curr_raw_img'].unsqueeze(1)
                 next_image_frame = item['next_raw_img'].unsqueeze(1)
                 
-                photometric_loss = multi_scale_photometric_loss(scaled_flows=scaled_flows, curr_frame=curr_image_frame, next_frame=next_image_frame)
+                photometric_loss = multi_scale_photometric_loss(scaled_flows=estimated_scaled_flows, curr_frame=curr_image_frame, next_frame=next_image_frame)
 
                 self.optimizer.zero_grad()
                 photometric_loss.backward()
@@ -86,7 +106,7 @@ class trainManager:
                 train_loss += photometric_loss.item() / len(self.train_data)
 
                 # Clean up memory
-                del input, scaled_flows, photometric_loss, curr_image_frame, next_image_frame   # Free tensors
+                del input, estimated_scaled_flows, photometric_loss, curr_image_frame, next_image_frame   # Free tensors
                 torch.cuda.empty_cache()
  
             ################# Validation #################
@@ -103,21 +123,29 @@ class trainManager:
                         input_array.append(padded_sample)
 
                     # Prepare the input
-                    input = torch.stack(input_array, dim=-1).float()
+                    input = torch.stack(input_array, dim=0).float().cuda()
                     
-                    # Estimate the optical flow
-                    scaled_flows   = self.model(input, 0.75)
+                    # Get the estimated scaled flows
+                    estimated_scaled_flows_padded = self.model(input)
                     
+                    # Get rid of the padded parts
+                    estimated_scaled_flows = []
+                    for scale_idx, padded_estimated_scale in enumerate(estimated_scaled_flows_padded):
+                        new_H = H//(2**scale_idx)
+                        new_W = W//(2**scale_idx)
+                        scaled_flow = padded_estimated_scale[:,:, :new_H, :new_W]
+                        estimated_scaled_flows.append(scaled_flow)
+                        
                     # Get image frames
                     curr_image_frame = item['curr_raw_img'].unsqueeze(1)
                     next_image_frame = item['next_raw_img'].unsqueeze(1)
                     
-                    photometric_loss = multi_scale_photometric_loss(scaled_flows=scaled_flows, curr_frame=curr_image_frame, next_frame=next_image_frame)
+                    photometric_loss = multi_scale_photometric_loss(scaled_flows=estimated_scaled_flows, curr_frame=curr_image_frame, next_frame=next_image_frame)
                     
                     valid_loss += photometric_loss.item() / len(self.train_data)
                     
                     # Clean up memory
-                    del input, scaled_flows, photometric_loss, curr_image_frame, next_image_frame   # Free tensors
+                    del input, estimated_scaled_flows, photometric_loss, curr_image_frame, next_image_frame   # Free tensors
                     torch.cuda.empty_cache()
 
             # Print the epoch

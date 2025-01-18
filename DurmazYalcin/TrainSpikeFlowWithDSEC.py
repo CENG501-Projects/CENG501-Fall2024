@@ -2,7 +2,7 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 import torch.nn.functional as F
 
-from models.leakyNeuron import SpikingFlowNet
+from models.SpikingFlow import SpikingNet
 from DSECUtils.DSECLoader import DSECManipulator
 import cv2
 import numpy as np
@@ -15,15 +15,27 @@ import sys
 
 class parameters:
     def __init__(self):
-        self.saving_path  = "checkpoints/DSEC/SpikingNet" 
+        # Path to training and validation data
+        self.train_data_path = "/media/hakito/HDD/event_data/dsec/ProcessedDSEC/training"
+        self.valid_data_path = "/media/hakito/HDD/event_data/dsec/ProcessedDSEC/validation"
+        
+        # Where the save the output
+        self.saving_path  = "checkpoints/SpikingNet/DSEC" 
+        
+        # Number of training epoches
         self.epochs       = 50
         
-        self.batch_size   = 10
+        # Batch size
+        self.batch_size   = 1
         
-        self.lr           = 1e-4 
+        # Optimization parameters
+        self.lr           = 1e-5
         self.momentum     = 0.9
         self.weight_decay = 4e-4
         self.beta         = 0.999
+        
+        # Spiking Network initial leakage factor
+        self.beta_init = 1.0    # 1 means no leakage
         
 
 def get_scaled_validty_tensors(validity: np.array):
@@ -40,6 +52,7 @@ def get_scaled_validty_tensors(validity: np.array):
         validity_tensor_arr.append(validty_tensor)
     return validity_tensor_arr
 
+
 def get_scaled_tensors(tensor):
     flow_tensor_arr = []
     H = tensor.shape[2]
@@ -55,7 +68,7 @@ def computeLoss(flow_gt, estimated_scaled_flows):
     # Create scaled masks and groundtruth
     scaled_gt_flows    = get_scaled_tensors(flow_gt)
     loss = 0.0
-    for idx in range(4):
+    for idx in range(len(estimated_scaled_flows)):
         estimated_flow  = estimated_scaled_flows[idx]
         flow_gt         = scaled_gt_flows[idx][:,:2,:,:]
         mask            = scaled_gt_flows[idx][:,2,:,:]
@@ -70,16 +83,18 @@ def computeLoss(flow_gt, estimated_scaled_flows):
         
 class TrainingManager:
     def __init__(self):
-        self.model      = SpikingFlowNet().cuda()
+        # Load parameters
         self.params     = parameters()
         
+        # Initialize the model
+        self.model      = SpikingNet(self.params).cuda()
+        
+        # Optimizer
         self.optimizer = torch.optim.Adam(self.model.parameters(), self.params.lr, betas=(self.params.momentum, self.params.beta))
         
-        trainig_path    = "/media/hakito/HDD/event_data/dsec/ProcessedDSEC/training"
-        validation_path = "/media/hakito/HDD/event_data/dsec/ProcessedDSEC/validation"
-        
-        self.train_data = DataLoader( DSECManipulator(trainig_path)   , batch_size=self.params.batch_size )
-        self.valid_data = DataLoader( DSECManipulator(validation_path), batch_size=self.params.batch_size )
+        # Load the training and validation dataset
+        self.train_data = DataLoader( DSECManipulator(self.params.train_data_path)   , batch_size=self.params.batch_size )
+        self.valid_data = DataLoader( DSECManipulator(self.params.valid_data_path), batch_size=self.params.batch_size )
         
         # Make sure that the saving path is available
         if not os.path.exists(self.params.saving_path):
@@ -111,14 +126,25 @@ class TrainingManager:
                     padded_sample = padding(sample)
                     input_array.append(padded_sample)
 
+                # Get the size of the original image
+                _, _, H, W = sample.shape
+                    
                 # Prepare the input
-                input = torch.stack(input_array, dim=-1).float()
-                
+                input = torch.stack(input_array, dim=0).float().cuda()
+
                 # Get the estimated scaled flows
-                estimated_scaled_flows = self.model(input, 0.75)
+                estimated_scaled_flows_padded = self.model(input)
                 
+                # Get rid of the padded parts
+                estimated_scaled_flows = []
+                for scale_idx, padded_estimated_scale in enumerate(estimated_scaled_flows_padded):
+                    new_H = H//(2**scale_idx)
+                    new_W = W//(2**scale_idx)
+                    scaled_flow = padded_estimated_scale[:,:, :new_H, :new_W]
+                    estimated_scaled_flows.append(scaled_flow)
+                    
                 # Get the groundturth and validty mask
-                flow_gt = padding(item['optical_flow'].cuda())
+                flow_gt = item['optical_flow'].cuda()
                 
                 # Compute the loss
                 loss = computeLoss(flow_gt, estimated_scaled_flows)
@@ -132,7 +158,9 @@ class TrainingManager:
                 # Clean up memory
                 del input, estimated_scaled_flows, flow_gt, loss  # Free tensors
                 torch.cuda.empty_cache()
-
+                break
+                
+                
             train_loss /= len(self.train_data)
             ################# Validation #################
             with torch.no_grad():
@@ -147,13 +175,21 @@ class TrainingManager:
                         input_array.append(padded_sample)
 
                     # Prepare the input
-                    input = torch.stack(input_array, dim=-1).float()
+                    input = torch.stack(input_array, dim=0).float().cuda()
                     
                     # Get the estimated scaled flows
-                    estimated_scaled_flows = self.model(input, 0.75)
+                    estimated_scaled_flows_padded = self.model(input)
                     
+                    # Get rid of the padded parts
+                    estimated_scaled_flows = []
+                    for scale_idx, padded_estimated_scale in enumerate(estimated_scaled_flows_padded):
+                        new_H = H//(2**scale_idx)
+                        new_W = W//(2**scale_idx)
+                        scaled_flow = padded_estimated_scale[:,:, :new_H, :new_W]
+                        estimated_scaled_flows.append(scaled_flow)
+                        
                     # Get the groundturth and validty mask
-                    flow_gt = padding(item['optical_flow'].cuda())
+                    flow_gt = item['optical_flow'].cuda()
                     
                     # Compute the loss
                     loss = computeLoss(flow_gt, estimated_scaled_flows)
@@ -162,7 +198,7 @@ class TrainingManager:
                     # Clean up memory
                     del input, estimated_scaled_flows, flow_gt, loss  # Free tensors
                     torch.cuda.empty_cache()
-
+                    print("heree")
                 val_loss /= len(self.valid_data)
             
             # Print the epoch details
