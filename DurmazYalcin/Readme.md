@@ -148,39 +148,15 @@ def get_scaled_tensors(tensor):
 ```
 
 ### Integrate and Fire Neurons (Leaky)
-We utilize the IF neuron implementation from the [Spike-FlowNet GitHub](https://github.com/chan8972/Spike-FlowNet) as a starting point. However, the provided IF neuron does not include leakage. Since the proposed method requires a leaky IF neuron, we incorporate the leakage mechanism into the implementation.
-```python
-# IF neuron from Spike-FlowNet
-def IF_Neuron(membrane_potential, threshold):
-    global threshold_k
-    threshold_k = threshold
-    # check exceed membrane potential and reset
-    ex_membrane = nn.functional.threshold(membrane_potential, threshold_k, 0)
-    membrane_potential = membrane_potential - ex_membrane # hard reset
-    # generate spike
-    out = SpikingNN()(ex_membrane)
-    out = out.detach() + (1/threshold)*out - (1/threshold)*out.detach()
-
-    return membrane_potential, out
-```
-
-To incorporate the leakage factor into our code, we introduced two terms: a decay factor $ λ = 0.9 $ and a $threshold = 0.75 $. These terms were defined as hyperparameters within the membrane potential history. The original paper also explored these parameters but concluded that they have minimal impact on the algorithm's overall performance. The implementation details can be seen as follows;
+The paper explores methods for learning the threshold potential and leakage parameters within spiking neurons. The term adaptive in the paper's title highlights that, unlike conventional spiking networks where these parameters are manually set, they are dynamically adjusted and learned during training. However, we have observed that PyTorch already includes support for spiking neural networks (SNNs) with built-in learnable firing thresholds and leakage parameters.
 
 ```python
-def LIF_Neuron(membrane_potential, threshold):
-    global threshold_k
-    threshold_k = threshold
-    # check exceed membrane potential and reset
-    ex_membrane = nn.functional.threshold(membrane_potential, threshold_k, 0)
-    membrane_potential = membrane_potential - ex_membrane # hard reset
-    membrane_potential = membrane_potential * 0.9
-    # generate spike
-    out = SpikingNN.apply(ex_membrane)
-    out = out.detach() + (1/threshold)*out - (1/threshold)*out.detach()
- 
-    return membrane_potential, out
+class snntorch._neurons.leaky.Leaky(beta, threshold=1.0, spike_grad=None, surrogate_disable=False, init_hidden=False, inhibition=False, learn_beta=False, learn_threshold=False, reset_mechanism='subtract', state_quant=False, output=False, graded_spikes_factor=1.0, learn_graded_spikes_factor=False, reset_delay=True)
 ```
-
+Hence, we directly use the torch library to construct the spiking network. 
+```python
+leaky_firing_net = snn.Leaky(beta=params.beta_init, learn_beta=True, learn_threshold=True)
+```
 ### Loss Function
 To implement supervised training, we need to incorporate the ground truth optical flow. However, as you may have noticed in the provided ground truth samples, not all pixels in a frame have corresponding ground truth optical flow. Therefore, we must first mask the pixels without valid ground truth values. The mask can be defined as follows:
 
