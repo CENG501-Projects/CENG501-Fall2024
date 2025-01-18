@@ -304,7 +304,7 @@ We have trained the network with the [MVSEC](https://daniilidis-group.github.io/
 
 We depict the training loss and validaion loss below. As expected, the losses decrease more slowly compared to supervised learning. 
 <div align="center">
-  <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/unsupervised_learning_losses.png" alt="description" width="50%">
+  <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/unsupervised_training_losses.png" alt="description" width="50%">
 </div>
 
 
