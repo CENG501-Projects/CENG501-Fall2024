@@ -295,6 +295,11 @@ We have extracted the following comparisons for LRW-Hard, LRW-Easy, LRW-Random, 
 
 -LRW-Random didn't perform the way the article suggested in every case because of its stochastic nature. In Cats and Dogs, LRW-Random gave better results than LRW-Easy, but in other datasets, its performance mostly aligned with the paper's suggestion of LRW-Easy > LRW-Random.
 
+### Original Paper Results
+Original paper results are provided as follows:
+
+![image](https://github.com/user-attachments/assets/f06b1546-5678-4e7e-bf43-c1ae3f46079e)
+
 
     
 ## **3.3.2. Margin Maximization Effect**
