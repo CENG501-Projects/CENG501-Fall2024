@@ -136,7 +136,7 @@ We provide a visualization of the input bins for the reader's convenience. The f
 - **Rigth Bottom:** Binned OFF Events
 
 #### Scaled Flows
-When backpropagation is applied at four different scales of optical flow, we adjust the motion values (optical flow) for each scale. For example, if an image is resized to be twice as large, the motion of each pixel also doubles. To ensure the motion stays accurate, we scale the optical flow values to match the size of the image at each scale. This way, the optical flow at each scale correctly represents the motion for that specific scale.
+When backpropagation is applied across four different scales of optical flow, we adjust the motion values (optical flow) to align with each scale. For instance, if an image is resized to double its original size, the motion of each pixel also doubles. To maintain accuracy, we scale the optical flow values proportionally to the size of the image at each scale. This adjustment ensures that the optical flow at each scale accurately represents the motion for that specific scale.
 
 ```python
 def get_scaled_tensors(tensor):
