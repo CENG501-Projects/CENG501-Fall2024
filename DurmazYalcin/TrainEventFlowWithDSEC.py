@@ -150,7 +150,6 @@ class TrainingManager:
                 # Clean up memory
                 del input, estimated_scaled_flows, flow_gt, loss  # Free tensors
                 torch.cuda.empty_cache()
-                break
 
             train_loss /= len(self.train_data)
             ################# Validation #################
@@ -184,7 +183,6 @@ class TrainingManager:
                     # Clean up memory
                     del input, estimated_scaled_flows, flow_gt, loss  # Free tensors
                     torch.cuda.empty_cache()
-                    print("hdfsfere")
 
             val_loss /= len(self.valid_data)
             

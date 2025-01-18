@@ -1,0 +1,1 @@
+# epoch, training loss, validation loss, epoch duration (sec)
