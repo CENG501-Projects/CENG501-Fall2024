@@ -120,17 +120,20 @@ $$
 where $\alpha$ is a hyperparameter to scale the effect of smoothness loss. 
 
 ## 2.2. Our interpretation
-The network employs a straightforward U-Net architecture, which has many similar examples available online. However, the following considerations are crucial:
-- The input representation should be manipulated carefully.
-- Unlike conventional ANNs, PyTorch does not natively support SNN structures. For this purpose, the [Spike-FlowNet GitHub](https://github.com/chan8972/Spike-FlowNet)  repository offers an implementation of SNNs, which can be adapted for this work.
-- Special attention must be paid to implementation of the loss function, as it directly impacts the network's performance for estimating the optical flow. 
+In this section, we clarify critical implementation details that were not sufficiently addressed in the paper. Additionally, we provide a transparent and detailed explanation of the points where we deviated from the proposed method in the paper, along with clear motivations for these changes.
 
 ### Input Representation and Scaled Flows
 #### Visualization of Input Fromat
-Assume that we desire to estimate the optical flow at time instant $t_k$. We determine the half window size as $100$ msec. Then, we create the bins between time interval $(t_k-100,t_k+100)$ and visualize them in order to verify the implementation.
+We provide a visualization of the input bins for the reader's convenience. The figure below illustrates the key components of the input representation:
+
 <div align="center">
   <img src="https://github.com/CENG501-Projects/CENG501-Fall2024/blob/main/DurmazYalcin/Figures/InputRepresentation.gif" alt="description" width="80%">
 </div>
+
+- **Left Upper:** All events within a single frame
+- **Right Upper:** Actual Optical Flow Vectors
+- **Left Bottom:** Binned ON Events
+- **Rigth Bottom:** Binned OFF Events
 
 #### Scaled Flows
 When backpropagation is applied at four different scales of optical flow, we adjust the motion values (optical flow) for each scale. For example, if an image is resized to be twice as large, the motion of each pixel also doubles. To ensure the motion stays accurate, we scale the optical flow values to match the size of the image at each scale. This way, the optical flow at each scale correctly represents the motion for that specific scale.
