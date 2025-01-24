@@ -311,7 +311,7 @@ We depict the training loss and validaion loss below. As expected, the losses de
 ### Comparison with the Paper
 | Dataset       | Our Results (AEE)      | Paper Result (AEE)       |
 |-----------------|----------------|----------------|
-| DSEC  | 7.78  | 4.27  |
+| MVSEC   | 0.778  | 0.48 |
 
 # 4. Conclusion
 
