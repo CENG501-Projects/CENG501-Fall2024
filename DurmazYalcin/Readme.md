@@ -308,6 +308,11 @@ We depict the training loss and validaion loss below. As expected, the losses de
 </div>
 
 
+### Comparison with the Paper
+| Dataset       | Our Results (AEE)      | Paper Result (AEE)       |
+|-----------------|----------------|----------------|
+| DSEC  | 7.78  | 4.27  |
+
 # 4. Conclusion
 
 In this study, we utilized the MVSEC and DSEC datasets, both of which provide LIDAR, IMU, event camera, and grayscale image data. Among these, the DSEC dataset offers a more reliable ground truth compared to MVSEC. For our implementation, we focused exclusively on the event camera data to estimate optical flow using the adaptive spike flow architecture outlined in the referenced paper.
